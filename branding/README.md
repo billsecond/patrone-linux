@@ -59,7 +59,14 @@ native 8K export from that would be better still.
 `fastfetch/config.jsonc` is the system-wide fastfetch setup (installed as
 `/etc/xdg/fastfetch/config.jsonc`, a path fastfetch 2.57 searches). It shows
 `fastfetch/logo.txt` in Patrone Blue and Highlight, with the keys in
-Highlight. To preview it from the repo:
+Highlight. Nothing installs it system-wide yet, so plain `fastfetch` still
+shows Ubuntu's logo until you either install it for your user:
+
+```
+./branding/fastfetch/install-dev.sh
+```
+
+or preview it from the repo:
 
 ```
 fastfetch -c branding/fastfetch/config.jsonc --logo branding/fastfetch/logo.txt

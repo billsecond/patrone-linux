@@ -5,8 +5,9 @@
 #
 #   ./setup-remote-desktop.sh sharing   Desktop Sharing: shows the session you're
 #                                       logged in to, at the VM's screen size.
-#   ./setup-remote-desktop.sh login     Remote Login: a separate session whose
-#                                       screen resizes with the client window.
+#   ./setup-remote-desktop.sh login     Remote Login: a separate session sized
+#                                       to the client window (resizing it
+#                                       afterwards not yet confirmed).
 #                                       Uses sudo. Signing in ends your console
 #                                       session, if you have one.
 #

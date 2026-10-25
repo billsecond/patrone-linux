@@ -31,7 +31,10 @@ Done:
 - **Remote Desktop:** Remote Desktop Connection works, at full 4K with Remote
   Login. The Hyper-V daemons are running.
 - **fastfetch** config in the Patrone colors (`branding/fastfetch/`), with a
-  placeholder logo.
+  placeholder logo, installed for the user with
+  `branding/fastfetch/install-dev.sh`. (At first it was only previewed with
+  `-c`/`--logo`, so the user's plain `fastfetch` still showed Ubuntu's logo
+  and looked like a false claim. Say exactly how something was checked.)
 
 Waiting on the user:
 
@@ -165,8 +168,10 @@ Findings:
 
 Plan:
 
-1. **Dev VM:** `mstsc` with Remote Login covers clipboard and resizing. The
-   VMConnect enhanced session is optional for the dev VM. To try it: run
+1. **Dev VM:** `mstsc` with Remote Login gives clipboard and full resolution.
+   Resizing with the window is expected but unconfirmed: the session was
+   still 3840×2160 with no resize logged when last checked. The VMConnect
+   enhanced session is optional for the dev VM. To try it: run
    `scripts/hyperv/guest/setup-enhanced-session.sh`, shut the VM down, run
    `Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket`, start
    it, and connect with VMConnect. Its main value is learning whether

@@ -56,8 +56,9 @@ you to choose an RDP username and password:
 - **Desktop Sharing** shows the session you're logged in to, at the VM's
   screen size. Clipboard works; resizing doesn't.
 - **Remote Login** starts a separate session on a virtual monitor the size of
-  the client window (3840×2160 on a 4K screen), which follows the window when
-  it's resized. After the RDP password you sign in at the login screen with
+  the client window (3840×2160 on a 4K screen). It should follow the window
+  when it's resized (GNOME Remote Desktop's source supports that), but that
+  hasn't been confirmed yet. After the RDP password you sign in at the login screen with
   your Linux account. If you're already logged in on the VM's console, that
   console session is ended. The new session starts at 100% scale; set 200% in
   Settings → Displays on a 4K screen.
