@@ -82,6 +82,8 @@ branding/              logo, colors and artwork
 compositor/            the Patrone compositor
 shell/                 panel, launcher, dock, notifications
 settings/              the settings app
+terminal/              Patrone Terminal
+zsh/                   default zsh setup (patrone-shell-config)
 session/               session entry, systemd user units, defaults
 packaging/             Debian packaging for each component
 iso/                   ISO remaster scripts

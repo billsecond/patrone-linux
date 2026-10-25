@@ -1,0 +1,61 @@
+//! Patrone Dark: the terminal's colors and font.
+//!
+//! A near-black background with the Patrone blues from `branding/README.md`
+//! for the cursor, selection and the blue ANSI colors.
+
+use gtk::{gdk, pango};
+use vte::prelude::*;
+
+/// Families are tried in order; `Monospace` is fontconfig's fallback.
+pub const FONT: &str = "JetBrains Mono, Fira Code, Monospace 11";
+
+const FOREGROUND: &str = "#D6DEEB";
+const BACKGROUND: &str = "#070A10";
+const CURSOR: &str = "#288BFA"; // Patrone Blue
+const SELECTION: &str = "#1851A8"; // Deep
+
+/// ANSI colors 0-15: black, red, green, yellow, blue, magenta, cyan, white,
+/// then the bright versions in the same order.
+const PALETTE: [&str; 16] = [
+    "#1C2230", "#E5484D", "#3FC56B", "#F2C14E", "#288BFA", "#B072F5", "#2BC3D6", "#C5CDD9",
+    "#5C6678", "#FF6B6F", "#6EE592", "#FFD97A", "#4DA0FC", "#C99BFF", "#5FE0EE", "#FFFFFF",
+];
+
+fn rgba(hex: &str) -> gdk::RGBA {
+    gdk::RGBA::parse(hex).expect("theme colors are valid")
+}
+
+pub fn apply(terminal: &vte::Terminal) {
+    let palette: Vec<gdk::RGBA> = PALETTE.iter().map(|hex| rgba(hex)).collect();
+    let palette: Vec<&gdk::RGBA> = palette.iter().collect();
+    terminal.set_colors(Some(&rgba(FOREGROUND)), Some(&rgba(BACKGROUND)), &palette);
+    terminal.set_color_cursor(Some(&rgba(CURSOR)));
+    terminal.set_color_cursor_foreground(Some(&rgba(BACKGROUND)));
+    terminal.set_color_highlight(Some(&rgba(SELECTION)));
+    terminal.set_color_highlight_foreground(Some(&rgba("#FFFFFF")));
+    terminal.set_bold_is_bright(false);
+    terminal.set_font(Some(&pango::FontDescription::from_string(FONT)));
+}
+
+/// Styles the window chrome around the terminals to match.
+pub const CSS: &str = "
+window.patrone-terminal,
+window.patrone-terminal notebook > stack {
+    background-color: #070A10;
+}
+window.patrone-terminal headerbar {
+    background-color: #0D121B;
+    color: #D6DEEB;
+    box-shadow: none;
+}
+window.patrone-terminal notebook > header {
+    background-color: #0D121B;
+    border-bottom: 1px solid #1C2230;
+}
+window.patrone-terminal notebook > header tab:checked {
+    box-shadow: inset 0 -2px #288BFA;
+}
+vte-terminal {
+    padding: 6px 10px;
+}
+";

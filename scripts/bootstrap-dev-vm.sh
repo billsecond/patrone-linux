@@ -30,8 +30,21 @@ apt-get install -y pkg-config clang meson ninja-build \
     libseat-dev libdrm-dev libgbm-dev libegl-dev libpixman-1-dev libdisplay-info-dev \
     xwayland libgtk-4-dev libgtk4-layer-shell-dev
 
-# Hyper-V integration: lets the Windows host see this VM's IP address
-apt-get install -y linux-cloud-tools-virtual || true
+# Patrone Terminal: VTE, the fonts it uses, and zsh with the plugins the
+# Patrone zshrc loads
+apt-get install -y libvte-2.91-gtk4-dev fonts-jetbrains-mono fonts-firacode \
+    zsh zsh-syntax-highlighting zsh-autosuggestions
+
+# Hyper-V integration: the KVP daemon lets the Windows host see this VM's IP
+# address. socat and the FreeRDP proxy are for enhanced sessions
+# (scripts/hyperv/guest/).
+apt-get install -y linux-cloud-tools-virtual socat freerdp-proxy || true
+
+# The Hyper-V daemons start when udev tags their devices, which only happens
+# at boot. If the tools were just installed, tag the devices now.
+if [[ $(systemd-detect-virt) == microsoft ]]; then
+    udevadm trigger --action=add --subsystem-match=misc --sysname-match='vmbus!hv_*'
+fi
 
 systemctl enable --now ssh
 

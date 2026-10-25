@@ -1,6 +1,6 @@
 # Next steps
 
-Last updated 2026-10-25, at the end of the setup session.
+Last updated 2026-10-25, at the end of the Patrone Terminal and Hyper-V session.
 
 ## Where things stand
 
@@ -16,103 +16,107 @@ Done:
 - Stack decided: Rust + Smithay compositor, GTK4 shell (see `docs/PLAN.md`).
 - Branding: logo concept, measured palette, and wallpaper 01 with an 8K master,
   set as the VM's wallpaper (see `branding/README.md`).
+- **Patrone Terminal, first version,** in `terminal/` (see its README). It
+  builds, its unit tests pass, and it opens and renders correctly in the VM's
+  GNOME session. Copy on select, paste on right-click, tabs and shortcuts are
+  written but not yet tried by hand.
+- **Patrone zshrc** in `zsh/zshrc`: Kali-style two-line prompt, written but not
+  yet run (zsh wasn't installed).
+- **Hyper-V:** root cause of the inactive daemons found and fixed in the
+  bootstrap script; enhanced-session bridge written (`scripts/hyperv/guest/`).
 
 Waiting on the user:
 
+- **Re-run the bootstrap script** on the VM, which needs their sudo password:
+  `sudo ./scripts/bootstrap-dev-vm.sh`. It installs VTE's development files,
+  the fonts, zsh and its plugins, `socat` and `freerdp-proxy`, and starts the
+  Hyper-V daemons.
+- **Remote Desktop password.** Clipboard and resizing need GNOME Remote
+  Desktop turned on in Settings, with a password the user sets.
 - **ASCII logo file.** The user shared an ASCII-art version of the logo as an
   image in chat, but it was never saved to disk. Ask for the file (for example
   in `C:\Users\wdaugherty\Downloads`) and add it under `branding/concepts/`.
   It also has to be redone as real text for `fastfetch` and `/etc/issue`.
 
-## 1. Milestone 2: minimal compositor
+## 1. Patrone Terminal: finish and package
 
-In `compositor/` (Rust + Smithay), build a compositor that runs as a window
-inside the VM's GNOME session (Smithay's winit backend). It should:
+- Have the user try copy on select, right-click paste, tabs and zoom, and
+  confirm the look (Patrone Dark palette in `terminal/src/theme.rs`).
+- After the bootstrap re-run: install with `./terminal/install-dev.sh --zshrc`,
+  check the prompt, the plugins, and that new tabs open in the current
+  directory (the zshrc reports it with OSC 7). `--default` makes it the
+  terminal GNOME opens, through `~/.config/xdg-terminals.list`. Check whether
+  Ctrl+Alt+T follows that or still opens Ptyxis.
+- Ideas not done yet: Ctrl+click to open links, a preferences dialog, asking
+  before closing a tab with a running program, the Patrone logo as the icon.
+- Packaging: `patrone-terminal` (registers the `x-terminal-emulator`
+  alternative; `-e` and `-T` already work) and `patrone-shell-config`
+  (`zsh/zshrc` as `/etc/skel/.zshrc`, zsh as the default shell for new users).
 
-- draw a background (the Patrone wallpaper)
-- launch a terminal on start
-- let windows be moved, resized and closed
+Findings:
 
-Smithay's `anvil` example and the niri compositor are good references. Both
-are GPL-3, so copying code from them makes the compositor GPL-3. Rendering in
-the VM is software-only (Mesa llvmpipe), since Hyper-V gives Linux guests no
-GPU.
+- The `vte4` 0.10 crate pairs with `gtk4` 0.11. Ubuntu 26.04 has VTE 0.84 and
+  GTK 4.22, so the crate features are `v0_84` and `gnome_50`.
+- Ubuntu's Yaru theme fails to load in plain (non-libadwaita) GTK4 apps on the
+  VM: "resource /com/ubuntu/themes/Yaru/4.0/gtk.css does not exist". The
+  terminal uses GTK's built-in `Default` theme, dark. The Patrone shell and
+  settings apps will hit the same thing.
+- Windows opened over SSH don't take keyboard focus in GNOME, so they don't
+  interrupt the user. `scripts/hyperv/vmshot.ps1` shows the result.
+- Don't run `pkill -f <pattern>` over SSH: the pattern also matches the SSH
+  command's own shell, which kills the connection. Kill by PID.
 
-## 2. Patrone Terminal (new request)
+## 2. Hyper-V guest support
 
-The user wants a new default terminal that looks a lot like Kali Linux's, with:
+The user wants clipboard copy and paste and desktop resizing when Patrone runs
+as a Windows Hyper-V guest. `scripts/hyperv/README.md` has the user-facing
+steps.
 
-- **Copy on select:** selecting text copies it to the clipboard.
-- **Paste on right-click.**
-- A dark, "terminal-ish" look: Kali-style two-line prompt, dark theme, a good
-  monospace font.
+Findings:
 
-Proposed design (confirm the look with the user as you go):
-
-- **App:** `patrone-terminal` in Rust, using GTK4 and VTE through the `vte4`
-  crate (system library `libvte-2.91-gtk4-dev` 0.84). VTE handles the terminal
-  emulation. On top of it:
-  - copy to the clipboard when the selection changes
-  - paste on right-click instead of a context menu
-  - Ctrl+Shift+C/V, Ctrl+Plus/Minus zoom, Ctrl+Shift+T/N for tabs and windows
-  - 10,000+ lines of scrollback
-- **Look:** a dark palette inspired by Kali's, using the Patrone blues from
-  `branding/README.md`, with Fira Code (`fonts-firacode`) or JetBrains Mono
-  (`fonts-jetbrains-mono`).
-- **Shell:** zsh as the default shell for new users, with
-  `zsh-syntax-highlighting` and `zsh-autosuggestions`, and a Kali-style
-  two-line prompt:
-
-  ```
-  ┌──(user㉿host)-[~/src]
-  └─$
-  ```
-
-  Blue for normal users, red for root. Write our own `.zshrc` rather than
-  copying Kali's.
-- **Packaging:** `patrone-terminal`, plus `patrone-shell-config` for zsh
-  defaults in `/etc/skel`, registered as the `x-terminal-emulator` alternative.
-  It can also be tried as the default terminal in the GNOME dev VM before
-  Patrone Desktop exists.
-
-All of those packages are confirmed available in Ubuntu 26.04 (`zsh` 5.9,
-`zsh-syntax-highlighting` 0.8.0, `zsh-autosuggestions` 0.7.1,
-`fonts-firacode` 6.2).
-
-## 3. Hyper-V guest support (new request)
-
-The user wants Patrone to work well as a Windows Hyper-V guest: clipboard
-copy and paste, desktop resizing, and similar.
-
-Findings so far, on the dev VM:
-
-- GNOME 50 is **Wayland-only**: no X11 session exists. The usual Linux
-  "enhanced session" recipe (xrdp + Xorg, Microsoft's linux-vm-tools) can't
-  work.
-- The kernel has `hv_sock`, `vsock`, `hv_utils`, `hyperv_drm` and `hid_hyperv`
-  loaded. `hv_sock` is the transport Hyper-V's console uses for enhanced
-  sessions.
-- `hv-kvp-daemon`, `hv-vss-daemon` and `hv-fcopy-daemon` are enabled but were
-  **inactive**. Find out why; they may need a reboot after
-  `linux-cloud-tools-virtual` was installed.
-- `gnome-remote-desktop` 50.2 is installed. `grdctl` has no option to listen
-  on vsock, so a bridge is needed for Hyper-V's enhanced session, for example
-  `socat VSOCK-LISTEN:3389,fork TCP:127.0.0.1:3389` (install `socat`).
-- `xrdp` 0.10.1 and `socat` are available in the archive.
+- GNOME 50 is **Wayland-only**, so the xrdp + Xorg recipe (Microsoft's
+  linux-vm-tools) can't work.
+- **The Hyper-V daemons were inactive** because `linux-cloud-tools` was
+  installed after boot. Their units bind to udev-tagged devices
+  (`/usr/lib/udev/rules.d/60-hv-*.rules`), and the devices had been created
+  before the rules existed. The bootstrap script now re-triggers udev for
+  them. `hv-fcopy-daemon` stays off: its unit waits for `/dev/vmbus/hv_fcopy`,
+  which the 7.0 kernel's UIO-based fcopy doesn't create. It's only for
+  `Copy-VMFile`, so it's low priority.
+- **Host side:** `EnableEnhancedSessionMode` is already True, but `PatroneDev`
+  uses the `VMBus` transport. Linux guests need
+  `Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket`.
+- **GNOME Remote Desktop** (50.2, checked against its source):
+  - accepts **NLA only** (`RdpSecurity` and `TlsSecurity` off, `NlaSecurity`
+    on);
+  - resizes the remote screen only when it gives the client virtual monitors:
+    **Remote Login** (headless) sessions, or Desktop Sharing in "extend" mode.
+    Desktop Sharing normally mirrors the primary monitor at its fixed size.
+  - has no vsock support.
+- Nobody has published a working GNOME Remote Desktop + VMConnect setup. One
+  forum attempt bridged vsock with socat and failed at sign-in ("connection
+  reset by peer"); its bridge pointed at the Remote Login daemon, which
+  redirects the client to a second connection, and VMConnect may not follow
+  that.
+- `freerdp-proxy` (FreeRDP 3.32) runs headless. Its client side can do NLA to
+  GNOME Remote Desktop with a stored username and password, and its server
+  side accepts TLS or standard RDP security without NLA.
 
 Plan:
 
 1. **Dev VM now.**
-   - Quickest way to get clipboard and resizing today: the user enables
-     **Settings → System → Remote Desktop** (they set the RDP password
-     themselves), then connects from Windows with Remote Desktop Connection to
-     `DevDistro-PatroneLinux.local`.
-   - Then try a real enhanced session in the Hyper-V console window: on the
-     host, `Set-VM PatroneDev -EnhancedSessionTransportType HvSocket` (and
-     check `Get-VMHost` shows `EnableEnhancedSessionMode` is True); in the
-     guest, bridge vsock port 3389 to GNOME Remote Desktop.
+   - Remote Desktop Connection from Windows: the user turns on Desktop Sharing
+     (clipboard, shares the console session, fixed size) or Remote Login
+     (clipboard and resizing, separate session) in **Settings → System →
+     Remote Desktop**, then runs `mstsc /v:DevDistro-PatroneLinux.local`.
+     Check whether Remote Login works while the same user is logged in on the
+     console.
+   - Enhanced session: run `scripts/hyperv/guest/setup-enhanced-session.sh`,
+     switch the VM to `HvSocket` (VM shut down), and connect with VMConnect.
+     If it fails at sign-in, put `freerdp-proxy` between the bridge and GNOME
+     Remote Desktop (TLS in, NLA out).
 2. **Patrone ISO.** Ship the Hyper-V daemons, enabled only on Hyper-V
-   (`systemd-detect-virt` reports `microsoft`), plus the vsock bridge.
+   (`systemd-detect-virt` reports `microsoft`), plus whichever bridge works.
 3. **Patrone Desktop.** GNOME Remote Desktop only works with GNOME's own
    compositor (Mutter), so Patrone needs its own RDP path. Either implement the
    screen-cast and remote-desktop D-Bus APIs that GNOME Remote Desktop expects,
@@ -123,8 +127,37 @@ Plan:
    - The compositor should also handle `hyperv_drm` resolution changes in the
      basic console.
 
+## 3. Milestone 2: minimal compositor
+
+In `compositor/` (Rust + Smithay), build a compositor that runs as a window
+inside the VM's GNOME session (Smithay's winit backend). It should:
+
+- draw a background (the Patrone wallpaper)
+- launch a terminal on start (Patrone Terminal)
+- let windows be moved, resized and closed
+
+Smithay's `anvil` example and the niri compositor are good references. Both
+are GPL-3, so copying code from them makes the compositor GPL-3. Rendering in
+the VM is software-only (Mesa llvmpipe), since Hyper-V gives Linux guests no
+GPU.
+
+## 4. fastfetch logo (when the ASCII logo exists)
+
+The user wants `fastfetch` to show the Patrone logo. `fastfetch` is already
+installed on Ubuntu 26.04 and currently shows Ubuntu's logo. Once the ASCII
+logo exists as real text:
+
+- ship it as a fastfetch logo file, with a system-wide config
+  (`/etc/xdg/fastfetch/config.jsonc`) that points at it and uses the Patrone
+  blues. Check that fastfetch reads that path.
+- When Patrone gets its own `/etc/os-release` (`ID=patrone`,
+  `ID_LIKE=ubuntu`), fastfetch would fall back to Ubuntu's logo without that
+  config.
+- Reuse the same text for `/etc/issue`.
+
 ## Suggested order
 
-Start Patrone Terminal and the dev-VM Hyper-V convenience (step 3.1) first:
-both give the user something visible quickly. Then the compositor
-(milestone 2), then Hyper-V support inside Patrone Desktop.
+Get the user's bootstrap re-run and Remote Desktop settings done, then finish
+testing Patrone Terminal and the zshrc. Then the compositor (milestone 2), then
+Hyper-V support inside Patrone Desktop. The fastfetch logo waits on the ASCII
+logo file.

@@ -1,6 +1,7 @@
 # Build output
 /out/
 /work/
+target/
 *.iso
 *.squashfs
 

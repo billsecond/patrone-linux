@@ -1,0 +1,19 @@
+[Unit]
+Description=Bridge Hyper-V enhanced sessions (vsock 3389) to the local RDP server
+ConditionVirtualization=microsoft
+After=network.target
+
+[Service]
+# Hyper-V's socket transport; usually loaded already
+ExecStartPre=+/usr/sbin/modprobe hv_sock
+ExecStart=/usr/bin/socat VSOCK-LISTEN:3389,reuseaddr,fork TCP:127.0.0.1:3389
+Restart=on-failure
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_VSOCK AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

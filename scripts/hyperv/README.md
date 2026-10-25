@@ -28,3 +28,43 @@ Notes:
   trigger desktop shortcuts.
 - If the VM console window was opened from an elevated process, desktop
   automation tools can't send input to it, but these scripts still work.
+
+## Inside the guest: clipboard and resizing
+
+Hyper-V's basic console has no clipboard sharing and a fixed screen size.
+Both come from RDP. GNOME 50 has no X11 session, so the xrdp recipe from
+Microsoft's linux-vm-tools can't work. GNOME Remote Desktop is the RDP server
+instead. Two things about it matter:
+
+- It only accepts connections that use network-level authentication (NLA).
+- It resizes the remote screen only when it gives the client a virtual
+  monitor: in **Remote Login** sessions, or in Desktop Sharing's "extend"
+  mode. Desktop Sharing normally mirrors the VM's screen at its current size.
+
+### Remote Desktop Connection (works today)
+
+1. In the VM, open **Settings → System → Remote Desktop**.
+   - **Desktop Sharing** shares the session you're logged in to. Turn it on,
+     turn on **Remote Control**, and set a username and password.
+   - **Remote Login** (needs your admin password) starts a separate session
+     whose size follows the client window. Turn it on and set a username and
+     password.
+2. On Windows, run `mstsc /v:DevDistro-PatroneLinux.local`. Desktop Sharing
+   and Remote Login can't both use port 3389. When both are on, Desktop
+   Sharing moves to the port shown on its tab.
+
+### Hyper-V enhanced session (experimental)
+
+In enhanced-session mode, VMConnect connects to vsock port 3389 in the guest.
+`guest/setup-enhanced-session.sh` installs `patrone-hyperv-rdp-bridge.service`,
+which forwards that port to GNOME Remote Desktop on TCP 3389:
+
+```
+sudo ./scripts/hyperv/guest/setup-enhanced-session.sh   # in the VM
+Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket   # on Windows, VM shut down
+```
+
+Then start the VM and pick the enhanced session in VMConnect. This hasn't
+worked end to end yet. If VMConnect can't do NLA, the next step is to put
+`freerdp-proxy` between the bridge and GNOME Remote Desktop: the proxy accepts
+TLS without NLA and signs in to GNOME Remote Desktop with NLA itself.
