@@ -1,10 +1,11 @@
 # Patrone Linux
 
-An Ubuntu 26.04 LTS-based desktop operating system with a customized GNOME.
+An Ubuntu 26.04 LTS-based operating system with its own, brand-new desktop
+environment: Patrone Desktop.
 
-Patrone Linux is built as a layer on top of Ubuntu: our own settings, branding and
-GNOME Shell extensions first, and patched GNOME components only where a goal
-requires them. The build produces an installable ISO.
+Ubuntu provides the kernel, drivers, system services and package archive.
+Patrone Desktop is a new Wayland desktop (compositor, shell, lock screen,
+settings) that replaces GNOME. The build produces an installable ISO.
 
 See [docs/PLAN.md](docs/PLAN.md) for the approach, repo layout and milestones.
 

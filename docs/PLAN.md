@@ -1,41 +1,66 @@
 # Patrone Linux: project plan
 
-Patrone Linux is an Ubuntu-based desktop OS with a customized GNOME, built as an
-installable ISO.
-Base: **Ubuntu 26.04.1 LTS ("Resolute Raccoon")**, GNOME as shipped in 26.04.
+Patrone Linux is an Ubuntu-based operating system with its own, brand-new desktop
+environment, **Patrone Desktop**, built as an installable ISO.
 
-## Approach: a derivative, not a full fork
+## What comes from Ubuntu, and what is ours
 
-Ubuntu is tens of thousands of packages. We do not copy all of it. We use Ubuntu's
-archive as-is and add a thin layer of our own packages on top, the way Pop!_OS,
-Zorin and Linux Mint do. We fork an individual Ubuntu or GNOME package only when
-configuration or an extension can't get us what we want, because every fork has
-to be rebased whenever Ubuntu updates that package.
+Ubuntu 26.04.1 LTS ("Resolute Raccoon") supplies everything below the desktop:
+the kernel and drivers, systemd, the package archive and security updates,
+NetworkManager, PipeWire audio, Bluetooth, power management, printing, and the
+apps people install. We don't fork any of that.
 
-## Customization layers (cheapest to maintain first)
+Patrone Desktop replaces GNOME. It is a new Wayland desktop that talks to the
+same standard Linux services GNOME uses, so ordinary GTK, Qt and Electron apps
+run on it unchanged, and X11 apps run through Xwayland.
 
-1. **Defaults and branding**, in `packages/patrone-desktop-settings/`
-   GSettings schema overrides (`/usr/share/glib-2.0/schemas/90_*.gschema.override`),
-   wallpaper, GTK and Shell theme, icons, fonts, dock favorites, default apps.
-   No GNOME source changes.
-2. **GNOME Shell extensions**, in `packages/patrone-shell-extensions/`
-   Panel, dock, workspace and window-management behavior, shipped as system
-   extensions and enabled by default.
-3. **Forked GNOME components**, in `forks/` (only when needed)
-   Start from Ubuntu's packaging (`git-ubuntu clone gnome-shell`, or `mutter`,
-   `gnome-control-center`), carry our changes as patches in `debian/patches/`,
-   and version them so they sort above Ubuntu's (for example `+patrone1`).
+## Patrone Desktop components
+
+| Component | Job | Notes |
+| --- | --- | --- |
+| Compositor | Draws every window, handles input, multiple monitors, window management | The core of the desktop, and the biggest piece of work |
+| Shell | Panel, app launcher, dock, notifications, quick settings | Separate programs that draw on the screen through the layer-shell protocol |
+| Lock screen | Locks and unlocks the session | Uses the ext-session-lock protocol |
+| Settings app | Displays, input, network, sound, appearance | Talks to NetworkManager, PipeWire and UPower over D-Bus |
+| Session | Starts everything at login | A session entry the login screen can pick, plus systemd user units |
+| Portals | Screenshots, screen sharing, file pickers for sandboxed apps | Start from the existing GTK portal; add our own backend where needed |
+
+At first the login screen is GDM, Ubuntu's own, which can start any Wayland
+session. A Patrone login screen can come later.
+
+## Proposed technology (to confirm)
+
+- **Compositor: Rust with [Smithay](https://github.com/Smithay/smithay).**
+  Rust keeps the most privileged process on the desktop memory-safe, and Smithay
+  is proven: System76's COSMIC desktop and the niri compositor are both built on
+  it. The main alternative is C with wlroots, the library behind Sway and labwc.
+- **Shell and settings UI: GTK4 through gtk4-rs, with gtk4-layer-shell.** This
+  gives us accessibility, input methods, high-quality text and theming without
+  writing them ourselves. Patrone's look comes from our own widgets and styling.
+
+## Development loop
+
+The compositor can run as a window inside the dev VM's existing GNOME desktop,
+so we can rebuild and relaunch it in seconds without logging out. Once it can
+run a full session, we install a session entry and choose "Patrone" at the login
+screen.
+
+**Hyper-V limitation:** Hyper-V gives Linux guests no GPU acceleration, so
+rendering in the VM is done in software by Mesa. That's fine for building the
+desktop, but animation smoothness and GPU-specific behavior need checking on
+real hardware before a release.
 
 ## Build pipeline
 
-- **Packages:** build `.deb`s in a clean chroot with `sbuild`.
+- **Packages:** each component becomes a `.deb` (`patrone-compositor`,
+  `patrone-shell`, `patrone-settings`, `patrone-session`, and the
+  `patrone-desktop` metapackage), built in a clean chroot with `sbuild`.
 - **Apt repository:** a private repo generated with `reprepro`. Launchpad PPAs
   are always public, so they're out while the project is private.
-- **ISO:** remaster the official 26.04.1 desktop ISO. Extract it, add our apt
-  repo and packages inside the root filesystem, rebuild the squashfs layers and
-  manifests, and repack with `xorriso`. This keeps Ubuntu's own installer. A
-  from-scratch build (debootstrap and our own installer) waits until we outgrow
-  remastering.
+- **ISO:** remaster the official 26.04.1 desktop ISO. Add our packages, make
+  Patrone Desktop the default session, apply branding, and repack with
+  `xorriso`. Ubuntu's installer stays in place. A from-scratch image build waits
+  until we outgrow remastering.
 - **Test:** boot each ISO with QEMU/KVM inside the dev VM (nested virtualization
   is on), and do full installs in disposable Hyper-V VMs.
 
@@ -43,22 +68,30 @@ to be rebased whenever Ubuntu updates that package.
 
 | Machine | Purpose |
 | --- | --- |
-| `PatroneDev` (Hyper-V, Ubuntu 26.04.1 Desktop, 12 vCPU, 32 GB, 250 GB) | Day-to-day development. The repo lives here, packages and ISOs are built here, and Claude Code runs here over SSH from the Claude app on Windows. |
+| `PatroneDev` (Hyper-V, Ubuntu 26.04.1 Desktop, 12 vCPU, 32 GB, 250 GB) | Day-to-day development. The repo lives here, everything is built here, and Claude Code runs here over SSH from the Claude app on Windows. |
 | Throwaway test VMs | Install and boot each built ISO from scratch. |
+| Real hardware (later) | Check GPU rendering and performance. |
 
 ## Repo layout
 
 ```
 docs/                  plan, decisions, how-to notes
-packages/              our own packages (settings, branding, extensions)
-forks/                 patched Ubuntu/GNOME packages, added only when needed
-build/                 package, apt-repo and ISO build scripts
+compositor/            the Patrone compositor
+shell/                 panel, launcher, dock, notifications
+settings/              the settings app
+session/               session entry, systemd user units, defaults
+packaging/             Debian packaging for each component
+iso/                   ISO remaster scripts
+scripts/               dev environment setup and helpers
 ```
 
 ## Milestones
 
-1. Dev VM installed, reachable by SSH, Claude Code running there, repo cloned.
-2. A settings package that changes wallpaper, theme and dock, verified on the
-   dev VM after logging out and back in.
-3. First remastered ISO that boots, installs, and comes up with our defaults.
-4. First patched GNOME component, if a goal needs one.
+1. Dev VM installed, reachable by SSH, toolchain and Claude Code in place, repo
+   cloned.
+2. A minimal compositor running as a window inside GNOME: a background, a
+   terminal that opens on launch, and windows you can move, resize and close.
+3. The compositor runs as a real session chosen at the login screen.
+4. A panel and app launcher, and a notification daemon.
+5. Lock screen and a first settings app (displays, input, network, sound).
+6. First Patrone ISO with Patrone Desktop as the default session.
