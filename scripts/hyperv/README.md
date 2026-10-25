@@ -41,17 +41,30 @@ instead. Two things about it matter:
   monitor: in **Remote Login** sessions, or in Desktop Sharing's "extend"
   mode. Desktop Sharing normally mirrors the VM's screen at its current size.
 
-### Remote Desktop Connection (works today)
+### Remote Desktop Connection
 
-1. In the VM, open **Settings → System → Remote Desktop**.
-   - **Desktop Sharing** shares the session you're logged in to. Turn it on,
-     turn on **Remote Control**, and set a username and password.
-   - **Remote Login** (needs your admin password) starts a separate session
-     whose size follows the client window. Turn it on and set a username and
-     password.
-2. On Windows, run `mstsc /v:DevDistro-PatroneLinux.local`. Desktop Sharing
-   and Remote Login can't both use port 3389. When both are on, Desktop
-   Sharing moves to the port shown on its tab.
+GNOME Remote Desktop is installed but off until it's configured. Nothing
+listens on port 3389 before that, so Remote Desktop Connection can't reach
+the VM. In the VM, run one of these as yourself (not with sudo). Each asks
+you to choose an RDP username and password:
+
+```
+./scripts/hyperv/guest/setup-remote-desktop.sh sharing   # Desktop Sharing
+./scripts/hyperv/guest/setup-remote-desktop.sh login     # Remote Login (uses sudo)
+```
+
+- **Desktop Sharing** shows the session you're logged in to, at the VM's
+  screen size. Clipboard works; resizing doesn't.
+- **Remote Login** starts a separate session whose screen follows the client
+  window. After the RDP password you sign in at the login screen with your
+  Linux account. Untested: whether it works while you're also logged in on
+  the console.
+
+Then on Windows, run `mstsc /v:DevDistro-PatroneLinux.local` (or the VM's IP
+address). With both modes on, Remote Login has port 3389 and Desktop Sharing
+moves to 3390 (`mstsc /v:DevDistro-PatroneLinux.local:3390`).
+
+Settings → System → Remote Desktop does the same thing through the GUI.
 
 ### Hyper-V enhanced session (experimental)
 

@@ -8,8 +8,7 @@
 #
 #   VMConnect --hv_sock--> vsock :3389 --socat--> TCP 127.0.0.1:3389 (GNOME Remote Desktop)
 #
-# Before running this, turn on Settings → System → Remote Desktop → Desktop
-# Sharing, with Remote Control on, and set its username and password.
+# Before running this, turn on Desktop Sharing with setup-remote-desktop.sh.
 #
 # Run in the VM:   sudo ./scripts/hyperv/guest/setup-enhanced-session.sh
 # Then on Windows: Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket

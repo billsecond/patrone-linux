@@ -27,12 +27,11 @@ Done:
 
 Waiting on the user:
 
-- **Re-run the bootstrap script** on the VM, which needs their sudo password:
-  `sudo ./scripts/bootstrap-dev-vm.sh`. It installs VTE's development files,
-  the fonts, zsh and its plugins, `socat` and `freerdp-proxy`, and starts the
-  Hyper-V daemons.
-- **Remote Desktop password.** Clipboard and resizing need GNOME Remote
-  Desktop turned on in Settings, with a password the user sets.
+- **Remote Desktop.** The bootstrap re-run is done and the Hyper-V daemons
+  are now running. RDP failed because GNOME Remote Desktop was never turned
+  on: nothing listens on port 3389. The user runs
+  `scripts/hyperv/guest/setup-remote-desktop.sh sharing` or `login` in the VM,
+  which asks them for an RDP password. Then test `mstsc` from Windows.
 - **ASCII logo file.** The user shared an ASCII-art version of the logo as an
   image in chat, but it was never saved to disk. Ask for the file (for example
   in `C:\Users\wdaugherty\Downloads`) and add it under `branding/concepts/`.
