@@ -14,6 +14,8 @@ Done:
   signed in.
 - Stack decided: Rust + Smithay compositor, GTK4 shell (see `docs/PLAN.md`).
   Default apps decided, including **Chromium in place of Firefox**.
+- **Milestone 2: the compositor** (`compositor/`) runs nested in GNOME with
+  the wallpaper and a terminal inside it (section 2).
 - **Patrone Terminal** (`terminal/`, see its README): copy on select, paste on
   right-click, Ctrl+click links, tabs, close confirmation, Preferences,
   `--standalone`, placeholder icon. Installed for the user with
@@ -47,6 +49,7 @@ Waiting on the user:
 - **A license for Patrone.** None is chosen; the Debian `copyright` files say
   "all rights reserved" until one is. It matters before anything is shared,
   and for which code the compositor may borrow (MIT vs GPL).
+- **Try the compositor's input handling** (section 2).
 
 ## 1. Patrone Terminal
 
@@ -89,10 +92,41 @@ Findings:
   command's own shell, which kills the connection. Anchor it (`^/path`) or
   kill by PID.
 
-## 2. Milestone 2: minimal compositor
+## 2. Compositor: milestone 2 done, next milestone 3
 
-In progress on branch `compositor-m2` (`compositor/`). See the section added
-when it merges.
+`compositor/` (see its README) runs nested in GNOME through Smithay 0.7's
+winit backend, with OpenGL ES on Mesa llvmpipe. It draws the wallpaper,
+starts `patrone-terminal --standalone` inside itself (falling back to
+`ptyxis --standalone`, then `foot`), and handles xdg-shell windows: client
+move and resize, Alt/Super+drag, Super+Q, click to focus, popups. Based on
+Smithay's `smallvil` (MIT); nothing from niri (GPL-3). Smithay and its
+`anvil` example are both MIT.
+
+Verified: it builds, 13 tests, Clippy and rustfmt pass; its `--screenshot`
+frames show the wallpaper, a centered Patrone Terminal, two windows
+cascading, focus passing on when a window closes, and the `#030303`
+fallback. Not verified (needs input in the user's session): moving,
+resizing, the shortcuts, click to focus, menus, clipboard, cursors. Ask the
+user to try `cargo run --manifest-path compositor/Cargo.toml -- --modifier alt`
+in the RDP session.
+
+Findings:
+
+- EGL works for nested clients in the Remote Login session (llvmpipe, GLES
+  3.2); the "failed to get driver name / ZINK" lines are only Mesa's GPU probe.
+- GNOME stops sending frame callbacks while its screen is locked, which froze
+  `eglSwapBuffers` at Mesa's default swap interval. The compositor turns
+  vsync off and times its own frames (60 a second at most, only on change).
+- GNOME keeps Super+drag for itself (`mouse-button-modifier`), so nested runs
+  use `--modifier alt`.
+- Reading back the window's framebuffer broke the next swap, so screenshots
+  draw the frame again off screen.
+- Ctrl+C or SIGTERM leaves the `wayland-1` socket file behind; the next run
+  reuses it.
+
+Next: maximize and fullscreen, `xdg-decoration`, primary selection, a
+keyboard layout from the system settings, then milestone 3: a DRM/KMS and
+libinput backend so it can run as a real session from GDM.
 
 ## 3. Hyper-V guest support
 
@@ -173,6 +207,6 @@ with the wallpaper). With its own `/etc/os-release` (`ID=patrone`,
 
 ## Suggested order
 
-The user's quick steps first (zsh login shell, RDP checks, the logo file, a
-license). Then merge and continue the compositor (milestone 2), then the
-Chromium defaults package, then Patrone's own RDP path.
+The user's quick steps first (zsh login shell, RDP checks, trying the
+compositor, the logo file, a license). Then the compositor's next features and
+milestone 3, the Chromium defaults package, then Patrone's own RDP path.

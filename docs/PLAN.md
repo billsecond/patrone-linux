@@ -101,9 +101,10 @@ scripts/               dev environment setup and helpers
 ## Milestones
 
 1. Dev VM installed, reachable by SSH, toolchain and Claude Code in place, repo
-   cloned.
+   cloned. (Done.)
 2. A minimal compositor running as a window inside GNOME: a background, a
    terminal that opens on launch, and windows you can move, resize and close.
+   (Done 2026-10-25; input handling still to be tried by hand.)
 3. The compositor runs as a real session chosen at the login screen.
 4. A panel and app launcher, and a notification daemon.
 5. Lock screen and a first settings app (displays, input, network, sound).
