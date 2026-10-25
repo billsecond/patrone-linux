@@ -1,0 +1,16 @@
+# Build output
+/out/
+/work/
+*.iso
+*.squashfs
+
+# Package build artifacts
+*.deb
+*.ddeb
+*.udeb
+*.buildinfo
+*.changes
+*.dsc
+*.tar.gz
+*.tar.xz
+*.build
