@@ -1,13 +1,20 @@
 # Saves a PNG of a Hyper-V VM's console using the Hyper-V WMI thumbnail API.
 param(
     [string]$VMName = 'PatroneDev',
-    [int]$Width = 1280,
-    [int]$Height = 800,
+    [int]$Width = 0,   # 0 = the VM's current screen resolution
+    [int]$Height = 0,
     [Parameter(Mandatory)][string]$Out
 )
 
 $ns = 'root\virtualization\v2'
 $vm = Get-CimInstance -Namespace $ns -ClassName Msvm_ComputerSystem -Filter "ElementName='$VMName'"
+if ($Width -eq 0 -or $Height -eq 0) {
+    # The thumbnail API can fail for sizes larger than the VM's current resolution.
+    $head = Get-CimInstance -Namespace $ns -ClassName Msvm_VideoHead |
+        Where-Object { $_.SystemName -eq $vm.Name } | Select-Object -First 1
+    $Width = [int]$head.CurrentHorizontalResolution
+    $Height = [int]$head.CurrentVerticalResolution
+}
 $vssd = Get-CimAssociatedInstance -InputObject $vm -ResultClassName Msvm_VirtualSystemSettingData |
     Where-Object { $_.VirtualSystemType -eq 'Microsoft:Hyper-V:System:Realized' }
 $svc = Get-CimInstance -Namespace $ns -ClassName Msvm_VirtualSystemManagementService
