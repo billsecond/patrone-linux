@@ -27,11 +27,10 @@ Done:
 
 Waiting on the user:
 
-- **Remote Desktop.** The bootstrap re-run is done and the Hyper-V daemons
-  are now running. RDP failed because GNOME Remote Desktop was never turned
-  on: nothing listens on port 3389. The user runs
-  `scripts/hyperv/guest/setup-remote-desktop.sh sharing` or `login` in the VM,
-  which asks them for an RDP password. Then test `mstsc` from Windows.
+- **Remote Desktop resizing.** Desktop Sharing works (see section 2). For a
+  screen that resizes, the user runs
+  `scripts/hyperv/guest/setup-remote-desktop.sh login`, which asks for an RDP
+  password and uses sudo.
 - **ASCII logo file.** The user shared an ASCII-art version of the logo as an
   image in chat, but it was never saved to disk. Ask for the file (for example
   in `C:\Users\wdaugherty\Downloads`) and add it under `branding/concepts/`.
@@ -73,10 +72,18 @@ steps.
 
 Findings:
 
+- **Working:** Remote Desktop Connection from Windows to Desktop Sharing,
+  set up with `scripts/hyperv/guest/setup-remote-desktop.sh sharing`. The
+  session negotiates the clipboard channel, audio and H.264 graphics. The
+  first attempt always fails with "connection reset by peer" during NLA,
+  because `mstsc` drops it while asking the user to trust the self-signed
+  certificate, then reconnects. Expect that in the GNOME Remote Desktop log.
+- RDP first failed only because GNOME Remote Desktop had never been turned
+  on: nothing listened on port 3389. The firewall (`ufw`) is disabled.
 - GNOME 50 is **Wayland-only**, so the xrdp + Xorg recipe (Microsoft's
   linux-vm-tools) can't work.
-- **The Hyper-V daemons were inactive** because `linux-cloud-tools` was
-  installed after boot. Their units bind to udev-tagged devices
+- **The Hyper-V daemons were inactive** (now fixed and running) because
+  `linux-cloud-tools` was installed after boot. Their units bind to udev-tagged devices
   (`/usr/lib/udev/rules.d/60-hv-*.rules`), and the devices had been created
   before the rules existed. The bootstrap script now re-triggers udev for
   them. `hv-fcopy-daemon` stays off: its unit waits for `/dev/vmbus/hv_fcopy`,
@@ -104,12 +111,10 @@ Findings:
 Plan:
 
 1. **Dev VM now.**
-   - Remote Desktop Connection from Windows: the user turns on Desktop Sharing
-     (clipboard, shares the console session, fixed size) or Remote Login
-     (clipboard and resizing, separate session) in **Settings → System →
-     Remote Desktop**, then runs `mstsc /v:DevDistro-PatroneLinux.local`.
-     Check whether Remote Login works while the same user is logged in on the
-     console.
+   - Desktop Sharing over `mstsc` works (clipboard, fixed size). Next, Remote
+     Login for resizing: `setup-remote-desktop.sh login`, then
+     `mstsc /v:DevDistro-PatroneLinux.local` (Desktop Sharing moves to 3390).
+     Check whether it works while the same user is logged in on the console.
    - Enhanced session: run `scripts/hyperv/guest/setup-enhanced-session.sh`,
      switch the VM to `HvSocket` (VM shut down), and connect with VMConnect.
      If it fails at sign-in, put `freerdp-proxy` between the bridge and GNOME
