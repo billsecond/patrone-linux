@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+pkg = debian/patrone-shell-config
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm644 zshrc $(pkg)/etc/skel/.zshrc
+	install -Dm644 zprofile $(pkg)/etc/skel/.zprofile

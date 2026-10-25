@@ -1,0 +1,17 @@
+Source: patrone-shell-config
+Section: shells
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-shell-config
+Architecture: all
+Depends: ${misc:Depends}, zsh, zsh-syntax-highlighting, zsh-autosuggestions
+Description: zsh setup for Patrone Linux users
+ Installs Patrone's .zshrc and .zprofile in /etc/skel and makes zsh the
+ login shell of users created after installation. The prompt takes two
+ lines, blue for normal users and red for root, with syntax highlighting and
+ suggestions from history.

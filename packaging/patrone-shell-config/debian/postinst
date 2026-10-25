@@ -1,0 +1,23 @@
+#!/bin/sh
+# New users get zsh as their login shell. adduser and useradd keep that
+# default in configuration files owned by other packages, so add it here,
+# after a marker line, and take both lines out again in postrm. A later
+# setting wins in both files.
+set -e
+
+marker="# patrone-shell-config: new users get zsh"
+
+set_default() {
+    file=$1
+    setting=$2
+    [ -f "$file" ] || return 0
+    grep -qxF "$marker" "$file" && return 0
+    printf '%s\n%s\n' "$marker" "$setting" >> "$file"
+}
+
+if [ "$1" = configure ]; then
+    set_default /etc/adduser.conf DSHELL=/usr/bin/zsh
+    set_default /etc/default/useradd SHELL=/usr/bin/zsh
+fi
+
+#DEBHELPER#

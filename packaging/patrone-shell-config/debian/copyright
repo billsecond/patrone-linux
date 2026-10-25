@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: patrone-shell-config
+Source: https://github.com/billsecond/patrone-linux
+
+Files: *
+Copyright: 2026 William Daugherty
+License: none-chosen
+ Patrone Linux hasn't chosen a license yet. Until it does, all rights are
+ reserved.
