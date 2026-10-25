@@ -28,12 +28,12 @@ run on it unchanged, and X11 apps run through Xwayland.
 At first the login screen is GDM, Ubuntu's own, which can start any Wayland
 session. A Patrone login screen can come later.
 
-## Proposed technology (to confirm)
+## Technology (decided 2026-10-25)
 
 - **Compositor: Rust with [Smithay](https://github.com/Smithay/smithay).**
   Rust keeps the most privileged process on the desktop memory-safe, and Smithay
   is proven: System76's COSMIC desktop and the niri compositor are both built on
-  it. The main alternative is C with wlroots, the library behind Sway and labwc.
+  it. We chose it over C with wlroots, the library behind Sway and labwc.
 - **Shell and settings UI: GTK4 through gtk4-rs, with gtk4-layer-shell.** This
   gives us accessibility, input methods, high-quality text and theming without
   writing them ourselves. Patrone's look comes from our own widgets and styling.
