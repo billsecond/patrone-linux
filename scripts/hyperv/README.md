@@ -55,14 +55,22 @@ you to choose an RDP username and password:
 
 - **Desktop Sharing** shows the session you're logged in to, at the VM's
   screen size. Clipboard works; resizing doesn't.
-- **Remote Login** starts a separate session whose screen follows the client
-  window. After the RDP password you sign in at the login screen with your
-  Linux account. Untested: whether it works while you're also logged in on
-  the console.
+- **Remote Login** starts a separate session on a virtual monitor the size of
+  the client window (3840×2160 on a 4K screen), which follows the window when
+  it's resized. After the RDP password you sign in at the login screen with
+  your Linux account. If you're already logged in on the VM's console, that
+  console session is ended. The new session starts at 100% scale; set 200% in
+  Settings → Displays on a 4K screen.
 
 Then on Windows, run `mstsc /v:DevDistro-PatroneLinux.local` (or the VM's IP
 address). With both modes on, Remote Login has port 3389 and Desktop Sharing
 moves to 3390 (`mstsc /v:DevDistro-PatroneLinux.local:3390`).
+
+The two modes have separate RDP usernames and passwords. Remote Desktop
+Connection remembers credentials per address, so after switching modes it
+may offer the wrong ones: pick **More choices → Use a different account**.
+GNOME Remote Desktop logs "Could not find user in SAM database" when the
+username doesn't match.
 
 Settings → System → Remote Desktop does the same thing through the GUI.
 

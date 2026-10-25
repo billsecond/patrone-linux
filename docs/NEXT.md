@@ -27,10 +27,9 @@ Done:
 
 Waiting on the user:
 
-- **Remote Desktop resizing.** Desktop Sharing works (see section 2). For a
-  screen that resizes, the user runs
-  `scripts/hyperv/guest/setup-remote-desktop.sh login`, which asks for an RDP
-  password and uses sudo.
+- **Remote Desktop resizing.** Remote Login works at full 4K (see section 2).
+  Still to confirm with the user: that resizing the `mstsc` window resizes
+  the session, and that copy and paste work both ways.
 - **ASCII logo file.** The user shared an ASCII-art version of the logo as an
   image in chat, but it was never saved to disk. Ask for the file (for example
   in `C:\Users\wdaugherty\Downloads`) and add it under `branding/concepts/`.
@@ -78,6 +77,16 @@ Findings:
   first attempt always fails with "connection reset by peer" during NLA,
   because `mstsc` drops it while asking the user to trust the self-signed
   certificate, then reconnects. Expect that in the GNOME Remote Desktop log.
+- **Working:** Remote Login (`setup-remote-desktop.sh login`). The session
+  gets a virtual monitor the size of the client (3840×2160 on the user's 4K
+  monitors) at 100% scale; the user may want 200%. Signing in as the user who
+  is logged in on the console **ends the console session** (seat0 went back
+  to the login screen), so anything running there, like `claude
+  remote-control`, has to be restarted in the remote session.
+- Remote Login and Desktop Sharing have separate RDP credentials, and
+  `mstsc` remembers credentials per address. After switching modes it offered
+  the old ones, which failed with "Could not find user in SAM database".
+  **More choices → Use a different account** fixes it.
 - RDP first failed only because GNOME Remote Desktop had never been turned
   on: nothing listened on port 3389. The firewall (`ufw`) is disabled.
 - GNOME 50 is **Wayland-only**, so the xrdp + Xorg recipe (Microsoft's
@@ -111,10 +120,9 @@ Findings:
 Plan:
 
 1. **Dev VM now.**
-   - Desktop Sharing over `mstsc` works (clipboard, fixed size). Next, Remote
-     Login for resizing: `setup-remote-desktop.sh login`, then
-     `mstsc /v:DevDistro-PatroneLinux.local` (Desktop Sharing moves to 3390).
-     Check whether it works while the same user is logged in on the console.
+   - Desktop Sharing (clipboard, fixed size) and Remote Login (full
+     resolution, separate session) both work over `mstsc`. Remote Login is
+     the better daily driver; confirm resizing and clipboard in it.
    - Enhanced session: run `scripts/hyperv/guest/setup-enhanced-session.sh`,
      switch the VM to `HvSocket` (VM shut down), and connect with VMConnect.
      If it fails at sign-in, put `freerdp-proxy` between the bridge and GNOME

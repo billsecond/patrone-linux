@@ -7,7 +7,8 @@
 #                                       logged in to, at the VM's screen size.
 #   ./setup-remote-desktop.sh login     Remote Login: a separate session whose
 #                                       screen resizes with the client window.
-#                                       Uses sudo.
+#                                       Uses sudo. Signing in ends your console
+#                                       session, if you have one.
 #
 # Run it as yourself, not with sudo. grdctl asks for the RDP username and
 # password to set; they're separate from your Linux password. With both modes
@@ -51,8 +52,9 @@ setup_login() {
     make_certificate "$dir" "sudo -u gnome-remote-desktop"
     sudo grdctl --system rdp set-tls-cert "$dir/rdp-tls.crt"
     sudo grdctl --system rdp set-tls-key "$dir/rdp-tls.key"
-    echo "Choose a username and password for Remote Login. After connecting,"
-    echo "you sign in at the login screen with your normal Linux account."
+    echo "Choose a username and password for Remote Login (separate from Desktop"
+    echo "Sharing's). After connecting, you sign in at the login screen with your"
+    echo "normal Linux account."
     sudo grdctl --system rdp set-credentials
     sudo grdctl --system rdp enable
     sudo systemctl enable gnome-remote-desktop.service
