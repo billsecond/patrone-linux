@@ -1,17 +1,21 @@
 // Patrone Linux's fastfetch setup, to be installed as
 // /etc/xdg/fastfetch/config.jsonc, with logo.txt as
-// /usr/share/patrone/fastfetch/logo.txt. Colors are the Patrone blues from
-// branding/README.md: $1 is Patrone Blue #288BFA, $2 Highlight #4DA0FC,
-// $3 white.
+// /usr/share/patrone/fastfetch/logo.txt. The logo colors are the Patrone
+// blues from branding/README.md, lightest first, then the wordmark's white
+// and the rule blue; tools/make_terminal_logo.py uses the same numbers.
 {
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
         "type": "file",
         "source": "/usr/share/patrone/fastfetch/logo.txt",
         "color": {
-            "1": "38;2;40;139;250",
-            "2": "38;2;77;160;252",
-            "3": "97"
+            "1": "38;2;77;160;252",
+            "2": "38;2;40;139;250",
+            "3": "38;2;35;114;221",
+            "4": "38;2;24;81;168",
+            "5": "38;2;19;67;148",
+            "6": "1;97",
+            "7": "38;2;62;145;222"
         },
         "padding": {
             "top": 1,

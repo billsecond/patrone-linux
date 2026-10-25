@@ -30,11 +30,13 @@ Done:
   build on the VM. Not installed anywhere yet.
 - **Remote Desktop:** Remote Desktop Connection works, at full 4K with Remote
   Login. The Hyper-V daemons are running.
-- **fastfetch** config in the Patrone colors (`branding/fastfetch/`), with a
-  placeholder logo, installed for the user with
-  `branding/fastfetch/install-dev.sh`. (At first it was only previewed with
-  `-c`/`--logo`, so the user's plain `fastfetch` still showed Ubuntu's logo
-  and looked like a false claim. Say exactly how something was checked.)
+- **fastfetch** shows the Patrone logo for the user (`branding/fastfetch/`,
+  installed with `branding/fastfetch/install-dev.sh`): the mark traced from
+  the concept by `branding/tools/make_terminal_logo.py`, with a gradient in
+  the Patrone blues. Checked with plain `fastfetch` in Patrone Terminal. (At
+  first it was only previewed with `-c`/`--logo`, so the user's plain
+  `fastfetch` still showed Ubuntu's logo and looked like a false claim. Say
+  exactly how something was checked.)
 
 Waiting on the user:
 
@@ -44,10 +46,10 @@ Waiting on the user:
 - **Confirm in the RDP session** that resizing the `mstsc` window resizes the
   desktop, and that copy and paste work both ways. Set 200% scale in Settings
   → Displays if text is too small.
-- **ASCII logo file.** The user shared an ASCII-art version of the logo as an
-  image in chat, but it was never saved to disk. Ask for the file (for example
-  in `C:\Users\wdaugherty\Downloads`), add it under `branding/concepts/`, and
-  redraw it as text in `branding/fastfetch/logo.txt`.
+- **ASCII logo file (optional now).** The user shared an ASCII-art version of
+  the logo as an image in chat, never saved to disk. The fastfetch logo is now
+  traced from the concept instead; their file would only matter for
+  `/etc/issue` or if they prefer that look.
 - **Chromium on the dev VM** if wanted now: `sudo snap install chromium`, then
   swap it for Firefox in the dock and run
   `xdg-settings set default-web-browser chromium_chromium.desktop`.

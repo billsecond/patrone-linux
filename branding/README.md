@@ -41,7 +41,8 @@ corners. It uses the same palette as the logo.
 The 8K version is a lossless PNG on purpose. JPEG, even at quality 98, leaves
 faint blotches in the dark blue gradients.
 
-It was made from the original with `tools/upscale_wallpaper.py`.
+It was made from the original with `tools/upscale_wallpaper.py` (Python with
+Pillow and NumPy, like `tools/make_terminal_logo.py`).
 It enlarges the glows and gradients smoothly, rebuilds the logo, text and
 thin lines with sharp edges at full resolution, and adds fine grain so the
 dark gradients don't band. Re-run it if the original changes:
@@ -72,9 +73,20 @@ or preview it from the repo:
 fastfetch -c branding/fastfetch/config.jsonc --logo branding/fastfetch/logo.txt
 ```
 
-**`logo.txt` is a placeholder** (a slanted block "P" over the wordmark). It
-gets replaced by the terminal logo from the concept, redrawn as text. `$1`,
-`$2` and `$3` in the file switch between Patrone Blue, Highlight and white.
+`logo.txt` is traced from the primary mark in `concepts/logo-concept-01.webp`
+by `tools/make_terminal_logo.py`: quadrant block characters (▟ ▛ and so on)
+give each character cell four "pixels", and a diagonal gradient through the
+five Patrone blues runs from the top right to the bottom left. Below the
+mark are the wordmark and the ruled "LINUX". To regenerate it:
+
+```
+python tools/make_terminal_logo.py concepts/logo-concept-01.webp fastfetch/logo.txt
+```
+
+`$1` to `$5` in the file are the blues (Highlight to Shadow), `$6` the
+wordmark's white and `$7` the rule blue, as set in `config.jsonc`. The
+dashed-outline terminal logo in the concept could replace it later, but
+block characters read better at this size.
 
 ## Colors measured from the concept
 
