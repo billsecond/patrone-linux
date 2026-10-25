@@ -76,6 +76,7 @@ real hardware before a release.
 
 ```
 docs/                  plan, decisions, how-to notes
+branding/              logo, colors and artwork
 compositor/            the Patrone compositor
 shell/                 panel, launcher, dock, notifications
 settings/              the settings app
