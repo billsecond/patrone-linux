@@ -1,0 +1,5 @@
+# Linux build scripts and Debian packaging need LF line endings, even in a Windows checkout.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.svg text eol=lf
