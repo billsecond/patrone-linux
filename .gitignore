@@ -2,6 +2,9 @@
 /out/
 /work/
 target/
+
+# Claude Code's temporary git worktrees
+/.claude/worktrees/
 *.iso
 *.squashfs
 

@@ -4,14 +4,18 @@
 //! Patrone Dark theme.
 
 mod cli;
+mod preferences;
+mod settings;
 mod theme;
 mod window;
 
 use gtk::{gdk, gio, glib, prelude::*};
 
-const APP_ID: &str = "org.patrone.Terminal";
+/// Also the icon name and the desktop file's name.
+pub const APP_ID: &str = "org.patrone.Terminal";
 
 const ACCELS: &[(&str, &[&str])] = &[
+    ("win.preferences", &["<Ctrl>comma"]),
     ("win.copy", &["<Ctrl><Shift>c"]),
     ("win.paste", &["<Ctrl><Shift>v", "<Shift>Insert"]),
     ("win.new-tab", &["<Ctrl><Shift>t"]),
@@ -28,9 +32,13 @@ const ACCELS: &[(&str, &[&str])] = &[
 ];
 
 fn main() -> glib::ExitCode {
+    let mut flags = gio::ApplicationFlags::HANDLES_COMMAND_LINE;
+    if cli::wants_standalone(std::env::args_os()) {
+        flags |= gio::ApplicationFlags::NON_UNIQUE;
+    }
     let app = gtk::Application::builder()
         .application_id(APP_ID)
-        .flags(gio::ApplicationFlags::HANDLES_COMMAND_LINE)
+        .flags(flags)
         .build();
     app.connect_startup(startup);
     app.connect_command_line(command_line);
@@ -52,6 +60,7 @@ fn startup(app: &gtk::Application) {
         settings.set_gtk_theme_name(Some("Default"));
         settings.set_gtk_interface_color_scheme(gtk::InterfaceColorScheme::Dark);
     }
+    gtk::Window::set_default_icon_name(APP_ID);
     for (action, accels) in ACCELS {
         app.set_accels_for_action(action, accels);
     }

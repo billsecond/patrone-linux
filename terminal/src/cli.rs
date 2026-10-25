@@ -12,6 +12,8 @@ Usage: patrone-terminal [OPTION...] [-e COMMAND [ARG...]]
   -e, -x, -- COMMAND [ARG...]   Run COMMAND instead of your shell (must come last)
   -T, --title TITLE             Title for the new tab
   --working-directory DIR       Start in DIR
+  -s, --standalone              Start a separate process instead of opening the
+                                window in the one already running
   -h, --help                    Show this help
   --version                     Show the version
 ";
@@ -21,6 +23,16 @@ pub enum Command {
     Open(Launch),
     Help,
     Version,
+}
+
+/// Whether `--standalone` comes before any command to run. GApplication has
+/// to know before it starts, since by default it hands the command line to
+/// an instance that's already running.
+pub fn wants_standalone(args: impl IntoIterator<Item = OsString>) -> bool {
+    args.into_iter()
+        .skip(1)
+        .take_while(|arg| !matches!(arg.to_str(), Some("-e" | "-x" | "--")))
+        .any(|arg| matches!(arg.to_str(), Some("-s" | "--standalone")))
 }
 
 /// Parses `args` (including the program name). `cwd` is the directory the
@@ -48,6 +60,7 @@ pub fn parse(args: &[OsString], cwd: Option<&Path>) -> Result<Command, String> {
             "--working-directory" => {
                 launch.working_directory = Some(resolve(cwd, &value(&arg, args.next())?));
             }
+            "-s" | "--standalone" => {} // handled by wants_standalone
             "-h" | "--help" => return Ok(Command::Help),
             "--version" => return Ok(Command::Version),
             _ => {
@@ -142,6 +155,21 @@ mod tests {
             launch(&["--working-directory=/tmp"]).working_directory,
             Some("/tmp".into())
         );
+    }
+
+    #[test]
+    fn standalone_counts_only_before_the_command() {
+        let args = |list: &[&str]| -> Vec<OsString> {
+            std::iter::once("patrone-terminal")
+                .chain(list.iter().copied())
+                .map(OsString::from)
+                .collect()
+        };
+        assert!(wants_standalone(args(&["--standalone"])));
+        assert!(wants_standalone(args(&["-s", "-e", "htop"])));
+        assert!(!wants_standalone(args(&["-e", "ls", "-s"])));
+        assert!(!wants_standalone(args(&[])));
+        assert_eq!(launch(&["-s"]), launch(&[]));
     }
 
     #[test]

@@ -1,13 +1,14 @@
-//! Patrone Dark: the terminal's colors and font.
+//! Patrone Dark: the terminal's colors and default font.
 //!
 //! A near-black background with the Patrone blues from `branding/README.md`
 //! for the cursor, selection and the blue ANSI colors.
 
-use gtk::{gdk, pango};
+use gtk::gdk;
 use vte::prelude::*;
 
-/// Families are tried in order; `Monospace` is fontconfig's fallback.
-pub const FONT: &str = "JetBrains Mono, Fira Code, Monospace 11";
+/// The default font, from the fonts-jetbrains-mono package. A single family,
+/// so the font chooser in Preferences can show it.
+pub const FONT: &str = "JetBrains Mono 11";
 
 const FOREGROUND: &str = "#D6DEEB";
 const BACKGROUND: &str = "#070A10";
@@ -34,7 +35,6 @@ pub fn apply(terminal: &vte::Terminal) {
     terminal.set_color_highlight(Some(&rgba(SELECTION)));
     terminal.set_color_highlight_foreground(Some(&rgba("#FFFFFF")));
     terminal.set_bold_is_bright(false);
-    terminal.set_font(Some(&pango::FontDescription::from_string(FONT)));
 }
 
 /// Styles the window chrome around the terminals to match.

@@ -1,6 +1,7 @@
 //! Terminal windows: a header bar over a notebook of terminal tabs.
 
 use std::cell::RefCell;
+use std::os::fd::AsRawFd;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::time::Duration;
@@ -8,9 +9,8 @@ use std::time::Duration;
 use gtk::{gdk, gio, glib, pango, prelude::*};
 use vte::prelude::*;
 
-use crate::theme;
+use crate::{preferences, settings, theme};
 
-const SCROLLBACK_LINES: i64 = 100_000;
 const COLUMNS: i64 = 100;
 const ROWS: i64 = 30;
 const FONT_SCALE_STEP: f64 = 0.1;
@@ -22,6 +22,14 @@ const COPY_DELAY: Duration = Duration::from_millis(150);
 /// The title a program sets with the xterm escape sequence.
 const TITLE: &str = "xterm.title";
 const DEFAULT_TITLE: &str = "Terminal";
+/// Plain-text links that Ctrl+click opens. Programs can also mark links
+/// explicitly with the OSC 8 escape sequence.
+const LINK_PATTERN: &str = r#"(?:https?|ftp|file)://[^\s<>"'`]*[^\s<>"'`.,;:!?)\]}]|\bwww\.[^\s<>"'`]*[^\s<>"'`.,;:!?)\]}]"#;
+// PCRE2 flags for VTE's match regexes
+const PCRE2_CASELESS: u32 = 0x0000_0008;
+const PCRE2_MULTILINE: u32 = 0x0000_0400;
+const PCRE2_UCP: u32 = 0x0002_0000;
+const PCRE2_UTF: u32 = 0x0008_0000;
 
 /// What to run in a new tab.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -53,7 +61,44 @@ pub fn open(app: &gtk::Application, launch: Launch) {
             .action_name("win.new-tab")
             .build(),
     );
+    let menu = gio::Menu::new();
+    menu.append(Some("New Window"), Some("win.new-window"));
+    menu.append(Some("Preferences"), Some("win.preferences"));
+    menu.append(Some("About Patrone Terminal"), Some("win.about"));
+    header.pack_end(
+        &gtk::MenuButton::builder()
+            .icon_name("open-menu-symbolic")
+            .tooltip_text("Main Menu")
+            .menu_model(&menu)
+            .build(),
+    );
     window.set_titlebar(Some(&header));
+
+    // Closing the window stops every program in it, so ask first if any
+    // tab is running something other than its shell.
+    window.connect_close_request(|window| {
+        let Some(notebook) = window.child().and_downcast::<gtk::Notebook>() else {
+            return glib::Propagation::Proceed;
+        };
+        let programs: Vec<String> = pages(&notebook)
+            .filter_map(|page| terminal_of(&page))
+            .filter_map(|terminal| foreground_program(&terminal))
+            .collect();
+        if programs.is_empty() {
+            return glib::Propagation::Proceed;
+        }
+        confirm_close(
+            window.upcast_ref(),
+            "Close this window?",
+            &programs,
+            glib::clone!(
+                #[weak]
+                window,
+                move || window.destroy()
+            ),
+        );
+        glib::Propagation::Stop
+    });
 
     // The tab bar only shows with two or more tabs, and the last tab to close
     // takes the window with it.
@@ -148,7 +193,7 @@ fn add_tab(notebook: &gtk::Notebook, launch: Launch) {
         notebook,
         #[weak]
         page,
-        move |_| close_page(&notebook, &page)
+        move |_| request_close_page(&notebook, page.upcast_ref())
     ));
     terminal.connect_child_exited(glib::clone!(
         #[weak]
@@ -163,7 +208,7 @@ fn add_tab(notebook: &gtk::Notebook, launch: Launch) {
 
 fn configure(terminal: &vte::Terminal) {
     theme::apply(terminal);
-    terminal.set_scrollback_lines(SCROLLBACK_LINES);
+    apply_settings(terminal, &settings::get());
     terminal.set_cursor_shape(vte::CursorShape::Block);
     terminal.set_cursor_blink_mode(vte::CursorBlinkMode::System);
     terminal.set_audible_bell(false);
@@ -175,6 +220,24 @@ fn configure(terminal: &vte::Terminal) {
     terminal.set_vexpand(true);
     copy_on_select(terminal);
     paste_on_right_click(terminal);
+    open_links_on_ctrl_click(terminal);
+}
+
+fn apply_settings(terminal: &vte::Terminal, settings: &settings::Settings) {
+    terminal.set_font(Some(&pango::FontDescription::from_string(&settings.font)));
+    terminal.set_scrollback_lines(settings.scrollback_lines);
+}
+
+/// Applies changed preferences to the terminals in every window.
+pub fn apply_settings_everywhere(app: &gtk::Application) {
+    let settings = settings::get();
+    for window in app.windows() {
+        if let Some(notebook) = window.child().and_downcast::<gtk::Notebook>() {
+            for terminal in pages(&notebook).filter_map(|page| terminal_of(&page)) {
+                apply_settings(&terminal, &settings);
+            }
+        }
+    }
 }
 
 fn spawn(terminal: &vte::Terminal, launch: &Launch) {
@@ -221,7 +284,7 @@ fn copy_on_select(terminal: &vte::Terminal) {
         if let Some(source) = pending.take() {
             source.remove();
         }
-        if !terminal.has_selection() {
+        if !terminal.has_selection() || !settings::get().copy_on_select {
             return;
         }
         let source = glib::timeout_add_local_once(
@@ -249,10 +312,62 @@ fn paste_on_right_click(terminal: &vte::Terminal) {
         .propagation_phase(gtk::PropagationPhase::Capture)
         .build();
     click.connect_pressed(|gesture, _, _, _| {
+        if !settings::get().paste_on_right_click {
+            return;
+        }
         gesture.set_state(gtk::EventSequenceState::Claimed);
         if let Some(terminal) = gesture.widget().and_downcast::<vte::Terminal>() {
             terminal.paste_clipboard();
         }
+    });
+    terminal.add_controller(click);
+}
+
+fn open_links_on_ctrl_click(terminal: &vte::Terminal) {
+    let regex = vte::Regex::for_match(
+        LINK_PATTERN,
+        PCRE2_UTF | PCRE2_UCP | PCRE2_MULTILINE | PCRE2_CASELESS,
+    )
+    .expect("the link pattern is valid");
+    let tag = terminal.match_add_regex(&regex, 0);
+    terminal.match_set_cursor_name(tag, "pointer");
+
+    let click = gtk::GestureClick::builder()
+        .button(gdk::BUTTON_PRIMARY)
+        .propagation_phase(gtk::PropagationPhase::Capture)
+        .build();
+    click.connect_pressed(|gesture, _, x, y| {
+        if !gesture
+            .current_event_state()
+            .contains(gdk::ModifierType::CONTROL_MASK)
+        {
+            return;
+        }
+        let Some(terminal) = gesture.widget().and_downcast::<vte::Terminal>() else {
+            return;
+        };
+        let Some(link) = terminal
+            .check_hyperlink_at(x, y)
+            .or_else(|| terminal.check_match_at(x, y).0)
+        else {
+            return;
+        };
+        gesture.set_state(gtk::EventSequenceState::Claimed);
+        let uri = if link.contains("://") {
+            link.to_string()
+        } else {
+            format!("http://{link}")
+        };
+        let window = terminal.root().and_downcast::<gtk::Window>();
+        gtk::UriLauncher::new(&uri).launch(
+            window.as_ref(),
+            gio::Cancellable::NONE,
+            move |result| {
+                if let Err(error) = result {
+                    eprintln!("patrone-terminal: could not open {uri}: {error}");
+                }
+            },
+        );
     });
     terminal.add_controller(click);
 }
@@ -295,9 +410,25 @@ fn add_actions(window: &gtk::ApplicationWindow, notebook: &gtk::Notebook) {
                 }
             ))
             .build(),
+        gio::ActionEntry::builder("preferences")
+            .activate(|window: &gtk::ApplicationWindow, _, _| preferences::show(window))
+            .build(),
+        gio::ActionEntry::builder("about")
+            .activate(|window: &gtk::ApplicationWindow, _, _| {
+                gtk::AboutDialog::builder()
+                    .transient_for(window)
+                    .modal(true)
+                    .program_name("Patrone Terminal")
+                    .logo_icon_name(crate::APP_ID)
+                    .version(env!("CARGO_PKG_VERSION"))
+                    .comments("The terminal of Patrone Linux")
+                    .build()
+                    .present();
+            })
+            .build(),
         notebook_action("close-tab", notebook, |notebook| {
             if let Some(page) = notebook.nth_page(notebook.current_page()) {
-                close_page(notebook, &page);
+                request_close_page(notebook, &page);
             }
         }),
         notebook_action("next-tab", notebook, |notebook| cycle_tabs(notebook, 1)),
@@ -356,6 +487,73 @@ fn close_page(notebook: &gtk::Notebook, page: &impl IsA<gtk::Widget>) {
     if let Some(index) = notebook.page_num(page) {
         notebook.remove_page(Some(index));
     }
+}
+
+/// Closes a tab, asking first if a program other than the shell is running.
+fn request_close_page(notebook: &gtk::Notebook, page: &gtk::Widget) {
+    let program = terminal_of(page).and_then(|terminal| foreground_program(&terminal));
+    let (Some(program), Some(window)) = (program, notebook.root().and_downcast::<gtk::Window>())
+    else {
+        close_page(notebook, page);
+        return;
+    };
+    confirm_close(
+        &window,
+        "Close this tab?",
+        &[program],
+        glib::clone!(
+            #[weak]
+            notebook,
+            #[weak]
+            page,
+            move || close_page(&notebook, &page)
+        ),
+    );
+}
+
+fn confirm_close(
+    window: &gtk::Window,
+    question: &str,
+    programs: &[String],
+    close: impl FnOnce() + 'static,
+) {
+    let running = match programs {
+        [program] => format!("{program} is still running"),
+        _ => format!("{} are still running", programs.join(", ")),
+    };
+    gtk::AlertDialog::builder()
+        .message(question)
+        .detail(format!("{running}. Closing will stop it."))
+        .buttons(["Cancel", "Close"])
+        .cancel_button(0)
+        .default_button(0)
+        .modal(true)
+        .build()
+        .choose(Some(window), gio::Cancellable::NONE, move |answer| {
+            if matches!(answer, Ok(1)) {
+                close();
+            }
+        });
+}
+
+/// The name of the program in the terminal's foreground, unless that's the
+/// shell itself. The shell leads the terminal's session, so anything else in
+/// the foreground is a program it started.
+fn foreground_program(terminal: &vte::Terminal) -> Option<String> {
+    let pty = terminal.pty()?;
+    let fd = pty.fd().as_raw_fd();
+    // SAFETY: fd is the terminal's open PTY, borrowed for these two calls.
+    let (group, session) = unsafe { (libc::tcgetpgrp(fd), libc::tcgetsid(fd)) };
+    if group <= 0 || session <= 0 || group == session {
+        return None;
+    }
+    let name = std::fs::read_to_string(format!("/proc/{group}/comm")).unwrap_or_default();
+    let name = name.trim();
+    Some(if name.is_empty() { "A program" } else { name }.to_owned())
+}
+
+fn pages(notebook: &gtk::Notebook) -> impl Iterator<Item = gtk::Widget> + '_ {
+    (0..notebook.n_pages()).filter_map(|index| notebook.nth_page(Some(index)))
 }
 
 fn cycle_tabs(notebook: &gtk::Notebook, step: i32) {
