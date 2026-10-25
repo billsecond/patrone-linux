@@ -3,13 +3,13 @@
 
 use smithay::backend::input::{
     AbsolutePositionEvent, Axis, AxisSource, ButtonState, Event, InputBackend, InputEvent,
-    KeyState, KeyboardKeyEvent, PointerAxisEvent, PointerButtonEvent,
+    KeyState, KeyboardKeyEvent, PointerAxisEvent, PointerButtonEvent, PointerMotionEvent,
 };
 use smithay::input::keyboard::{FilterResult, Keysym, ModifiersState};
 use smithay::input::pointer::{
     AxisFrame, ButtonEvent, CursorIcon, CursorImageStatus, GrabStartData, MotionEvent,
 };
-use smithay::utils::SERIAL_COUNTER;
+use smithay::utils::{Logical, Point, SERIAL_COUNTER};
 
 use crate::cli::Modifier;
 use crate::grabs::Edges;
@@ -28,6 +28,8 @@ enum Action {
     OpenTerminal,
     ToggleMaximized,
     ToggleFullscreen,
+    Quit,
+    SwitchVt(i32),
 }
 
 impl Modifier {
@@ -45,6 +47,7 @@ fn shortcut(modifier: Modifier, modifiers: &ModifiersState, keysym: Keysym) -> O
         return None;
     }
     match keysym {
+        Keysym::e | Keysym::E if modifiers.shift => Some(Action::Quit),
         Keysym::q | Keysym::Q => Some(Action::CloseWindow),
         Keysym::Return | Keysym::KP_Enter => Some(Action::OpenTerminal),
         Keysym::Up => Some(Action::ToggleMaximized),
@@ -54,10 +57,21 @@ fn shortcut(modifier: Modifier, modifiers: &ModifiersState, keysym: Keysym) -> O
     }
 }
 
+/// The virtual terminal that Ctrl+Alt+F1 to F12 switch to. The keyboard
+/// layout turns those keys into the XF86Switch_VT keysyms.
+fn vt_number(keysym: Keysym) -> Option<i32> {
+    let first = Keysym::XF86_Switch_VT_1.raw();
+    let last = Keysym::XF86_Switch_VT_12.raw();
+    (first..=last)
+        .contains(&keysym.raw())
+        .then(|| (keysym.raw() - first + 1) as i32)
+}
+
 impl Patrone {
     pub fn process_input_event<I: InputBackend>(&mut self, event: InputEvent<I>) {
         match event {
             InputEvent::Keyboard { event } => self.on_key::<I>(event),
+            InputEvent::PointerMotion { event } => self.on_pointer_motion_relative::<I>(event),
             InputEvent::PointerMotionAbsolute { event } => self.on_pointer_motion::<I>(event),
             InputEvent::PointerButton { event } => self.on_pointer_button::<I>(event),
             InputEvent::PointerAxis { event } => self.on_pointer_axis::<I>(event),
@@ -88,6 +102,10 @@ impl Patrone {
                         FilterResult::Forward
                     };
                 }
+                if let Some(vt) = vt_number(keysym.modified_sym()) {
+                    state.suppressed_keys.push(keycode);
+                    return FilterResult::Intercept(Some(Action::SwitchVt(vt)));
+                }
                 let keysym = keysym.raw_latin_sym_or_raw_current_sym();
                 match keysym.and_then(|keysym| shortcut(modifier, modifiers, keysym)) {
                     Some(action) => {
@@ -101,6 +119,8 @@ impl Patrone {
         let focused = self.focused_window();
         let toplevel = focused.as_ref().and_then(|window| window.toplevel());
         match (action.flatten(), toplevel) {
+            (Some(Action::Quit), _) => self.loop_signal.stop(),
+            (Some(Action::SwitchVt(vt)), _) => self.vt_switch = Some(vt),
             (Some(Action::OpenTerminal), _) => self.launcher.launch(),
             (Some(Action::CloseWindow), Some(toplevel)) => toplevel.send_close(),
             (Some(Action::ToggleMaximized), Some(toplevel)) => self.toggle_maximized(toplevel),
@@ -109,12 +129,38 @@ impl Patrone {
         }
     }
 
+    /// Absolute devices (Hyper-V's mouse, tablets, the nested window) give a
+    /// position on the output.
     fn on_pointer_motion<I: InputBackend>(&mut self, event: I::PointerMotionAbsoluteEvent) {
+        let Some(output) = self.output_geometry() else {
+            return;
+        };
+        let location = event.position_transformed(output.size) + output.loc.to_f64();
+        self.move_pointer(location, event.time_msec());
+    }
+
+    /// Mice report how far they moved. The pointer stays on the output.
+    fn on_pointer_motion_relative<I: InputBackend>(&mut self, event: I::PointerMotionEvent) {
         let (Some(output), Some(pointer)) = (self.output_geometry(), self.seat.get_pointer())
         else {
             return;
         };
-        let location = event.position_transformed(output.size) + output.loc.to_f64();
+        let moved = pointer.current_location() + event.delta();
+        let x = moved.x.clamp(
+            output.loc.x as f64,
+            (output.loc.x + output.size.w - 1) as f64,
+        );
+        let y = moved.y.clamp(
+            output.loc.y as f64,
+            (output.loc.y + output.size.h - 1) as f64,
+        );
+        self.move_pointer((x, y).into(), event.time_msec());
+    }
+
+    fn move_pointer(&mut self, location: Point<f64, Logical>, time: u32) {
+        let Some(pointer) = self.seat.get_pointer() else {
+            return;
+        };
         let under = self.surface_under(location);
         if under.is_none() && !pointer.is_grabbed() {
             // Over the wallpaper: no client sets the cursor there.
@@ -126,7 +172,7 @@ impl Patrone {
             &MotionEvent {
                 location,
                 serial: SERIAL_COUNTER.next_serial(),
-                time: event.time_msec(),
+                time,
             },
         );
         pointer.frame(self);
@@ -249,5 +295,29 @@ mod tests {
             Some(Action::ToggleFullscreen)
         );
         assert_eq!(shortcut(Modifier::Super, &super_held, Keysym::f), None);
+    }
+
+    #[test]
+    fn quitting_needs_shift_too() {
+        let super_shift = ModifiersState {
+            logo: true,
+            shift: true,
+            ..ModifiersState::default()
+        };
+        assert_eq!(
+            shortcut(Modifier::Super, &super_shift, Keysym::E),
+            Some(Action::Quit)
+        );
+        assert_eq!(
+            shortcut(Modifier::Super, &held(true, false), Keysym::e),
+            None
+        );
+    }
+
+    #[test]
+    fn virtual_terminal_keys() {
+        assert_eq!(vt_number(Keysym::XF86_Switch_VT_1), Some(1));
+        assert_eq!(vt_number(Keysym::XF86_Switch_VT_12), Some(12));
+        assert_eq!(vt_number(Keysym::F1), None);
     }
 }

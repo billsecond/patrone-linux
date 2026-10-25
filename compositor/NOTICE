@@ -2,7 +2,9 @@ The Patrone compositor is licensed under the GNU General Public License,
 version 3 or later (see LICENSE at the top of this repository).
 
 Its structure follows the smallvil example from Smithay
-(https://github.com/Smithay/smithay/tree/master/smallvil), which is licensed
+(https://github.com/Smithay/smithay/tree/master/smallvil), and its on-screen
+backend (src/udev.rs) the anvil example
+(https://github.com/Smithay/smithay/tree/master/anvil). Both are licensed
 under these terms:
 
 MIT License

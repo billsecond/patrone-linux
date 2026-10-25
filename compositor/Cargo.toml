@@ -10,12 +10,25 @@ publish = false
 image = { version = "0.25", default-features = false, features = ["png"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+xcursor = "0.3"
 
 [dependencies.smithay]
 version = "0.7"
 default-features = false
-# Nested in another desktop for now: winit for the window, GLES to draw.
-features = ["backend_winit", "desktop", "wayland_frontend"]
+# Nested in another desktop (winit), or on the screen itself (DRM/KMS, GBM,
+# libinput, a libseat session). Both draw with OpenGL ES.
+features = [
+    "backend_winit",
+    "backend_drm",
+    "backend_gbm",
+    "backend_egl",
+    "backend_libinput",
+    "backend_session_libseat",
+    "backend_udev",
+    "renderer_gl",
+    "desktop",
+    "wayland_frontend",
+]
 
 [profile.release]
 lto = true

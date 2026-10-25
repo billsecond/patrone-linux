@@ -9,6 +9,7 @@ use smithay::backend::renderer::element::memory::{
 };
 use smithay::backend::renderer::gles::{GlesError, GlesRenderer};
 use smithay::utils::{Logical, Rectangle, Size, Transform};
+use tracing::warn;
 
 /// Patrone's near-black, shown where there's no wallpaper.
 pub const BACKGROUND: [f32; 4] = [3.0 / 255.0, 3.0 / 255.0, 3.0 / 255.0, 1.0];
@@ -16,6 +17,14 @@ pub const BACKGROUND: [f32; 4] = [3.0 / 255.0, 3.0 / 255.0, 3.0 / 255.0, 1.0];
 pub struct Wallpaper {
     buffer: MemoryRenderBuffer,
     size: Size<i32, Logical>,
+}
+
+/// The wallpaper at `path`, or `None` with a warning: the near-black
+/// background shows instead.
+pub fn load_or_warn(path: &Path) -> Option<Wallpaper> {
+    Wallpaper::load(path)
+        .inspect_err(|err| warn!("no wallpaper: {}: {err}", path.display()))
+        .ok()
 }
 
 impl Wallpaper {

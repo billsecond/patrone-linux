@@ -141,9 +141,30 @@ only two window capabilities (maximize, fullscreen); GTK then greys out its
 minimize button. Not verified (needs input): Super+Up and Super+F11, and
 dragging a maximized window off its maximized state.
 
-Next: milestone 3, a DRM/KMS and libinput backend so it can run as a real
-session from GDM; then primary selection and a keyboard layout from the
-system settings.
+**Milestone 3, written but not yet run on the screen:** `src/udev.rs` is a
+DRM/KMS + GBM + libinput backend with a libseat session (based on anvil, cut
+down to one GPU and one screen), chosen automatically when there's no
+`WAYLAND_DISPLAY`/`DISPLAY`. It accepts software rendering (anvil refuses
+it): on Hyper-V, Mesa's `kms_swrast` and `dri_gbm` are installed, which is
+how Mutter draws on `hyperv_drm` (`/dev/dri/card1`, no render node). It
+draws the cursor from the xcursor theme, switches virtual terminals with
+Ctrl+Alt+F1–F12, quits with Super+Shift+E, takes relative and absolute
+pointer motion, and picks the largest mode on Hyper-V (whose "preferred" mode
+is the 1024×768 boot mode). `data/` and `install-dev-session.sh` add a
+"Patrone" login-screen session. Verified: it builds (debug and release), 21
+tests pass (mode choice, VT keys, quit shortcut, CLI), Clippy and rustfmt are
+clean, nested mode still behaves the same (window-states sequence and a
+screenshot), and over SSH it finds `/dev/dri/card1` and fails with a clear
+message, since only the session on the screen may open it.
+
+**Next: the console test, with the user.** From SSH the display device can't
+be opened (it belongs to the console's session, now the GDM greeter), so the
+user logs in on a text console: VMConnect, Ctrl+Alt+F3 (can be sent with
+`scripts/hyperv/vminput.ps1 -Combo Ctrl+Alt+F3`), then run
+`~/src/patrone-linux/compositor/target/release/patrone-compositor 2> ~/patrone.log`.
+`vmshot.ps1` then shows what the compositor drew, and `~/patrone.log` can be
+read over SSH. After that: the login-screen session, primary selection, and
+a keyboard layout from the system settings.
 
 ## 3. Hyper-V guest support
 

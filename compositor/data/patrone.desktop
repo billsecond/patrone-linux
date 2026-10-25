@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Patrone
+Comment=Patrone Desktop (early development)
+Exec=patrone-session
+Type=Application
+DesktopNames=Patrone

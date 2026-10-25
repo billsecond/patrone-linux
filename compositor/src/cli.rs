@@ -7,6 +7,10 @@ use std::time::Duration;
 pub const USAGE: &str = "\
 Usage: patrone-compositor [OPTION...]
 
+  --backend auto|nested|drm Run as a window inside another desktop (nested) or
+                            on the screen itself (drm). auto: nested when
+                            WAYLAND_DISPLAY or DISPLAY is set
+  --mode WIDTHxHEIGHT       Screen resolution for the drm backend
   --terminal COMMAND        Start COMMAND (run by sh) instead of the default terminal
   --wallpaper PATH          Draw PATH as the background (PNG)
   --modifier super|alt      Key held for window shortcuts (default: super)
@@ -32,6 +36,9 @@ pub enum Command {
 
 #[derive(Debug, PartialEq)]
 pub struct Options {
+    pub backend: BackendChoice,
+    /// The screen resolution the drm backend uses, instead of choosing one.
+    pub mode: Option<(u16, u16)>,
     /// A shell command that replaces the default terminal.
     pub terminal: Option<String>,
     pub wallpaper: PathBuf,
@@ -43,11 +50,36 @@ pub struct Options {
 impl Default for Options {
     fn default() -> Self {
         Options {
+            backend: BackendChoice::Auto,
+            mode: None,
             terminal: None,
             wallpaper: PathBuf::from(DEFAULT_WALLPAPER),
             modifier: Modifier::Super,
             screenshot: None,
             screenshot_after: DEFAULT_SCREENSHOT_AFTER,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum BackendChoice {
+    Auto,
+    /// A window inside another desktop
+    Nested,
+    /// The screen itself, through DRM/KMS
+    Drm,
+}
+
+impl BackendChoice {
+    /// Nested when there's a desktop to be a window in.
+    pub fn nested(self) -> bool {
+        match self {
+            BackendChoice::Nested => true,
+            BackendChoice::Drm => false,
+            BackendChoice::Auto => {
+                std::env::var_os("WAYLAND_DISPLAY").is_some()
+                    || std::env::var_os("DISPLAY").is_some()
+            }
         }
     }
 }
@@ -77,6 +109,8 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Command, String
                 .ok_or_else(|| format!("{name} needs a value"))
         };
         match name {
+            "--backend" => options.backend = backend(&value()?)?,
+            "--mode" => options.mode = Some(mode(&value()?)?),
             "--terminal" => options.terminal = Some(value()?),
             "--wallpaper" => options.wallpaper = PathBuf::from(value()?),
             "--modifier" => options.modifier = modifier(&value()?)?,
@@ -88,6 +122,24 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Command, String
         }
     }
     Ok(Command::Run(options))
+}
+
+fn backend(value: &str) -> Result<BackendChoice, String> {
+    match value {
+        "auto" => Ok(BackendChoice::Auto),
+        "nested" | "winit" => Ok(BackendChoice::Nested),
+        "drm" | "tty" => Ok(BackendChoice::Drm),
+        _ => Err(format!(
+            "--backend must be auto, nested or drm, not {value}"
+        )),
+    }
+}
+
+fn mode(value: &str) -> Result<(u16, u16), String> {
+    value
+        .split_once('x')
+        .and_then(|(w, h)| Some((w.parse().ok()?, h.parse().ok()?)))
+        .ok_or_else(|| format!("--mode needs WIDTHxHEIGHT, such as 1920x1080, not {value}"))
 }
 
 fn modifier(value: &str) -> Result<Modifier, String> {
@@ -149,6 +201,17 @@ mod tests {
         assert_eq!(options.modifier, Modifier::Alt);
         assert_eq!(options.screenshot, Some(PathBuf::from("/tmp/shot.png")));
         assert_eq!(options.screenshot_after, Duration::from_millis(1500));
+    }
+
+    #[test]
+    fn backend_and_mode() {
+        let options = options(&["--backend", "drm", "--mode=1920x1080"]);
+        assert_eq!(options.backend, BackendChoice::Drm);
+        assert_eq!(options.mode, Some((1920, 1080)));
+        assert!(BackendChoice::Nested.nested());
+        assert!(!BackendChoice::Drm.nested());
+        assert!(parse_args(&["--backend", "x11"]).is_err());
+        assert!(parse_args(&["--mode", "1920"]).is_err());
     }
 
     #[test]

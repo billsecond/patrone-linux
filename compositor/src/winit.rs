@@ -3,37 +3,29 @@
 //! on the CPU.
 
 use std::error::Error;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use smithay::backend::allocator::Fourcc;
 use smithay::backend::egl::ffi::egl as egl_ffi;
 use smithay::backend::renderer::damage::OutputDamageTracker;
-use smithay::backend::renderer::element::memory::MemoryRenderBufferRenderElement;
-use smithay::backend::renderer::element::surface::{
-    WaylandSurfaceRenderElement, render_elements_from_surface_tree,
-};
-use smithay::backend::renderer::element::{Kind, render_elements};
-use smithay::backend::renderer::gles::{GlesRenderer, GlesTexture};
-use smithay::backend::renderer::{Bind, ExportMem, Frame, Offscreen, Renderer, TextureMapping};
+use smithay::backend::renderer::gles::GlesRenderer;
+use smithay::backend::renderer::{Frame, Renderer};
 use smithay::backend::winit::{self as smithay_winit, WinitEvent, WinitGraphicsBackend};
-use smithay::desktop::space::SpaceRenderElements;
-use smithay::desktop::utils::send_frames_surface_tree;
-use smithay::input::pointer::{CursorIcon, CursorImageStatus, CursorImageSurfaceData};
+use smithay::input::pointer::{CursorIcon, CursorImageStatus};
 use smithay::output::{Mode, Output, PhysicalProperties, Scale, Subpixel};
 use smithay::reexports::calloop::LoopHandle;
 use smithay::reexports::calloop::timer::{TimeoutAction, Timer};
 use smithay::reexports::winit::dpi::LogicalSize;
 use smithay::reexports::winit::platform::wayland::WindowAttributesExtWayland;
 use smithay::reexports::winit::window::Window as WinitWindow;
-use smithay::utils::{Buffer, Physical, Rectangle, Size, Transform};
-use smithay::wayland::compositor::with_states;
+use smithay::utils::{Physical, Size, Transform};
 use tracing::{error, info, warn};
 
-use crate::App;
 use crate::cli::Options;
+use crate::render::{output_elements, save_screenshot};
 use crate::state::Patrone;
 use crate::wallpaper::{self, Wallpaper};
+use crate::{App, Backend as AnyBackend};
 
 const TITLE: &str = "Patrone Desktop";
 const APP_ID: &str = "org.patrone.Compositor";
@@ -43,13 +35,6 @@ const REFRESH_MHZ: i32 = 60_000;
 /// doesn't always send the frame callbacks winit waits for, which would stop
 /// winit's redraws for good.
 const FRAME_INTERVAL: Duration = Duration::from_micros(16_667);
-
-render_elements! {
-    OutputElement<=GlesRenderer>;
-    Space = SpaceRenderElements<GlesRenderer, WaylandSurfaceRenderElement<GlesRenderer>>,
-    Cursor = WaylandSurfaceRenderElement<GlesRenderer>,
-    Wallpaper = MemoryRenderBufferRenderElement<GlesRenderer>,
-}
 
 pub struct Backend {
     winit: WinitGraphicsBackend<GlesRenderer>,
@@ -100,17 +85,11 @@ pub fn init(
     output.set_preferred(mode);
     state.space.map_output(&output, (0, 0));
 
-    let wallpaper = match Wallpaper::load(&options.wallpaper) {
-        Ok(wallpaper) => Some(wallpaper),
-        Err(err) => {
-            warn!("no wallpaper: {}: {err}", options.wallpaper.display());
-            None
-        }
-    };
-
     event_loop.insert_source(events, |event, _, app| {
         let App { state, backend } = app;
-        backend.on_event(event, state);
+        if let AnyBackend::Winit(backend) = backend {
+            backend.on_event(event, state);
+        }
     })?;
 
     Ok(Backend {
@@ -118,7 +97,7 @@ pub fn init(
         winit,
         event_loop,
         output,
-        wallpaper,
+        wallpaper: wallpaper::load_or_warn(&options.wallpaper),
         host_cursor: Some(CursorIcon::Default),
         screenshot: None,
         frame_scheduled: false,
@@ -173,8 +152,10 @@ impl Backend {
             .event_loop
             .insert_source(Timer::from_duration(delay), |_, _, app| {
                 let App { state, backend } = app;
-                backend.frame_scheduled = false;
-                backend.render(state);
+                if let AnyBackend::Winit(backend) = backend {
+                    backend.frame_scheduled = false;
+                    backend.render(state);
+                }
                 TimeoutAction::Drop
             });
         match timer {
@@ -223,7 +204,8 @@ impl Backend {
                 return;
             }
         };
-        let elements = output_elements(renderer, state, &self.output, self.wallpaper.as_ref());
+        let elements =
+            output_elements(renderer, state, &self.output, self.wallpaper.as_ref(), None);
         let damage = match self.damage_tracker.render_output(
             renderer,
             &mut framebuffer,
@@ -255,25 +237,7 @@ impl Backend {
                 error!("couldn't get back to drawing in the window: {err}");
             }
         }
-        self.send_frames(state);
-    }
-
-    /// Tells clients they can draw their next frame.
-    fn send_frames(&self, state: &mut Patrone) {
-        let time = state.start_time.elapsed();
-        let output = &self.output;
-        for window in state.space.elements() {
-            window.send_frame(output, time, Some(Duration::ZERO), |_, _| {
-                Some(output.clone())
-            });
-        }
-        if let CursorImageStatus::Surface(surface) = &state.cursor {
-            send_frames_surface_tree(surface, output, time, Some(Duration::ZERO), |_, _| {
-                Some(output.clone())
-            });
-        }
-        state.space.refresh();
-        state.popups.cleanup();
+        state.send_frames(&self.output);
     }
 
     /// Named cursors are drawn by the desktop around us. Cursors that clients
@@ -296,86 +260,4 @@ impl Backend {
         }
         self.host_cursor = wanted;
     }
-}
-
-/// Everything on the output, front to back: the cursor, the windows, then
-/// the wallpaper.
-fn output_elements(
-    renderer: &mut GlesRenderer,
-    state: &Patrone,
-    output: &Output,
-    wallpaper: Option<&Wallpaper>,
-) -> Vec<OutputElement> {
-    let mut elements = Vec::new();
-    let scale = output.current_scale().fractional_scale();
-    if let CursorImageStatus::Surface(surface) = &state.cursor
-        && let Some(pointer) = state.seat.get_pointer()
-    {
-        let hotspot = with_states(surface, |states| {
-            states
-                .data_map
-                .get::<CursorImageSurfaceData>()
-                .map(|data| data.lock().unwrap().hotspot)
-                .unwrap_or_default()
-        });
-        let location = (pointer.current_location() - hotspot.to_f64()).to_physical(scale);
-        let cursor = render_elements_from_surface_tree(
-            renderer,
-            surface,
-            location.to_i32_round(),
-            scale,
-            1.0,
-            Kind::Cursor,
-        );
-        elements.extend(cursor.into_iter().map(OutputElement::Cursor));
-    }
-    match state
-        .space
-        .render_elements_for_output(renderer, output, 1.0)
-    {
-        Ok(windows) => elements.extend(windows.into_iter().map(OutputElement::Space)),
-        Err(err) => warn!("couldn't draw the windows: {err:?}"),
-    }
-    if let Some(wallpaper) = wallpaper {
-        let output_size = state.output_geometry().unwrap_or_default().size;
-        match wallpaper.element(renderer, output_size) {
-            Ok(element) => elements.push(OutputElement::Wallpaper(element)),
-            Err(err) => warn!("couldn't draw the wallpaper: {err}"),
-        }
-    }
-    elements
-}
-
-/// Draws `elements` again, off screen, and writes them to a PNG file.
-fn save_screenshot(
-    renderer: &mut GlesRenderer,
-    elements: &[OutputElement],
-    size: Size<i32, Physical>,
-    scale: f64,
-    path: &Path,
-) -> Result<(), Box<dyn Error>> {
-    let buffer_size = Size::<i32, Buffer>::from((size.w, size.h));
-    let mut texture: GlesTexture = renderer.create_buffer(Fourcc::Abgr8888, buffer_size)?;
-    let mut target = renderer.bind(&mut texture)?;
-    damage_tracker(size, scale).render_output(
-        renderer,
-        &mut target,
-        0,
-        elements,
-        wallpaper::BACKGROUND,
-    )?;
-    let region = Rectangle::from_size(buffer_size);
-    let mapping = renderer.copy_framebuffer(&target, region, Fourcc::Abgr8888)?;
-    let flipped = mapping.flipped();
-    let pixels = renderer.map_texture(&mapping)?;
-    let mut image = image::RgbaImage::from_raw(size.w as u32, size.h as u32, pixels.to_vec())
-        .ok_or("the frame is smaller than the window")?;
-    if flipped {
-        image::imageops::flip_vertical_in_place(&mut image);
-    }
-    for pixel in image.pixels_mut() {
-        pixel.0[3] = u8::MAX;
-    }
-    image.save(path)?;
-    Ok(())
 }

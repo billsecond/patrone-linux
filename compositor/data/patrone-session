@@ -1,0 +1,10 @@
+#!/bin/sh
+# Starts a Patrone Desktop session. The login screen runs this through
+# /usr/share/wayland-sessions/patrone.desktop. The compositor's log goes to
+# ~/.local/state/patrone-session.log.
+export XDG_CURRENT_DESKTOP=Patrone
+export XDG_SESSION_DESKTOP=patrone
+
+state="${XDG_STATE_HOME:-$HOME/.local/state}"
+mkdir -p "$state"
+exec patrone-compositor --backend drm "$@" > "$state/patrone-session.log" 2>&1

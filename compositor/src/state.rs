@@ -3,13 +3,15 @@
 use std::ffi::OsString;
 use std::io;
 use std::sync::Arc;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use smithay::backend::renderer::utils::with_renderer_surface_state;
+use smithay::desktop::utils::send_frames_surface_tree;
 use smithay::desktop::{PopupManager, Space, Window, WindowSurfaceType};
 use smithay::input::keyboard::{Keycode, XkbConfig};
 use smithay::input::pointer::{CursorIcon, CursorImageStatus};
 use smithay::input::{Seat, SeatState};
+use smithay::output::Output;
 use smithay::reexports::calloop::generic::Generic;
 use smithay::reexports::calloop::{EventLoop, Interest, LoopHandle, LoopSignal, Mode, PostAction};
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities;
@@ -61,6 +63,9 @@ pub struct Patrone {
     pub suppressed_keys: Vec<Keycode>,
     pub launcher: Launcher,
     pub redraw_needed: bool,
+    /// A virtual terminal to switch to (Ctrl+Alt+F1 and so on), which only
+    /// the backend that owns the screen can do.
+    pub vt_switch: Option<i32>,
 }
 
 impl Patrone {
@@ -109,7 +114,25 @@ impl Patrone {
             modifier: options.modifier,
             suppressed_keys: Vec::new(),
             redraw_needed: true,
+            vt_switch: None,
         })
+    }
+
+    /// Tells clients they can draw their next frame. Called after each frame.
+    pub fn send_frames(&mut self, output: &Output) {
+        let time = self.start_time.elapsed();
+        for window in self.space.elements() {
+            window.send_frame(output, time, Some(Duration::ZERO), |_, _| {
+                Some(output.clone())
+            });
+        }
+        if let CursorImageStatus::Surface(surface) = &self.cursor {
+            send_frames_surface_tree(surface, output, time, Some(Duration::ZERO), |_, _| {
+                Some(output.clone())
+            });
+        }
+        self.space.refresh();
+        self.popups.cleanup();
     }
 
     /// The surface under `location` and where that surface is.
