@@ -18,7 +18,7 @@ widely spaced blue capitals between two rules. Intended for:
 **Terminal logo (bottom).** The same mark drawn as dashed ASCII-style lines.
 Intended for:
 
-- the logo shown by system-info tools such as `fastfetch`
+- the logo shown by system-info tools such as `fastfetch` (see below)
 - the text-console login banner (`/etc/issue`)
 - text-mode boot and recovery screens
 
@@ -53,6 +53,21 @@ python tools/upscale_wallpaper.py wallpapers/patrone-back-01.png wallpapers/patr
 An upscale can sharpen edges but can't invent detail the original never had.
 If the original design file, or a higher-resolution render of it, exists, a
 native 8K export from that would be better still.
+
+## fastfetch
+
+`fastfetch/config.jsonc` is the system-wide fastfetch setup (installed as
+`/etc/xdg/fastfetch/config.jsonc`, a path fastfetch 2.57 searches). It shows
+`fastfetch/logo.txt` in Patrone Blue and Highlight, with the keys in
+Highlight. To preview it from the repo:
+
+```
+fastfetch -c branding/fastfetch/config.jsonc --logo branding/fastfetch/logo.txt
+```
+
+**`logo.txt` is a placeholder** (a slanted block "P" over the wordmark). It
+gets replaced by the terminal logo from the concept, redrawn as text. `$1`,
+`$2` and `$3` in the file switch between Patrone Blue, Highlight and white.
 
 ## Colors measured from the concept
 
