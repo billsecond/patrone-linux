@@ -202,6 +202,7 @@ impl Backend {
                     None,
                 );
                 self.damage_tracker = damage_tracker(size, scale_factor);
+                state.output_resized();
                 state.redraw_needed = true;
             }
             WinitEvent::Input(event) => state.process_input_event(event),

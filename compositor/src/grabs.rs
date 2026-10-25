@@ -14,6 +14,7 @@ use smithay::utils::{Logical, Point, Rectangle, Serial, Size};
 use smithay::wayland::compositor::with_states;
 use smithay::wayland::shell::xdg::SurfaceCachedState;
 
+use crate::maximize::fills_output;
 use crate::state::Patrone;
 
 /// The edges of a window that a resize moves.
@@ -110,6 +111,14 @@ pub struct WindowGrab {
 
 impl Patrone {
     pub fn start_move(&mut self, window: Window, start_data: GrabStartData<Self>, serial: Serial) {
+        if let Some(toplevel) = window.toplevel()
+            && fills_output(toplevel)
+        {
+            if toplevel.with_pending_state(|s| s.states.contains(xdg_toplevel::State::Fullscreen)) {
+                return;
+            }
+            self.restore_under_pointer(&window, start_data.location);
+        }
         let Some(initial_location) = self.space.element_location(&window) else {
             return;
         };
@@ -135,6 +144,10 @@ impl Patrone {
         else {
             return;
         };
+        // Maximized and fullscreen windows keep the size of the output.
+        if fills_output(toplevel) {
+            return;
+        }
         let initial = Rectangle::new(location, window.geometry().size);
         toplevel.with_pending_state(|state| {
             state.states.set(xdg_toplevel::State::Resizing);

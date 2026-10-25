@@ -11,14 +11,23 @@ can be rebuilt and tried in seconds.
   exits with an error within two seconds is skipped for the next one.
 - **Windows** can be moved, resized and closed. GTK apps draw their own title
   bars, and dragging those and the window borders works as usual.
+- **Maximize and fullscreen,** from the window's own buttons, a double-click
+  on its title bar, an app's F11, or the shortcuts below. Restoring puts the
+  window back where it was, at its old size. Leaving fullscreen goes back to
+  maximized if it was. Dragging a maximized window's title bar restores it
+  under the pointer. Minimizing isn't offered, so GTK greys out that button.
 - Click to focus. New windows open in the middle, focused, each a little
   below and to the right of the last. Menus and other popups are kept on
   screen.
+- Apps draw their own title bars. Apps that ask through `xdg-decoration` are
+  told to do so.
 
 | Keys | Action |
 | --- | --- |
 | Super+left-drag | Move a window |
 | Super+right-drag | Resize a window from the nearest corner |
+| Super+Up | Maximize or restore the focused window |
+| Super+F11 | Fullscreen or restore the focused window |
 | Super+Q | Close the focused window |
 | Super+Enter | Open another terminal |
 
@@ -54,6 +63,14 @@ export XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/us
 `--screenshot` saves what the compositor drew, which works even when you
 can't see its window: over SSH, or while the screen is locked.
 
+`tools/window-states.py` is a GTK test window that asks to be maximized,
+fullscreened and restored on a timer, and prints the state and size it gets
+back, so window management can be checked without any input:
+
+```
+cargo run -- --terminal "python3 tools/window-states.py"
+```
+
 ## How it draws
 
 Smithay's winit backend opens the window, and frames are drawn with OpenGL ES.
@@ -72,7 +89,7 @@ its screen is locked, and waiting for them froze the compositor.
   backend (milestone 3).
 - One output. No layer-shell (panels), no Xwayland, and no server-side title
   bars, so apps that don't draw their own get none.
-- Maximize, minimize and fullscreen do nothing yet.
+- No minimizing: there's no panel to bring a window back from yet.
 - The keyboard layout is xkb's default (US) unless `XKB_DEFAULT_LAYOUT` and
   friends are set.
 - The clipboard isn't shared with the desktop around the compositor. There's
@@ -85,9 +102,10 @@ its screen is locked, and waiting for them froze the compositor.
 | `src/main.rs` | Startup and the event loop |
 | `src/cli.rs` | Command-line options |
 | `src/state.rs` | Wayland globals, windows, focus, where new windows go |
-| `src/handlers.rs` | The Wayland protocols: surfaces, xdg-shell, seat, clipboard, cursor shapes |
+| `src/handlers.rs` | The Wayland protocols: surfaces, xdg-shell, xdg-decoration, seat, clipboard, cursor shapes |
 | `src/input.rs` | Keyboard and pointer input, shortcuts |
 | `src/grabs.rs` | Moving and resizing windows with the pointer |
+| `src/maximize.rs` | Maximized and fullscreen windows |
 | `src/winit.rs` | The nested window, drawing frames, screenshots |
 | `src/wallpaper.rs` | The background |
 | `src/launch.rs` | Starting terminals |

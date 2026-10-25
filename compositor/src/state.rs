@@ -12,6 +12,7 @@ use smithay::input::pointer::{CursorIcon, CursorImageStatus};
 use smithay::input::{Seat, SeatState};
 use smithay::reexports::calloop::generic::Generic;
 use smithay::reexports::calloop::{EventLoop, Interest, LoopHandle, LoopSignal, Mode, PostAction};
+use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities;
 use smithay::reexports::wayland_server::backend::{ClientData, ClientId, DisconnectReason};
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::reexports::wayland_server::{Display, DisplayHandle};
@@ -21,6 +22,7 @@ use smithay::wayland::cursor_shape::CursorShapeManagerState;
 use smithay::wayland::output::OutputManagerState;
 use smithay::wayland::selection::data_device::DataDeviceState;
 use smithay::wayland::shell::xdg::XdgShellState;
+use smithay::wayland::shell::xdg::decoration::XdgDecorationState;
 use smithay::wayland::shm::ShmState;
 use smithay::wayland::socket::ListeningSocketSource;
 use tracing::info;
@@ -29,6 +31,7 @@ use crate::App;
 use crate::cli::{Modifier, Options};
 use crate::grabs::Resize;
 use crate::launch::Launcher;
+use crate::maximize::fills_output;
 
 /// New windows open this far apart, so they don't hide each other.
 const CASCADE_STEP: i32 = 32;
@@ -68,7 +71,12 @@ impl Patrone {
     ) -> io::Result<Self> {
         let dh = display.handle();
         let compositor_state = CompositorState::new::<Self>(&dh);
-        let xdg_shell_state = XdgShellState::new::<Self>(&dh);
+        // Only what the compositor does: GTK greys out the buttons for the rest.
+        let xdg_shell_state = XdgShellState::new_with_capabilities::<Self>(
+            &dh,
+            [WmCapabilities::Maximize, WmCapabilities::Fullscreen],
+        );
+        XdgDecorationState::new::<Self>(&dh);
         let shm_state = ShmState::new::<Self>(&dh, vec![]);
         OutputManagerState::new_with_xdg_output::<Self>(&dh);
         CursorShapeManagerState::new::<Self>(&dh);
@@ -181,8 +189,14 @@ impl Patrone {
         window.on_commit();
         let has_buffer = with_renderer_surface_state(surface, |state| state.buffer().is_some());
         if has_buffer == Some(true) {
+            // Asked to be maximized or fullscreen before it mapped
+            let fills = fills_output(toplevel);
             let window = self.unmapped.remove(index);
-            let location = self.placement(&window);
+            let location = if fills {
+                self.output_geometry().unwrap_or_default().loc
+            } else {
+                self.placement(&window)
+            };
             self.space.map_element(window.clone(), location, true);
             self.focus(Some(&window), SERIAL_COUNTER.next_serial());
         }
@@ -190,10 +204,15 @@ impl Patrone {
 
     /// Where a new window goes: centered, a step down and right from the last
     /// one, and never with its top-left corner off screen.
-    fn placement(&self, window: &Window) -> Point<i32, Logical> {
+    pub fn placement(&self, window: &Window) -> Point<i32, Logical> {
         let output = self.output_geometry().unwrap_or_default();
         let size = window.geometry().size;
-        let step = CASCADE_STEP * (self.space.elements().len() as i32 % CASCADE_STEPS);
+        let others = self
+            .space
+            .elements()
+            .filter(|other| *other != window)
+            .count();
+        let step = CASCADE_STEP * (others as i32 % CASCADE_STEPS);
         let x = output.loc.x + (output.size.w - size.w) / 2 + step;
         let y = output.loc.y + (output.size.h - size.h) / 2 + step;
         (x.max(output.loc.x), y.max(output.loc.y)).into()

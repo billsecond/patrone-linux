@@ -129,9 +129,21 @@ Findings:
 - Ctrl+C or SIGTERM leaves the `wayland-1` socket file behind; the next run
   reuses it.
 
-Next: maximize and fullscreen, `xdg-decoration`, primary selection, a
-keyboard layout from the system settings, then milestone 3: a DRM/KMS and
-libinput backend so it can run as a real session from GDM.
+**Maximize and fullscreen** (`src/maximize.rs`) and **xdg-decoration**
+(apps are always told to draw their own title bars) are done. Verified with
+`tools/window-states.py`, a GTK window that requests each state on a timer
+and prints what it gets: maximize and fullscreen give exactly the output size
+(1600×900), restoring returns 640×400, leaving fullscreen returns to
+maximized when it was, and a window that opens maximized is placed at the
+top left and, once restored, centered to the pixel (measured from a
+screenshot). `WAYLAND_DEBUG` showed `zxdg_decoration_manager_v1` offered and
+only two window capabilities (maximize, fullscreen); GTK then greys out its
+minimize button. Not verified (needs input): Super+Up and Super+F11, and
+dragging a maximized window off its maximized state.
+
+Next: milestone 3, a DRM/KMS and libinput backend so it can run as a real
+session from GDM; then primary selection and a keyboard layout from the
+system settings.
 
 ## 3. Hyper-V guest support
 

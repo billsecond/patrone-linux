@@ -26,6 +26,8 @@ const WHEEL_STEP: f64 = 15.0;
 enum Action {
     CloseWindow,
     OpenTerminal,
+    ToggleMaximized,
+    ToggleFullscreen,
 }
 
 impl Modifier {
@@ -45,6 +47,9 @@ fn shortcut(modifier: Modifier, modifiers: &ModifiersState, keysym: Keysym) -> O
     match keysym {
         Keysym::q | Keysym::Q => Some(Action::CloseWindow),
         Keysym::Return | Keysym::KP_Enter => Some(Action::OpenTerminal),
+        Keysym::Up => Some(Action::ToggleMaximized),
+        // Not F: Alt+F opens apps' File menus when the modifier is Alt.
+        Keysym::F11 => Some(Action::ToggleFullscreen),
         _ => None,
     }
 }
@@ -93,14 +98,14 @@ impl Patrone {
                 }
             },
         );
-        match action.flatten() {
-            Some(Action::CloseWindow) => {
-                if let Some(toplevel) = self.focused_window().as_ref().and_then(|w| w.toplevel()) {
-                    toplevel.send_close();
-                }
-            }
-            Some(Action::OpenTerminal) => self.launcher.launch(),
-            None => {}
+        let focused = self.focused_window();
+        let toplevel = focused.as_ref().and_then(|window| window.toplevel());
+        match (action.flatten(), toplevel) {
+            (Some(Action::OpenTerminal), _) => self.launcher.launch(),
+            (Some(Action::CloseWindow), Some(toplevel)) => toplevel.send_close(),
+            (Some(Action::ToggleMaximized), Some(toplevel)) => self.toggle_maximized(toplevel),
+            (Some(Action::ToggleFullscreen), Some(toplevel)) => self.toggle_fullscreen(toplevel),
+            _ => {}
         }
     }
 
@@ -230,5 +235,19 @@ mod tests {
             None
         );
         assert_eq!(shortcut(Modifier::Super, &super_held, Keysym::w), None);
+    }
+
+    #[test]
+    fn maximize_and_fullscreen_shortcuts() {
+        let super_held = held(true, false);
+        assert_eq!(
+            shortcut(Modifier::Super, &super_held, Keysym::Up),
+            Some(Action::ToggleMaximized)
+        );
+        assert_eq!(
+            shortcut(Modifier::Alt, &held(false, true), Keysym::F11),
+            Some(Action::ToggleFullscreen)
+        );
+        assert_eq!(shortcut(Modifier::Super, &super_held, Keysym::f), None);
     }
 }

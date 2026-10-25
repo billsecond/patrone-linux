@@ -7,8 +7,11 @@ use smithay::desktop::{
 };
 use smithay::input::pointer::{CursorImageStatus, Focus, GrabStartData};
 use smithay::input::{Seat, SeatHandler, SeatState};
+use smithay::reexports::wayland_protocols::xdg::decoration::zv1::server::zxdg_toplevel_decoration_v1::Mode as DecorationMode;
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel;
-use smithay::reexports::wayland_server::protocol::{wl_buffer, wl_seat, wl_surface::WlSurface};
+use smithay::reexports::wayland_server::protocol::{
+    wl_buffer, wl_output, wl_seat, wl_surface::WlSurface,
+};
 use smithay::reexports::wayland_server::{Client, Resource};
 use smithay::utils::Serial;
 use smithay::wayland::buffer::BufferHandler;
@@ -21,6 +24,7 @@ use smithay::wayland::selection::data_device::{
     ClientDndGrabHandler, DataDeviceHandler, DataDeviceState, ServerDndGrabHandler,
     set_data_device_focus,
 };
+use smithay::wayland::shell::xdg::decoration::XdgDecorationHandler;
 use smithay::wayland::shell::xdg::{
     PopupSurface, PositionerState, ToplevelSurface, XdgShellHandler, XdgShellState,
 };
@@ -28,7 +32,7 @@ use smithay::wayland::shm::{ShmHandler, ShmState};
 use smithay::wayland::tablet_manager::TabletSeatHandler;
 use smithay::{
     delegate_compositor, delegate_cursor_shape, delegate_data_device, delegate_output,
-    delegate_seat, delegate_shm, delegate_xdg_shell,
+    delegate_seat, delegate_shm, delegate_xdg_decoration, delegate_xdg_shell,
 };
 
 use crate::grabs;
@@ -52,6 +56,7 @@ impl CompositorHandler for Patrone {
             }
             if let Some(window) = self.window_for(&root) {
                 window.on_commit();
+                self.place_if_restored(&window);
             }
         }
         self.commit_unmapped(surface);
@@ -140,6 +145,27 @@ impl XdgShellHandler for Patrone {
             return;
         };
         self.start_resize(window, edges.into(), start_data, serial);
+    }
+
+    fn maximize_request(&mut self, surface: ToplevelSurface) {
+        self.maximize(&surface);
+    }
+
+    fn unmaximize_request(&mut self, surface: ToplevelSurface) {
+        self.unmaximize(&surface);
+    }
+
+    /// There's only one output, so the client's choice of output is moot.
+    fn fullscreen_request(
+        &mut self,
+        surface: ToplevelSurface,
+        _output: Option<wl_output::WlOutput>,
+    ) {
+        self.fullscreen(&surface);
+    }
+
+    fn unfullscreen_request(&mut self, surface: ToplevelSurface) {
+        self.unfullscreen(&surface);
     }
 
     /// Menus take the keyboard and pointer until they're dismissed.
@@ -258,9 +284,35 @@ impl ServerDndGrabHandler for Patrone {}
 
 impl OutputHandler for Patrone {}
 
+/// The compositor doesn't draw title bars, so clients always draw their own,
+/// whichever mode they ask for.
+impl XdgDecorationHandler for Patrone {
+    fn new_decoration(&mut self, toplevel: ToplevelSurface) {
+        set_client_side(&toplevel);
+    }
+
+    fn request_mode(&mut self, toplevel: ToplevelSurface, _mode: DecorationMode) {
+        set_client_side(&toplevel);
+    }
+
+    fn unset_mode(&mut self, toplevel: ToplevelSurface) {
+        set_client_side(&toplevel);
+    }
+}
+
+fn set_client_side(toplevel: &ToplevelSurface) {
+    toplevel.with_pending_state(|state| {
+        state.decoration_mode = Some(DecorationMode::ClientSide);
+    });
+    if toplevel.is_initial_configure_sent() {
+        toplevel.send_pending_configure();
+    }
+}
+
 delegate_compositor!(Patrone);
 delegate_shm!(Patrone);
 delegate_xdg_shell!(Patrone);
+delegate_xdg_decoration!(Patrone);
 delegate_seat!(Patrone);
 delegate_cursor_shape!(Patrone);
 delegate_data_device!(Patrone);

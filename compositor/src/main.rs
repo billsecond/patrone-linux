@@ -8,6 +8,7 @@ mod grabs;
 mod handlers;
 mod input;
 mod launch;
+mod maximize;
 mod state;
 mod wallpaper;
 mod winit;
