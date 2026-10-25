@@ -47,6 +47,9 @@ session. A Patrone login screen can come later.
 - **Shell and settings UI: GTK4 through gtk4-rs, with gtk4-layer-shell.** This
   gives us accessibility, input methods, high-quality text and theming without
   writing them ourselves. Patrone's look comes from our own widgets and styling.
+- **License: GPL-3.0-or-later** for all of Patrone's own code. GPL code (such
+  as niri's) can be borrowed, and MIT or Apache code (such as Smithay's) can
+  be included as long as its notice is kept.
 
 ## Development loop
 

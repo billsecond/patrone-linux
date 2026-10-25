@@ -13,7 +13,9 @@ Done:
   rustc, for package builds) through rustup. Claude Code, `gh` and `git`
   signed in.
 - Stack decided: Rust + Smithay compositor, GTK4 shell (see `docs/PLAN.md`).
-  Default apps decided, including **Chromium in place of Firefox**.
+  Default apps decided, including **Chromium in place of Firefox**. License:
+  **GPL-3.0-or-later** (`LICENSE`), set in the crates and Debian packaging;
+  the compositor keeps Smithay's MIT notice in `compositor/NOTICE`.
 - **Milestone 2: the compositor** (`compositor/`) runs nested in GNOME with
   the wallpaper and a terminal inside it (section 2).
 - **Patrone Terminal** (`terminal/`, see its README): copy on select, paste on
@@ -46,9 +48,6 @@ Waiting on the user:
 - **Chromium on the dev VM** if wanted now: `sudo snap install chromium`, then
   swap it for Firefox in the dock and run
   `xdg-settings set default-web-browser chromium_chromium.desktop`.
-- **A license for Patrone.** None is chosen; the Debian `copyright` files say
-  "all rights reserved" until one is. It matters before anything is shared,
-  and for which code the compositor may borrow (MIT vs GPL).
 - **Try the compositor's input handling** (section 2).
 
 ## 1. Patrone Terminal
@@ -99,8 +98,9 @@ winit backend, with OpenGL ES on Mesa llvmpipe. It draws the wallpaper,
 starts `patrone-terminal --standalone` inside itself (falling back to
 `ptyxis --standalone`, then `foot`), and handles xdg-shell windows: client
 move and resize, Alt/Super+drag, Super+Q, click to focus, popups. Based on
-Smithay's `smallvil` (MIT); nothing from niri (GPL-3). Smithay and its
-`anvil` example are both MIT.
+Smithay's `smallvil` (MIT, notice kept in `compositor/NOTICE`). Smithay and
+its `anvil` example are MIT; niri is GPL-3, which Patrone's GPL-3.0-or-later
+license now lets us borrow from.
 
 Verified: it builds, 13 tests, Clippy and rustfmt pass; its `--screenshot`
 frames show the wallpaper, a centered Patrone Terminal, two windows
@@ -208,5 +208,5 @@ with the wallpaper). With its own `/etc/os-release` (`ID=patrone`,
 ## Suggested order
 
 The user's quick steps first (zsh login shell, RDP checks, trying the
-compositor, the logo file, a license). Then the compositor's next features and
+compositor, the logo file). Then the compositor's next features and
 milestone 3, the Chromium defaults package, then Patrone's own RDP path.

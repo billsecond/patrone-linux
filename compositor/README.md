@@ -93,4 +93,4 @@ its screen is locked, and waiting for them froze the compositor.
 | `src/launch.rs` | Starting terminals |
 
 The structure follows Smithay's `smallvil` example, which is MIT-licensed
-like Smithay itself.
+like Smithay itself; its notice is in `NOTICE`.

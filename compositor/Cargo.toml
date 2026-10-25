@@ -3,6 +3,7 @@ name = "patrone-compositor"
 version = "0.1.0"
 edition = "2024"
 description = "The Patrone Desktop compositor"
+license = "GPL-3.0-or-later"
 publish = false
 
 [dependencies]
