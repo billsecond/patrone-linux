@@ -2,7 +2,7 @@
 
 usage: upscale_wallpaper.py SRC OUT_BASENAME [width height]
 
-Writes OUT_BASENAME.png and OUT_BASENAME.jpg.
+Writes OUT_BASENAME.png. (Not JPEG: it leaves blotches in the dark gradients.)
 
 How it works:
   1. Denoise the source to remove JPEG blocking.
@@ -34,9 +34,13 @@ def box(x0, y0, x1, y1):
 LOGO = box(550, 280, 1120, 630)
 DETAIL_BOXES = [box(1140, 0, 1672, 380), box(0, 600, 700, 941)]
 
-# 1. Denoise
+# 1. Denoise. All colour work happens in float: smoothing in 8-bit flattens the
+# dark gradients into visible bands. The 8-bit denoised copy is only used to
+# find features.
 den8 = cv2.fastNlMeansDenoisingColored(img8, None, 3, 3, 7, 21)
-den = den8.astype(np.float32) / 255.0
+src = img8.astype(np.float32) / 255.0
+# Edge-preserving smoothing removes JPEG blocks and grain but keeps strong edges.
+den = cv2.bilateralFilter(src, 9, 0.05, 2.5)
 maxch = den.max(axis=2)
 
 roi = np.zeros((h, w), np.float32)
@@ -54,11 +58,17 @@ big = logo_roi & (maxch > 0.18)
 cand = ((thin | big) & (roi > 0)).astype(np.uint8)
 mask0 = cv2.dilate(cand, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))
 
-bg8 = cv2.inpaint(den8, mask0 * 255, 7, cv2.INPAINT_TELEA)
-bg = bg8.astype(np.float32) / 255.0
-# The background is only glows and gradients, so it can take much stronger
-# denoising than the graphics; this removes the JPEG blocks left in the glows.
-bg_up_src = cv2.fastNlMeansDenoisingColored(bg8, None, 7, 7, 7, 35).astype(np.float32) / 255.0
+# Inpaint works in 8-bit, so only take its values under the masked graphics,
+# then smooth them so the filled area has no steps.
+painted = cv2.inpaint(den8, mask0 * 255, 7, cv2.INPAINT_TELEA).astype(np.float32) / 255.0
+under = mask0.astype(bool)
+bg = den.copy()
+bg[under] = painted[under]
+soft = cv2.GaussianBlur(mask0.astype(np.float32), (0, 0), 4.0)[..., None]
+bg = bg * (1 - soft) + cv2.GaussianBlur(bg, (0, 0), 4.0) * soft
+# The background is only glows and gradients, so smooth it a little more than
+# the graphics to clear the remaining JPEG blocks in the glows.
+bg_up_src = cv2.bilateralFilter(bg, 9, 0.08, 3.0)
 
 # 3. Coverage: brightness above background, relative to the local peak.
 d = np.clip(maxch - bg.max(axis=2), 0, None) * roi * mask0
@@ -106,6 +116,4 @@ del grain
 out8 = (np.clip(out, 0, 1) * 255.0 + 0.5).astype(np.uint8)
 del out
 cv2.imwrite(out_base + ".png", out8, [cv2.IMWRITE_PNG_COMPRESSION, 6])
-cv2.imwrite(out_base + ".jpg", out8, [cv2.IMWRITE_JPEG_QUALITY, 95,
-                                      cv2.IMWRITE_JPEG_SAMPLING_FACTOR, cv2.IMWRITE_JPEG_SAMPLING_FACTOR_444])
-print("wrote", out_base + ".png", "and", out_base + ".jpg")
+print("wrote", out_base + ".png")

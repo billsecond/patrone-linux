@@ -27,7 +27,7 @@ written as actual text characters so terminals can print it.
 
 ## Wallpaper 01
 
-![Wallpaper 01](wallpapers/patrone-back-01-8k.jpg)
+![Wallpaper 01](wallpapers/patrone-back-01-8k.png)
 
 The default desktop and lock-screen wallpaper: the primary logo centered on a
 near-black field with blue light streaks and faint terminal details in the
@@ -36,10 +36,12 @@ corners. It uses the same palette as the logo.
 | File | Size | Use |
 | --- | --- | --- |
 | `wallpapers/patrone-back-01.png` | 1672×941 | Original artwork, kept as the source |
-| `wallpapers/patrone-back-01-8k.png` | 7680×4320 | Lossless 8K master |
-| `wallpapers/patrone-back-01-8k.jpg` | 7680×4320 | What the OS ships (JPEG quality 95, full colour resolution) |
+| `wallpapers/patrone-back-01-8k.png` | 7680×4320 | The 8K wallpaper the OS ships |
 
-The 8K files were made from the original with `tools/upscale_wallpaper.py`.
+The 8K version is a lossless PNG on purpose. JPEG, even at quality 98, leaves
+faint blotches in the dark blue gradients.
+
+It was made from the original with `tools/upscale_wallpaper.py`.
 It enlarges the glows and gradients smoothly, rebuilds the logo, text and
 thin lines with sharp edges at full resolution, and adds fine grain so the
 dark gradients don't band. Re-run it if the original changes:
