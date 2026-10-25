@@ -36,7 +36,7 @@ session. A Patrone login screen can come later.
 | --- | --- | --- |
 | Terminal | Patrone Terminal | Ours (`terminal/`) |
 | Shell | zsh with Patrone's config | `patrone-shell-config` |
-| Web browser | Chromium, replacing Firefox (decided 2026-10-25) | Canonical's Chromium snap, kept current automatically by snapd. Not forked or rebranded: Chromium ships security fixes about weekly and a major release every four weeks, and a fork would make us responsible for every one of them. Patrone's look and defaults come from Chromium's enterprise policies instead. |
+| Web browser | Chromium, replacing Firefox (decided 2026-10-25) | Canonical's Chromium snap, kept current automatically by snapd. Not forked or rebranded: Chromium ships security fixes about weekly and a major release every four weeks, and a fork would make us responsible for every one of them. Patrone's look and defaults come from Chromium's enterprise policies instead, in `/etc/chromium-browser/policies/managed/` (the snap's `etc-chromium-browser-policies` plug reads that folder). |
 
 ## Technology (decided 2026-10-25)
 
