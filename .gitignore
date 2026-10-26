@@ -18,3 +18,5 @@ target/
 *.tar.gz
 *.tar.xz
 *.build
+# (but not Meson's build files)
+!meson.build
