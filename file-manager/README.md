@@ -166,8 +166,8 @@ file types, drives, places) are SVGs in `data/icons`, drawn by
 `tools/make_icons.py`; `tools/preview_icons.py` renders them all on light
 and dark backgrounds for checking. The line glyphs of the command bar and
 menus are vector paths in `src/glyph.rs`, drawn in the text color so they
-follow light and dark mode. The text is Patrone's typeface, Inter (Noto Sans
-until `fonts-inter` is installed), at Windows' 9 points; file lists draw
+follow light and dark mode. The text is Patrone's typeface, Noto Sans, at
+Windows' 9 points; file lists draw
 their icons at 20 pixels, which with the artwork's margins makes the item
 itself about Windows' 16.
 

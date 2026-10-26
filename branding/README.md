@@ -59,11 +59,12 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "Patrone Linux 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"` | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
 | Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over a spinner on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the spinner frames are copied from Plymouth's spinner theme |
 | Boot splash without graphics | `system/plymouth/patrone-text.plymouth`: "Patrone Linux 0.1" in Patrone's colors | Plymouth text theme, made the default |
-| Login screen | Patrone logo; a navy-to-black background; blue accents; Inter; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
+| Login screen | Patrone logo; a navy-to-black background; blue accents; Noto Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
 | Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
 | Welcome message at login (SSH, console) | `system/motd/00-header`: "Welcome to Patrone Linux 0.1 (...)" | Replaces Ubuntu's header; Ubuntu's help links, news and Ubuntu Pro ads are moved aside |
-| Desktop | The Patrone wallpaper, blue accent color, Yaru's blue GTK theme and icons (GTK 3 apps don't follow the accent color), Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
-| Typeface | Inter (from Ubuntu's `fonts-inter`), close to Microsoft's Segoe UI, which can't be redistributed, and the font Patrone's own apps (MailCraft) use: for the desktop, apps, window titles and the login screen; web pages and documents that ask for sans-serif or Segoe UI get it too, in Chromium as well. Monospace stays Ubuntu Sans Mono | GNOME's font settings in the override above and `95-patrone-settings`; `system/fontconfig/05-patrone-fonts.conf` in `/etc/fonts/conf.d` and, for snaps (which don't read `conf.d`), `/etc/fonts/snap-override` |
+| Desktop | The Patrone wallpaper (its light version in the light style, the dark one in the dark style), blue accent color, Yaru's blue GTK theme and icons (GTK 3 apps don't follow the accent color), Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
+| Wallpapers to choose from | Wallpaper 01's family (below) in Settings → Appearance | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties` |
+| Typeface | Noto Sans (from Ubuntu's `fonts-noto-core`), the font Patrone File Manager uses as its stand-in for Microsoft's Segoe UI, which can't be redistributed: for the desktop, apps, window titles (in bold: Ubuntu's Noto Sans has no semibold) and the login screen; web pages and documents that ask for sans-serif or Segoe UI get it too, in Chromium as well. Monospace stays Ubuntu Sans Mono | GNOME's font settings in the override above and `95-patrone-settings`; `system/fontconfig/05-patrone-fonts.conf` in `/etc/fonts/conf.d` and, for snaps (which don't read `conf.d`), `/etc/fonts/snap-override` |
 | Settings | Ubuntu's "Ubuntu Desktop" page is named "Desktop" | `system/settings/gnome-ubuntu-panel.desktop` replaces Ubuntu's (GNOME Settings names each page from its desktop file) |
 
 The login-screen theme is built from the Yaru that's installed when the
@@ -88,7 +89,7 @@ The 8K version is a lossless PNG on purpose. JPEG, even at quality 98, leaves
 faint blotches in the dark blue gradients.
 
 It was made from the original with `tools/upscale_wallpaper.py` (Python with
-Pillow and NumPy, like `tools/make_terminal_logo.py`).
+OpenCV and NumPy).
 It enlarges the glows and gradients smoothly, rebuilds the logo, text and
 thin lines with sharp edges at full resolution, and adds fine grain so the
 dark gradients don't band. Re-run it if the original changes:
@@ -100,6 +101,49 @@ python tools/upscale_wallpaper.py wallpapers/patrone-back-01.png wallpapers/patr
 An upscale can sharpen edges but can't invent detail the original never had.
 If the original design file, or a higher-resolution render of it, exists, a
 native 8K export from that would be better still.
+
+### The family
+
+Variants of wallpaper 01, all in Settings → Appearance. Those with a light
+version are listed there as one wallpaper that follows the light or dark
+style.
+
+| Preview | File (`wallpapers/`) | In Settings |
+| --- | --- | --- |
+| ![](wallpapers/previews/patrone-back-01-light.jpg) | `patrone-back-01-light.png` | Patrone, light (the default in the light style) |
+| ![](wallpapers/previews/patrone-back-01-plain.jpg) | `patrone-back-01-plain.png` | Patrone, no logo |
+| ![](wallpapers/previews/patrone-back-01-plain-light.jpg) | `patrone-back-01-plain-light.png` | Patrone, no logo, light |
+| ![](wallpapers/previews/patrone-back-01-clean.jpg) | `patrone-back-01-clean.png` | Patrone Clean: the light streaks alone |
+| ![](wallpapers/previews/patrone-back-01-mark.jpg) | `patrone-back-01-mark.png` | Patrone Mark: a small P in the middle |
+| ![](wallpapers/previews/patrone-back-01-mark-light.jpg) | `patrone-back-01-mark-light.png` | Patrone Mark, light |
+| ![](wallpapers/previews/patrone-back-01-badge.jpg) | `patrone-back-01-badge.png` | Patrone Badge: a small logo at the bottom right |
+| ![](wallpapers/previews/patrone-back-01-midnight.jpg) | `patrone-back-01-midnight.png` | Patrone Midnight: navy in place of black |
+| ![](wallpapers/previews/patrone-back-01-blue.jpg) | `patrone-back-01-blue.png` | Patrone Blue: Patrone Blue, with white light and a white P |
+| ![](wallpapers/previews/patrone-back-01-graphite.jpg) | `patrone-back-01-graphite.png` | Patrone Graphite: grey and silver, with the blue P |
+| ![](wallpapers/previews/patrone-back-01-watermark.jpg) | `patrone-back-01-watermark.png` | Patrone Watermark: a giant, faint P of glass |
+
+They're 3840×2160 PNGs of about 3 MB, made from the original by
+`tools/make_wallpapers.py`. It takes the original apart with
+`tools/wallpaper_layers.py` (the same steps `upscale_wallpaper.py` uses):
+the background with the logo and details painted out, the corner details,
+and the logo, each redrawn sharp at full size. Then a color scheme
+recolors the background and details, and the logo goes back at its own
+place, smaller, or not at all. The light scheme inverts lightness and keeps
+the hue, so the light streaks become blue ink on a pale field, and the
+wordmark turns navy.
+
+4K holds all the detail the original has. They're dithered with an 8×8
+ordered pattern instead of grain: it stops the dark gradients from banding
+as well as grain does, keeps their average brightness closer to the
+original's, and makes the files about a third the size. To make them again:
+
+```
+python tools/make_wallpapers.py wallpapers/patrone-back-01.png wallpapers --preview wallpapers/previews
+```
+
+Add variant names after the folder to make only those. Each is defined in
+`VARIANTS` in the script: its color scheme, whether it keeps the corner
+details, and its logo.
 
 ## fastfetch
 

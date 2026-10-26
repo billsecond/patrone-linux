@@ -40,7 +40,7 @@ override_dh_auto_install:
 	    $(pkg)/usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
 	install -Dm644 system/schemas/90_patrone.gschema.override \
 	    $(pkg)/usr/share/glib-2.0/schemas/90_patrone.gschema.override
-	# Inter for sans-serif and Segoe UI: for the system (conf.d) and for
+	# Noto Sans for sans-serif and Segoe UI: for the system (conf.d) and for
 	# snaps such as Chromium, which read /etc/fonts/snap-override instead
 	install -Dm644 system/fontconfig/05-patrone-fonts.conf \
 	    $(pkg)/usr/share/fontconfig/conf.avail/05-patrone-fonts.conf
@@ -52,7 +52,9 @@ override_dh_auto_install:
 	install -Dm644 -t $(pkg)/usr/share/pixmaps \
 	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png \
 	    logos/patrone-logo-login.png
-	install -Dm644 wallpapers/patrone-back-01-8k.png \
-	    $(pkg)/usr/share/backgrounds/patrone/patrone-back-01-8k.png
+	# Wallpaper 01 and its variants, listed in Settings > Appearance
+	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/patrone-back-01-*.png
+	install -Dm644 system/backgrounds/patrone-wallpapers.xml \
+	    $(pkg)/usr/share/gnome-background-properties/patrone-wallpapers.xml
 	install -Dm644 fastfetch/config.jsonc $(pkg)/etc/xdg/fastfetch/config.jsonc
 	install -Dm644 fastfetch/logo.txt $(pkg)/usr/share/patrone/fastfetch/logo.txt

@@ -27,7 +27,7 @@ window, tooltip, popover, dnd {
   --shadow: rgba(0, 0, 0, 0.16);
   --danger: #c42b1c;
   --progress: #13a10e;
-  font-family: "Inter", "Noto Sans", sans-serif;
+  font-family: "Noto Sans", sans-serif;
   font-size: 9pt;
   color: var(--text);
 }

@@ -1,3 +1,16 @@
+patrone-branding (0.1.4) resolute; urgency=medium
+
+  * Noto Sans, the font of Patrone File Manager, as the typeface in place
+    of Inter: GNOME's font settings, the login screen, and fontconfig's
+    sans-serif and Segoe UI. Window titles are bold, the weight Noto Sans
+    has nearest to Inter's semibold. No longer depends on fonts-inter.
+  * Wallpaper 01's family, at 4K: a light version, which the light style
+    now uses by default, versions with no logo, with a small mark or badge,
+    and Midnight, Blue, Graphite and Watermark color schemes. All are in
+    Settings > Appearance, the light ones paired with their dark ones.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 21:00:00 -0500
+
 patrone-branding (0.1.3) resolute; urgency=medium
 
   * Inter as the typeface everywhere, in place of Ubuntu Sans: the

@@ -14,7 +14,6 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 Package: patrone-branding
 Architecture: all
 Depends: ${misc:Depends},
-         fonts-inter,
          fonts-noto-core,
          plymouth-theme-spinner,
          plymouth-theme-ubuntu-text
@@ -23,9 +22,11 @@ Description: Patrone Linux's name, logos and artwork
  the boot splash, the boot menu, the login screen, Settings > About, the text
  console's banner and the welcome message at login, which also loses Ubuntu's
  help links, news and Ubuntu Pro advertising. The login screen gets Patrone's
- colors and a blue default avatar. Inter is the typeface everywhere: the
- desktop, apps, the login screen, and web pages that ask for Segoe UI or a
- plain sans-serif font, Chromium's included. It installs the
- Patrone wallpaper as the default, makes blue the accent color in place of
- Ubuntu's orange, turns Ubuntu's dock off by default, and sets up fastfetch
- with the Patrone logo. Removing the package puts Ubuntu's files back.
+ colors and a blue default avatar. Noto Sans is the typeface everywhere:
+ the desktop, apps, the login screen, and web pages that ask for Segoe UI or
+ a plain sans-serif font, Chromium's included. It installs the Patrone
+ wallpaper as the default, light in the light style and dark in the dark
+ one, with variants to choose from in Settings, makes blue the accent color
+ in place of Ubuntu's orange, turns Ubuntu's dock off by default, and sets
+ up fastfetch with the Patrone logo. Removing the package puts Ubuntu's
+ files back.

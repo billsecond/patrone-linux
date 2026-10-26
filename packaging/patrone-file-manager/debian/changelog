@@ -19,7 +19,7 @@ patrone-file-manager (0.2.0) resolute; urgency=medium
     through pkexec when they need it.
   * System folders have their own icons; the special folders' emblems and
     the system drive's mark are larger.
-  * Text in Patrone's typeface (Inter) at Windows' 9 points, with larger
+  * Text in Patrone's typeface (Noto Sans) at Windows' 9 points, with larger
     icons in the lists; the empty-folder message sits in the middle.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 14:40:00 -0500

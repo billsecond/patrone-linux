@@ -5,7 +5,7 @@
 logo='/usr/share/pixmaps/patrone-logo-login.png'
 
 # Blue focus rings and buttons in place of Ubuntu's orange, and Patrone's
-# typeface, Inter, in place of Ubuntu Sans
+# typeface, Noto Sans, in place of Ubuntu's
 [org/gnome/desktop/interface]
 accent-color='blue'
-font-name='Inter 11'
+font-name='Noto Sans 11'

@@ -93,13 +93,15 @@ Waiting on the user:
   `chsh -s /bin/bash` (asks for their password).
 - **Install this round's packages, then sign out and back in**:
   `patrone-gnome-taskbar` 0.2.0 (dragging, sizes, themes; section 7),
-  `patrone-settings` 0.1.0 (section 9), `patrone-branding` 0.1.3 (Inter,
-  pulls in `fonts-inter`; Settings' "Desktop" page; section 6) and
-  `patrone-remote-desktop` 0.4.3 (the polkit rule that brings back the
-  quick settings' network menu; section 3). The user had 0.1.3 of the
-  taskbar installed (2026-10-26). Then try the Super key, the network
-  menu's chevron, Shut down in a real session, and Chromium's pages in
-  Inter.
+  `patrone-settings` 0.1.0 (section 9), `patrone-branding` 0.1.4 (Noto
+  Sans, the wallpaper family, Settings' "Desktop" page; sections 10 and
+  12) and `patrone-remote-desktop` 0.4.3 (the polkit rule that brings back
+  the quick settings' network menu; section 3). The user had 0.1.3 of the
+  taskbar and 0.1.2 of the branding installed (2026-10-26); 0.1.3 of the
+  branding (Inter) was never installed. Then try the Super key, the network
+  menu's chevron, Shut down in a real session, Chromium's pages in Noto
+  Sans, and the wallpapers in Settings → Appearance (their own wallpaper is
+  a copy in `~/Pictures`, so Patrone's new default doesn't reach them).
 - **Install `patrone-desktop` 0.1.0** (section 11), which takes out
   Canonical's reporting:
   `sudo apt install ~/src/patrone-linux/out/patrone-desktop_0.1.0_all.deb`.
@@ -878,8 +880,8 @@ The user's notes on 0.1.0, and what changed:
   and `-rwxr-xr-x`), changes as administrator through pkexec when needed,
   and with hints on the `chmod`/`chown` commands, with `sudo` when needed.
 - Text looked too large and icons too small, and the special folders'
-  emblems too small: the text is 9 pt (Windows' size) in Patrone's Inter
-  (Noto Sans until `fonts-inter` is installed), list icons are drawn at 20
+  emblems too small: the text is 9 pt (Windows' size) in Patrone's Noto
+  Sans (section 10), list icons are drawn at 20
   px (the artwork's margins make the item about 16), the emblems are 1.4
   times larger, and the system drive and its "P" are larger.
 - At `/`, known folders get their own icons (a gear for `/etc`, a terminal
@@ -912,8 +914,8 @@ through its ScreenCast stream (see the README's testing notes):
   Clippy and rustfmt are clean; the 0.2.0 package builds.
 
 Not verified yet: applying permission changes (directly or through pkexec's
-password prompt, which needs the user), dropping files on a tab, the tab
-menu's "Move to window", and how Inter looks once installed.
+password prompt, which needs the user), dropping files on a tab, and the tab
+menu's "Move to window".
 
 Findings:
 
@@ -951,20 +953,30 @@ Checked in the throwaway shell: see the README. Not checked: on the real
 desktop, the theme in apps that aren't GTK (Chromium's own title bar), and
 Studio's and Classic's look in GTK 3 apps.
 
-## 10. Typeface and Settings' Ubuntu wording (patrone-branding 0.1.3)
+## 10. Typeface and Settings' Ubuntu wording (patrone-branding 0.1.3, 0.1.4)
 
 Asked for 2026-10-26: a font "closer to what Microsoft has and closer to
 what we added to MailCraft", everywhere, the browser included. MailCraft
 draws with Windows' Segoe UI on Windows and its bundled Inter elsewhere,
-so Patrone's is Inter (Ubuntu's `fonts-inter`, static OTFs in every
-weight). How it's set everywhere: `branding/README.md`, "Typeface".
-Checked: the GNOME defaults compile with Ubuntu's schemas and give Inter
+so 0.1.3 made it Inter (Ubuntu's `fonts-inter`). Before installing it, the
+user asked for "the same font as the file explorer" as the system default:
+File Manager 0.1.0, which they had installed, set its text in Noto Sans. So
+0.1.4 makes it Noto Sans (`fonts-noto-core`, already a dependency) and
+drops `fonts-inter`, and File Manager 0.2.0 names Noto Sans again (it had
+switched to Inter first, falling back to Noto Sans). How it's set
+everywhere: `branding/README.md`, "Typeface". The system's size stays 11
+pt, GNOME's; the File Manager's 9 pt is Windows' size for its own lists.
+
+Checked for 0.1.4, on the VM: the GNOME defaults compile with Ubuntu's
+schemas (`--strict`) and give Noto Sans 11 and Noto Sans Bold 11 for titles
 under both desktop names; fontconfig with the rule first and Ubuntu's own
-after (as installed) gives Inter for sans-serif, bold, Segoe UI and its
-Semibold, Light and Variable names, while Arial and Times New Roman keep
-their metric-compatible stand-ins. Not checked until installed: Chromium
-itself (its snap reads `/etc/fonts/snap-override`, per the GNOME
-platform snap's `desktop-launch`), and the login screen.
+after (as installed) gives Noto Sans for sans-serif, system-ui and Segoe
+UI, Bold for Segoe UI Semibold (Ubuntu alone gives Regular), and Noto Sans
+Display for Segoe UI Variable Display; Settings in the throwaway shell
+with the font set draws in Noto Sans. Ubuntu's Noto Sans has only regular
+and bold, so titles are bold rather than semibold. Not checked until
+installed: Chromium itself (its snap reads `/etc/fonts/snap-override`, per
+the GNOME platform snap's `desktop-launch`), and the login screen.
 
 Findings: `fc-match sans-serif` reads the hyphen as the start of a size
 and asks for "sans"; test with `fc-match :family=sans-serif`. Chromium uses
@@ -1038,6 +1050,42 @@ Still to decide (the user): whether the network check
 release-upgrade offers (`changelogs.ubuntu.com`) and the Ubuntu Pro page in
 first-login setup should move off Canonical or go. The update archive and
 the Snap Store stay.
+
+## 12. Wallpaper family (patrone-branding 0.1.4)
+
+Asked for 2026-10-26: "a few new versions of the background, one that is a
+light mode version, and several that have no logo, several that have small
+logos, and maybe a few other interesting versions". Eleven variants of
+wallpaper 01, all in Settings → Appearance (`branding/README.md`, "The
+family", has previews and how they're made): light; no logo (dark, light,
+and Clean without the corner details); a small P (dark and light), a small
+badge; Midnight, Blue and Graphite color schemes; and Watermark, a giant
+faint P. The light ones are paired with their dark ones, and the default
+is now a pair too: new accounts start in Ubuntu's light style, so they see
+the light version first.
+
+`tools/make_wallpapers.py` makes them from the original, on Windows: the VM
+has no NumPy or OpenCV. Its parts come from `tools/wallpaper_layers.py`,
+taken out of `upscale_wallpaper.py`, which still makes the 8K wallpaper
+byte for byte (checked).
+
+Checked: the package builds (63 MB, 33 of them the 8K original), every file
+the list names is in it, and the list parses; in the throwaway shell,
+Settings → Appearance shows all nine entries, the pairs as split tiles,
+with the default pair ticked and the style previews in light and dark.
+Not checked until installed: switching between them on the real desktop.
+
+Findings:
+
+- JPEG brings the dark gradients' banding back even at quality 97 with
+  full-resolution color: it smooths away the grain that dithered them.
+- An 8×8 ordered dither stops banding better than random grain (its
+  average stays 0.05 levels from the true gradient, against 0.6) and
+  makes a 4K PNG 2.9 MB instead of 8.
+- Painting the logo out with inpainting leaves its outline, and the
+  bottom-left details' box overlaps the logo's, so its left rule counted
+  as a detail. The cleared background refills the logo's whole area from
+  its surroundings, and the details leave the logo's box alone.
 
 ## Suggested order
 

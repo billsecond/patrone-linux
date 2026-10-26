@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<!-- Patrone's wallpapers in Settings > Appearance. A wallpaper with a
+     filename-dark is a pair: GNOME shows filename in the light style and
+     filename-dark in the dark one. See branding/README.md. -->
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Patrone</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-01-8k.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone, no logo</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-plain-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-01-plain.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Mark</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-mark-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-01-mark.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Clean</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-clean.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Badge</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-badge.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Midnight</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-midnight.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Blue</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-blue.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Graphite</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-graphite.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Watermark</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-01-watermark.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+</wallpapers>
