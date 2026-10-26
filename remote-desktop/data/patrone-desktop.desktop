@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Patrone Desktop
-Comment=Your desktop: the same one Remote Desktop connects to
-Exec=/usr/libexec/patrone-remote-desktop/console
-TryExec=/usr/bin/cage
-Type=Application
-DesktopNames=Patrone

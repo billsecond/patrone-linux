@@ -1,3 +1,15 @@
+patrone-remote-desktop (0.4.1) resolute; urgency=medium
+
+  * Patrone Desktop is gnome.desktop, the session GDM falls back to, with a
+    dispatcher (libexec/session) that runs the screen's viewer when the
+    session has a seat and Ubuntu's GNOME session when it hasn't (the
+    background desktop). With ubuntu.desktop gone, GDM's fallback had picked
+    gnome-greeter, the first session file by name in GDM's own folder: a
+    bare GNOME session on the screen, which made Remote Desktop "busy".
+  * Replaces 0.4.0's patrone-desktop.desktop and patrone-gnome.desktop.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 13:30:00 -0500
+
 patrone-remote-desktop (0.4.0) resolute; urgency=medium
 
   * Signing in on the screen joins the account's desktop instead of ending

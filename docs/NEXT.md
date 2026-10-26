@@ -457,6 +457,19 @@ Findings:
   `X-GDM-CanRunHeadless`). With `ubuntu` gone, GDM's fallback (`gnome`, else
   the first session file by name) is `patrone-desktop`. Not tried yet:
   needs a reboot (GDM reads it all at start).
+- **0.4.0 after a reboot:** still "busy". With `ubuntu.desktop` diverted,
+  the user's remembered "ubuntu" was invalid, GDM fell back (`gnome`, else
+  the first session file by name), and its search includes its own
+  `/usr/share/gdm/greeter/wayland-sessions/`, where `gnome-greeter.desktop`
+  (`Exec=gnome-session`, `X-GDM-CanRunHeadless=true`) sorts before
+  `patrone-desktop`: the screen got a bare GNOME session
+  (`XDG_SESSION_DESKTOP=gnome-greeter`). AccountsService still says
+  "ubuntu" (GDM didn't save the fallback). 0.4.1: Patrone Desktop is
+  `gnome.desktop` (GDM's first fallback, for local and headless), running
+  `libexec/session`, which picks the viewer on a seat and
+  `gnome-session --session=ubuntu` without one (tested against the live
+  seat0 session and a seatless one). Other packages' `gnome.desktop` is
+  diverted too.
 - Packaging lessons: debhelper replaces `#DEBHELPER#` even inside comments
   (0.2.1's install failed; `build.sh` now refuses it), and for units
   installed with `--no-start` its generated `preinst` stops them on every

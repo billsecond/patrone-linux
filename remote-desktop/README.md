@@ -19,10 +19,10 @@ on Windows:
 
 ## Turning on Remote Desktop
 
-The screen part works as soon as the package is installed: choose "Patrone
-Desktop" from the gear menu on the login screen (it's the default for
-accounts that haven't picked a session). Remote Desktop is off until an
-administrator turns it on and adds the accounts that may use it:
+The screen part works as soon as the package is installed and GDM has
+restarted (a reboot): "Patrone Desktop" is the login screen's only session.
+Remote Desktop is off until an administrator turns it on and adds the
+accounts that may use it:
 
 ```
 sudo patrone-remote-desktop enable
@@ -74,8 +74,8 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    with Ubuntu's plain GNOME session instead, which GNOME can't run beside
    this one.
 3. **The screen**: the "Patrone Desktop" login session
-   (`/usr/share/wayland-sessions/patrone-desktop.desktop`) runs
-   `libexec/console` as the account. It asks for its desktop over
+   (`/usr/share/wayland-sessions/gnome.desktop`, see 6) runs `libexec/session`,
+   which on a seat runs `libexec/console` as the account. It asks for its desktop over
    `/run/patrone-remote-desktop/console.sock`, where `auth --console` takes
    the account from the connection itself (`SO_PEERCRED`), and shows it full
    screen with FreeRDP's SDL client inside `cage`, a one-app compositor.
@@ -119,11 +119,15 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    screen only, switched on by `/usr/share/gdm/dconf/96-patrone-remote-desktop`)
    leaves desktops without a seat out of that check. Ubuntu's own session
    (`ubuntu.desktop`) is moved aside, since a plain GNOME session started on
-   the screen would end the account's desktop; the hidden
-   `patrone-gnome.desktop` (`NoDisplay`, which only the login screen's menu
-   reads, and `X-GDM-CanRunHeadless`) is the GNOME session the background
-   desktops run. That leaves Patrone Desktop as the screen's only session,
-   and GDM's choice even for accounts that remembered Ubuntu's.
+   the screen would end the account's desktop. Patrone Desktop is
+   `gnome.desktop`, because `gnome` is the session GDM falls back to for an
+   account whose own choice isn't valid (like a remembered "ubuntu"); without
+   it, GDM falls back to the first session file by name, which is GDM's own
+   `gnome-greeter` (a bare GNOME session). The same session runs the
+   background desktops (`X-GDM-CanRunHeadless`): `libexec/session` runs the
+   viewer when the session has a seat, and Ubuntu's GNOME session
+   (`gnome-session --session=ubuntu`) when it has none. A `gnome.desktop`
+   from any other package is moved aside too.
 
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's
