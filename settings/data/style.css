@@ -85,3 +85,10 @@
   font-size: 0.9em;
   opacity: 0.7;
 }
+
+/* A font's card shows text in that font, in the space a picture takes */
+.patrone-font-sample {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: alpha(currentColor, 0.05);
+}

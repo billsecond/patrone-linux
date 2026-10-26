@@ -1,9 +1,10 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
 //! Title bar buttons (where minimize, maximize and close go, and their
-//! style) and Theme. Patrone's build of GNOME Settings has the same
-//! settings on its Patrone page, and uses this program to apply a theme or
-//! button style and for its pictures.
+//! style) and Theme (the theme, and the desktop's font: Noto Sans or
+//! Patrone Sans). Patrone's build of GNOME Settings has the same settings on
+//! its Patrone page, and uses this program to apply a theme or button style
+//! and for its pictures.
 //!
 //!   patrone-settings [--page taskbar|buttons|theme]
 //!   patrone-settings --set-theme THEME          apply a theme, and quit
@@ -12,6 +13,7 @@
 //!                                               for the settings as they are
 //!   patrone-settings --export-previews DIR      save the choices' pictures as PNGs
 
+mod font;
 mod preview;
 mod theme;
 
@@ -20,7 +22,7 @@ use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
 use gtk::prelude::*;
-use gtk::{gdk, gio, glib};
+use gtk::{gdk, gio, glib, pango};
 
 use preview::Layout;
 
@@ -681,13 +683,15 @@ fn buttons_page() -> gtk::ScrolledWindow {
 fn theme_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Theme",
-        "The look of the taskbar, title bars and window buttons. Where the \
-         taskbar's buttons go (the Taskbar page) and which corner the window \
-         buttons go in (Title bar buttons) are up to you: themes don't change \
-         them. Apps that are open pick up the change when they're next opened.",
+        "The look of the taskbar, title bars and window buttons, and the \
+         desktop's font. Where the taskbar's buttons go (the Taskbar page) and \
+         which corner the window buttons go in (Title bar buttons) are up to \
+         you: themes don't change them. Apps that are open pick up a new theme \
+         when they're next opened.",
     );
     let Some(desktop) = settings(DESKTOP_SCHEMA) else {
         note(&content, "Patrone Settings isn't installed properly: its settings schema is missing.");
+        font_section(&content);
         return scrolled;
     };
 
@@ -709,7 +713,115 @@ fn theme_page() -> gtk::ScrolledWindow {
         }
     });
     desktop.connect_changed(Some("theme"), move |settings, key| refresh(&settings.string(key)));
+
+    font_section(&content);
     scrolled
+}
+
+fn font_section(content: &gtk::Box) {
+    section_title(content, "Font");
+    let Some(interface) = settings(font::INTERFACE_SCHEMA) else {
+        note(content, "GNOME's interface settings aren't installed.");
+        return;
+    };
+    note(
+        content,
+        "For the desktop's and apps' text, at the size it is now. Monospace text \
+         keeps its own font.",
+    );
+    let window_manager = settings(WINDOW_MANAGER_SCHEMA);
+    let installed: Vec<String> = content
+        .pango_context()
+        .list_families()
+        .iter()
+        .map(|family| family.name().to_string())
+        .collect();
+    let target = interface.clone();
+    let current = font::family_of(&interface.string("font-name"));
+    let refresh = font_choices(content, &current, &installed, move |family| {
+        font::apply(family, &target, window_manager.as_ref());
+    });
+    interface.connect_changed(Some("font-name"), move |settings, key| {
+        refresh(&font::family_of(&settings.string(key)));
+    });
+}
+
+/// Text in a font, at a size in points, for a font's card (in its regular
+/// weight, whatever weight the theme gives buttons' text).
+fn sample_label(text: &str, family: &str, points: i32) -> gtk::Label {
+    let mut description = pango::FontDescription::new();
+    description.set_family(family);
+    description.set_weight(pango::Weight::Normal);
+    description.set_size(points * pango::SCALE);
+    let attributes = pango::AttrList::new();
+    attributes.insert(pango::AttrFontDesc::new(&description));
+    gtk::Label::builder().label(text).attributes(&attributes).xalign(0.0).build()
+}
+
+/// The fonts to pick from, each card showing text in its font; one that
+/// isn't installed can't be picked.
+fn font_choices(content: &gtk::Box, current: &str, installed: &[String], pick: impl Fn(&str) + 'static) -> Box<dyn Fn(&str)> {
+    let flow = gtk::FlowBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .column_spacing(12)
+        .row_spacing(12)
+        .max_children_per_line(2)
+        .min_children_per_line(2)
+        .homogeneous(true)
+        .build();
+    let pick = Rc::new(pick);
+    let mut buttons: Vec<(gtk::ToggleButton, &'static str)> = Vec::new();
+    for &(family, title, detail, package) in &font::FONTS {
+        let is_installed = installed.iter().any(|name| name == family);
+        let sample = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .spacing(2)
+            .height_request(118)
+            .css_classes(["patrone-font-sample"])
+            .build();
+        sample.append(&sample_label(font::SAMPLE_BIG, family, 30));
+        sample.append(&sample_label(font::SAMPLE, family, 15));
+
+        let card = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        card.append(&sample);
+        card.append(&gtk::Label::builder().label(title).xalign(0.0).css_classes(["patrone-choice-title"]).build());
+        let missing = format!("Not installed: the {package} package");
+        card.append(
+            &gtk::Label::builder()
+                .label(if is_installed { detail } else { missing.as_str() })
+                .xalign(0.0)
+                .wrap(true)
+                .max_width_chars(24)
+                .css_classes(["patrone-choice-detail"])
+                .build(),
+        );
+        let button = gtk::ToggleButton::builder()
+            .child(&card)
+            .css_classes(["patrone-choice"])
+            .active(family == current)
+            .sensitive(is_installed)
+            .build();
+        if let Some((first, _)) = buttons.first() {
+            button.set_group(Some(first));
+        }
+        let pick = pick.clone();
+        button.connect_toggled(move |button| {
+            if button.is_active() {
+                pick(family);
+            }
+        });
+        flow.append(&button);
+        buttons.push((button, family));
+    }
+    content.append(&flow);
+
+    Box::new(move |value: &str| {
+        for (button, choice) in &buttons {
+            if *choice == value && !button.is_active() {
+                button.set_active(true);
+            }
+        }
+    })
 }
 
 #[cfg(test)]

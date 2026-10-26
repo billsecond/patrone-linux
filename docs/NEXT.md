@@ -179,6 +179,15 @@ Waiting on the user:
   new to the session). Also open a zip or tar.gz (Extract all, Extract here)
   and a `.deb`: Install asks for your password with "Installing software for
   everyone on this computer needs an administrator's password".
+- **Install Patrone Sans and try it** (section 14), from SSH or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/fonts-patrone-sans_1.0.0_all.deb
+  ~/src/patrone-linux/out/patrone-settings_0.3.2_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone4_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone4_all.deb`.
+  Then Patrone Settings → Theme → Font (or GNOME Settings → Patrone → Font)
+  → Patrone Sans: open apps and the taskbar change at once. Then decide
+  whether Patrone Sans becomes Patrone's default (recommended, once tried;
+  section 14 says what that changes).
 
 ## 1. Patrone Terminal
 
@@ -1488,6 +1497,74 @@ Findings:
 - File Manager has its own Extract All for zip and tar; it could hand 7z,
   rar and Extract here to `patrone-unpack --extract-here` /
   `--extract-to DIR` (its session was told).
+
+## 14. Patrone Sans (fonts-patrone-sans)
+
+Asked for 2026-10-26: a font that looks and feels mostly like the current
+one (Noto Sans), changed by best practice for a system font, with a choice
+between the two in Patrone Settings. Done:
+
+- **Patrone Sans 1.000** (`fonts/`, see its README and FONTLOG): Noto Sans
+  2.015 from its own sources, with l tailed (the foot of Noto's t) and the
+  slashed zero (Noto's own) made the default, so I, l, 1, | and O, 0 are
+  told apart. One weight axis (100 to 900), upright and italic. Spacing,
+  line height (exactly Noto's), features and languages unchanged; figures
+  were already tabular. Reproducible: `fonts/build.sh` gives the same bytes
+  each time. OFL 1.1 (Noto's license has no Reserved Font Name; "Noto" is a
+  trademark, so the name is Patrone's own).
+- **fonts-patrone-sans 1.0.0** installs it in
+  `/usr/share/fonts/truetype/patrone-sans/`.
+- **The Font choice**: `patrone-settings` 0.3.2 (Theme page) and GNOME
+  Settings `...patrone4` (Patrone page). It changes the family of
+  `font-name`, `document-font-name` and `titlebar-font`, keeping sizes;
+  the monospace font stays. Each card shows text in its own font (not a
+  picture: the package build has no Patrone Sans to draw with). A font
+  that isn't installed can't be picked.
+- **The default stays Noto Sans.** Recommended: make Patrone Sans the
+  default once the user has tried it on their desktop. It changes only l
+  and 0, keeps every line the same height, and brings the medium and
+  semibold weights Ubuntu's Noto Sans lacks. That's the user's call. Making
+  it the default touches `branding/` (another session's): the font lines
+  of `system/schemas/90_patrone.gschema.override` and
+  `system/gdm/95-patrone-settings` (login screen), the aliases in
+  `system/fontconfig/05-patrone-fonts.conf` (sans-serif, system-ui, Segoe
+  UI, for Chromium and web pages too), and a dependency of
+  `patrone-branding` on `fonts-patrone-sans`. File Manager names "Noto
+  Sans" in its style sheet, so it keeps Noto Sans whatever is picked; its
+  session was asked to follow the system font instead.
+
+Checked: fontbakery 1.1.0's universal checks (5 fails, all inherited from
+Noto Sans 2.015, which fails the same checks built the same way; see
+`fonts/README.md`); the glyph set and GDEF classes equal Noto's; the
+comparison sheet (`fonts/comparison.png`, Noto Sans and Patrone Sans at 9,
+10 and 11 pt, light and dark, as GTK draws them); `cargo test` (12 tests,
+3 new); GNOME Settings revision 4 compiled with no warnings in the page;
+both settings apps in the throwaway shell: the cards, picking Patrone Sans
+and Noto Sans in each (the four keys checked after each click), Patrone
+Settings' own text and the taskbar's clock switching at once.
+`fonts-patrone-sans` passes lintian with no tags. Not checked: installed
+for real, the login screen, Chromium and web pages (they follow fontconfig's
+sans-serif, still Noto Sans), apps other than these.
+
+Findings:
+
+- The VM's python3 has no pip or venv module (`python3-venv` isn't
+  installed). `python3 -m venv --without-pip` and PyPA's `get-pip.py` make
+  a venv without sudo; `fonts/build.sh` does that itself.
+- `glyphs2ufo` needs `--generate-GDEF --write-public-skip-export-glyphs` to
+  match `fontmake -g`; without them the font kept 36 unexported glyphs and
+  called spacing accents marks.
+- With GNOME's default "slight" hinting, FreeType ignores a TrueType font's
+  instructions: Ubuntu's Noto Sans and a copy without its instructions drew
+  identical pixels (and different ones at "full"). So Patrone Sans ships
+  without instructions, and FreeType autohints it at every setting.
+- A throwaway shell (`headless.sh`) finds fonts added to its
+  `data/fonts` only in apps started afterwards, not in the shell itself.
+  Exporting `FONTCONFIG_FILE` (a file that includes `/etc/fonts/fonts.conf`
+  and adds a `<dir>`) before `headless.sh start` gives the shell and its
+  apps the fonts without touching the account.
+- libadwaita draws buttons' text in bold, so text inside a card button
+  needs its weight set to show a font's regular weight.
 
 ## Suggested order
 

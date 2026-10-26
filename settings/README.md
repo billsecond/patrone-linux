@@ -24,7 +24,7 @@ of GNOME Settings isn't installed; the launcher's actions open each page.
 | --- | --- | --- |
 | Taskbar | Size: Small (32 pixels), Medium (42, the default), Large (52). Layout: Left (the default), Centered, Split (Start on the left, the apps in the middle), Top (along the top of the screen). Start button: the Patrone P, one color, orb, grid, menu, circle, spark, prompt. Color: from the wallpaper (the default), or the theme's own. Pin icons: Patrone's (the default), or each app's own | `org.gnome.shell.extensions.patrone-taskbar` `size`, `layout`, `start-icon`, `color` and `pin-icons` (the taskbar's own schema; the page says so if the taskbar isn't installed, and leaves out Color and Pin icons for a taskbar older than 0.3.2). The Start button's icons are the taskbar's, from its `icons` folder |
 | Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps |
-| Theme | Patrone, Modern, Classic, Royal, Studio | `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps |
+| Theme | Themes: Patrone, Modern, Classic, Royal, Studio. Font: Noto Sans (the font Patrone has used until now) or Patrone Sans (`fonts/`, the `fonts-patrone-sans` package) | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `document-font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, their sizes and styles kept (`src/font.rs`); the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
 
 The taskbar's layout, and the title bar buttons' corner and style, are the
 account's own choices: no theme changes them (the user's decisions,
@@ -97,6 +97,10 @@ start, and an account's lines move to new versions of the style sheets
 setting, and came back in 0.3.1 with title bars only).
 
 ## Pictures
+
+The font cards have no picture: each shows "Aa" and "Il1 O0 10:00" in its
+own font, drawn by GTK, here and in GNOME Settings, since the package's
+build has no Patrone Sans to draw pictures with.
 
 `--export-previews` draws every choice's picture at twice the cards' size
 (376 by 236) and saves it as a PNG (through a GDK texture: this build of

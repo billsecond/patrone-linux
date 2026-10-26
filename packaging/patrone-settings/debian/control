@@ -15,10 +15,10 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 Package: patrone-settings
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, gsettings-desktop-schemas
-Recommends: patrone-gnome-taskbar
-Description: Patrone's own settings: taskbar, title bar buttons, theme
+Recommends: patrone-gnome-taskbar, fonts-patrone-sans
+Description: Patrone's own settings: taskbar, title bar buttons, theme, font
  Patrone Settings has the settings Patrone adds to the desktop's own: the
  taskbar's size (small, medium or large), which corner of windows' title
- bars minimize, maximize and close go in, and the theme, one of four looks
- for the taskbar, title bars and window buttons. Each choice shows a
- picture of what it does.
+ bars minimize, maximize and close go in, the theme, one of five looks
+ for the taskbar, title bars and window buttons, and the desktop's font,
+ Noto Sans or Patrone Sans. Each choice shows a picture of what it does.

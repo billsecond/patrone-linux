@@ -1,3 +1,14 @@
+patrone-settings (0.3.2) resolute; urgency=medium
+
+  * The Theme page has a Font choice: Noto Sans, the font Patrone has used
+    until now, or Patrone Sans (the fonts-patrone-sans package), Noto Sans
+    with a tailed l and a slashed zero. Each card shows text in its font.
+    Picking one changes the family of the interface, document and title
+    bar fonts and keeps their sizes; the monospace font stays. A font that
+    isn't installed can't be picked, and its card names its package.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:30:00 -0500
+
 patrone-settings (0.3.1) resolute; urgency=medium
 
   * Every theme has title bars of its own in GTK 4 apps: Patrone's pale

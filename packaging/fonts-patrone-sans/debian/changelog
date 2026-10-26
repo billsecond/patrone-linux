@@ -1,0 +1,6 @@
+fonts-patrone-sans (1.0.0) resolute; urgency=medium
+
+  * Patrone Sans 1.000: Noto Sans 2.015 with a tailed l and a slashed zero,
+    as two variable fonts (upright and italic) with one axis, weight.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:00:00 -0500

@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+# The fonts are built from Noto Sans's sources by fonts/build.sh, which needs
+# the network for its tools; the package installs the fonts it built
+# (in ttf/), as they're kept in the repository.
+
+pkg = debian/fonts-patrone-sans
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	for font in ttf/*.ttf; do \
+	    install -Dm644 "$$font" "$(pkg)/usr/share/fonts/truetype/patrone-sans/$$(basename "$$font")"; \
+	done
+	install -Dm644 OFL.txt $(pkg)/usr/share/doc/fonts-patrone-sans/OFL.txt
+	install -Dm644 FONTLOG.txt $(pkg)/usr/share/doc/fonts-patrone-sans/FONTLOG.txt
+	install -Dm644 README.md $(pkg)/usr/share/doc/fonts-patrone-sans/README.md

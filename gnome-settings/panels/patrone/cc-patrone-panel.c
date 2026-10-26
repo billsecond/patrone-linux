@@ -2,7 +2,8 @@
 /*
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
  * button icon), the title bar buttons (top right or top left, and their
- * style) and the theme. The same settings as Patrone Settings' window,
+ * style), the theme and the desktop's font (Noto Sans or Patrone Sans,
+ * which the page sets itself). The same settings as Patrone Settings' window,
  * which this page leans on: its pictures (/usr/share/patrone/settings/
  * previews) and, to apply a theme or button style, "patrone-settings
  * --set-theme" and "--set-title-buttons". The choices' values match
@@ -36,6 +37,7 @@
 #define TASKBAR_SCHEMA "org.gnome.shell.extensions.patrone-taskbar"
 #define DESKTOP_SCHEMA "org.patrone.desktop"
 #define WM_SCHEMA "org.gnome.desktop.wm.preferences"
+#define INTERFACE_SCHEMA "org.gnome.desktop.interface"
 #define PREVIEWS_DIR "/usr/share/patrone/settings/previews"
 #define TASKBAR_ICONS "gnome-shell/extensions/patrone-taskbar@patrone-linux/icons"
 
@@ -106,6 +108,17 @@ static const Choice themes[] = {
   { "studio", N_("Studio"), N_("Soft and translucent, with round colored window buttons") },
 };
 
+/* The desktop's fonts, by family, and the packages that install them */
+static const Choice fonts[] = {
+  { "Noto Sans", N_("Noto Sans"), N_("The font Patrone has used until now") },
+  { "Patrone Sans", N_("Patrone Sans"), N_("Noto Sans with a tailed l and a slashed zero, easier to tell apart") },
+};
+static const char * const font_packages[] = { "fonts-noto-core", "fonts-patrone-sans" };
+
+/* What a font's card shows, in that font */
+#define FONT_SAMPLE_BIG "Aa"
+#define FONT_SAMPLE "Il1 O0 10:00"
+
 typedef struct _ChoiceSet ChoiceSet;
 typedef char *(*ReadFunc) (ChoiceSet *set);
 typedef void (*WriteFunc) (ChoiceSet *set, const char *value);
@@ -129,6 +142,7 @@ struct _CcPatronePanel
   GSettings *taskbar;
   GSettings *desktop;
   GSettings *wm;
+  GSettings *interface;
   GFile *icons_dir;
   GPtrArray *choice_sets;
 };
@@ -220,6 +234,55 @@ static void
 write_title_buttons (ChoiceSet *set, const char *value)
 {
   run_patrone_settings ("--set-title-buttons", value);
+}
+
+/* The family of a font setting such as "Noto Sans Bold 11" */
+static char *
+read_font (ChoiceSet *set)
+{
+  g_autofree char *current = g_settings_get_string (set->settings, set->key);
+  g_autoptr(PangoFontDescription) font = pango_font_description_from_string (current);
+
+  return g_strdup (pango_font_description_get_family (font));
+}
+
+/* Gives a font setting another family, keeping its style and size */
+static void
+set_font_family (GSettings *settings, const char *key, const char *family)
+{
+  g_autofree char *current = g_settings_get_string (settings, key);
+  g_autoptr(PangoFontDescription) font = pango_font_description_from_string (current);
+  g_autofree char *changed = NULL;
+
+  pango_font_description_set_family (font, family);
+  changed = pango_font_description_to_string (font);
+  if (g_strcmp0 (current, changed) != 0)
+    g_settings_set_string (settings, key, changed);
+}
+
+/* The interface and document fonts, and the title bar font for windows
+ * that don't draw their own title bars; the monospace font stays */
+static void
+write_font (ChoiceSet *set, const char *value)
+{
+  g_autoptr(GSettings) wm = g_settings_new (WM_SCHEMA);
+
+  set_font_family (set->settings, "font-name", value);
+  set_font_family (set->settings, "document-font-name", value);
+  set_font_family (wm, "titlebar-font", value);
+}
+
+static gboolean
+font_installed (GtkWidget *widget, const char *family)
+{
+  g_autofree PangoFontFamily **families = NULL;
+  int n_families = 0;
+
+  pango_context_list_families (gtk_widget_get_pango_context (widget), &families, &n_families);
+  for (int i = 0; i < n_families; i++)
+    if (g_ascii_strcasecmp (pango_font_family_get_name (families[i]), family) == 0)
+      return TRUE;
+  return FALSE;
 }
 
 /* Whether the settings have a key: an older Patrone Settings' schema may
@@ -328,8 +391,61 @@ make_icon_card (CcPatronePanel *self, const Choice *choice)
   return box;
 }
 
+/* Text in a font, at a size in points, in its regular weight (buttons'
+ * text is bold here) */
+static GtkWidget *
+make_sample (const char *text, const char *family, int points)
+{
+  GtkWidget *label = gtk_label_new (text);
+  g_autoptr(PangoAttrList) attributes = pango_attr_list_new ();
+  g_autoptr(PangoFontDescription) font = pango_font_description_new ();
+
+  pango_font_description_set_family (font, family);
+  pango_font_description_set_weight (font, PANGO_WEIGHT_NORMAL);
+  pango_font_description_set_size (font, points * PANGO_SCALE);
+  pango_attr_list_insert (attributes, pango_attr_font_desc_new (font));
+  gtk_label_set_attributes (GTK_LABEL (label), attributes);
+  gtk_label_set_xalign (GTK_LABEL (label), 0.0);
+  return label;
+}
+
+/* Text in the font where the other cards have a picture, its name and a
+ * line about it; a font that isn't installed says which package installs
+ * it, and its card can't be picked ("patrone-unavailable") */
+static GtkWidget *
+make_font_card (CcPatronePanel *self, const Choice *choice)
+{
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+  GtkWidget *sample = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+  gboolean installed = font_installed (GTK_WIDGET (self), choice->value);
+  g_autofree char *missing = g_strdup_printf (_("Not installed: the %s package"),
+                                              font_packages[choice - fonts]);
+
+  gtk_widget_add_css_class (sample, "patrone-font-sample");
+  gtk_widget_set_size_request (sample, -1, 104);
+  gtk_box_append (GTK_BOX (sample), make_sample (FONT_SAMPLE_BIG, choice->value, 30));
+  gtk_box_append (GTK_BOX (sample), make_sample (FONT_SAMPLE, choice->value, 15));
+  gtk_box_append (GTK_BOX (box), sample);
+  gtk_box_append (GTK_BOX (box), make_label (_(choice->title), "heading"));
+  gtk_box_append (GTK_BOX (box), make_label (installed ? _(choice->detail) : missing, "dim-label"));
+  if (!installed)
+    g_object_set_data (G_OBJECT (box), "patrone-unavailable", GINT_TO_POINTER (TRUE));
+  return box;
+}
+
+/* A choice's card: a picture's, a Start icon's (no prefix) or a font's */
+static GtkWidget *
+make_card (CcPatronePanel *self, const char *prefix, const Choice *choice)
+{
+  if (prefix == NULL)
+    return make_icon_card (self, choice);
+  if (g_str_equal (prefix, "font"))
+    return make_font_card (self, choice);
+  return make_picture_card (prefix, choice);
+}
+
 /* A row of choices for one setting, in a group; `prefix` names their
- * pictures, or NULL for Start button icons */
+ * pictures, or is NULL for Start button icons or "font" for fonts */
 static void
 add_choices (CcPatronePanel      *self,
              AdwPreferencesGroup *group,
@@ -363,10 +479,10 @@ add_choices (CcPatronePanel      *self,
   for (guint i = 0; i < n_choices; i++)
     {
       GtkWidget *button = gtk_toggle_button_new ();
+      GtkWidget *card = make_card (self, prefix, &choices[i]);
 
-      gtk_button_set_child (GTK_BUTTON (button),
-                            prefix != NULL ? make_picture_card (prefix, &choices[i])
-                                           : make_icon_card (self, &choices[i]));
+      gtk_button_set_child (GTK_BUTTON (button), card);
+      gtk_widget_set_sensitive (button, g_object_get_data (G_OBJECT (card), "patrone-unavailable") == NULL);
       gtk_widget_add_css_class (button, "patrone-choice");
       if (first != NULL)
         gtk_toggle_button_set_group (GTK_TOGGLE_BUTTON (button), first);
@@ -421,7 +537,8 @@ load_style (void)
   provider = gtk_css_provider_new ();
   gtk_css_provider_load_from_string (provider,
     ".patrone-choice { padding: 8px; border-radius: 12px; }\n"
-    ".patrone-choice:checked { box-shadow: inset 0 0 0 2px var(--accent-bg-color); }\n");
+    ".patrone-choice:checked { box-shadow: inset 0 0 0 2px var(--accent-bg-color); }\n"
+    ".patrone-font-sample { padding: 8px 12px; border-radius: 8px; background: alpha(currentColor, 0.05); }\n");
   gtk_style_context_add_provider_for_display (gdk_display_get_default (),
                                               GTK_STYLE_PROVIDER (provider),
                                               GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -442,6 +559,7 @@ cc_patrone_panel_dispose (GObject *object)
   g_clear_object (&self->taskbar);
   g_clear_object (&self->desktop);
   g_clear_object (&self->wm);
+  g_clear_object (&self->interface);
   g_clear_object (&self->icons_dir);
 
   G_OBJECT_CLASS (cc_patrone_panel_parent_class)->dispose (object);
@@ -478,6 +596,7 @@ cc_patrone_panel_init (CcPatronePanel *self)
   self->taskbar = settings_if_installed (TASKBAR_SCHEMA);
   self->desktop = settings_if_installed (DESKTOP_SCHEMA);
   self->wm = g_settings_new (WM_SCHEMA);
+  self->interface = g_settings_new (INTERFACE_SCHEMA);
   self->icons_dir = find_icons_dir ();
 
   if (self->taskbar != NULL)
@@ -543,6 +662,12 @@ cc_patrone_panel_init (CcPatronePanel *self)
       add_choices (self, group, self->desktop, "theme", read_string, write_theme,
                    themes, G_N_ELEMENTS (themes), "theme", 3);
     }
+
+  group = add_group (page, _("Font"),
+                     _("For the desktop's and apps' text, at the size it is now. Monospace "
+                       "text keeps its own font."));
+  add_choices (self, group, self->interface, "font-name", read_font, write_font,
+               fonts, G_N_ELEMENTS (fonts), "font", 2);
 
   adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (view), adw_header_bar_new ());
   adw_toolbar_view_set_content (ADW_TOOLBAR_VIEW (view), GTK_WIDGET (page));
