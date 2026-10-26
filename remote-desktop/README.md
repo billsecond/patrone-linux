@@ -13,9 +13,9 @@ on Windows:
   machine's screen back to the login screen; signing in on the screen
   disconnects the Remote Desktop client. Disconnecting leaves the desktop
   running for next time; logging out ends it.
-- **Remote Desktop asks once, for the account's own password**, which PAM
-  checks on every connection. Nothing keeps a copy of it. Remote sessions
-  never lock or blank the screen.
+- **Remote Desktop asks once, for the account's own password**, in Remote
+  Desktop Connection's own dialog (NLA, as on Windows), and PAM checks it on
+  every connection. Remote sessions never lock or blank the screen.
 
 ## Turning on Remote Desktop
 
@@ -29,28 +29,26 @@ sudo patrone-remote-desktop enable
 sudo adduser NAME remote-desktop
 ```
 
-Then connect from Windows with a connection file made on the Patrone
-machine, and give the Linux account's username and password:
+An account can connect once it has signed in on the computer with its
+password after joining the group (on the login screen, with `sudo`, over
+SSH), or changed its password: that's when Patrone records what NLA checks.
+
+Then connect from Windows with `mstsc /v:HOSTNAME`, and give the Linux
+account's username and password in Remote Desktop Connection's dialog. The
+first time, it also asks you to trust the computer's certificate, which is
+self-signed. A connection file with the computer and username filled in,
+full screen, and resizing with the window:
 
 ```
 patrone-remote-desktop rdp-file > Patrone.rdp     # copy it to Windows, double-click
 ```
-
-The file matters: by default Remote Desktop Connection sends no password to
-a server without NLA, expecting the server to show its own sign-in screen.
-The file's `enablecredsspsupport:i:0` and `prompt for credentials on
-client:i:1` make it ask on Windows and send what you type. (Microsoft's
-current list of RDP file settings doesn't include the second one; it comes
-from Remote Desktop Connection 6.0's era.) The first time, Remote Desktop
-Connection also asks you to trust the computer's certificate, which is
-self-signed.
 `patrone-remote-desktop status` shows whether it's on and who's in the group;
 `patrone-remote-desktop disable` turns it off.
 
 ## How it works
 
 ```
-mstsc ──TLS──▶ freerdp-proxy :3389 ──NLA──▶ ┐
+mstsc ──NLA──▶ freerdp-proxy :3389 ──NLA──▶ ┐
                (user patrone-rdp)           │ the account's GNOME Remote
                  │ patrone-login plugin     │ Desktop, :20000+uid, serving
                  ▼                          │ its one headless GNOME desktop
@@ -85,18 +83,34 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    screen.
 4. **Remote Desktop**: FreeRDP's proxy listens on port 3389 as the
    unprivileged `patrone-rdp` user (`patrone-remote-desktop.service`, config
-   in `/etc/patrone-remote-desktop/proxy.ini`). It speaks TLS without NLA to
-   clients, so the client sends the username and password inside the
-   encrypted connection. The `patrone-login` plugin (`src/patrone-login.c`,
-   required: without it the proxy won't start) hands them to `auth` over
+   in `/etc/patrone-remote-desktop/proxy.ini`). It requires NLA from
+   clients, as Windows does, and checks it against
+   `/var/lib/patrone-remote-desktop/sam` (root's, readable by `patrone-rdp`),
+   which holds the NT hash of each `remote-desktop` member's password. A
+   wrong password fails right there, in Remote Desktop Connection's own
+   "logon attempt failed". NLA then hands the server the password itself,
+   and the `patrone-login` plugin (`src/patrone-login.c`, required: without
+   it the proxy won't start) takes it before anything else in the
+   connection can overwrite it. Before the proxy connects anywhere, the
+   plugin hands the username and password to `auth` over
    `/run/patrone-remote-desktop/auth.sock`, which only `patrone-rdp` can
-   open, and clears the password from the proxy. `auth` (`src/auth.c`, root)
-   checks them with PAM (`/etc/pam.d/patrone-remote-desktop`: in the
-   `remote-desktop` group, UID 1000 or above, the account's own password,
-   the account not locked or expired), then runs `prepare-session`. The
-   proxy connects to `127.0.0.1` on the answered port with NLA, signing in
-   with the secret, and passes the session through: display, input,
-   clipboard, audio, and resizing with the client's window.
+   open, and forgets the password. `auth` (`src/auth.c`, root) checks them
+   with PAM (`/etc/pam.d/patrone-remote-desktop`: in the `remote-desktop`
+   group, UID 1000 or above, the account's own password, the account not
+   locked or expired), so a hash that still matches doesn't let in an
+   account that's been locked or taken out of the group. Then it runs
+   `prepare-session`. The proxy connects to `127.0.0.1` on the answered port
+   with NLA, signing in with the secret, and passes the session through:
+   display, input, clipboard, audio, and resizing with the client's window.
+5. **Keeping the hashes current**: a `pam-auth-update` profile
+   (`/usr/share/pam-configs/patrone-remote-desktop`) adds `pam_exec` to
+   `common-auth` and `common-password`, after the password check succeeds.
+   It runs `auth --remember` as root with the password, which writes the
+   account's NT hash to the SAM file if the account is in the
+   `remote-desktop` group (and drops it if not). That happens at every
+   password sign-in (login screen, `sudo`, SSH, Remote Desktop) and every
+   password change, so the hash always matches the current password. Screen
+   unlocks run as the account itself, not root, and are skipped.
 
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's
@@ -110,11 +124,18 @@ them back at the next login in a plain GNOME session on the screen.
   games are slower than in a plain GNOME session. Patrone's own compositor
   will move a session between the screen and Remote Desktop without that.
   Ubuntu's plain session stays in the gear menu, but it can't be shared.
-- **NLA is off towards clients.** To check the password against the account
-  when someone connects, the server has to receive it; NLA's first step
-  needs the server to hold a copy of the password (its NT hash) already. The
-  password travels inside TLS instead, as it does with xrdp. Kerberos would
-  keep NLA without a copy, on machines joined to a domain.
+- **The SAM file holds password hashes**, as Windows' own account database
+  does: NLA's NTLM step can't work without the NT hash. It's root's, readable
+  only by the proxy's user, and only for `remote-desktop` members. Like
+  Windows' hashes, anyone who gets root can use them for NLA logins
+  ("pass the hash"); PAM's check of the real password at every connection
+  still applies. Kerberos would avoid the hash, on machines joined to a
+  domain. Without NLA, Remote Desktop Connection sends no password at all
+  (it expects a sign-in screen from the server), which is why Patrone uses
+  NLA.
+- **A brand-new member can't connect until a password sign-in** records the
+  hash. Changing a password with `usermod -p` or by editing `/etc/shadow`
+  skips PAM, so the next password sign-in brings the hash up to date.
 - **The login keyring stays locked.** Nothing unlocks it when the desktop
   starts, so apps that keep passwords there may ask for it.
 - **The screen doesn't lock by itself yet.** Leaving the machine, sign out

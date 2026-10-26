@@ -409,6 +409,25 @@ Findings:
   it can't go stale, though. GNOME's Remote Login as the sign-in screen:
   undocumented when the user already has a desktop (one report says it
   kills the other session).
+- **The user chose B (NLA) on 2026-10-26; built as 0.3.0.** The proxy
+  requires NLA and checks it against `/var/lib/patrone-remote-desktop/sam`
+  (WinPR's format, `user:::NTHASH:`; FreeRDP's NTLM retries the lookup
+  without the client's domain, and matches usernames case-sensitively). NLA
+  writes the decrypted TSPasswordCreds into the peer's settings; the client
+  info that follows clears `FreeRDP_Password` (`rdp_read_info_string` sets it
+  to NULL first), so the plugin takes the credentials in its
+  `ServerPeerLogon` filter, which runs right after NLA. `auth --remember`
+  (from `pam_exec quiet seteuid expose_authtok`, added to `common-auth` and
+  `common-password` as "Additional" by a `pam-auth-update` profile) writes
+  `remote-desktop` members' hashes with WinPR's `NTOWFv1W`; `pam_exec` runs
+  password-type commands only in the update step, when `PAM_AUTHTOK` is the
+  new password. Checked: `make check`, 50 checks (NLA path in the plugin, the
+  textbook NT hashes of "password" and "Password1", read back with WinPR's
+  SAM reader, one entry per account, others kept); a throwaway proxy on
+  3399 with a test SAM: FreeRDP's client with the right made-up password got
+  "Accepted client" (NLA passed), a wrong one `ERRCONNECT_LOGON_FAILURE`
+  (NTLM's MIC check failed). Not yet: `pam-auth-update` on the VM, a real
+  hash from a real sign-in, and `mstsc`.
 - Packaging lessons: debhelper replaces `#DEBHELPER#` even inside comments
   (0.2.1's install failed; `build.sh` now refuses it), and for units
   installed with `--no-start` its generated `preinst` stops them on every

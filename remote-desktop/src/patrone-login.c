@@ -1,12 +1,19 @@
 /* Patrone's sign-in check for FreeRDP's proxy (patrone-remote-desktop).
  *
- * The proxy accepts TLS connections without NLA, so the client sends the
- * account's username and password in its client info. Before the proxy
- * connects on, this hands them to patrone-remote-desktop's auth helper, which
- * checks them with PAM and gets the account's desktop ready. On success the
- * proxy connects to that account's own GNOME Remote Desktop on localhost,
- * signing in with the random secret the helper returns. The password goes
- * no further, and is cleared from the proxy's settings once checked.
+ * The proxy speaks NLA to clients, as Windows does: Remote Desktop Connection
+ * asks for the username and password, NLA proves them against the password
+ * hashes the sign-in helper keeps (the SAM file), and then hands the server
+ * the password itself. This plugin takes the username and password at that
+ * point, before anything else can overwrite them, and later, before the proxy
+ * connects on, hands them to the sign-in helper, which checks them with PAM
+ * (so a locked account or a changed password is refused even if the hash
+ * still matches) and gets the account's desktop ready. On success the proxy
+ * connects to that account's own GNOME Remote Desktop on localhost, signing in
+ * with the random secret the helper returns. The password goes no further,
+ * and is cleared from the proxy's memory once checked.
+ *
+ * Without NLA (a client that sends its credentials in its client info
+ * instead), the same check runs on those.
  *
  * Copyright 2026 William Daugherty
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -44,20 +51,45 @@ static const char plugin_name[] = "patrone-login";
 static const char plugin_desc[] =
     "Checks Remote Desktop sign-ins with PAM and connects each account to its own desktop";
 
-/* What a session signs in to GNOME Remote Desktop with */
+/* One connection's sign-in: the credentials NLA delivered, until they're
+ * checked, then what the proxy signs in to GNOME Remote Desktop with. */
 typedef struct
 {
 	char* user;
+	char* password;
 	char secret[SECRET_MAX];
-} Target;
+} Session;
 
-static void target_free(Target* target)
+static void forget_password(Session* session)
 {
-	if (!target)
+	if (session && session->password)
+	{
+		explicit_bzero(session->password, strlen(session->password));
+		free(session->password);
+		session->password = NULL;
+	}
+}
+
+static void session_free(Session* session)
+{
+	if (!session)
 		return;
-	free(target->user);
-	explicit_bzero(target->secret, sizeof(target->secret));
-	free(target);
+	forget_password(session);
+	free(session->user);
+	explicit_bzero(session->secret, sizeof(session->secret));
+	free(session);
+}
+
+static Session* get_session(proxyPlugin* plugin, proxyData* pdata)
+{
+	return plugin->mgr->GetPluginData(plugin->mgr, plugin_name, pdata);
+}
+
+/* Clears a setting that may hold a password */
+static void clear(rdpSettings* settings, FreeRDP_Settings_Keys_String key)
+{
+	BOOL cleared = freerdp_settings_set_string(settings, key, NULL);
+	WINPR_UNUSED(cleared);
 }
 
 static BOOL write_all(int fd, const char* data, size_t size)
@@ -120,76 +152,107 @@ out:
 	return ok;
 }
 
+/* Runs once the client has signed in at the protocol level: right after NLA,
+ * whose credentials are in the settings now and would be cleared by the
+ * client info that follows, so keep them for fetch_target. (Without NLA it
+ * runs before the client info, when there's nothing to keep yet.) */
+static BOOL peer_logon(proxyPlugin* plugin, proxyData* pdata, void* param)
+{
+	WINPR_UNUSED(param);
+	rdpSettings* front = pdata->ps->settings;
+	const char* user = freerdp_settings_get_string(front, FreeRDP_Username);
+	const char* password = freerdp_settings_get_string(front, FreeRDP_Password);
+
+	if (!user || !*user || !password || !*password)
+		return TRUE;
+
+	Session* session = calloc(1, sizeof(*session));
+	if (!session)
+		return FALSE;
+	session->user = strdup(user);
+	session->password = strdup(password);
+	clear(front, FreeRDP_Password);
+	if (!session->user || !session->password ||
+	    !plugin->mgr->SetPluginData(plugin->mgr, plugin_name, pdata, session))
+	{
+		session_free(session);
+		return FALSE;
+	}
+	return TRUE;
+}
+
 /* Decides where the proxy connects: runs once per connection, after the
- * client's info (with its username and password) has arrived. Returning FALSE
- * ends the connection. */
+ * client's info has arrived. Returning FALSE ends the connection. */
 static BOOL fetch_target(proxyPlugin* plugin, proxyData* pdata, void* param)
 {
 	proxyFetchTargetEventInfo* event = param;
 	rdpSettings* front = pdata->ps->settings;
 	rdpSettings* back = pdata->pc->settings;
 	const char* client = pdata->ps->peer ? pdata->ps->peer->hostname : "";
+	Session* session = get_session(plugin, pdata);
 	char reply[REPLY_MAX];
 	unsigned int port = 0;
-	Target* target = NULL;
-	BOOL asked = FALSE;
 
-	const char* user = freerdp_settings_get_string(front, FreeRDP_Username);
-	const char* password = freerdp_settings_get_string(front, FreeRDP_Password);
-	if (!user || !*user || !password || !*password)
+	/* NLA's credentials, or else the client info's */
+	if (!session)
 	{
-		/* Remote Desktop Connection sends them only when it asked for them on
-		 * the client (see patrone-remote-desktop rdp-file). */
-		if (user && *user)
-			WLog_WARN(TAG, "refused a connection from %s that sent the username \"%s\" but no password",
-			          client, user);
-		else
-			WLog_WARN(TAG, "refused a connection from %s that sent no username or password", client);
-		freerdp_settings_set_string(front, FreeRDP_Password, NULL);
-		return FALSE;
+		const char* user = freerdp_settings_get_string(front, FreeRDP_Username);
+		const char* password = freerdp_settings_get_string(front, FreeRDP_Password);
+		if (!user || !*user || !password || !*password)
+		{
+			if (user && *user)
+				WLog_WARN(TAG, "refused a connection from %s that sent the username \"%s\" but no password",
+				          client, user);
+			else
+				WLog_WARN(TAG, "refused a connection from %s that sent no username or password", client);
+			clear(front, FreeRDP_Password);
+			return FALSE;
+		}
+		session = calloc(1, sizeof(*session));
+		if (!session)
+			return FALSE;
+		session->user = strdup(user);
+		session->password = strdup(password);
+		if (!plugin->mgr->SetPluginData(plugin->mgr, plugin_name, pdata, session))
+		{
+			session_free(session);
+			return FALSE;
+		}
+		if (!session->user || !session->password)
+			return FALSE;
 	}
+	clear(front, FreeRDP_Password);
 
-	target = calloc(1, sizeof(*target));
-	if (target)
-		target->user = strdup(user);
-	if (target && target->user)
-		asked = ask_auth_helper(user, password, client, reply, sizeof(reply));
-
+	BOOL asked = ask_auth_helper(session->user, session->password, client, reply, sizeof(reply));
 	/* Checked, or failed: either way the password isn't needed again. */
-	freerdp_settings_set_string(front, FreeRDP_Password, NULL);
+	forget_password(session);
 
 	if (!asked)
 	{
-		WLog_ERR(TAG, "couldn't check the sign-in for %s from %s", user, client);
-		target_free(target);
+		WLog_ERR(TAG, "couldn't check the sign-in for %s from %s", session->user, client);
 		return FALSE;
 	}
-	if (sscanf(reply, "ok %u %127s", &port, target->secret) != 2 || port == 0 || port > 65535)
+	if (sscanf(reply, "ok %u %127s", &port, session->secret) != 2 || port == 0 || port > 65535)
 	{
 		/* Only the first word: a garbled answer could hold the secret. */
 		reply[strcspn(reply, " \n")] = '\0';
-		WLog_WARN(TAG, "refused the sign-in for %s from %s (%s)", user, client,
+		WLog_WARN(TAG, "refused the sign-in for %s from %s (%s)", session->user, client,
 		          strcmp(reply, "ok") == 0 ? "garbled answer from the sign-in helper" : reply);
 		explicit_bzero(reply, sizeof(reply));
-		target_free(target);
+		explicit_bzero(session->secret, sizeof(session->secret));
 		return FALSE;
 	}
 	explicit_bzero(reply, sizeof(reply));
 
-	if (!plugin->mgr->SetPluginData(plugin->mgr, plugin_name, pdata, target))
-	{
-		target_free(target);
-		return FALSE;
-	}
 	event->fetch_method = PROXY_FETCH_TARGET_USE_CUSTOM_ADDR;
 	event->target_address = strdup("127.0.0.1"); /* the proxy frees it */
 	event->target_port = (UINT16)port;
 	if (!event->target_address)
 		return FALSE;
-	WLog_INFO(TAG, "signed in %s from %s, to their desktop on port %u", user, client, port);
+	WLog_INFO(TAG, "signed in %s from %s, to their desktop on port %u", session->user, client, port);
 
-	return freerdp_settings_set_string(back, FreeRDP_Username, target->user) &&
-	       freerdp_settings_set_string(back, FreeRDP_Password, target->secret) &&
+	return freerdp_settings_set_string(back, FreeRDP_Username, session->user) &&
+	       freerdp_settings_set_string(back, FreeRDP_Password, session->secret) &&
 	       freerdp_settings_set_string(back, FreeRDP_Domain, NULL);
 }
 
@@ -198,23 +261,23 @@ static BOOL fetch_target(proxyPlugin* plugin, proxyData* pdata, void* param)
 static BOOL client_pre_connect(proxyPlugin* plugin, proxyData* pdata, void* param)
 {
 	rdpContext* context = param;
-	Target* target = plugin->mgr->GetPluginData(plugin->mgr, plugin_name, pdata);
-	if (!target)
+	Session* session = get_session(plugin, pdata);
+	if (!session || !session->secret[0])
 		return FALSE;
-	return freerdp_settings_set_string(context->settings, FreeRDP_Username, target->user) &&
-	       freerdp_settings_set_string(context->settings, FreeRDP_Password, target->secret) &&
+	return freerdp_settings_set_string(context->settings, FreeRDP_Username, session->user) &&
+	       freerdp_settings_set_string(context->settings, FreeRDP_Password, session->secret) &&
 	       freerdp_settings_set_string(context->settings, FreeRDP_Domain, NULL);
 }
 
 static BOOL session_end(proxyPlugin* plugin, proxyData* pdata, void* param)
 {
 	WINPR_UNUSED(param);
-	Target* target = plugin->mgr->GetPluginData(plugin->mgr, plugin_name, pdata);
-	if (target)
+	Session* session = get_session(plugin, pdata);
+	if (session)
 	{
 		BOOL cleared = plugin->mgr->SetPluginData(plugin->mgr, plugin_name, pdata, NULL);
 		WINPR_UNUSED(cleared);
-		target_free(target);
+		session_free(session);
 	}
 	return TRUE;
 }
@@ -232,6 +295,7 @@ FREERDP_ENTRY_POINT(BOOL proxy_module_entry_point(proxyPluginsManager* manager, 
 	plugin.name = plugin_name;
 	plugin.description = plugin_desc;
 	plugin.PluginUnload = unload;
+	plugin.ServerPeerLogon = peer_logon;
 	plugin.ServerFetchTargetAddr = fetch_target;
 	plugin.ClientPreConnect = client_pre_connect;
 	plugin.ServerSessionEnd = session_end;

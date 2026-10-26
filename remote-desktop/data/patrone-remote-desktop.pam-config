@@ -1,0 +1,9 @@
+Name: Patrone Remote Desktop - keep the password hash NLA checks current
+Default: yes
+Priority: 0
+Auth-Type: Additional
+Auth:
+	optional	pam_exec.so quiet seteuid expose_authtok /usr/libexec/patrone-remote-desktop/auth --remember
+Password-Type: Additional
+Password:
+	optional	pam_exec.so quiet seteuid expose_authtok /usr/libexec/patrone-remote-desktop/auth --remember

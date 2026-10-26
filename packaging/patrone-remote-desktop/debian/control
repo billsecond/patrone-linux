@@ -24,6 +24,7 @@ Depends: ${shlibs:Depends},
          gnome-remote-desktop,
          iproute2,
          libpam-modules,
+         libpam-runtime,
          openssl,
          python3,
          util-linux

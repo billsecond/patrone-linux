@@ -20,6 +20,8 @@ override_dh_auto_install:
 	install -Dm755 sbin/patrone-remote-desktop $(pkg)/usr/sbin/patrone-remote-desktop
 	install -Dm644 data/proxy.ini $(pkg)/etc/patrone-remote-desktop/proxy.ini
 	install -Dm644 data/patrone-remote-desktop.pam $(pkg)/etc/pam.d/patrone-remote-desktop
+	install -Dm644 data/patrone-remote-desktop.pam-config \
+	    $(pkg)/usr/share/pam-configs/patrone-remote-desktop
 	install -Dm644 data/patrone-remote-desktop-no-lock.desktop \
 	    $(pkg)/etc/xdg/autostart/patrone-remote-desktop-no-lock.desktop
 	install -Dm644 -t $(pkg)/usr/lib/systemd/system data/patrone-remote-desktop.service \

@@ -11,6 +11,8 @@ if [ "$1" = configure ]; then
         adduser --system --quiet --group --no-create-home \
             --home /var/lib/patrone-remote-desktop/proxy patrone-rdp
     fi
+    # The PAM hook that keeps the password hash NLA checks current
+    pam-auth-update --package
 fi
 
 #DEBHELPER#

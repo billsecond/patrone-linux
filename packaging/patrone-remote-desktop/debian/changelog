@@ -1,3 +1,16 @@
+patrone-remote-desktop (0.3.0) resolute; urgency=medium
+
+  * NLA, as Windows does it: Remote Desktop Connection asks for the username
+    and password itself, and the proxy checks NLA against a SAM file of NT
+    hashes. A PAM hook (pam_exec, through pam-auth-update) keeps each
+    remote-desktop member's hash current at every password sign-in and
+    password change. The password NLA delivers is still checked with PAM at
+    every connection. Remote Desktop Connection sends no password to a
+    server without NLA, so 0.2's TLS-only sign-in never worked with it.
+  * rdp-file no longer turns NLA off.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 12:00:00 -0500
+
 patrone-remote-desktop (0.2.3) resolute; urgency=medium
 
   * Start Remote Desktop again after an upgrade when it's enabled: debhelper

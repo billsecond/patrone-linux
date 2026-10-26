@@ -49,6 +49,8 @@ case ${1:-} in
         echo "Remote Desktop is on, on port 3389."
         echo "Who may sign in (the remote-desktop group): $(members)"
         echo "To let an account sign in: sudo adduser NAME remote-desktop"
+        echo "Each account can connect after its next password sign-in on this"
+        echo "computer (or password change), which records what NLA checks."
         ;;
     disable)
         need_root
@@ -64,15 +66,13 @@ case ${1:-} in
         echo "Who may sign in (the remote-desktop group): $(members)"
         ;;
     rdp-file)
-        # Patrone checks the password on the server, not through NLA, and
-        # Remote Desktop Connection only asks for it on the client, and sends
-        # it, when told to. Windows reads these files with CRLF line ends.
+        # Plain Remote Desktop Connection works; the file only fills in the
+        # computer and username, full screen, and resizing with the window.
+        # Windows reads these files with CRLF line ends.
         host=${2:-$(hostname).local}
         printf '%s\r\n' \
             "full address:s:$host" \
             "username:s:${SUDO_USER:-$USER}" \
-            "enablecredsspsupport:i:0" \
-            "prompt for credentials on client:i:1" \
             "authentication level:i:2" \
             "screen mode id:i:2" \
             "dynamic resolution:i:1" \

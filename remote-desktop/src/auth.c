@@ -15,24 +15,45 @@
  * (SO_PEERCRED), not from anything sent, and needs no password: GDM checked
  * it.
  *
+ * With --remember, pam_exec runs it after every successful password sign-in
+ * or password change (see the pam-auth-update profile), with the password on
+ * stdin and the account in PAM_USER. For members of the remote-desktop group
+ * it keeps the password's NT hash in the SAM file the proxy checks NLA
+ * against, as Windows keeps one for its local accounts; it drops the entry of
+ * anyone else. So the hash always matches the account's current password.
+ *
  * Copyright 2026 William Daugherty
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 #define _GNU_SOURCE
 #include <errno.h>
+#include <fcntl.h>
+#include <grp.h>
 #include <pwd.h>
 #include <security/pam_appl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
+
+#include <winpr/ntlm.h>
+#include <winpr/ssl.h>
+#include <winpr/string.h>
 
 #ifndef PREPARE_SESSION
 #define PREPARE_SESSION "/usr/libexec/patrone-remote-desktop/prepare-session"
 #endif
+#ifndef SAM_FILE
+#define SAM_FILE "/var/lib/patrone-remote-desktop/sam"
+#endif
+#define SAM_DIRECTORY "/var/lib/patrone-remote-desktop"
 #define SERVICE_NAME "patrone-remote-desktop"
+#define REMOTE_GROUP "remote-desktop"
+#define PROXY_GROUP "patrone-rdp"
 #define FIELD_MAX 512
 #define READ_TIMEOUT_SECONDS 30
 
@@ -184,12 +205,175 @@ static int console(void)
 	return 1;
 }
 
+static int may_use_remote_desktop(const struct passwd* account)
+{
+#ifdef REMEMBER_TEST
+	WINPR_UNUSED(account);
+	return 1;
+#else
+	struct group* group = getgrnam(REMOTE_GROUP);
+	gid_t groups[256];
+	int count = 256;
+
+	if (!group || getgrouplist(account->pw_name, account->pw_gid, groups, &count) < 0)
+		return 0;
+	for (int i = 0; i < count; i++)
+	{
+		if (groups[i] == group->gr_gid)
+			return 1;
+	}
+	return 0;
+#endif
+}
+
+/* The NT hash NLA checks: MD4 of the password in UTF-16, as 32 hex digits */
+static int nt_hash_hex(const char* password, char hex[33])
+{
+	size_t length = 0;
+	BYTE hash[16];
+
+	WCHAR* wide = ConvertUtf8ToWCharAlloc(password, &length);
+	if (!wide)
+		return 0;
+	BOOL ok = NTOWFv1W(wide, (UINT32)(length * sizeof(WCHAR)), hash);
+	explicit_bzero(wide, length * sizeof(WCHAR));
+	free(wide);
+	if (!ok)
+		return 0;
+	for (int i = 0; i < 16; i++)
+		snprintf(hex + 2 * i, 3, "%02X", hash[i]);
+	explicit_bzero(hash, sizeof(hash));
+	return 1;
+}
+
+/* Puts the account's entry ("user:::NTHASH:") in the SAM file in place of any
+ * older one, or with no hash, takes it out. Root owns the file; the proxy's
+ * group may read it. */
+static void update_sam(const char* user, const char* nt_hash)
+{
+	char entry[FIELD_MAX + 48] = "";
+	char line[FIELD_MAX + 64];
+	char temp[] = SAM_FILE ".XXXXXX";
+	size_t user_length = strlen(user);
+	int found = 0, changed = 0;
+
+	if (nt_hash)
+		snprintf(entry, sizeof(entry), "%s:::%s:\n", user, nt_hash);
+
+	mkdir(SAM_DIRECTORY, 0755);
+	int lock = open(SAM_FILE ".lock", O_RDWR | O_CREAT | O_CLOEXEC, 0600);
+	if (lock < 0 || flock(lock, LOCK_EX) != 0)
+		goto out;
+
+	FILE* old = fopen(SAM_FILE, "re");
+	int fd = mkostemp(temp, O_CLOEXEC);
+	FILE* new = fd >= 0 ? fdopen(fd, "w") : NULL;
+	if (!new)
+	{
+		if (fd >= 0)
+		{
+			close(fd);
+			unlink(temp);
+		}
+		if (old)
+			fclose(old);
+		goto out;
+	}
+
+	while (old && fgets(line, sizeof(line), old))
+	{
+		if (strncmp(line, user, user_length) == 0 && line[user_length] == ':')
+		{
+			found = 1;
+			if (!nt_hash || strcmp(line, entry) != 0)
+				changed = 1;
+			continue;
+		}
+		fputs(line, new);
+	}
+	if (old)
+		fclose(old);
+	if (nt_hash)
+	{
+		fputs(entry, new);
+		if (!found)
+			changed = 1;
+	}
+
+	struct group* readers = getgrnam(PROXY_GROUP);
+	if (readers && fchown(fd, 0, readers->gr_gid) == 0)
+		fchmod(fd, 0640);
+	else
+		fchmod(fd, 0600);
+	if (changed && fflush(new) == 0 && fsync(fd) == 0)
+	{
+		fclose(new);
+		if (rename(temp, SAM_FILE) != 0)
+			unlink(temp);
+	}
+	else
+	{
+		fclose(new);
+		unlink(temp);
+	}
+
+out:
+	explicit_bzero(entry, sizeof(entry));
+	explicit_bzero(line, sizeof(line));
+	if (lock >= 0)
+		close(lock);
+}
+
+/* pam_exec's call after a successful password sign-in or change. It never
+ * fails the sign-in. */
+static int remember(void)
+{
+	const char* user = getenv("PAM_USER");
+	char password[FIELD_MAX];
+	char hex[33];
+	size_t length = 0;
+
+#ifndef REMEMBER_TEST
+	/* Not root: the account unlocking its own screen, say. */
+	if (geteuid() != 0)
+		return 0;
+#endif
+	if (!user || !valid_user(user))
+		return 0;
+	struct passwd* account = getpwnam(user);
+	if (!account || account->pw_uid < 1000)
+		return 0;
+	if (!may_use_remote_desktop(account))
+	{
+		update_sam(user, NULL);
+		return 0;
+	}
+
+	while (length + 1 < sizeof(password))
+	{
+		ssize_t got = read(STDIN_FILENO, password + length, sizeof(password) - 1 - length);
+		if (got < 0 && errno == EINTR)
+			continue;
+		if (got <= 0)
+			break;
+		length += (size_t)got;
+	}
+	password[length] = '\0';
+	if (password[0] && winpr_InitializeSSL(WINPR_SSL_INIT_DEFAULT) && nt_hash_hex(password, hex))
+		update_sam(user, hex);
+	explicit_bzero(password, sizeof(password));
+	explicit_bzero(hex, sizeof(hex));
+	return 0;
+}
+
 int main(int argc, char** argv)
 {
 	static Request request;
 
 	if (argc > 1 && strcmp(argv[1], "--console") == 0)
 		return console();
+	if (argc > 1 && strcmp(argv[1], "--remember") == 0)
+		return remember();
 
 	alarm(READ_TIMEOUT_SECONDS);
 	if (read_request(&request) != 0)

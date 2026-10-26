@@ -52,6 +52,43 @@ else
     failures=$((failures + 1))
 fi
 
+# --remember keeps an account's NT hash in the SAM file NLA checks, read back
+# here as FreeRDP's NTLM reads it. A test build: it writes a file in /tmp, and
+# needs neither root nor the remote-desktop group.
+expect() {
+    local test=$1
+    shift
+    if "$@"; then
+        echo "ok   remember: $test"
+    else
+        echo "FAIL remember: $test"
+        failures=$((failures + 1))
+    fi
+}
+remember=$(dirname "$test_plugin")/auth-remember-test
+read_sam=$(dirname "$test_plugin")/test-sam
+sam=/tmp/patrone-rd-test.sam
+me=$(id -un)
+if (($(id -u) >= 1000)); then
+    printf 'someone:::00000000000000000000000000000000:\n' > "$sam"
+    printf '%s' password | PAM_USER=$me "$remember" --remember
+    expect "the NT hash of \"password\"" \
+        "$read_sam" "$sam" "$me" "" 8846F7EAEE8FB117AD06BDD830B7586C
+    expect "found when the client sends a domain" \
+        "$read_sam" "$sam" "$me" SOME-PC 8846F7EAEE8FB117AD06BDD830B7586C
+    printf '%s' Password1 | PAM_USER=$me "$remember" --remember
+    expect "a new password replaces it" \
+        "$read_sam" "$sam" "$me" "" 64F12CDDAA88057E06A81B54E73B949B
+    expect "one entry per account" test "$(grep -c "^$me:" "$sam")" = 1
+    expect "other accounts' entries kept" \
+        "$read_sam" "$sam" someone "" 00000000000000000000000000000000
+    expect "readable by its owner only (no proxy group here)" \
+        test "$(stat -c %a "$sam")" = 600
+    rm -f "$sam" "$sam.lock"
+else
+    echo "skip remember: needs an account with UID 1000 or above"
+fi
+
 # The proxy must be able to read the shipped config (it once wasn't: FreeRDP
 # rejects "#" comments). It stops at the certificates, which don't exist here.
 config_parses() {

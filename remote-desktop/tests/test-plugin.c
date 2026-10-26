@@ -133,6 +133,35 @@ static void accepted(void)
 	expect(plugin_data == NULL, test, "forgotten when the session ends");
 }
 
+/* NLA: the credentials arrive in the settings before the client info, which
+ * then clears them, so the plugin must keep them at logon. */
+static void nla(const char* test, const char* password, int should_sign_in)
+{
+	Connection* c = connection("alice", password);
+	BOOL ok = plugin.ServerPeerLogon(&plugin, &c->pdata, NULL);
+	expect(ok, test, "logon accepted");
+	expect(is_empty(freerdp_settings_get_string(c->front.settings, FreeRDP_Password)), test,
+	       "password taken out of the settings");
+
+	/* The client info that follows NLA, with no password */
+	freerdp_settings_set_string(c->front.settings, FreeRDP_Password, NULL);
+	ok = plugin.ServerFetchTargetAddr(&plugin, &c->pdata, &c->event);
+	if (should_sign_in)
+	{
+		expect(ok, test, "signed in with NLA's credentials");
+		expect(strcmp(freerdp_settings_get_string(c->back.settings, FreeRDP_Password), "0123abcd") == 0,
+		       test, "signs on with the secret");
+	}
+	else
+	{
+		expect(!ok, test, "refused");
+		expect(is_empty(freerdp_settings_get_string(c->back.settings, FreeRDP_Password)), test,
+		       "nothing sent on");
+	}
+	finish(c);
+	expect(plugin_data == NULL, test, "forgotten when the session ends");
+}
+
 int main(int argc, char** argv)
 {
 	proxyPluginsManager manager = { 0 };
@@ -160,6 +189,8 @@ int main(int argc, char** argv)
 		refused("signed in elsewhere", "alice", "busy");
 		refused("garbled answer", "alice", "garbage");
 		accepted();
+		nla("NLA, right password", "right", 1);
+		nla("NLA, password PAM refuses", "wrong", 0);
 	}
 	return failures ? 1 : 0;
 }
