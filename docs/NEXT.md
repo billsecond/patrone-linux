@@ -122,10 +122,12 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.2** (section 8; the user runs 0.2.0),
+- **Install Patrone File Manager 0.2.4** (section 8; the user runs 0.2.0),
   from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.2_amd64.deb`,
-  then close every File Manager window so the new version starts. Try
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.4_amd64.deb`,
+  then close every File Manager window so the new version starts (with
+  "Restore previous folder windows at sign-in" on, the next sign-in should
+  reopen them). Try
   Folder Options twice, the Purpose column with View → Show → System folder
   hints, the full path in the address bar, and Properties → Permissions:
   give a person or group access by name (an account named "base" has to be
@@ -1001,7 +1003,19 @@ Not verified yet: the pkexec path for someone else's items, groups added by
 name (only root, the VM's one other account, was tried), and "Apply to
 everything inside" together with named entries.
 
-Next: the user's verdict on 0.2.2, then the gaps in the README's "Not done
+### 0.2.4 (2026-10-26)
+
+Found on the user's VM by the Terminal session: GNOME 50's session skipped
+the "reopen folders at sign-in" entry ("sets X-GNOME-Autostart-Phase, but
+gnome-session no longer manages session services"). systemd's
+xdg-autostart generator still makes a unit for such an entry, but marks it
+NotShowIn=GNOME, so its ExecCondition fails under `ubuntu:GNOME`. The entry
+no longer sets the phase. Checked by running
+`/usr/lib/systemd/user-generators/systemd-xdg-autostart-generator` on the old
+and new entries: the old unit's condition exits 1 for `ubuntu:GNOME`, the
+new unit has none. Not yet seen across a real sign-in.
+
+Next: the user's verdict on 0.2.4, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 
