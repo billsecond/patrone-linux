@@ -1,5 +1,7 @@
 # Patrone's defaults for GNOME, over Ubuntu's (10_ubuntu-settings). Users'
-# own settings still win.
+# own settings still win. Ubuntu sets some keys again for its own session
+# ([schema:ubuntu]; its session has XDG_CURRENT_DESKTOP=ubuntu:GNOME), and
+# those beat a plain default there, so Patrone sets them in both.
 
 # Ubuntu's dock is off: Patrone will have its own panel.
 [org.gnome.shell]
@@ -15,7 +17,14 @@ picture-uri-dark='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
 picture-options='zoom'
 primary-color='#030303'
 
+[org.gnome.desktop.background:ubuntu]
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-uri-dark='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+
 [org.gnome.desktop.screensaver]
 picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
 picture-options='zoom'
 primary-color='#030303'
+
+[org.gnome.desktop.screensaver:ubuntu]
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
