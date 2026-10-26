@@ -485,6 +485,23 @@ Findings:
   client crashed with it. 0.4.2 runs the client with `DISPLAY` unset and
   `SDL_VIDEO_DRIVER=wayland`; checked that SDL starts on Wayland that way
   (on the background desktop's display, against a closed port).
+- **0.4.2 works end to end (the user, 2026-10-26: "IT WORKS!!!").** One
+  NLA prompt with the Linux password, the same desktop on the VM's screen
+  and over RDP, each taking it over from the other, no desktop lost.
+- **Multiple monitors (the user's question, 2026-10-26).** The desktop's
+  monitors are virtual: GNOME Remote Desktop builds one per monitor in the
+  client's layout (its "Layout manager", up to a maximum count; layouts can
+  change mid-session over the display-control channel). Over RDP with
+  "Use all my monitors" the desktop should get the client's monitors;
+  connecting from a one-monitor client moves every window onto it, and
+  going back to more monitors doesn't put them back (GNOME doesn't remember
+  per-layout positions; Windows does, and Patrone's compositor could). Not
+  yet seen through the proxy. The screen's viewer runs the client
+  full-screen without `/multimon`, and `cage` extends across all outputs by
+  default (`-m extend`), so a multi-monitor PC would likely show one monitor
+  or one wide one. To do: `/multimon` in `libexec/console`, tested with a
+  QEMU VM with several displays inside the dev VM (Hyper-V's console has
+  one).
 - Packaging lessons: debhelper replaces `#DEBHELPER#` even inside comments
   (0.2.1's install failed; `build.sh` now refuses it), and for units
   installed with `--no-start` its generated `preinst` stops them on every
