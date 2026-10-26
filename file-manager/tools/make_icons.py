@@ -8,6 +8,11 @@ soft gradients, rounded corners and a consistent light source. The large
 icons are drawn on a 64-unit grid and scale to every view size; the
 navigation pane gets its own simpler drawings on a 16-unit grid, which stay
 readable at 16 pixels. Nothing here is copied from Microsoft's icons.
+
+The app's own icon, data/org.patrone.FileManager.svg, is drawn by hand and
+isn't made here; the taskbar's Files pin
+(shell/gnome/patrone-taskbar@patrone-linux/icons/pin-files.svg) is a copy of
+it, so a new app icon goes there too.
 """
 
 import math
@@ -361,16 +366,6 @@ def folder_zip():
         '<rect x="30" y="47" width="4" height="3" rx=".8" fill="#D9DEE4"/>'
     )
     return folder(zipper, paper=False)
-
-
-def app_icon():
-    """A folder carrying the slanted bar of the Patrone mark."""
-    defs = gradient("pmark", BLUE_HI, BLUE_DEEP, x2=0.35, y2=1)
-    mark = (
-        '<path d="M27.5 25.5H39L31.5 50.5H20Z" fill="url(#pmark)"/>'
-        f'<path d="M38.5 25.5H47.5L44.4 36H35.4Z" fill="{BLUE_HI}"/>'
-    )
-    return folder(mark, defs)
 
 
 # --- Files (64 grid) ---------------------------------------------------------
@@ -1000,10 +995,7 @@ def main():
     for name, draw in ICONS.items():
         with open(os.path.join(out, name + ".svg"), "w", encoding="utf-8") as file:
             file.write(draw())
-    # The app's own icon also goes into the system icon theme.
-    with open(os.path.join(out, "..", "org.patrone.FileManager.svg"), "w", encoding="utf-8") as file:
-        file.write(app_icon())
-    print(f"wrote {len(ICONS) + 1} icons")
+    print(f"wrote {len(ICONS)} icons")
 
 
 if __name__ == "__main__":

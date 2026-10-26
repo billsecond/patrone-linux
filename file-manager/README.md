@@ -179,7 +179,11 @@ Every icon is original artwork drawn for Patrone in the style of Windows 11's
 Fluent design; nothing is copied from Microsoft. The color icons (folders,
 file types, drives, places) are SVGs in `data/icons`, drawn by
 `tools/make_icons.py`; `tools/preview_icons.py` renders them all on light
-and dark backgrounds for checking. The line glyphs of the command bar and
+and dark backgrounds for checking. The app's own icon,
+`data/org.patrone.FileManager.svg`, is drawn by hand (not by the script),
+and the taskbar's Files pin is a copy of it
+(`shell/gnome/patrone-taskbar@patrone-linux/icons/pin-files.svg`), so a new
+app icon goes there too. The line glyphs of the command bar and
 menus are vector paths in `src/glyph.rs`, drawn in the text color so they
 follow light and dark mode. The text is Patrone's typeface, Noto Sans, at
 Windows' 9 points; file lists draw
