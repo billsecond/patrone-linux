@@ -36,6 +36,8 @@ $vk = @{
 function Get-KeyCode([string]$name) {
     if ($vk.ContainsKey($name)) { return [uint32]$vk[$name] }
     if ($name -match '^[A-Za-z0-9]$') { return [uint32][char]$name.ToUpper() }
+    # F1 to F12 are virtual keys 0x70 to 0x7B
+    if ($name -match '^F([1-9]|1[0-2])$') { return [uint32](0x6F + [int]$Matches[1]) }
     throw "Unknown key '$name'"
 }
 

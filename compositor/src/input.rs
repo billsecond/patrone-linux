@@ -157,7 +157,7 @@ impl Patrone {
         self.move_pointer((x, y).into(), event.time_msec());
     }
 
-    fn move_pointer(&mut self, location: Point<f64, Logical>, time: u32) {
+    pub fn move_pointer(&mut self, location: Point<f64, Logical>, time: u32) {
         let Some(pointer) = self.seat.get_pointer() else {
             return;
         };

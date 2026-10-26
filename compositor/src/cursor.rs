@@ -23,9 +23,11 @@ struct Image {
 /// Cursor images, loaded the first time each one is shown. Follows
 /// `XCURSOR_THEME` and `XCURSOR_SIZE` like other Wayland compositors.
 pub struct Cursors {
+    theme_name: String,
     theme: xcursor::CursorTheme,
     size: u32,
     loaded: HashMap<CursorIcon, Option<Image>>,
+    warned: bool,
 }
 
 impl Cursors {
@@ -37,8 +39,10 @@ impl Cursors {
             .unwrap_or(DEFAULT_SIZE);
         Cursors {
             theme: xcursor::CursorTheme::load(&name),
+            theme_name: name,
             size,
             loaded: HashMap::new(),
+            warned: false,
         }
     }
 
@@ -69,6 +73,13 @@ impl Cursors {
                 .inspect_err(|err| warn!("couldn't draw the cursor: {err}"))
                 .ok();
             }
+        }
+        if !self.warned {
+            warn!(
+                "the cursor theme \"{}\" has no default cursor; set XCURSOR_THEME",
+                self.theme_name
+            );
+            self.warned = true;
         }
         None
     }

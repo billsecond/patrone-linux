@@ -9,6 +9,7 @@
 
 use std::error::Error;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use smithay::backend::allocator::format::FormatSet;
 use smithay::backend::allocator::gbm::{GbmAllocator, GbmBufferFlags, GbmDevice};
@@ -25,12 +26,13 @@ use smithay::backend::session::{Event as SessionEvent, Session};
 use smithay::backend::udev::{all_gpus, primary_gpu};
 use smithay::output::{Mode as OutputMode, Output, PhysicalProperties};
 use smithay::reexports::calloop::LoopHandle;
+use smithay::reexports::calloop::timer::{TimeoutAction, Timer};
 use smithay::reexports::drm::Device as _;
 use smithay::reexports::drm::control::{Device as _, ModeTypeFlags, connector, crtc};
 use smithay::reexports::input::Libinput;
 use smithay::reexports::rustix::fs::OFlags;
 use smithay::utils::DeviceFd;
-use tracing::{error, info, warn};
+use tracing::{debug, error, info, warn};
 
 use crate::cli::Options;
 use crate::cursor::Cursors;
@@ -41,6 +43,9 @@ use crate::{App, Backend as AnyBackend};
 
 /// The formats the screen's buffers may have, best first.
 const COLOR_FORMATS: [Fourcc; 2] = [Fourcc::Xrgb8888, Fourcc::Argb8888];
+/// How long a shown frame waits for its vblank event before the compositor
+/// stops waiting. Displays without vblank, like Hyper-V's, may never send one.
+const VBLANK_TIMEOUT: Duration = Duration::from_millis(50);
 
 type Allocator = GbmAllocator<DrmDeviceFd>;
 type Exporter = GbmFramebufferExporter<DrmDeviceFd>;
@@ -57,6 +62,11 @@ pub struct Backend {
     event_loop: LoopHandle<'static, App>,
     /// A frame waits to be shown; the next is drawn after its vblank.
     frame_pending: bool,
+    /// Counts frames sent to the display, so a vblank timeout knows whether
+    /// its frame is still the one waiting.
+    frames_queued: u64,
+    vblank_seen: bool,
+    vblank_timed_out: bool,
     redraw_after_vblank: bool,
     render_scheduled: bool,
     screenshot: Option<PathBuf>,
@@ -111,6 +121,8 @@ pub fn init(
     let output = new_output(&connector, mode);
     output.create_global::<Patrone>(&state.display_handle);
     state.space.map_output(&output, (0, 0));
+    let (width, height) = mode.size();
+    state.move_pointer((width as f64 / 2.0, height as f64 / 2.0).into(), 0);
     info!(
         "screen {} at {}x{}",
         output.name(),
@@ -153,6 +165,10 @@ pub fn init(
     event_loop.insert_source(drm_events, |event, _, app| match event {
         DrmEvent::VBlank(_) => {
             if let AnyBackend::Udev(backend) = &mut app.backend {
+                if !backend.vblank_seen {
+                    info!("the display sends vblank events");
+                    backend.vblank_seen = true;
+                }
                 backend.on_vblank();
             }
         }
@@ -194,6 +210,9 @@ pub fn init(
         cursors: Cursors::new(),
         event_loop,
         frame_pending: false,
+        frames_queued: 0,
+        vblank_seen: false,
+        vblank_timed_out: false,
         redraw_after_vblank: false,
         render_scheduled: false,
         screenshot: None,
@@ -244,7 +263,7 @@ impl Backend {
             FrameFlags::DEFAULT,
         ) {
             Ok(frame) if !frame.is_empty => match self.screen.queue_frame(()) {
-                Ok(()) => self.frame_pending = true,
+                Ok(()) => self.frame_queued(),
                 Err(err) => warn!("couldn't show a frame: {err}"),
             },
             Ok(_) => {}
@@ -266,8 +285,40 @@ impl Backend {
         state.send_frames(&self.output);
     }
 
+    /// Waits for the frame's vblank, but not forever.
+    fn frame_queued(&mut self) {
+        self.frame_pending = true;
+        self.frames_queued += 1;
+        let frame = self.frames_queued;
+        debug!("frame {frame} sent to the display");
+        let timer = Timer::from_duration(VBLANK_TIMEOUT);
+        let inserted = self.event_loop.insert_source(timer, move |_, _, app| {
+            if let AnyBackend::Udev(backend) = &mut app.backend
+                && backend.frame_pending
+                && backend.frames_queued == frame
+            {
+                if !backend.vblank_timed_out {
+                    warn!(
+                        "no vblank {} ms after frame {frame}; the compositor times frames itself \
+                         when the display doesn't say",
+                        VBLANK_TIMEOUT.as_millis()
+                    );
+                    backend.vblank_timed_out = true;
+                }
+                backend.on_vblank();
+            }
+            TimeoutAction::Drop
+        });
+        if let Err(err) = inserted {
+            error!("couldn't set a vblank timeout: {err}");
+        }
+    }
+
     /// The frame waiting to be shown is on screen now.
     fn on_vblank(&mut self) {
+        if !self.frame_pending {
+            return;
+        }
         self.frame_pending = false;
         if let Err(err) = self.screen.frame_submitted() {
             warn!("frame error: {err}");
