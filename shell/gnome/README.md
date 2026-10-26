@@ -135,7 +135,11 @@ tests/headless.sh shot /tmp/shot.png
 tests/headless.sh stop
 ```
 
-It also fills the recent files list with a few sample files. A helper
+It also fills the recent files list with a few sample files, and leaves out
+two of Ubuntu's extensions that reach outside the test: the desktop icons
+(when they start, they end every desktop-icons process of the account,
+the real desktop's included; early test runs made the real desktop's icons
+restart this way) and the snap permission prompts. A helper
 extension, `tests/unsafe@patrone-linux`, turns on GNOME Shell's unsafe mode
 in that shell, which is what lets the script run JavaScript there and take
 screenshots; never install it on a real desktop.

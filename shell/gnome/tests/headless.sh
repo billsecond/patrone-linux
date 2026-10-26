@@ -122,6 +122,11 @@ start)
         3> "$base/bus" 4> "$base/bus.pid"
     environment
     gsettings set org.gnome.shell enabled-extensions "['$uuid', 'unsafe@patrone-linux']"
+    # Not Ubuntu's desktop icons, which end every desktop-icons process of
+    # the account when they start, the real desktop's included; nor its
+    # snap permission prompts, which deal with the system's snapd
+    gsettings set org.gnome.shell disabled-extensions \
+        "['ubuntu-dock@ubuntu.com', 'ding@rastersoft.com', 'snapd-prompting@canonical.com']"
     gsettings set org.gnome.shell welcome-dialog-last-shown-version '999'
     gsettings set org.gnome.desktop.interface color-scheme "prefer-$style"
 

@@ -669,7 +669,7 @@ options a real session allows, and the RDP and console views.
 To install and load it:
 
 ```
-sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.0_all.deb
+sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.1_all.deb
 ```
 
 then sign out of the desktop and back in (GNOME Shell loads extensions when
@@ -692,6 +692,11 @@ Findings:
 - A throwaway shell's document portal mounts a FUSE folder in its runtime
   folder; `headless.sh stop` ends everything on the test's D-Bus session and
   unmounts it.
+- Ubuntu's desktop icons extension (DING) ends every desktop-icons process
+  of the account when it starts, across sessions: each throwaway shell made
+  the user's real desktop relaunch its icons (seen in the user journal,
+  "Launching DING process" at each test start). `headless.sh` now turns DING
+  and the snap permission prompts off in the throwaway shell.
 
 ## Suggested order
 

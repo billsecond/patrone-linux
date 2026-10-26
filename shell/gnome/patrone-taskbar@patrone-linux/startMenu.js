@@ -85,9 +85,11 @@ function makeRow(icon, name, detail, styleClass = 'patrone-start-row') {
         y_align: Clutter.ActorAlign.CENTER,
         x_expand: true,
     });
-    labels.add_child(makeLabel(name, 'patrone-start-row-name'));
+    // One line each: search providers' descriptions can hold line breaks
+    const oneLine = text => text.replace(/\s+/g, ' ').trim();
+    labels.add_child(makeLabel(oneLine(name), 'patrone-start-row-name'));
     if (detail)
-        labels.add_child(makeLabel(detail, 'patrone-start-row-detail'));
+        labels.add_child(makeLabel(oneLine(detail), 'patrone-start-row-detail'));
     box.add_child(labels);
     return new St.Button({
         style_class: styleClass,
