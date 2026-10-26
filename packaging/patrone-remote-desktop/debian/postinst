@@ -15,10 +15,16 @@ fi
 
 #DEBHELPER#
 
-# On an upgrade, a running proxy picks up the new plugin, once systemd has
-# reloaded the changed unit files. (Don't name debhelper's placeholder in a
-# comment: debhelper replaces it wherever it appears.)
+# On an upgrade, debhelper has stopped Remote Desktop (and was told not to
+# start it, since it's off until enabled), so start it again, with the new
+# plugin, if an administrator turned it on. Once systemd has reloaded the
+# changed unit files. (Don't name debhelper's placeholder in a comment:
+# debhelper replaces it wherever it appears.)
 if [ "$1" = configure ] && [ -n "$2" ] && [ -d /run/systemd/system ]; then
     systemctl --system daemon-reload > /dev/null || true
-    deb-systemd-invoke try-restart patrone-remote-desktop.service || true
+    for unit in patrone-remote-desktop-auth.socket patrone-remote-desktop.service; do
+        if systemctl is-enabled --quiet "$unit"; then
+            deb-systemd-invoke restart "$unit" || true
+        fi
+    done
 fi

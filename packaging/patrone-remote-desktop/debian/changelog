@@ -1,3 +1,10 @@
+patrone-remote-desktop (0.2.3) resolute; urgency=medium
+
+  * Start Remote Desktop again after an upgrade when it's enabled: debhelper
+    stops it at the start of an upgrade, and nothing started it again.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 11:30:00 -0500
+
 patrone-remote-desktop (0.2.2) resolute; urgency=medium
 
   * Fix the install script, which failed with ",: not found": a comment
