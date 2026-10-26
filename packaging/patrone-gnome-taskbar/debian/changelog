@@ -1,3 +1,16 @@
+patrone-gnome-taskbar (0.1.2) resolute; urgency=medium
+
+  * Hide GNOME's screen-sharing indicator in desktops with no screen of
+    their own (Patrone's): there it's always on, for the very Remote Desktop
+    connection the desktop is seen through, and any click on it, a
+    right-click included, cut that connection. It showed as two unexplained
+    icons in the tray.
+  * Style the screen-sharing and screen-recording indicators for the tray
+    (an orange or red pill with white icons), where they still show.
+  * Keep the tray from ever expanding: GNOME's top bar buttons ask to.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 16:00:00 -0500
+
 patrone-gnome-taskbar (0.1.1) resolute; urgency=medium
 
   * Keep each search result on one line: some search providers (App Center's)

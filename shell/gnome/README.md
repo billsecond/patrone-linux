@@ -115,6 +115,13 @@ Right-click an app in the menu to pin it to Start or the taskbar.
   whole, so every indicator, including ones other extensions add later,
   comes along; their menus open upward. Turning the extension off puts it
   all back.
+- **The screen-sharing indicator** is hidden in a desktop with no screen of
+  its own, which is how Patrone's desktops run (see
+  `remote-desktop/README.md`): there the Remote Desktop connection the
+  desktop is seen through counts as screen sharing, so the indicator is
+  always on, and any click on it (GNOME stops the sharing on a press of
+  any button) cuts the connection. The user hit this by right-clicking
+  near it. Elsewhere it shows, as a small orange pill.
 - **The Super key**: GNOME's own handler for it (it opens the Activities
   overview) is blocked, and the taskbar's opens the Start menu. The overview
   is still there (Super+A for the app grid).

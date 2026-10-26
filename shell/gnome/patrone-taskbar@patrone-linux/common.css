@@ -61,6 +61,43 @@
   spacing: 2px;
 }
 
+/* Screen recording and sharing (outside GNOME's top bar, the theme's style
+ * for them doesn't apply): a small red or orange pill, as in the top bar */
+.patrone-taskbar-tray .panel-button.screen-recording-indicator,
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator {
+  color: #ffffff;
+  -natural-hpadding: 8px;
+}
+
+/* (.panel-button too, to beat the tray buttons' hover colors) */
+.patrone-taskbar-tray .panel-button.screen-recording-indicator {
+  background-color: #c01c28;
+}
+
+.patrone-taskbar-tray .panel-button.screen-recording-indicator:hover,
+.patrone-taskbar-tray .panel-button.screen-recording-indicator:focus {
+  background-color: #a51822;
+}
+
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator {
+  background-color: #c64600;
+}
+
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator:hover,
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator:focus {
+  background-color: #a83b00;
+}
+
+.patrone-taskbar-tray .screen-recording-indicator StBoxLayout,
+.patrone-taskbar-tray .screen-sharing-indicator StBoxLayout {
+  spacing: 6px;
+}
+
+.patrone-taskbar-tray .screen-recording-indicator StIcon,
+.patrone-taskbar-tray .screen-sharing-indicator StIcon {
+  icon-size: 14px;
+}
+
 .patrone-taskbar-tray .clock-display-box {
   spacing: 4px;
 }

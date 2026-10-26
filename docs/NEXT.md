@@ -84,11 +84,12 @@ Waiting on the user:
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
-- **Log out of the desktop to load the taskbar** (section 7). The user
-  installed `patrone-gnome-taskbar` 0.1.1 (2026-10-26) and signed back in,
-  but the desktop kept running (its GNOME Shell had started at 11:19), so
-  it still had the top bar: it has to be ended with Log Out from inside it.
-  Then try the Super key, typing in Start, the jump lists and the tray.
+- **Install `patrone-gnome-taskbar` 0.1.2, then Start → power → Sign out
+  and sign in again** (section 7). 0.1.1 ran in the user's desktop (after
+  they logged out from inside it) and showed GNOME's screen-sharing
+  indicator, which cut their Remote Desktop connection when clicked; 0.1.2
+  hides it. Then try the Super key, typing in Start, the jump lists and
+  the tray.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -672,7 +673,7 @@ options a real session allows, and the RDP and console views.
 To install and load it:
 
 ```
-sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.1_all.deb
+sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.2_all.deb
 ```
 
 then **log out from inside the desktop** (the power menu, top right, → Log
@@ -705,6 +706,24 @@ Findings:
   the user's real desktop relaunch its icons (seen in the user journal,
   "Launching DING process" at each test start). `headless.sh` now turns DING
   and the snap permission prompts off in the throwaway shell.
+- **0.1.1 in the user's desktop** (2026-10-26, over Remote Desktop): "some
+  strange icons in the middle", and a right-click on what looked like empty
+  space "logged me out". The desktop wasn't logged out (its shell kept
+  running); the Remote Desktop connection was cut three times, each logged
+  by GNOME Remote Desktop as "Disconnected by EIS" with
+  `ERRINFO_RPC_INITIATED_DISCONNECT`. The icons were GNOME's screen-sharing
+  indicator (`ui/status/remoteAccess.js`): a shared-screen icon and a stop
+  square, unstyled outside the top bar (the theme styles it under
+  `#panel`), about 100 pixels wide, and stopping the sharing on a press of
+  any button. In a desktop with no seat (mutter: "No seat assigned, running
+  headlessly") the Remote Desktop connection is itself a screen-sharing
+  handle, so the indicator is always on. A throwaway shell has no client,
+  so it never showed there. 0.1.2 hides it when
+  `global.backend.is_headless()`. A right-click on the bar's real empty
+  space opened the taskbar's own menu (Task Manager started at 13:09).
+- GNOME's top bar buttons (`PanelMenu.ButtonBox`) set `x_expand`, but
+  `St.Bin` containers don't pass it up, so the tray didn't stretch; 0.1.2
+  sets `x_expand = false` on the moved boxes anyway.
 
 ## Suggested order
 

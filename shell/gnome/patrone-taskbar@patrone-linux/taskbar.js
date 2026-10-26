@@ -571,10 +571,24 @@ export class Taskbar {
                 continue;
             this._movedBoxes.push({box, index: panel.get_children().indexOf(box)});
             panel.remove_child(box);
+            // GNOME's top bar buttons ask to expand, which the top bar
+            // ignores; here it would stretch the tray across the bar
+            box.x_expand = false;
             this._tray.add_child(box);
             box.connectObject('child-added', () => this._updateTrayMenus(), this);
         }
         this._updateTrayMenus();
+
+        // In a desktop with no screen of its own (Patrone's, which every
+        // screen and Remote Desktop client shows through GNOME Remote
+        // Desktop), the screen-sharing indicator is always on, for that very
+        // connection, and clicking it (any button) cuts the connection
+        this._hiddenIndicators = [];
+        const sharing = panel.statusArea.screenSharing?.container;
+        if (sharing && global.backend.is_headless()) {
+            sharing.hide();
+            this._hiddenIndicators.push(sharing);
+        }
 
         const dateMenu = panel.statusArea.dateMenu;
         this._clockDisplay = dateMenu?._clockDisplay ?? null;
@@ -590,6 +604,10 @@ export class Taskbar {
 
     _returnTray() {
         Main.messageTray.bannerAlignment = this._bannerAlignment;
+
+        for (const actor of this._hiddenIndicators)
+            actor.show();
+        this._hiddenIndicators = [];
 
         this._clock?.destroy();
         this._clock = null;
