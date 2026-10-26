@@ -65,7 +65,7 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
 - **Right-click menus in Windows 11's form:** the icon row (Cut, Copy,
   Rename, Share, Delete), then Open, Open with, Open in new tab and window,
   Pin to Quick access, Add to Favorites, Compress to (ZIP, TAR), Extract
-  All, Copy as path, Set as desktop background, Properties, Open in
+  All… and Extract here, Copy as path, Set as desktop background, Properties, Open in
   Terminal, and "Show more options" for the full classic menu with Send to.
   The background menu has View, Sort by, Group by, Undo, Paste, Paste
   shortcut, New and Properties.
@@ -76,6 +76,13 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   drives, network shares and the Recycle Bin: copy, move, delete to the
   Recycle Bin or for good, restore, rename in place (F2), new folder, new
   file, shortcuts (symbolic links), compress to ZIP or TAR and extract.
+  ZIP and TAR extract here; every other archive Patrone Unpack opens (7z,
+  rar, tar.xz, tar.zst, cpio, cab, single files such as `notes.txt.gz`)
+  goes to it when it's installed: Extract All… runs
+  `patrone-unpack --extract-to FOLDER` (File Manager makes the folder and
+  shows it while the files arrive), and Extract here runs
+  `patrone-unpack --extract-here`, which keeps one folder or file as it is
+  and puts anything else in a new folder named after the archive.
   Copies into the same folder become "name - Copy". Folders merge.
   Conflicts are asked about once for the whole operation (Replace, Skip, or
   "Let me decide for each file", where keeping both adds a number). Errors

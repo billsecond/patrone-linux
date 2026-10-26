@@ -267,7 +267,7 @@ entry.address-entry {
 
 .search-field {
   margin-left: 8px;
-  min-width: 260px;
+  min-width: 240px;
   background-color: var(--field);
   border: 1px solid var(--field-border);
   border-radius: 6px;

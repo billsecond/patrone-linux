@@ -1,3 +1,14 @@
+patrone-file-manager (0.2.7) resolute; urgency=medium
+
+  * Extract All... and a new Extract here work for every archive Patrone
+    Unpack opens (7z, rar, tar.xz, tar.zst, cpio, cab, notes.txt.gz...),
+    through `patrone-unpack --extract-to` and `--extract-here`, when Unpack
+    is installed. ZIP and TAR still extract here, with or without it.
+  * The search box has a fixed width, as on Windows, leaving the rest of
+    the row to the address bar.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:30:00 -0500
+
 patrone-file-manager (0.2.6) resolute; urgency=medium
 
   * The title bars follow the title bar style chosen in Patrone Settings,

@@ -224,16 +224,79 @@ pub fn can_extract(name: &str) -> bool {
         .any(|ext| name.ends_with(ext))
 }
 
-/// The folder name "Extract All" suggests: the archive's name without its
-/// extension.
-pub fn folder_name_for(name: &str) -> String {
+/// What Patrone Unpack opens (unpack/README.md): archives, and single
+/// compressed files such as `notes.txt.gz`. Longest endings first, so
+/// `.tar.gz` is found before `.gz`.
+const UNPACK_TYPES: &[&str] = &[
+    ".tar.gz",
+    ".tar.xz",
+    ".tar.bz2",
+    ".tar.zst",
+    ".tar.lzma",
+    ".tar.lz",
+    ".tgz",
+    ".txz",
+    ".tbz2",
+    ".tbz",
+    ".tzst",
+    ".tlz",
+    ".zip",
+    ".tar",
+    ".7z",
+    ".rar",
+    ".cpio",
+    ".cab",
+    ".gz",
+    ".xz",
+    ".bz2",
+    ".zst",
+    ".lzma",
+    ".lz",
+];
+
+fn archive_ending(name: &str) -> Option<&'static str> {
     let lower = name.to_lowercase();
-    for ext in [".tar.gz", ".tgz", ".zip", ".tar"] {
-        if lower.ends_with(ext) {
-            return name[..name.len() - ext.len()].to_owned();
+    UNPACK_TYPES
+        .iter()
+        .copied()
+        .find(|ending| lower.ends_with(ending))
+}
+
+/// Patrone Unpack, when it's installed.
+pub fn unpack() -> Option<PathBuf> {
+    gtk::glib::find_program_in_path("patrone-unpack")
+}
+
+/// Whether Extract All… and Extract here can take this file: ZIP and TAR
+/// here, any other archive through Patrone Unpack when it's installed.
+pub fn extractable(name: &str) -> bool {
+    can_extract(name) || (archive_ending(name).is_some() && unpack().is_some())
+}
+
+/// Starts Patrone Unpack with these arguments (it shows its own progress
+/// and questions) and reaps it when it exits.
+pub fn run_unpack<S: AsRef<std::ffi::OsStr>>(arguments: &[S]) -> bool {
+    let Some(unpack) = unpack() else {
+        return false;
+    };
+    match std::process::Command::new(unpack).args(arguments).spawn() {
+        Ok(mut child) => {
+            std::thread::spawn(move || {
+                let _ = child.wait();
+            });
+            true
         }
+        Err(_) => false,
     }
-    name.to_owned()
+}
+
+/// The folder name "Extract All" suggests: the archive's name without its
+/// extension (`notes.txt` for `notes.txt.gz`).
+pub fn folder_name_for(name: &str) -> String {
+    match archive_ending(name) {
+        Some(ending) if name.len() > ending.len() => name[..name.len() - ending.len()].to_owned(),
+        _ => name.to_owned(),
+    }
 }
 
 /// Unpacks `archive` into `target` (created if needed). Entries that would
@@ -394,7 +457,12 @@ mod tests {
     fn suggested_folder_names_drop_the_extension() {
         assert_eq!(folder_name_for("Photos.zip"), "Photos");
         assert_eq!(folder_name_for("src.tar.gz"), "src");
+        assert_eq!(folder_name_for("backup.tar.zst"), "backup");
+        assert_eq!(folder_name_for("Data.7z"), "Data");
+        assert_eq!(folder_name_for("notes.txt.gz"), "notes.txt");
         assert!(can_extract("A.TGZ"));
         assert!(!can_extract("a.7z"));
+        assert_eq!(archive_ending("a.RAR"), Some(".rar"));
+        assert_eq!(archive_ending("readme.txt"), None);
     }
 }

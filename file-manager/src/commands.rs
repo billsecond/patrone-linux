@@ -688,6 +688,43 @@ pub fn extract(window: &Window) {
             return;
         }
         let target = gio::File::for_commandline_arg(entry.text().as_str());
+        if !archive::can_extract(&name) {
+            // Any other archive goes to Patrone Unpack, which shows its own
+            // progress and asks about files already there. The folder is
+            // made first, so it can be shown while the files arrive.
+            let made = target
+                .make_directory_with_parents(gio::Cancellable::NONE)
+                .is_ok();
+            let (Some(archive_path), Some(target_path)) = (archive_file.path(), target.path())
+            else {
+                return;
+            };
+            let arguments = [
+                std::ffi::OsString::from("--extract-to"),
+                target_path.into_os_string(),
+                archive_path.into_os_string(),
+            ];
+            if !archive::run_unpack(&arguments) {
+                dialogs::error(
+                    parent(&window).as_ref(),
+                    "Extract Compressed (Zipped) Folders",
+                    "Patrone Unpack couldn't be started.",
+                    "",
+                );
+                return;
+            }
+            if made {
+                crate::undo::record(crate::undo::Action::Create {
+                    file: target.clone(),
+                    folder: true,
+                    template: None,
+                });
+            }
+            if show.is_active() {
+                window.navigate(Location::Folder(target));
+            }
+            return;
+        }
         if ops::extract(parent(&window), archive_file, target.clone()).await {
             crate::undo::record(crate::undo::Action::Create {
                 file: target.clone(),
@@ -696,6 +733,60 @@ pub fn extract(window: &Window) {
             });
             if show.is_active() {
                 window.navigate(Location::Folder(target));
+            }
+        }
+    });
+}
+
+/// "Extract here": each selected archive next to itself, without asking.
+/// Patrone Unpack does it when it's installed (one folder or file comes
+/// out as it is, anything else in a new folder named after the archive);
+/// otherwise ZIP and TAR go into a new folder named after the archive.
+pub fn extract_here(window: &Window) {
+    let files: Vec<gio::File> = window
+        .tab()
+        .selected_infos()
+        .iter()
+        .filter(|info| archive::extractable(&info.name().to_string_lossy()))
+        .filter_map(util::file_of)
+        .collect();
+    if files.is_empty() {
+        return;
+    }
+    if archive::unpack().is_some() {
+        let mut arguments = vec![std::ffi::OsString::from("--extract-here")];
+        arguments.extend(files.iter().filter_map(|file| file.path()).map(Into::into));
+        if !archive::run_unpack(&arguments) {
+            dialogs::error(
+                parent(window).as_ref(),
+                "Extract here",
+                "Patrone Unpack couldn't be started.",
+                "",
+            );
+        }
+        return;
+    }
+    let window = window.clone();
+    glib::spawn_future_local(async move {
+        for file in files {
+            let (Some(folder), Some(name)) = (file.parent(), file.basename()) else {
+                continue;
+            };
+            let base = archive::folder_name_for(&name.to_string_lossy());
+            // A name already taken gets " (2)", " (3)", as on Windows.
+            let target = (1..)
+                .map(|n| match n {
+                    1 => folder.child(&base),
+                    n => folder.child(format!("{base} ({n})")),
+                })
+                .find(|candidate| !candidate.query_exists(gio::Cancellable::NONE))
+                .expect("a free name");
+            if ops::extract(parent(&window), file, target.clone()).await {
+                crate::undo::record(crate::undo::Action::Create {
+                    file: target,
+                    folder: true,
+                    template: None,
+                });
             }
         }
     });

@@ -240,14 +240,18 @@ impl AddressBar {
         field.add_css_class("address-field");
         widget.append(&field);
 
+        // A fixed width, as on Windows, so the path gets the rest of the row.
         let search = gtk::Entry::builder()
             .placeholder_text("Search")
             .hexpand(true)
+            .width_chars(1)
+            .max_width_chars(1)
             .build();
         search.add_css_class("search-entry");
         let search_icon = Glyph::new("search");
         search_icon.add_css_class("search-glyph");
         let search_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        search_box.set_hexpand(false);
         search_box.add_css_class("search-field");
         search_box.append(&search);
         search_box.append(&search_icon);

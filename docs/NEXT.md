@@ -148,12 +148,14 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.6** (section 8; the user runs 0.2.5),
+- **Install Patrone File Manager 0.2.7** (section 8; the user runs 0.2.5),
   from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.6_amd64.deb`,
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.7_amd64.deb`,
   then close every File Manager window so the new version starts. Its title
-  bars should now follow the title bar style chosen in Patrone Settings
-  (Studio: raised grey when active, flat when not), like Terminal's.
+  bars should follow the title bar style chosen in Patrone Settings (Studio:
+  raised grey when active, flat when not), like Terminal's; the search box
+  is narrower and fixed; and with Patrone Unpack installed, any archive gets
+  Extract All… and Extract here.
 - **Install Patrone Unpack** (section 13), from SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.0_amd64.deb
   ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
@@ -1065,7 +1067,30 @@ Patrone Settings sets it: Studio with Wide buttons in dark mode, two windows
 (glossy blue when active, pale blue when not, the selected tab readable;
 a Properties dialog's title bar royal blue with a bold white title).
 
-Next: the user's verdict on 0.2.6, then the gaps in the README's "Not done
+### 0.2.7 (2026-10-26)
+
+- At the user's go-ahead on the Unpack session's offer: Extract All… and a
+  new Extract here cover every archive Patrone Unpack opens, through
+  `patrone-unpack --extract-to` / `--extract-here` when it's on PATH; ZIP
+  and TAR keep File Manager's own extraction (Extract here without Unpack
+  makes a folder named after the archive, " (2)" when taken). Unpack is a
+  single-instance app whose process can return before the work is done, so
+  for Extract All… File Manager makes the destination folder first and
+  opens it while the files arrive.
+- "Make the searchbox smaller and a fixed size, allowing more space for the
+  folder path": 240 pixels, not stretching.
+
+Verified with real clicks in the headless GNOME Shell, with Unpack 0.1.0's
+files unpacked to a scratch folder on PATH (not installed): a `.tar.zst`'s
+right-click menu offered Extract All… and Extract here, and Extract here
+left its one folder, `stuff`, next to it; Extract all from the command bar
+on a `.tar.xz` suggested `arc-xz`, extracted `stuff` into it and showed the
+folder. Screenshots of the address row at 820 pixels and maximized (the
+whole path from This PC, the search box 240 pixels). Not checked: rar and
+7z (no tool on the VM to make them), single compressed files, and Extract
+here on several archives at once.
+
+Next: the user's verdict on 0.2.7, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 

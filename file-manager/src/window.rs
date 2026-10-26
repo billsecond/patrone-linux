@@ -1043,7 +1043,7 @@ impl Window {
         } else if let [info] = selected {
             let name = info.name().to_string_lossy().into_owned();
             let mime = util::content_type(info);
-            if crate::archive::can_extract(&name) {
+            if crate::archive::extractable(&name) {
                 buttons.push(Contextual {
                     glyph: "extract",
                     label: "Extract all",
@@ -1150,11 +1150,12 @@ impl Window {
         );
         set("compress-zip", files_selected && !in_trash);
         set("compress-tar", files_selected && !in_trash);
-        set(
-            "extract",
-            selected.len() == 1
-                && crate::archive::can_extract(&selected[0].name().to_string_lossy()),
-        );
+        let archives = has_selection
+            && selected
+                .iter()
+                .all(|info| crate::archive::extractable(&info.name().to_string_lossy()));
+        set("extract", selected.len() == 1 && archives);
+        set("extract-here", archives && writable_folder);
         set("restore-selected", in_trash && has_selection);
         set("restore-all", in_trash);
         set("empty-trash", true);
@@ -1356,6 +1357,7 @@ impl Window {
             commands::compress(w, crate::archive::Format::TarGz)
         });
         simple("extract", commands::extract);
+        simple("extract-here", commands::extract_here);
         simple("create-shortcut", commands::create_shortcut);
         simple("new-folder", commands::new_folder);
         simple("empty-trash", |w| {

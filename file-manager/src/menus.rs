@@ -213,13 +213,22 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
         );
     }
     if !drives {
-        if single && archive::can_extract(&selected[0].name().to_string_lossy()) {
+        if single && archive::extractable(&selected[0].name().to_string_lossy()) {
             menu.item(
                 Icon::Glyph("extract"),
                 "Extract All…",
                 None,
                 true,
                 act(window, "extract"),
+            );
+        }
+        if enabled(window, "extract-here") {
+            menu.item(
+                Icon::Glyph("extract"),
+                "Extract here",
+                None,
+                true,
+                act(window, "extract-here"),
             );
         }
         let w = window.clone();
