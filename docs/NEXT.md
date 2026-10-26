@@ -391,6 +391,29 @@ Findings:
   the user was signed in on the screen with Ubuntu's session (GDM
   preselects the last one), which would have been "busy"; they pick Patrone
   Desktop from the gear menu.
+- **Third try (0.2.3, 2026-10-26): the RDP file doesn't help.** The proxy
+  logged plain `mstsc` twice as "no username or password" and
+  `PatroneDev.rdp` as "the username "wdaugherty" but no password": with
+  `enablecredsspsupport:i:0` Remote Desktop Connection sends the file's
+  username and leaves the password to a sign-in screen on the server. It
+  doesn't send passwords to a server without NLA. Two ways forward, put to
+  the user: (A) a Patrone sign-in screen served over RDP to clients that
+  send nothing (what Windows does without NLA; nothing stored; the prompt
+  is in the RDP window; needs a login screen plus a hand-off to the
+  desktop, perhaps RDP server redirection), or (B) NLA as Windows does for
+  local accounts: FreeRDP's proxy checks NLA against a SAM file of NT hashes
+  (`[Server] SamFile=`), which a PAM hook keeps in step with the Linux
+  password (on every password change and password sign-in), and PAM still
+  checks the real password from CredSSP's TSCredentials on every
+  connection. B stores a hash, which the user rejected for GNOME's own copy;
+  it can't go stale, though. GNOME's Remote Login as the sign-in screen:
+  undocumented when the user already has a desktop (one report says it
+  kills the other session).
+- Packaging lessons: debhelper replaces `#DEBHELPER#` even inside comments
+  (0.2.1's install failed; `build.sh` now refuses it), and for units
+  installed with `--no-start` its generated `preinst` stops them on every
+  upgrade without starting them again (0.2.3's `postinst` restarts enabled
+  ones).
 - The earlier per-user attempt (a `headless` mode in
   `setup-remote-desktop.sh` with the Linux password as GNOME's credentials,
   and `rdp-no-lock.sh`) was removed: it stored the password, which the user
