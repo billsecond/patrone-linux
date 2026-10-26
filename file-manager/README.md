@@ -8,6 +8,10 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
 
 ## What it does
 
+- **Window buttons:** GTK's own minimize, maximize and close, as in every
+  other app, so they go in the corner the account chose (Settings' Patrone
+  page) and look the way its title bar button style says. (They were drawn
+  here, Windows 11's, and so ignored both.)
 - **Window:** tabs in the title bar (new, close, middle-click to close, a
   right-click menu with Duplicate, Move to new window, Move to window ▸,
   Close other tabs and Close tabs to the right); Back, Forward, Up and

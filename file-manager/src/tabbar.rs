@@ -1,6 +1,9 @@
 //! The title bar: the tabs, a button for a new tab, and the window's
 //! minimize, maximize and close buttons, as in Windows 11's File Explorer.
-//! Dragging the empty space moves the window; double-clicking maximizes.
+//! Those are GTK's own window controls, so like every other app's they go
+//! in the corner the account chose (GNOME's button-layout) and look the way
+//! Patrone Settings' title bar button style says. Dragging the empty space
+//! moves the window; double-clicking maximizes.
 //!
 //! Dragging a tab:
 //! - when it's the window's only tab, moves the window, like the title bar;
@@ -20,6 +23,7 @@ use gtk::{gdk, gio, glib, graphene, prelude::*};
 
 use crate::glyph::{self, Glyph};
 use crate::icons;
+use crate::util;
 
 pub enum TabBarEvent {
     Select(usize),
@@ -76,7 +80,6 @@ pub struct TabBar {
     pub widget: gtk::WindowHandle,
     tabs: gtk::Box,
     items: RefCell<Vec<Item>>,
-    maximize: gtk::Button,
     drag_mode: Cell<DragMode>,
     hover_timer: RefCell<Option<glib::SourceId>>,
     events: crate::util::Handler<TabBarEvent>,
@@ -84,7 +87,7 @@ pub struct TabBar {
 }
 
 impl TabBar {
-    pub fn new(window: &gtk::ApplicationWindow) -> Rc<TabBar> {
+    pub fn new() -> Rc<TabBar> {
         let tabs = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         tabs.add_css_class("tabs");
         // Tabs keep their width until the strip is full, then shrink; past
@@ -101,28 +104,22 @@ impl TabBar {
         new_tab.set_valign(gtk::Align::Center);
         let spacer = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         spacer.set_hexpand(true);
-        let minimize = glyph::button("minimize", "Minimize");
-        let maximize = glyph::button("maximize", "Maximize");
-        let close = glyph::button("close", "Close");
-        for button in [&minimize, &maximize] {
-            button.add_css_class("window-control");
-        }
-        close.add_css_class("window-close");
         let bar = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         bar.add_css_class("tab-bar");
+        // The window's buttons before the tabs or after the spacer, wherever
+        // the account's button-layout puts them (each set is empty, and
+        // hidden, when it puts none there)
+        bar.append(&util::window_controls(gtk::PackType::Start));
         bar.append(&scroller);
         bar.append(&new_tab);
         bar.append(&spacer);
-        bar.append(&minimize);
-        bar.append(&maximize);
-        bar.append(&close);
+        bar.append(&util::window_controls(gtk::PackType::End));
         let widget = gtk::WindowHandle::builder().child(&bar).build();
 
         let tab_bar = Rc::new(TabBar {
             widget,
             tabs,
             items: RefCell::default(),
-            maximize: maximize.clone(),
             drag_mode: Cell::new(DragMode::Done),
             hover_timer: RefCell::default(),
             events: RefCell::default(),
@@ -133,38 +130,6 @@ impl TabBar {
         new_tab.connect_clicked(move |_| {
             if let Some(bar) = weak.upgrade() {
                 bar.emit(TabBarEvent::New);
-            }
-        });
-        {
-            let window = window.clone();
-            minimize.connect_clicked(move |_| window.minimize());
-        }
-        {
-            let window = window.clone();
-            maximize.connect_clicked(move |_| {
-                if window.is_maximized() {
-                    window.unmaximize();
-                } else {
-                    window.maximize();
-                }
-            });
-        }
-        {
-            let window = window.clone();
-            close.connect_clicked(move |_| window.close());
-        }
-        let weak = Rc::downgrade(&tab_bar);
-        window.connect_maximized_notify(move |window| {
-            if let Some(bar) = weak.upgrade() {
-                let maximized = window.is_maximized();
-                if let Some(glyph) = bar.maximize.child().and_downcast::<Glyph>() {
-                    glyph.set_name(if maximized { "unmaximize" } else { "maximize" });
-                }
-                bar.maximize.set_tooltip_text(Some(if maximized {
-                    "Restore Down"
-                } else {
-                    "Maximize"
-                }));
             }
         });
         tab_bar

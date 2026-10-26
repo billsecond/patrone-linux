@@ -1,7 +1,7 @@
 /* Patrone's Classic theme for GTK 4 apps (Patrone Settings imports it into
  * the account's ~/.config/gtk-4.0/gtk.css): plain and square. Solid slate
- * title bars with white titles, flat square title-bar buttons, and close
- * turning red under the pointer. */
+ * title bars with white titles, and square windows. The title bar buttons
+ * are a setting of their own (data/titlebuttons). */
 
 headerbar {
   background-color: #3d4b63;
@@ -28,32 +28,6 @@ headerbar button:not(.suggested-action):not(.destructive-action) {
 
 headerbar button:not(.suggested-action):not(.destructive-action):hover {
   background-color: rgba(255, 255, 255, 0.14);
-}
-
-windowcontrols > button {
-  min-width: 30px;
-  min-height: 24px;
-  margin: 0;
-  padding: 0;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-}
-
-windowcontrols > button > image {
-  padding: 4px;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-  color: #ffffff;
-}
-
-windowcontrols > button:hover {
-  background-color: rgba(255, 255, 255, 0.16);
-}
-
-windowcontrols > button.close:hover {
-  background-color: #c42b1c;
 }
 
 /* Square windows */

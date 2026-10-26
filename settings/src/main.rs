@@ -1,12 +1,16 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
-//! Title bar buttons (where minimize, maximize and close go) and Theme.
-//! Patrone's build of GNOME Settings has the same settings on its Patrone
-//! page, and uses this program to apply a theme and for its pictures.
+//! Title bar buttons (where minimize, maximize and close go, and their
+//! style) and Theme. Patrone's build of GNOME Settings has the same
+//! settings on its Patrone page, and uses this program to apply a theme or
+//! button style and for its pictures.
 //!
 //!   patrone-settings [--page taskbar|buttons|theme]
-//!   patrone-settings --set-theme THEME      apply a theme, and quit
-//!   patrone-settings --export-previews DIR  save the choices' pictures as PNGs
+//!   patrone-settings --set-theme THEME          apply a theme, and quit
+//!   patrone-settings --set-title-buttons STYLE  apply a button style, and quit
+//!   patrone-settings --apply                    write the account's GTK styles
+//!                                               for the settings as they are
+//!   patrone-settings --export-previews DIR      save the choices' pictures as PNGs
 
 mod preview;
 mod theme;
@@ -84,6 +88,12 @@ fn main() -> glib::ExitCode {
     if let Some(name) = option_value(&arguments, "--set-theme") {
         return set_theme(&name);
     }
+    if let Some(style) = option_value(&arguments, "--set-title-buttons") {
+        return set_title_buttons(&style);
+    }
+    if arguments.iter().skip(1).any(|argument| argument == "--apply") {
+        return apply_current();
+    }
     if let Some(dir) = option_value(&arguments, "--export-previews") {
         return export_previews(Path::new(&dir));
     }
@@ -140,6 +150,34 @@ fn set_theme(name: &str) -> glib::ExitCode {
     glib::ExitCode::SUCCESS
 }
 
+/// --set-title-buttons: applies a title bar button style without a window.
+fn set_title_buttons(style: &str) -> glib::ExitCode {
+    if !theme::BUTTON_STYLES.iter().any(|&(value, _, _)| value == style) {
+        eprintln!("patrone-settings: no title bar button style called {style}");
+        return glib::ExitCode::FAILURE;
+    }
+    let Some(desktop) = settings(DESKTOP_SCHEMA) else {
+        eprintln!("patrone-settings: the {DESKTOP_SCHEMA} settings schema is missing");
+        return glib::ExitCode::FAILURE;
+    };
+    theme::apply_buttons(style, &desktop);
+    gio::Settings::sync();
+    glib::ExitCode::SUCCESS
+}
+
+/// --apply: writes the account's GTK styles for the theme and button style
+/// as they're set. It runs at every sign-in (an autostart entry), so every
+/// account gets the same title bar buttons in every app, and so style
+/// sheets a new version of Patrone Settings brings take over from the old.
+fn apply_current() -> glib::ExitCode {
+    let Some(desktop) = settings(DESKTOP_SCHEMA) else {
+        eprintln!("patrone-settings: the {DESKTOP_SCHEMA} settings schema is missing");
+        return glib::ExitCode::FAILURE;
+    };
+    theme::write_styles(&desktop);
+    glib::ExitCode::SUCCESS
+}
+
 /// --export-previews: every choice's picture as a PNG in `dir`, at twice
 /// the size the cards draw them (GNOME Settings' Patrone page shows these).
 fn export_previews(dir: &Path) -> glib::ExitCode {
@@ -152,6 +190,9 @@ fn export_previews(dir: &Path) -> glib::ExitCode {
     }
     for (value, layout) in [("right", Layout::Right), ("left", Layout::Left)] {
         pictures.push((format!("buttons-{value}"), drawing(move |cr, w, h| preview::buttons(cr, w, h, layout))));
+    }
+    for &(value, _, _) in &theme::BUTTON_STYLES {
+        pictures.push((format!("titlebuttons-{value}"), drawing(move |cr, w, h| preview::button_style(cr, w, h, value))));
     }
     for &(value, _, _) in &theme::THEMES {
         pictures.push((format!("theme-{value}"), drawing(move |cr, w, h| preview::theme(cr, w, h, value))));
@@ -521,8 +562,9 @@ fn side_of(layout: &str) -> &'static str {
 fn buttons_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Title bar buttons",
-        "Which corner of windows' title bars minimize, maximize and close go in. \
-         It changes at once, and stays as you set it whatever the theme.",
+        "Which corner of windows' title bars minimize, maximize and close go in, \
+         and how they look. The corner changes at once, and stays as you set it \
+         whatever the theme.",
     );
     let Some(window_manager) = settings(WINDOW_MANAGER_SCHEMA) else {
         note(&content, "GNOME's window settings aren't installed.");
@@ -555,6 +597,32 @@ fn buttons_page() -> gtk::ScrolledWindow {
     window_manager.connect_changed(Some("button-layout"), move |settings, key| {
         refresh(side_of(&settings.string(key)));
     });
+
+    section_title(&content, "Style");
+    let Some(desktop) = settings(DESKTOP_SCHEMA) else {
+        note(&content, "Patrone Settings isn't installed properly: its settings schema is missing.");
+        return scrolled;
+    };
+    note(
+        &content,
+        "The same in every app. Apps that are open pick up a new style when they're next opened.",
+    );
+    let items = theme::BUTTON_STYLES
+        .iter()
+        .map(|&(value, title, detail)| Choice {
+            value,
+            title,
+            detail,
+            draw: drawing(move |cr, w, h| preview::button_style(cr, w, h, value)),
+        })
+        .collect();
+    let target = desktop.clone();
+    let refresh = choices(&content, items, &desktop.string("title-buttons"), move |value| {
+        if target.string("title-buttons") != value {
+            theme::apply_buttons(value, &target);
+        }
+    });
+    bind(&desktop, "title-buttons", refresh);
     scrolled
 }
 

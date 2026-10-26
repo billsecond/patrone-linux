@@ -6,8 +6,8 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 (2026-10-26):
 
 - **A Patrone page** in the sidebar, after Appearance and Ubuntu's Desktop
-  page: the taskbar's size, layout and Start button icon, which corner the
-  title bar buttons go in, and the theme. The same choices as Patrone
+  page: the taskbar's size, layout and Start button icon, the title bar
+  buttons' corner and style, and the theme. The same choices as Patrone
   Settings' window (`settings/`), with its pictures.
 - **No Telemetry page** under Privacy & Security. Its switches send error
   reports and system information to Canonical, which Patrone doesn't do
@@ -43,7 +43,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone1_amd64.deb ./out/gnome-control-center-data_*patrone1_all.deb
+sudo apt install ./out/gnome-control-center_*patrone2_amd64.deb ./out/gnome-control-center-data_*patrone2_all.deb
 ```
 
 ## How it was checked
@@ -60,8 +60,10 @@ elsewhere moved the page's pick. Privacy & Security had no Telemetry row.
 
 ## Keeping up with Ubuntu
 
-The version is Ubuntu's with `patrone1` added (`1:50.3-0ubuntu0.2patrone1`),
-which apt prefers to the same Ubuntu version. When Ubuntu updates Settings
+The version is Ubuntu's with `patrone` and a revision added
+(`1:50.3-0ubuntu0.2patrone2`), which apt prefers to the same Ubuntu
+version. The revision is at the top of `build.sh`: one more with each
+change to the page or the patches, so a new build installs as an upgrade. When Ubuntu updates Settings
 (a newer `0ubuntuN`), apt installs Ubuntu's in its place and the Patrone
 page goes away until `build.sh` is run again and the new packages are
 installed. The patches are small, so a new Ubuntu version usually needs no

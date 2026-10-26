@@ -17,7 +17,9 @@ import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as CtrlAltTab from 'resource:///org/gnome/shell/ui/ctrlAltTab.js';
 import * as DND from 'resource:///org/gnome/shell/ui/dnd.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
 
 import {JumpList} from './jumpList.js';
 import {RecentFiles} from './recent.js';
@@ -449,6 +451,7 @@ export class Taskbar {
         this._desktopSettings?.connectObject('changed::theme', () => this._applyTheme(), this);
         this._dragMonitor = {dragMotion: event => this._onDragMotion(event)};
         DND.addDragMonitor(this._dragMonitor);
+        this._watchForUpdates(extension);
         this._appSystem.connectObject(
             'installed-changed', () => this.queueRebuild(),
             'app-state-changed', () => this.queueRebuild(), this);
@@ -467,6 +470,7 @@ export class Taskbar {
     }
 
     destroy() {
+        this._updateMonitor.cancel();
         DND.removeDragMonitor(this._dragMonitor);
         this._returnOverlayKey();
         this._returnTray();
@@ -911,6 +915,33 @@ export class Taskbar {
                 menu.actor.add_style_class_name('patrone-tray-menu');
             menu._patroneTray = true;
         }
+    }
+
+    // When a package update replaces the taskbar's files, this desktop keeps
+    // running the old ones until the next sign-in (GNOME Shell can't load
+    // an extension's code again), so the new version's settings seem to do
+    // nothing. Say so, once, with a way to sign out.
+
+    _watchForUpdates(extension) {
+        this._updateMonitor = extension.dir.get_child('metadata.json')
+            .monitor_file(Gio.FileMonitorFlags.WATCH_MOVES, null);
+        this._updateMonitor.connect('changed', () => this._notifyUpdated());
+    }
+
+    _notifyUpdated() {
+        if (this._updateNotified)
+            return;
+        this._updateNotified = true;
+        const source = MessageTray.getSystemSource();
+        const notification = new MessageTray.Notification({
+            source,
+            title: 'The taskbar was updated',
+            body: 'Sign out and back in to start using the new version.',
+            urgency: MessageTray.Urgency.HIGH,
+            resident: true,
+        });
+        notification.addAction('Sign out', () => SystemActions.getDefault().activateLogout());
+        source.addNotification(notification);
     }
 
     // The Super key opens the Start menu instead of the Activities overview

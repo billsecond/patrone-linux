@@ -173,7 +173,7 @@ impl Window {
             window.maximize();
         }
 
-        let tabbar = TabBar::new(&window);
+        let tabbar = TabBar::new();
         window.set_titlebar(Some(&tabbar.widget));
 
         let address = AddressBar::new();

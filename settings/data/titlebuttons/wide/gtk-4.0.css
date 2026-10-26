@@ -1,0 +1,56 @@
+/* Patrone's Wide title bar buttons for GTK 4 apps (Patrone Settings imports
+ * them into the account's ~/.config/gtk-4.0/gtk.css): flat and wide, in the
+ * title's color, close turning red under the pointer. Every property is set
+ * in every state, so libadwaita's buttons and the GTK theme's come out the
+ * same. */
+
+windowcontrols {
+  border-spacing: 0;
+  margin: 0;
+}
+
+windowcontrols > button,
+windowcontrols > button:hover,
+windowcontrols > button:active,
+windowcontrols > button:backdrop {
+  min-width: 46px;
+  min-height: 32px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  background: none;
+  color: inherit;
+}
+
+windowcontrols > button > image,
+windowcontrols > button:hover > image,
+windowcontrols > button:active > image,
+windowcontrols > button:backdrop > image {
+  min-width: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+  color: inherit;
+  -gtk-icon-size: 16px;
+}
+
+windowcontrols > button:hover {
+  background-color: alpha(currentColor, 0.1);
+}
+
+windowcontrols > button:active {
+  background-color: alpha(currentColor, 0.18);
+}
+
+windowcontrols > button.close:hover,
+windowcontrols > button.close:active {
+  background-color: #c42b1c;
+  color: #ffffff;
+}

@@ -22,5 +22,25 @@
         layout setting, which no theme changes.
       </description>
     </key>
+    <key name="title-buttons" type="s">
+      <choices>
+        <choice value="theme"/>
+        <choice value="wide"/>
+        <choice value="round"/>
+        <choice value="dots"/>
+        <choice value="glossy"/>
+      </choices>
+      <default>'theme'</default>
+      <summary>The title bar buttons' style</summary>
+      <description>
+        How minimize, maximize and close look in every app: "wide" (flat and
+        wide, close turning red under the pointer), "round" (small symbols
+        in soft circles), "dots" (red, yellow and green dots) or "glossy"
+        (framed blue squares, a red close). "theme" is the theme's own:
+        wide for Patrone and Classic, round for Modern, glossy for Royal,
+        dots for Studio. Patrone Settings puts the style in the account's
+        GTK settings. Which corner they go in is GNOME's button-layout.
+      </description>
+    </key>
   </schema>
 </schemalist>

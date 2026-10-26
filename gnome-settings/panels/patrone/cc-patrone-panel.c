@@ -1,10 +1,11 @@
 /* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
- * button icon), the title bar buttons (top right or top left) and the
- * theme. The same settings as Patrone Settings' window, which this page
- * leans on: its pictures (/usr/share/patrone/settings/previews) and, to
- * apply a theme, "patrone-settings --set-theme". The choices' values match
+ * button icon), the title bar buttons (top right or top left, and their
+ * style) and the theme. The same settings as Patrone Settings' window,
+ * which this page leans on: its pictures (/usr/share/patrone/settings/
+ * previews) and, to apply a theme or button style, "patrone-settings
+ * --set-theme" and "--set-title-buttons". The choices' values match
  * the settings schemas' (the taskbar's and org.patrone.desktop) and
  * settings/src in Patrone's repository.
  *
@@ -77,6 +78,14 @@ static const Choice start_icons[] = {
 static const Choice sides[] = {
   { "right", N_("Top Right"), N_("Minimize, maximize, then close in the corner") },
   { "left", N_("Top Left"), N_("Close in the corner, then minimize, maximize") },
+};
+
+static const Choice button_styles[] = {
+  { "theme", N_("Theme's Own"), N_("Whichever style the theme comes with") },
+  { "wide", N_("Wide"), N_("Flat and wide; close turns red under the pointer") },
+  { "round", N_("Round"), N_("Small symbols in soft circles") },
+  { "dots", N_("Dots"), N_("Red, yellow and green dots, symbols on hover") },
+  { "glossy", N_("Glossy"), N_("Framed blue squares and a red close") },
 };
 
 static const Choice themes[] = {
@@ -178,17 +187,40 @@ write_side (ChoiceSet *set, const char *value)
                          g_str_equal (value, "left") ? LAYOUT_LEFT : LAYOUT_RIGHT);
 }
 
-/* A theme also restyles apps through the account's gtk.css, which Patrone
- * Settings knows how to do */
+/* A theme or title bar button style also restyles apps through the
+ * account's gtk.css, which Patrone Settings knows how to do */
 static void
-write_theme (ChoiceSet *set, const char *value)
+run_patrone_settings (const char *option, const char *value)
 {
-  const char *argv[] = { "patrone-settings", "--set-theme", value, NULL };
+  const char *argv[] = { "patrone-settings", option, value, NULL };
   g_autoptr(GError) error = NULL;
 
   if (!g_spawn_async (NULL, (char **) argv, NULL, G_SPAWN_SEARCH_PATH,
                       NULL, NULL, NULL, &error))
-    g_warning ("Couldn't apply the theme %s: %s", value, error->message);
+    g_warning ("Couldn't run patrone-settings %s %s: %s", option, value, error->message);
+}
+
+static void
+write_theme (ChoiceSet *set, const char *value)
+{
+  run_patrone_settings ("--set-theme", value);
+}
+
+static void
+write_title_buttons (ChoiceSet *set, const char *value)
+{
+  run_patrone_settings ("--set-title-buttons", value);
+}
+
+/* Whether the settings have a key: an older Patrone Settings' schema may
+ * not, and reading a missing key would end GNOME Settings */
+static gboolean
+has_key (GSettings *settings, const char *key)
+{
+  g_autoptr(GSettingsSchema) schema = NULL;
+
+  g_object_get (settings, "settings-schema", &schema, NULL);
+  return schema != NULL && g_settings_schema_has_key (schema, key);
 }
 
 static void
@@ -254,6 +286,9 @@ make_picture_card (const char *prefix, const Choice *choice)
 
       gtk_picture_set_content_fit (GTK_PICTURE (picture), GTK_CONTENT_FIT_CONTAIN);
       gtk_picture_set_can_shrink (GTK_PICTURE (picture), TRUE);
+      /* A height of its own: in a window of ordinary height the flow box
+       * gave a picture that can shrink its minimum, none at all */
+      gtk_widget_set_size_request (picture, -1, 104);
       gtk_box_append (GTK_BOX (box), picture);
     }
   gtk_box_append (GTK_BOX (box), make_label (_(choice->title), "heading"));
@@ -463,11 +498,21 @@ cc_patrone_panel_init (CcPatronePanel *self)
   add_choices (self, group, self->wm, "button-layout", read_side, write_side,
                sides, G_N_ELEMENTS (sides), "buttons", 2);
 
+  if (self->desktop != NULL && has_key (self->desktop, "title-buttons"))
+    {
+      group = add_group (page, _("Title Bar Button Style"),
+                         _("How minimize, maximize and close look, the same in every app. "
+                           "Apps that are open pick up a new style when they're next opened."));
+      add_choices (self, group, self->desktop, "title-buttons", read_string, write_title_buttons,
+                   button_styles, G_N_ELEMENTS (button_styles), "titlebuttons", 3);
+    }
+
   if (self->desktop != NULL)
     {
       group = add_group (page, _("Theme"),
-                         _("The look of the taskbar, title bars and window buttons. "
-                           "Apps that are open pick up a new theme when they're next opened."));
+                         _("The look of the taskbar and title bars, and of the window buttons "
+                           "when their style is the theme's own. Apps that are open pick up "
+                           "a new theme when they're next opened."));
       add_choices (self, group, self->desktop, "theme", read_string, write_theme,
                    themes, G_N_ELEMENTS (themes), "theme", 3);
     }

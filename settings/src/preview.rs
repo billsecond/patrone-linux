@@ -148,6 +148,92 @@ pub fn buttons(cr: &Context, w: f64, h: f64, layout: Layout) {
     }
 }
 
+/// One close button (or minimize, maximize) in a title bar button style,
+/// centered on (cx, cy) in a title bar `bar` tall.
+fn styled_button(cr: &Context, style: &str, button: Button, cx: f64, cy: f64, bar: f64) {
+    match style {
+        "wide" => {
+            if button == Button::Close {
+                // As under the pointer: red
+                let cell = bar * 1.3;
+                color(cr, 0xc42b1c, 1.0);
+                cr.rectangle(cx - cell / 2.0, cy - bar / 2.0, cell, bar);
+                let _ = cr.fill();
+                symbol(cr, button, cx, cy, bar * 0.3, 0xffffff);
+            } else {
+                symbol(cr, button, cx, cy, bar * 0.3, 0x3a3d45);
+            }
+        }
+        "round" => {
+            let unit = bar * 0.62;
+            fill_rounded(cr, cx - unit / 2.0, cy - unit / 2.0, unit, unit, unit / 2.0, 0xdfe1e6, 1.0);
+            symbol(cr, button, cx, cy, unit * 0.42, 0x3a3d45);
+        }
+        "dots" => {
+            let unit = bar * 0.42;
+            let rgb = match button {
+                Button::Minimize => 0xfebc2e,
+                Button::Maximize => 0x28c840,
+                Button::Close => 0xff5f57,
+            };
+            fill_rounded(cr, cx - unit / 2.0, cy - unit / 2.0, unit, unit, unit / 2.0, rgb, 1.0);
+        }
+        _ => {
+            // Glossy: a framed square, blue, or red to close
+            let unit = bar * 0.62;
+            let (top, bottom) = if button == Button::Close { (0xf2967a, 0xc8381b) } else { (0x5b9dff, 0x1f63d8) };
+            rounded(cr, cx - unit / 2.0, cy - unit / 2.0, unit, unit, 2.0);
+            vertical_gradient(cr, cy - unit / 2.0, unit, top, bottom);
+            let _ = cr.fill_preserve();
+            color(cr, 0xffffff, 1.0);
+            cr.set_line_width(1.0);
+            let _ = cr.stroke();
+            symbol(cr, button, cx, cy, unit * 0.45, 0xffffff);
+        }
+    }
+}
+
+/// A title bar button style: a window's title bar with its buttons. "theme"
+/// (each theme's own) shows one close button in each style instead.
+pub fn button_style(cr: &Context, w: f64, h: f64, style: &str) {
+    desktop(cr, w, h);
+    let (x, y, ww, wh) = (w * 0.08, h * 0.14, w * 0.84, h * 0.72);
+    fill_rounded(cr, x, y, ww, wh, 6.0, 0xffffff, 1.0);
+    let bar = (wh * 0.30).max(18.0);
+    let _ = cr.save();
+    rounded(cr, x, y, ww, wh, 6.0);
+    cr.clip();
+    color(cr, 0xeceef2, 1.0);
+    cr.rectangle(x, y, ww, bar);
+    let _ = cr.fill();
+    fill_rounded(cr, x + 10.0, y + bar / 2.0 - 2.0, ww * 0.16, 4.0, 2.0, 0x9aa0aa, 1.0);
+
+    let cy = y + bar / 2.0;
+    let right = x + ww;
+    if style == "theme" {
+        for (i, each) in ["wide", "round", "dots", "glossy"].iter().enumerate() {
+            let cx = right - bar * 0.75 - (3 - i) as f64 * bar * 1.15;
+            styled_button(cr, each, Button::Close, cx, cy, bar);
+        }
+    } else {
+        let cell = if style == "wide" { bar * 1.3 } else { bar * 0.8 };
+        for (i, button) in [Button::Minimize, Button::Maximize, Button::Close].iter().enumerate() {
+            let cx = right - cell * (3 - i) as f64 + cell / 2.0 - if style == "wide" { 0.0 } else { 4.0 };
+            styled_button(cr, style, *button, cx, cy, bar);
+        }
+    }
+    let _ = cr.restore();
+
+    // Lines of text in the window
+    for line in 0..3 {
+        let ly = y + bar + 10.0 + f64::from(line) * 9.0;
+        if ly + 4.0 > y + wh - 4.0 {
+            break;
+        }
+        fill_rounded(cr, x + 10.0, ly, ww * [0.7, 0.55, 0.62][line as usize], 4.0, 2.0, 0xdfe2e8, 1.0);
+    }
+}
+
 /// App icons on a taskbar: colored squares.
 fn app_icons(cr: &Context, x: f64, y: f64, size: f64, count: usize, dots: Option<u32>) -> f64 {
     const COLORS: [u32; 5] = [0x3d8eff, 0x2d3038, 0x7c8494, 0x5aa0ff, 0x4c9a55];

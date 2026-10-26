@@ -1,0 +1,67 @@
+/* Patrone's Dots title bar buttons for GTK 4 apps (Patrone Settings imports
+ * them into the account's ~/.config/gtk-4.0/gtk.css): red, yellow and green
+ * dots, their symbols showing on hover, grey in windows in the background.
+ * Every property is set in every state, so libadwaita's buttons and the GTK
+ * theme's come out the same. */
+
+windowcontrols {
+  border-spacing: 8px;
+  margin: 0;
+}
+
+windowcontrols.start {
+  margin-right: 6px;
+}
+
+windowcontrols.end {
+  margin-left: 6px;
+}
+
+windowcontrols > button,
+windowcontrols > button:hover,
+windowcontrols > button:active,
+windowcontrols > button:backdrop {
+  min-width: 14px;
+  min-height: 14px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 100%;
+  outline: none;
+  box-shadow: none;
+  background: none;
+  color: transparent;
+}
+
+windowcontrols > button > image,
+windowcontrols > button:hover > image,
+windowcontrols > button:active > image,
+windowcontrols > button:backdrop > image {
+  min-width: 12px;
+  min-height: 12px;
+  margin: 0;
+  padding: 1px;
+  border: none;
+  border-radius: 100%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  background-image: none;
+  background-color: #ff5f57;
+  color: transparent;
+  -gtk-icon-size: 12px;
+}
+
+windowcontrols > button.minimize > image {
+  background-color: #febc2e;
+}
+
+windowcontrols > button.maximize > image {
+  background-color: #28c840;
+}
+
+windowcontrols:hover > button > image {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+windowcontrols > button:backdrop > image {
+  background-color: #c9c9cc;
+}

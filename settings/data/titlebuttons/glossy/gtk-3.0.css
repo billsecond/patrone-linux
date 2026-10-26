@@ -1,0 +1,42 @@
+/* Patrone's Glossy title bar buttons for GTK 3 apps (Patrone Settings
+ * imports them into the account's ~/.config/gtk-3.0/gtk.css): framed blue
+ * squares with white symbols, and a red one to close. */
+
+headerbar button.titlebutton,
+headerbar button.titlebutton:hover,
+headerbar button.titlebutton:active,
+headerbar button.titlebutton:backdrop,
+.titlebar button.titlebutton,
+.titlebar button.titlebutton:hover,
+.titlebar button.titlebutton:active,
+.titlebar button.titlebutton:backdrop {
+  min-width: 22px;
+  min-height: 22px;
+  margin: 0 1px;
+  padding: 0;
+  border: 1px solid #ffffff;
+  border-radius: 3px;
+  outline: none;
+  box-shadow: none;
+  background-color: #2a73e8;
+  background-image: linear-gradient(to bottom, #5b9dff, #1f63d8);
+  color: #ffffff;
+  text-shadow: none;
+  -gtk-icon-shadow: none;
+}
+
+headerbar button.titlebutton.close,
+.titlebar button.titlebutton.close {
+  background-color: #d4492b;
+  background-image: linear-gradient(to bottom, #f2967a, #c8381b);
+}
+
+headerbar button.titlebutton:hover,
+.titlebar button.titlebutton:hover {
+  background-image: linear-gradient(to bottom, #78b0ff, #3474e6);
+}
+
+headerbar button.titlebutton.close:hover,
+.titlebar button.titlebutton.close:hover {
+  background-image: linear-gradient(to bottom, #f7ab93, #d9472a);
+}

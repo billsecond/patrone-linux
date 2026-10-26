@@ -1,3 +1,13 @@
+patrone-gnome-taskbar (0.3.1) resolute; urgency=medium
+
+  * When an update replaces the taskbar's files, a notification says to
+    sign out and back in, with a Sign out button: until then the desktop
+    keeps running the old taskbar, whose settings the new version's
+    Patrone Settings can't change (layouts, Start icons and Royal did
+    nothing after 0.3.0 was installed into a running desktop).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 23:45:00 -0500
+
 patrone-gnome-taskbar (0.3.0) resolute; urgency=medium
 
   * Layouts, apart from themes (the new "layout" setting): Left, Centered,

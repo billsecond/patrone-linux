@@ -1,5 +1,6 @@
-//! Windows-style dialogs: a title bar with the title on the left and a close
-//! button, a white body, and the buttons on the right of a gray footer.
+//! Windows-style dialogs: a title bar with the title and GTK's own close
+//! button (in the corner and style the account chose), a white body, and
+//! the buttons on the right of a gray footer.
 
 use std::cell::RefCell;
 use std::future::Future;
@@ -9,7 +10,8 @@ use std::task::{Context, Poll, Waker};
 
 use gtk::{gdk, gio, glib, prelude::*};
 
-use crate::glyph::{self, Glyph};
+use crate::glyph::Glyph;
+use crate::util;
 
 /// A value that arrives later, on the main thread.
 pub struct Receiver<T>(Rc<RefCell<(Option<T>, Option<Waker>)>>);
@@ -78,12 +80,11 @@ impl Dialog {
             .hexpand(true)
             .build();
         title_label.add_css_class("dialog-title");
-        let close = glyph::button("close", "Close");
-        close.add_css_class("window-close");
         let bar = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         bar.add_css_class("dialog-titlebar");
+        bar.append(&util::window_controls(gtk::PackType::Start));
         bar.append(&title_label);
-        bar.append(&close);
+        bar.append(&util::window_controls(gtk::PackType::End));
         window.set_titlebar(Some(&gtk::WindowHandle::builder().child(&bar).build()));
 
         let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
@@ -107,17 +108,9 @@ impl Dialog {
             sender,
             receiver: RefCell::new(Some(receiver)),
         });
-        // The window's own controls hold it weakly: a strong reference from
+        // The window's own handlers hold it weakly: a strong reference from
         // its children kept every closed dialog alive, and Folder Options
         // then showed the old, dead one again.
-        {
-            let window = dialog.window.downgrade();
-            close.connect_clicked(move |_| {
-                if let Some(window) = window.upgrade() {
-                    window.close();
-                }
-            });
-        }
         {
             let sender = dialog.sender.clone();
             dialog.window.connect_close_request(move |_| {

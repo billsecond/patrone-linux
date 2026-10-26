@@ -93,19 +93,24 @@ Waiting on the user:
   `chsh -s /bin/bash` (asks for their password).
 - **Installed 2026-10-26 by the user**: `patrone-gnome-taskbar` 0.3.0,
   `patrone-settings` 0.2.0, `patrone-branding` 0.1.5, `patrone-remote-desktop`
-  0.4.3, `patrone-desktop` 0.1.1 and `patrone-file-manager` 0.2.0, and
-  GNOME Settings' build dependencies. Still to hear how they went: the
-  Super key, the network menu's chevron, Shut down in a real session,
-  Chromium's pages in Noto Sans, the wallpapers in Settings → Appearance,
-  and the taskbar's layouts, Start icons and themes. (Earlier, Patrone
-  Settings' clicks didn't change the taskbar because their GNOME Shell had
-  started at 13:27, before the 14:59 install; they signed out and back in
-  at 15:26. Each new taskbar needs that again.)
-- **Install Patrone's GNOME Settings** (section 9), with the Patrone page
-  and no Telemetry page:
-  `sudo apt install ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone1_amd64.deb ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone1_all.deb`
-  (a dry run upgrades just those two). No sign-out needed: Settings shows
-  the page the next time it opens.
+  0.4.3, `patrone-desktop` 0.1.1, `patrone-file-manager` 0.2.0 and
+  Patrone's GNOME Settings (`...patrone1`), and GNOME Settings' build
+  dependencies. Still to hear how they went: the Super key, the network
+  menu's chevron, Shut down in a real session, Chromium's pages in Noto
+  Sans and the wallpapers in Settings → Appearance.
+- **The user's report on 0.3.0 (2026-10-26)**: "The themes are not the
+  correct theme, the icons in the buttons are inconsistent, the start and
+  buttons don't show the change, The taskbar layout doesn't change. Classic
+  is royal, Royal is something else." Their GNOME Shell had started at
+  15:26 and 0.3.0 was installed at 15:35, so the desktop ran 0.2.0's
+  taskbar (the second time: Patrone Settings' first clicks hit the same
+  thing at 14:59). And the title bar buttons did differ from app to app
+  (section 9). Fixed in this round: install `patrone-gnome-taskbar` 0.3.1
+  (it now says when to sign out), `patrone-settings` 0.3.0 (button styles
+  of their own), `patrone-file-manager` 0.2.3 (GTK's own window buttons)
+  and GNOME Settings `...patrone2` (the style choice, and pictures that
+  were nearly invisible in a window of ordinary height), **then sign out
+  from inside the desktop and back in**.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -1044,6 +1049,36 @@ has no Telemetry row. (There the sidebar said "Ubuntu Desktop": the
 unpacked package's own desktop file came first. Installed, Ubuntu's file is
 diverted by `patrone-branding`.) Not checked until installed: the real
 desktop.
+
+**Title bar button styles (patrone-settings 0.3.0, GNOME Settings
+`...patrone2`, File Manager 0.2.3).** The user found "the icons in the
+buttons are inconsistent". In the throwaway shell, five apps under each
+theme showed why: libadwaita apps (Text Editor, Calculator), plain GTK 4
+apps that Ubuntu's Yaru styles (Patrone Settings, Patrone Terminal), GTK 3
+apps (Disks) and File Manager (its own Windows 11 buttons) each kept parts
+of their own look; under Classic and Modern Patrone Settings' buttons
+vanished, and under Studio Terminal's were big grey circles and Disks'
+disappeared. Asked which look the Patrone theme should have, the user said
+to make it configurable, with descriptive names, not "windows" or "gnome".
+So the style is its own setting (`org.patrone.desktop title-buttons`):
+Wide, Round, Dots, Glossy, or the theme's own (the default). Each style's
+sheets set every property of the buttons and their symbols in every state
+(Yaru gives the symbols a 30-pixel minimum, which showed as the big
+circles), the themes keep only their title bars, File Manager uses GTK's
+window controls, and `patrone-settings --apply` runs at every sign-in so
+accounts get the sheets (and move off Modern's and Studio's, which went
+away). Checked in the throwaway shell: each style in those five apps, the
+same in each; File Manager in Wide and Dots, top right and top left; the
+page's Style section, a click writing the setting and both `gtk.css`
+files, and a change made elsewhere moving the pick.
+
+Also found: in a window of ordinary height the page's pictures were nearly
+invisible (a flow box gives a picture that can shrink its minimum height,
+none); they now have a height of their own. And the taskbar (0.3.1) shows
+"The taskbar was updated", with Sign out, when a package update replaces
+its files, since the running desktop keeps the old code until the next
+sign-in; checked by renaming a copy of `metadata.json` over it, as dpkg
+does.
 
 ## 10. Typeface and Settings' Ubuntu wording (patrone-branding 0.1.3, 0.1.4)
 

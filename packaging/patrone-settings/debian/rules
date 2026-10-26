@@ -24,11 +24,15 @@ override_dh_auto_install:
 	# The theme setting the taskbar follows; dpkg's trigger compiles the schemas
 	install -Dm644 data/org.patrone.desktop.gschema.xml \
 	    $(pkg)/usr/share/glib-2.0/schemas/org.patrone.desktop.gschema.xml
-	# The themes' styles for GTK 3 and GTK 4 apps
-	for theme in modern classic royal studio; do \
-	    install -Dm644 -t $(pkg)/usr/share/patrone/themes/$$theme \
-	        data/themes/$$theme/gtk-4.0.css data/themes/$$theme/gtk-3.0.css; \
+	# The styles for GTK 3 and GTK 4 apps: the themes' title bars (the
+	# themes that have their own) and the title bar button styles
+	for dir in themes/classic themes/royal titlebuttons/wide titlebuttons/round \
+	        titlebuttons/dots titlebuttons/glossy; do \
+	    install -Dm644 -t $(pkg)/usr/share/patrone/$$dir data/$$dir/gtk-4.0.css data/$$dir/gtk-3.0.css; \
 	done
+	# Writes those styles into each account's GTK settings at sign-in
+	install -Dm644 data/org.patrone.Settings-apply.desktop \
+	    $(pkg)/etc/xdg/autostart/org.patrone.Settings-apply.desktop
 	# The choices' pictures, for GNOME Settings' Patrone page
 	target/release/patrone-settings --export-previews $(pkg)/usr/share/patrone/settings/previews
 

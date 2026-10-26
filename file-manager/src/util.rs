@@ -7,6 +7,17 @@ use gtk::{gio, glib, prelude::*};
 /// Where a widget sends its events: one handler, set once.
 pub type Handler<T> = std::cell::RefCell<Option<std::rc::Rc<dyn Fn(T)>>>;
 
+/// GTK's own minimize, maximize and close buttons for one end of a title
+/// bar. Like every other app's, they show in the corner the account chose
+/// (GNOME's button-layout; the other end's set is empty and hidden), only
+/// those the window can use, and in Patrone Settings' title bar button
+/// style.
+pub fn window_controls(side: gtk::PackType) -> gtk::WindowControls {
+    let controls = gtk::WindowControls::new(side);
+    controls.set_valign(gtk::Align::Center);
+    controls
+}
+
 /// 1234567 → "1,234,567".
 pub fn thousands(number: u64) -> String {
     let digits = number.to_string();

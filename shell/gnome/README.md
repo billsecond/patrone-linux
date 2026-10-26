@@ -11,6 +11,13 @@ loads extensions when it starts: log out from inside the desktop (Start →
 the account picture → Sign out, or GNOME's top bar's power menu → Log Out)
 and sign in again. Disconnecting Remote Desktop or signing
 out of the screen's session leaves the desktop, and its old shell, running.
+The same goes for every update: the desktop keeps running the old taskbar,
+whose settings a new Patrone Settings may not know, until the next sign-in.
+So the taskbar watches its own `metadata.json` (which every package update
+replaces) and then shows a notification, "The taskbar was updated", with a
+Sign out button. (The user hit this twice: after 0.2.0 Patrone Settings'
+clicks did nothing, and after 0.3.0 the layouts, Start icons and Royal
+didn't show.)
 
 ## What it does
 

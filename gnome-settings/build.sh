@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Builds Patrone's GNOME Settings on the dev VM: Ubuntu's gnome-control-center
 # with Patrone's page and patches, as packages whose version is Ubuntu's
-# plus "patrone1" (so apt prefers them to the same Ubuntu version, and an
-# Ubuntu update of Settings replaces them until this is run again).
+# plus "patrone" and the revision below (so apt prefers them to the same
+# Ubuntu version, and an Ubuntu update of Settings replaces them until this
+# is run again).
 #
 #   gnome-settings/build.sh [UBUNTU_VERSION] [dpkg-buildpackage options]
 #
@@ -13,6 +14,12 @@
 # Build-Depends: Ubuntu's, which `dpkg-checkbuilddeps` in the unpacked
 # source lists. Tests are skipped unless DEB_BUILD_OPTIONS says otherwise.
 set -euo pipefail
+
+# Patrone's revision of the page and patches: one more with each change to
+# them, so a new build of the same Ubuntu version installs as an upgrade
+revision=2
+# What changed in it, for the package's changelog
+changes="Patrone's build: a Patrone page (taskbar size, layout and Start button, title bar button position and style, theme), and no Telemetry page."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -46,12 +53,12 @@ QUILT_PATCHES=debian/patches quilt push -a
 
 DEBFULLNAME="William Daugherty" \
 DEBEMAIL="31995458+billsecond@users.noreply.github.com" \
-    dch --local patrone --distribution resolute \
-    "Patrone's build: a Patrone page (taskbar size, layout and Start button, title bar buttons, theme), and no Telemetry page."
+    dch --newversion "$(dpkg-parsechangelog -S Version)patrone$revision" \
+    --distribution resolute "$changes"
 
 export DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:-nocheck parallel=$(nproc)}"
 dpkg-buildpackage -us -uc -b "$@"
 
 mkdir -p "$root/out"
 mv ../gnome-control-center*_*.deb "$root/out/"
-ls -l "$root"/out/gnome-control-center*patrone*.deb
+ls -l "$root"/out/gnome-control-center*patrone"$revision"_*.deb

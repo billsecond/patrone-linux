@@ -145,28 +145,9 @@ window.fluent-dialog.csd {
   border-radius: 6px;
 }
 
-.window-control,
-.window-close {
-  min-width: 46px;
-  min-height: 34px;
-  margin-top: -6px;
-  padding: 0;
-  border-radius: 0;
-}
-
-window.maximized .window-close {
-  border-radius: 0;
-}
-
-.window-close:hover {
-  background-color: var(--danger);
-  color: #ffffff;
-}
-
-.window-close:active {
-  background-color: #b82a1d;
-  color: #ffffff;
-}
+/* The window's minimize, maximize and close buttons are GTK's own
+ * (windowcontrols), styled like every other app's by the title bar button
+ * style Patrone Settings puts in the account's gtk.css. */
 
 /* --- Address row and command bar ----------------------------------------- */
 
@@ -905,12 +886,6 @@ window.fluent-dialog {
 
 .dialog-title {
   font-size: 9pt;
-}
-
-.dialog-titlebar .window-close,
-.dialog-titlebar .window-control {
-  margin-top: 0;
-  min-height: 32px;
 }
 
 .dialog-body {
