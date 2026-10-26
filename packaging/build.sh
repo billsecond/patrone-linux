@@ -4,6 +4,7 @@
 #   ./packaging/build.sh patrone-terminal [dpkg-buildpackage options]
 #   ./packaging/build.sh patrone-shell-config
 #   ./packaging/build.sh patrone-branding
+#   ./packaging/build.sh patrone-default-apps
 #
 # The packages land in out/. For a Rust package the crates are vendored into
 # the source tree first, so the build itself runs offline, as it will in a
@@ -19,6 +20,7 @@ case $package in
     patrone-terminal) source_dir=terminal ;;
     patrone-shell-config) source_dir=shell-config ;;
     patrone-branding) source_dir=branding ;;
+    patrone-default-apps) source_dir=default-apps ;;
     *)
         echo "Unknown package: $package" >&2
         exit 1

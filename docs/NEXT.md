@@ -29,8 +29,9 @@ Done:
   (`install-dev.sh --bashrc`) and checked in an interactive bash in a pty.
   `shell-config/zshrc` and `zprofile` remain for anyone who picks zsh.
 - **Packages** (`packaging/`): `patrone-terminal` (0.1.1, now with a login
-  autostart entry), `patrone-shell-config` and `patrone-branding` build on
-  the VM. Not installed anywhere yet.
+  autostart entry), `patrone-shell-config`, `patrone-branding` and
+  `patrone-default-apps` (Chromium in place of Firefox) build on the VM. Not
+  installed anywhere yet.
 - **Branding** (section 6): `patrone-branding` replaces Ubuntu's name and
   logos (boot splash, boot menu, login screen, About, console banner, login
   message), restyles the login screen, makes blue the accent color and turns
@@ -53,9 +54,13 @@ Done:
 
 Waiting on the user:
 
-- **Install the branding and reboot** (needs their sudo password):
-  `sudo apt install ./out/patrone-branding_0.1.0_all.deb ./out/patrone-terminal_0.1.1_amd64.deb`
-  in `~/src/patrone-linux`, then `sudo reboot`. Then check (section 6).
+- **Install the packages, remove Firefox and reboot** (needs their sudo
+  password), in `~/src/patrone-linux`:
+  `sudo apt install ./out/patrone-branding_0.1.0_all.deb ./out/patrone-terminal_0.1.1_amd64.deb ./out/patrone-default-apps_0.1.0_all.deb`,
+  `sudo snap remove firefox`, `sudo apt-mark hold firefox`, `sudo reboot`.
+  Then reset their own favorites, which still name Firefox, to Patrone's
+  (`gsettings reset org.gnome.shell favorite-apps`, no sudo), and check
+  (sections 4 and 6).
 - **One-sign-in RDP:** from SSH or the VM's console, not from inside RDP,
   log out of the Remote Login desktop and run
   `./scripts/hyperv/guest/setup-remote-desktop.sh headless`, entering their
@@ -79,9 +84,6 @@ Waiting on the user:
   the logo as an image in chat, never saved to disk. The fastfetch logo is now
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
-- **Chromium on the dev VM** if wanted now: `sudo snap install chromium`, then
-  swap it for Firefox in the dock and run
-  `xdg-settings set default-web-browser chromium_chromium.desktop`.
 - **Try the compositor's input handling** (section 2).
 
 ## 1. Patrone Terminal
@@ -303,6 +305,30 @@ Decided 2026-10-25 (see "Default apps" in `docs/PLAN.md`): Canonical's
 Chromium snap, kept current by snapd (stable was 156, two days old, when
 checked), customized with enterprise policies rather than forked or rebranded.
 
+Done 2026-10-26 (the user asked to replace Firefox): `patrone-default-apps`
+(`default-apps/`) depends on Ubuntu's `chromium-browser` stub, which
+installs the snap, makes Chromium the default browser through
+`/etc/xdg/mimeapps.list`, and puts it in the favorites in place of Firefox.
+Checked: it builds; with a stand-in `chromium_chromium.desktop`,
+`gio mime` picks Chromium for `https` and `text/html`; the favorites
+override gives the new list in both the `ubuntu` session and plain GNOME.
+Not checked until the user installs it: the snap installing, links opening in
+Chromium. Findings:
+
+- Ubuntu's `firefox` package is a stub that installs the snap, and
+  `ubuntu-desktop-minimal` depends on it, so the package can't simply
+  conflict with Firefox. Its `preinst` runs `snap install firefox` on every
+  install **and upgrade**, so after `snap remove firefox` the stub must be
+  held (`apt-mark hold firefox`). Patrone's ISO needs its own desktop
+  metapackage in place of `ubuntu-desktop-minimal`.
+- Ubuntu's `ubuntu-mimeapps.list` and `gnome-mimeapps.list` in
+  `/usr/share/applications` name Firefox first. A list in `/etc/xdg` is read
+  before them (the session's `XDG_CONFIG_DIRS` is
+  `/etc/xdg/xdg-ubuntu:/etc/xdg`), and a user's
+  `~/.config/mimeapps.list` before that.
+
+Still to do:
+
 - The snap reads policies from `/etc/chromium-browser/policies` (its
   `etc-chromium-browser-policies` plug, seen in `meta/snap.yaml`). After
   installing, check `snap connections chromium` shows that plug connected.
@@ -343,6 +369,12 @@ for the dock, the accent and the terminal opening by itself.
 
 Findings:
 
+- Ubuntu sets the wallpaper, lock-screen picture and favorites again for its
+  own session (`[org.gnome.desktop.background:ubuntu]` and so on), and the
+  user's GNOME session runs with `XDG_CURRENT_DESKTOP=ubuntu:GNOME`, so a
+  plain default loses there. Patrone's overrides set both; checked with
+  `gsettings get` under both desktop names against a scratch copy of the
+  compiled schemas.
 - Ubuntu's login screen looked like Ubuntu through four things: its logo,
   the orange accent (`accent-color='orange'` from
   `10_ubuntu-settings.gschema.override`, used 211 times in Yaru's login

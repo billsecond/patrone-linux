@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+pkg = debian/patrone-default-apps
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm644 mimeapps.list $(pkg)/etc/xdg/mimeapps.list
+	install -Dm644 91_patrone-default-apps.gschema.override \
+	    $(pkg)/usr/share/glib-2.0/schemas/91_patrone-default-apps.gschema.override

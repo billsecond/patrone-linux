@@ -91,7 +91,9 @@ real hardware before a release.
 
 ```
 docs/                  plan, decisions, how-to notes
-branding/              logo, colors and artwork
+branding/              logo, colors and artwork, and the system files that
+                       replace Ubuntu's branding (patrone-branding)
+default-apps/          default browser and favorites (patrone-default-apps)
 compositor/            the Patrone compositor
 shell/                 panel, launcher, dock, notifications
 settings/              the settings app

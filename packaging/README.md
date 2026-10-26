@@ -7,6 +7,7 @@ source. `build.sh` puts the two together and builds the `.deb` on the dev VM:
 ./packaging/build.sh patrone-terminal -d
 ./packaging/build.sh patrone-shell-config
 ./packaging/build.sh patrone-branding
+./packaging/build.sh patrone-default-apps
 ```
 
 The packages land in `out/`. Install them with
@@ -18,6 +19,7 @@ dependencies).
 | `patrone-terminal` | `terminal/` | The terminal, its launcher entry and icon, and an autostart entry that opens it at every login. Registers the `x-terminal-emulator` alternative (priority 60) and is the terminal `xdg-terminal-exec` picks in a Patrone Desktop session. |
 | `patrone-shell-config` | `shell-config/` | Patrone's bash prompt (`/usr/share/patrone/bashrc`, loaded from `/etc/skel/.bash_aliases`), and `/etc/skel/.zshrc` and `.zprofile` for users who choose zsh. Bash stays the default shell. |
 | `patrone-branding` | `branding/` | Patrone's name and logos in place of Ubuntu's: `os-release`, the boot splash (graphical and text), the boot menu name, the login screen logo, Settings → About, `/etc/issue` and the login message. Also the wallpaper, the dock turned off, and fastfetch's config and logo. See `branding/README.md`. |
+| `patrone-default-apps` | `default-apps/` | Chromium as the default browser (`/etc/xdg/mimeapps.list`) and in the favorites in place of Firefox. Depends on `chromium-browser`, which installs the Chromium snap. See `default-apps/README.md` for removing Firefox. |
 
 Notes:
 
@@ -38,5 +40,9 @@ Notes:
   splash is chosen through the `default.plymouth` and `text.plymouth`
   alternatives (priority 200), and installing or removing the package
   rebuilds the initramfs and the GRUB menu.
+- Ubuntu sets some GNOME defaults twice: plainly and again for its own
+  session (`[schema:ubuntu]` in `10_ubuntu-settings.gschema.override`).
+  The session-specific value beats any plain default, so Patrone's overrides
+  set both.
 - Later these builds move into a clean `sbuild` chroot, and the packages into
   the private `reprepro` repository (see `docs/PLAN.md`).

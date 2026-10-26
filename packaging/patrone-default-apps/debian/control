@@ -1,0 +1,16 @@
+Source: patrone-default-apps
+Section: misc
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-default-apps
+Architecture: all
+Depends: ${misc:Depends}, chromium-browser
+Description: Patrone Linux's default apps
+ Makes Chromium the default web browser and puts it in the favorites in place
+ of Firefox, along with Patrone Terminal. Chromium comes from Canonical's
+ snap, which keeps it up to date. Users' own choices still win.
