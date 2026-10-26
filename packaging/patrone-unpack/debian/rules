@@ -24,6 +24,9 @@ override_dh_auto_install:
 	# action (an administrator's password every time)
 	install -Dm755 data/install-deb $(pkg)/usr/libexec/patrone-unpack/install-deb
 	install -Dm644 data/org.patrone.unpack.policy $(pkg)/usr/share/polkit-1/actions/org.patrone.unpack.policy
+	# Flathub's own repository file, added to an account when a Flatpak
+	# app's runtime has to come from Flathub
+	install -Dm644 data/flathub.flatpakrepo $(pkg)/usr/share/patrone-unpack/flathub.flatpakrepo
 
 override_dh_auto_clean:
 	rm -rf target debian/cargo-home

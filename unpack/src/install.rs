@@ -2,7 +2,8 @@
 //! package is, whether it's installed already, what else installing it
 //! changes, then Install. A .deb is installed by apt, through a small root
 //! helper run by pkexec (polkit asks for an administrator's password); a
-//! Flatpak by Flatpak itself, for everyone, with its own polkit prompt.
+//! Flatpak by Flatpak itself, for the account that opened it, with no
+//! password.
 
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
@@ -25,7 +26,16 @@ pub enum Kind {
 
 enum Details {
     Deb(deb::Deb, deb::Installed),
-    Flatpak(flatpak::Info, bool),
+    Flatpak(flatpak::Info, FlatpakState),
+}
+
+/// A Flatpak file against what's installed.
+struct FlatpakState {
+    installed: bool,
+    /// The bundle's runtime isn't installed yet, so installing downloads it.
+    runtime_missing: bool,
+    /// ...from Flathub, which has to be set up first.
+    add_flathub: bool,
 }
 
 struct Window {
@@ -39,6 +49,7 @@ struct Window {
     status: gtk::Label,
     description: gtk::Label,
     facts: gtk::Grid,
+    permissions: gtk::Box,
     changes: gtk::Label,
     progress: gtk::ProgressBar,
     log: gtk::TextView,
@@ -54,7 +65,7 @@ pub fn open(app: &gtk::Application, path: &Path, kind: Kind) {
         .application(app)
         .title(file_name(path))
         .default_width(600)
-        .default_height(640)
+        .default_height(720)
         .build();
 
     let icon = gtk::Image::builder()
@@ -81,6 +92,11 @@ pub fn open(app: &gtk::Application, path: &Path, kind: Kind) {
         .row_spacing(6)
         .margin_top(6)
         .build();
+    let permissions = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(4)
+        .visible(false)
+        .build();
     let changes = label(&[]);
     let body = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
@@ -89,6 +105,7 @@ pub fn open(app: &gtk::Application, path: &Path, kind: Kind) {
         .build();
     body.append(&description);
     body.append(&facts);
+    body.append(&permissions);
     body.append(&changes);
     let scroller = gtk::ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Never)
@@ -183,6 +200,7 @@ pub fn open(app: &gtk::Application, path: &Path, kind: Kind) {
         status,
         description,
         facts,
+        permissions,
         changes,
         progress,
         log,
@@ -253,12 +271,27 @@ fn load(this: Rc<Window>) {
                 }
                 Kind::Flatpak(kind) => {
                     let info = flatpak::read(&path, kind)?;
-                    let installed = flatpak::available()
+                    let available = flatpak::available();
+                    let installed = available
                         && match kind {
                             flatpak::Kind::Repo => flatpak::has_repository(&info.id),
                             _ => flatpak::installed(&info.id),
                         };
-                    Ok(Details::Flatpak(info, installed))
+                    let runtime_missing = available
+                        && kind == flatpak::Kind::Bundle
+                        && info
+                            .needs
+                            .as_deref()
+                            .is_some_and(|runtime| !flatpak::runtime_installed(runtime));
+                    let add_flathub = runtime_missing && flatpak::needs_flathub(&info);
+                    Ok(Details::Flatpak(
+                        info,
+                        FlatpakState {
+                            installed,
+                            runtime_missing,
+                            add_flathub,
+                        },
+                    ))
                 }
             }
         })
@@ -396,9 +429,9 @@ fn fill(this: &Window, details: &Details) {
             this.changes.set_text("Checking what else is needed…");
             this.changes.add_css_class("unpack-dim");
         }
-        Details::Flatpak(info, installed) => {
+        Details::Flatpak(info, state) => {
             let flatpak::Kind::Repo = kind_of(this) else {
-                return fill_flatpak_app(this, info, *installed);
+                return fill_flatpak_app(this, info, state);
             };
             this.window.set_title(Some(&format!("Add {}", info.title)));
             this.title.set_text(&info.title);
@@ -418,15 +451,15 @@ fn fill(this: &Window, details: &Details) {
             this.install.set_label("Add");
             if !flatpak::available() {
                 no_flatpak(this);
-            } else if *installed {
+            } else if state.installed {
                 this.status.set_text(&format!(
-                    "{} is already set up on this computer as “{}”.",
+                    "{} is already set up for you as “{}”.",
                     info.title, info.id
                 ));
                 this.install.set_sensitive(false);
             } else {
                 this.status.set_text(&format!(
-                    "Adds {} as a place Flatpak apps come from, for everyone on this computer.",
+                    "Adds {} as a place your Flatpak apps can come from. No password is needed.",
                     info.title
                 ));
                 this.install.set_sensitive(true);
@@ -442,12 +475,17 @@ fn kind_of(this: &Window) -> flatpak::Kind {
     }
 }
 
-fn fill_flatpak_app(this: &Window, info: &flatpak::Info, installed: bool) {
+fn fill_flatpak_app(this: &Window, info: &flatpak::Info, state: &FlatpakState) {
     this.window
         .set_title(Some(&format!("Install {}", info.title)));
+    if let Some(png) = &info.icon
+        && let Ok(texture) = gtk::gdk::Texture::from_bytes(&glib::Bytes::from(png.as_slice()))
+    {
+        this.icon.set_paintable(Some(&texture));
+    }
     this.title.set_text(&info.title);
     this.subtitle.set_text(if info.summary.is_empty() {
-        if info.runtime {
+        if info.is_runtime {
             "Flatpak runtime"
         } else {
             "Flatpak app"
@@ -456,47 +494,94 @@ fn fill_flatpak_app(this: &Window, info: &flatpak::Info, installed: bool) {
         &info.summary
     });
     this.description.set_text(&info.description);
-    add_fact(this, "App ID", &info.id);
-    add_fact(this, "Branch", &info.branch);
+    add_fact(this, "Version", &info.version);
+    add_fact(this, "Made by", &info.developer);
     if kind_of(this) == flatpak::Kind::Bundle {
         add_fact(this, "Download size", &file_size(&this.path));
     }
     if let Some(size) = info.installed_size {
         add_fact(this, "Size installed", &util::size(size));
     }
+    if let Some(needs) = &info.needs {
+        let label = flatpak::runtime_label(needs);
+        let text = if state.runtime_missing {
+            let from = match info.runtime_repo.as_deref() {
+                Some(repo) if !repo.contains("dl.flathub.org") => host(repo),
+                _ => "Flathub".to_string(),
+            };
+            format!("{label}, downloaded from {from} the first time")
+        } else {
+            label
+        };
+        add_fact(this, "Needs", &text);
+    }
     if let Some(url) = &info.url {
         add_fact(this, "Comes from", &host(url));
     }
-    if let Some(needs) = &info.needs {
-        add_fact(this, "Needs", needs);
-    }
+    add_fact(this, "App ID", &info.id);
+    add_fact(this, "Branch", &info.branch);
     if let Some(homepage) = &info.homepage {
         add_link(this, "Website", homepage);
     }
     add_fact(this, "File", &util::display_path(&this.path));
+    if let Some(permissions) = &info.permissions {
+        show_permissions(this, permissions);
+    }
     if !flatpak::available() {
         no_flatpak(this);
         return;
     }
-    if installed {
+    if state.installed {
         this.status
             .set_text(&format!("{} is already installed.", info.title));
         this.install.set_label("Reinstall");
-        this.open.set_visible(!info.runtime);
+        this.open.set_visible(!info.is_runtime);
     } else {
-        let source = match kind_of(this) {
-            flatpak::Kind::Bundle => "from this file".to_string(),
-            _ => match &info.url {
-                Some(url) => format!("from {}", host(url)),
-                None => String::new(),
-            },
-        };
-        this.status.set_text(&format!(
-            "Not installed. Installing downloads it {source} and makes it available to \
-             everyone on this computer, with anything else it needs."
-        ));
+        let mut text = "Not installed. Installing it for you needs no password.".to_string();
+        if kind_of(this) == flatpak::Kind::Ref
+            && let Some(url) = &info.url
+        {
+            text = format!(
+                "Not installed. Installing downloads it from {} for you, with anything \
+                 else it needs. No password is needed.",
+                host(url)
+            );
+        }
+        if state.runtime_missing {
+            text.push_str(
+                " It also downloads the runtime it needs, which Flatpak apps share; the \
+                 first one can be a few hundred MB.",
+            );
+        }
+        this.status.set_text(&text);
     }
     this.install.set_sensitive(true);
+}
+
+/// What the app may use beyond its own sandbox.
+fn show_permissions(this: &Window, permissions: &[flatpak::Permission]) {
+    this.permissions.append(
+        &gtk::Label::builder()
+            .label("What it can use")
+            .xalign(0.0)
+            .css_classes(["unpack-heading"])
+            .build(),
+    );
+    if permissions.is_empty() {
+        let line = label(&["unpack-dim"]);
+        line.set_text("Only its own files: nothing beyond Flatpak's sandbox.");
+        this.permissions.append(&line);
+    }
+    for permission in permissions {
+        let line = label(if permission.warning {
+            &["unpack-warning"]
+        } else {
+            &[]
+        });
+        line.set_text(&format!("•  {}", permission.text));
+        this.permissions.append(&line);
+    }
+    this.permissions.set_visible(true);
 }
 
 fn no_flatpak(this: &Window) {
@@ -616,11 +701,27 @@ fn start_install(this: &Rc<Window>) {
                 this.path.to_string_lossy().into_owned(),
             ]
         }
-        (Kind::Flatpak(kind), Some(Details::Flatpak(info, _))) => {
-            flatpak::install_command(*kind, &this.path, info)
+        (Kind::Flatpak(kind), Some(Details::Flatpak(info, state))) => {
+            let mut commands = flatpak::install_commands(
+                *kind,
+                &this.path,
+                info,
+                state.installed,
+                state.add_flathub,
+            );
+            // Flathub first, if it has to be set up
+            let last = commands.pop().unwrap_or_default();
+            run_all(this, commands, last);
+            return;
         }
         _ => return,
     };
+    run_all(this, Vec::new(), command);
+}
+
+/// Runs commands one after another, then the main one, with their output
+/// and progress in the window.
+fn run_all(this: &Rc<Window>, before: Vec<Vec<String>>, command: Vec<String>) {
     this.install.set_sensitive(false);
     this.close.set_sensitive(false);
     this.status.remove_css_class("unpack-error");
@@ -632,19 +733,6 @@ fn start_install(this: &Rc<Window>) {
     this.progress.set_fraction(0.0);
     this.progress.set_text(Some(""));
     this.expander.set_visible(true);
-    append_log(this, &format!("$ {}", command.join(" ")));
-
-    let arguments: Vec<&std::ffi::OsStr> = command.iter().map(std::ffi::OsStr::new).collect();
-    let process = match gio::Subprocess::newv(
-        &arguments,
-        gio::SubprocessFlags::STDOUT_PIPE | gio::SubprocessFlags::STDERR_MERGE,
-    ) {
-        Ok(process) => process,
-        Err(error) => {
-            finish(this, Err(format!("{} couldn't start: {error}", command[0])));
-            return;
-        }
-    };
     let pulse = {
         let progress = this.progress.clone();
         glib::timeout_add_local(std::time::Duration::from_millis(150), move || {
@@ -656,6 +744,48 @@ fn start_install(this: &Rc<Window>) {
     };
     let this = this.clone();
     glib::spawn_future_local(async move {
+        for step in before.iter().chain(std::iter::once(&command)) {
+            let code = run_one(&this, step).await;
+            if code != 0 {
+                pulse.remove();
+                finish(&this, Err(failure(this.kind, code)));
+                return;
+            }
+        }
+        pulse.remove();
+        finish(&this, Ok(()));
+    });
+}
+
+/// Why a command failed, for the status line.
+fn failure(kind: Kind, code: i32) -> String {
+    match (kind, code) {
+        // pkexec: the password dialog was dismissed
+        (Kind::Deb, 126) => String::new(),
+        (Kind::Deb, 127) => "You aren't allowed to install software on this computer, \
+                             or the password wasn't accepted."
+            .into(),
+        (_, -1) => "Installing couldn't start. The details below say why.".into(),
+        (_, code) => format!("Installing failed (exit status {code}). The details below say why."),
+    }
+}
+
+/// Runs one command and returns its exit status (-1 if it didn't start).
+async fn run_one(this: &Rc<Window>, command: &[String]) -> i32 {
+    append_log(this, &format!("$ {}", command.join(" ")));
+    let arguments: Vec<&std::ffi::OsStr> = command.iter().map(std::ffi::OsStr::new).collect();
+    let process = match gio::Subprocess::newv(
+        &arguments,
+        gio::SubprocessFlags::STDOUT_PIPE | gio::SubprocessFlags::STDERR_MERGE,
+    ) {
+        Ok(process) => process,
+        Err(error) => {
+            append_log(this, &format!("{} couldn't start: {error}", command[0]));
+            return -1;
+        }
+    };
+    {
+        let this = this.clone();
         let mut started = false;
         read_lines(&process, |line| {
             if !started {
@@ -675,26 +805,13 @@ fn start_install(this: &Rc<Window>) {
             append_log(&this, line);
         })
         .await;
-        let _ = process.wait_future().await;
-        pulse.remove();
-        let code = if process.has_exited() {
-            process.exit_status()
-        } else {
-            -1
-        };
-        let result = match (this.kind, code) {
-            (_, 0) => Ok(()),
-            // pkexec: the password dialog was dismissed
-            (Kind::Deb, 126) => Err(String::new()),
-            (Kind::Deb, 127) => Err("You aren't allowed to install software on this computer, \
-                                     or the password wasn't accepted."
-                .into()),
-            (_, code) => Err(format!(
-                "Installing failed (exit status {code}). The details below say why."
-            )),
-        };
-        finish(&this, result);
-    });
+    }
+    let _ = process.wait_future().await;
+    if process.has_exited() {
+        process.exit_status()
+    } else {
+        -1
+    }
 }
 
 /// Reads a process's output a line at a time, splitting on carriage returns
@@ -735,6 +852,11 @@ fn finish(this: &Rc<Window>, result: Result<(), String>) {
             this.progress.set_visible(false);
             this.status.set_text(match this.kind {
                 Kind::Flatpak(flatpak::Kind::Repo) => "Added. Its apps can be installed now.",
+                // Flatpak was only just installed: the session finds its apps
+                // from the next sign-in
+                Kind::Flatpak(_) if !flatpak::session_sees_flatpak_apps() => {
+                    "Installed. Open starts it now; it appears in Start after you next sign in."
+                }
                 _ => "Installed.",
             });
             this.status.add_css_class("unpack-success");
@@ -764,7 +886,7 @@ fn finish(this: &Rc<Window>, result: Result<(), String>) {
 fn has_launcher(this: &Window) -> bool {
     match &*this.details.borrow() {
         Some(Details::Deb(package, _)) => !deb::launchers(&package.package).is_empty(),
-        Some(Details::Flatpak(info, _)) => kind_of(this) != flatpak::Kind::Repo && !info.runtime,
+        Some(Details::Flatpak(info, _)) => kind_of(this) != flatpak::Kind::Repo && !info.is_runtime,
         None => false,
     }
 }

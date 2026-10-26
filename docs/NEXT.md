@@ -157,13 +157,15 @@ Waiting on the user:
   is narrower and fixed; and with Patrone Unpack installed, any archive gets
   Extract All… and Extract here.
 - **Install Patrone Unpack** (section 13), from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.0_amd64.deb
+  `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.1_amd64.deb
   ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
-  Flatpak, which `patrone-unpack` recommends). Then open a zip or tar.gz from
-  File Manager, try Extract all and Extract here, and open a `.deb`: Install
-  should ask for your password with "Installing software for everyone on
-  this computer needs an administrator's password". A `.flatpakref` from
-  flathub.org (its Install button) should install the app for everyone.
+  Flatpak, which `patrone-unpack` depends on). Then double-click
+  `~/Downloads/pdfcraft-0.9.0-linux-x86_64.flatpak` in File Manager: Install
+  needs no password, adds Flathub for its runtime the first time, and Open
+  starts PdfCraft (it reaches Start after the next sign-in, since Flatpak is
+  new to the session). Also open a zip or tar.gz (Extract all, Extract here)
+  and a `.deb`: Install asks for your password with "Installing software for
+  everyone on this computer needs an administrator's password".
 
 ## 1. Patrone Terminal
 
@@ -1372,14 +1374,23 @@ opens with what it is, what else installing it changes (apt's simulation),
 and Install. `patrone-default-apps` 0.1.3 makes it the default for all of
 them, with Nautilus and App Center as fallbacks.
 
+Then the user's actual need came through (via the main session): a
+downloaded `.flatpak` bundle (PdfCraft 0.9.0, in `~/Downloads`) showed
+GNOME's "No Apps Available" with a "Find more in App Center" button. 0.1.1
+installs Flatpak apps for the account that opens them (`--user`, no
+password), shows a bundle's icon, version, developer, size and permissions,
+sets Flathub up for the account (from Flathub's own `.flatpakrepo`, shipped
+in the package) when the runtime isn't installed and comes from there, and
+depends on `flatpak`.
+
 How: Rust and GTK 4; libarchive for every archive format, rar included
 (its own free code, no `unrar`), linked by its run-time name; extraction
 written by Unpack itself so nothing lands outside the destination; `.deb`
 installs through `pkexec` and a root helper running apt, under a polkit
 action of its own (`auth_admin`, every time); Flatpak through `flatpak
-install --system`, whose own polkit rules ask.
+install --user`, which needs no password.
 
-Checked on the VM: the package builds and its build runs 18 tests (real zip,
+Checked on the VM: the package builds and its build runs 19 tests (real zip,
 7z and tar archives made with libarchive's writer, paths that try to leave
 the destination, passwords, apt's output, Flatpak files); Clippy and
 rustfmt are clean; the desktop file validates; `gio mime` picks Unpack for
@@ -1389,9 +1400,14 @@ folder (and the folder opened in File Manager), Extract here naming
 "(2)", the replace/skip question, opening a file from the archive,
 `--extract-here`, a `.deb` up to polkit's password prompt and Cancel, a
 `.deb` apt can't install, a `.flatpakref` without Flatpak, light and dark.
-Not checked: a real install (needs the password), the installed policy's
-message, Flatpak installs and real `.flatpak` bundles (no Flatpak on the
-VM), rar files.
+For 0.1.1, the user's PdfCraft bundle **installed end to end** through the
+window, with Ubuntu's Flatpak unpacked into a scratch folder and scratch
+user and system folders (nothing reached the user's account; all deleted
+after): Flathub added, PdfCraft with its runtime and graphics drivers
+installed, progress, and Open started PdfCraft. Not checked: a real `.deb`
+install (needs the password), the installed policy's message, a Flatpak
+install with the installed package's own paths, `.flatpakref` installs, rar
+files.
 
 Findings:
 
@@ -1409,7 +1425,21 @@ Findings:
   the unmet dependency is already listed.
 - Ubuntu's Flatpak lets `sudo` members install without a password only in
   local sessions (with a seat). Patrone's seatless desktops get Flatpak's
-  defaults: an administrator's password.
+  defaults for `--system`: an administrator's password. Hence `--user`.
+- Flatpak bundles hold a `runtime-repo` (Flathub's `.flatpakrepo` for
+  PdfCraft), icons as PNGs (`icon-64`, `icon-128`), the metadata keyfile and
+  gzipped AppStream XML in the superblock's first dictionary; PdfCraft's has
+  no `installed-size`.
+- Flatpak's CLI can run unpacked from its `.deb` for tests
+  (`LD_LIBRARY_PATH`, `FLATPAK_SYSTEM_DIR`, `FLATPAK_USER_DIR`), but even a
+  read-only `flatpak list` fails until the system folder has an OSTree repo
+  (`repo/config` and its folders), and `--system` changes go through the
+  system helper over D-Bus.
+- **Left for later:** GNOME's "Open With" dialog (xdg-desktop-portal-gnome
+  50.0) has "Find more in App Center", which starts
+  `snap-store_snap-store.desktop`, else GNOME Software. App Center is still
+  installed on the VM, so it works there; without it the button fails
+  ("Failed to start App Center").
 - To reach a throwaway shell's polkit agent, start the app from inside the
   shell (`Gio.Subprocess` through `headless.sh eval`): pkexec asks the agent
   of its own login session, and each SSH command is a session of its own.

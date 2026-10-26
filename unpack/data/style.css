@@ -73,6 +73,9 @@
 
 .unpack-link {
   padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
 }
 
 button.suggested-action {

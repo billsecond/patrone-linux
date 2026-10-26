@@ -14,12 +14,13 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 
 Package: patrone-unpack
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, apt, pkexec
-Recommends: flatpak
+Depends: ${shlibs:Depends}, ${misc:Depends}, apt, flatpak, pkexec
 Description: Patrone's app for archives, .deb packages and Flatpak apps
  Patrone Unpack opens zip, tar (gzip, xz, bzip2, zstd), 7z and rar
  archives as folders, with Extract all and Extract here, and opens a
- single file from one with a double-click. It also installs .deb packages
- and Flatpak apps: it shows what a package is, its version and size and
- what else it needs, and installs it for everyone once an administrator's
- password is given.
+ single file from one with a double-click. It also installs Flatpak apps
+ (.flatpak bundles, .flatpakref and .flatpakrepo files) for the account
+ that opens them, with no password, setting up Flathub when an app's
+ runtime comes from there, and .deb packages for everyone once an
+ administrator's password is given. It shows what each one is first: its
+ version, size, permissions or what else it needs.
