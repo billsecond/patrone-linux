@@ -1,1 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs><linearGradient id="bin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEF3F8"/><stop offset="1" stop-color="#C2CEDB"/></linearGradient><linearGradient id="lid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C5D2"/><stop offset="1" stop-color="#8E9DAE"/></linearGradient></defs><path d="M20 22L23 8L37 11L34 25Z" fill="#FFFFFF" stroke="#B4BAC2"/><path d="M30 23L36 6.5L48 11L42 27Z" fill="#DDEBFF" stroke="#288BFA"/><path d="M24 12.5L33 14.5M23 16.5L32 18.5" stroke="#C9CED6" stroke-width="1.5" stroke-linecap="round"/><path d="M15 21H49L46 54.5A3.5 3.5 0 0 1 42.5 58H21.5A3.5 3.5 0 0 1 18 54.5Z" fill="url(#bin)" stroke="#8695A6" stroke-width="1.2" stroke-linejoin="round"/><path d="M25 27L26 51M32 27V51M39 27L38 51" stroke="#9AA8B8" stroke-width="2" stroke-linecap="round"/><rect x="11" y="16" width="42" height="7" rx="2.5" fill="url(#lid)"/><path d="M26 16V13.5A1.5 1.5 0 0 1 27.5 12H36.5A1.5 1.5 0 0 1 38 13.5V16" stroke="#8E9DAE" stroke-width="2" fill="none"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Patrone's Recycle Bin with something in it: the same bin, its lid lifted
+       by two sheets of paper. -->
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4da0fc"/>
+      <stop offset="1" stop-color="#1d5cc4"/>
+    </linearGradient>
+    <linearGradient id="lid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b5d8ff"/>
+      <stop offset="1" stop-color="#62abfc"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g transform="rotate(-10 27 25)">
+    <rect x="19" y="9" width="16" height="20" rx="2" fill="#ffffff" stroke="#c9d6ea"/>
+    <path d="M22.5 14H31.5M22.5 18H31.5M22.5 22H28.5" stroke="#8fb8ec" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+  <g transform="rotate(13 38 25)">
+    <rect x="31" y="11" width="15" height="18" rx="2" fill="#f2f7fd" stroke="#c9d6ea"/>
+    <path d="M34.5 16H42.5M34.5 20H42.5" stroke="#8fb8ec" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+  <path d="M13 22H51L47.6 52.2A6 6 0 0 1 41.6 58H22.4A6 6 0 0 1 16.4 52.2Z" fill="url(#body)"/>
+  <path d="M13 22H31L29.6 58H22.4A6 6 0 0 1 16.4 52.2Z" fill="url(#shine)"/>
+  <path d="M38.9 35A8 8 0 1 1 32 31" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M37.4 31L32 26.8V35.2Z" fill="#ffffff"/>
+  <g transform="rotate(-14 10 17)">
+    <rect x="10" y="7" width="44" height="6" rx="3" fill="url(#lid)"/>
+    <rect x="26" y="2.2" width="12" height="5.6" rx="2.8" fill="none" stroke="#b5d8ff" stroke-width="2.4"/>
+  </g>
+</svg>

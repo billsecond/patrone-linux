@@ -123,8 +123,10 @@ a corner: bottom right unless moved, inside the taskbar.
 
 - Double-click opens it in the file manager (`trash:///`, which opens in
   whatever opens folders: Patrone File Manager).
-- Its icon fills when something's in it (File Manager's own drawings,
-  copied into `icons/recycle-bin*.svg`).
+- Its icon is Patrone's own (`icons/recycle-bin*.svg`; the user asked for
+  one "more modern than windows/mac"): a Patrone Blue bin under a floating
+  lid, with a white loop of an arrow on it, and when something's in it,
+  two sheets of paper lifting the lid.
 - Right-click: **Open**, **Empty Recycle Bin** (after asking; Cancel is the
   default), and **Keep docked to** Bottom right, Bottom left, Top right, Top
   left, or Not docked.
@@ -132,6 +134,13 @@ a corner: bottom right unless moved, inside the taskbar.
   where it's dropped.
 - It sits above the wallpaper and the desktop icons' window and below every
   other window, and follows the free area when the screen size changes.
+  That window starts as an ordinary one and only then becomes a desktop
+  window and lowers itself, which GNOME Shell doesn't count as a restack;
+  0.3.3 missed that, so the Recycle Bin stayed under it and couldn't be
+  clicked or dragged (the user found it, 2026-10-26). It now follows each
+  window's type, and knows the desktop icons' window by their own
+  `customJS_ding` mark too. While it's dragged it holds the pointer, or the
+  window the pointer passes over (that full-screen one) takes the drag.
 
 Not done: dropping files onto it (GNOME Shell takes no drops from apps), and
 docked top left it can cover the first desktop file, since the desktop icons
@@ -208,7 +217,7 @@ the taskbar follows when it's installed):
 | `recycleBin.js` | The Recycle Bin on the desktop |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
 | `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
-| `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, the `-symbolic` ones drawn in the bar's text color. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
+| `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, `patrone-start-light.svg` (the P in light tones, for Royal's green button, where the blues washed out), the `-symbolic` ones drawn in the bar's text color. The Recycle Bin's, `recycle-bin.svg` and `recycle-bin-full.svg`. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
 | `tests/headless.sh` | The throwaway GNOME Shell (below) |
 
 - **Dragging** uses GNOME Shell's own drag and drop (`ui/dnd.js`): the

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 16 388 388" width="64" height="64">
+  <!-- The Patrone mark in light tones, for Start buttons whose color the
+       mark's own blues wash out against (the Royal theme's green): the same
+       shapes as patrone-start.svg, white to pale Patrone blue. -->
+  <defs>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6f1ff"/>
+    </linearGradient>
+    <linearGradient id="bowl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2f8ff"/>
+      <stop offset="1" stop-color="#d3e6ff"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="0.6" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#eef5ff"/>
+      <stop offset="0.56" stop-color="#dcebff"/>
+      <stop offset="1" stop-color="#cbe1ff"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#top)" d="M86 68 H306 C356 68 393 106 393 150 C393 156 392 162 391 167 H140 Z"/>
+  <path fill="url(#bowl)" d="M262 180 H379 C368 228 330 262 288 262 H213 Z"/>
+  <path fill="url(#stem)" d="M133 180 H237 L131 352 H28 Z"/>
+</svg>

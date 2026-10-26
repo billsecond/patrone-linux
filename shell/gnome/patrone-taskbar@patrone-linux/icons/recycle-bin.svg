@@ -1,1 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs><linearGradient id="bin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEF3F8"/><stop offset="1" stop-color="#C2CEDB"/></linearGradient><linearGradient id="lid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C5D2"/><stop offset="1" stop-color="#8E9DAE"/></linearGradient></defs><path d="M15 21H49L46 54.5A3.5 3.5 0 0 1 42.5 58H21.5A3.5 3.5 0 0 1 18 54.5Z" fill="url(#bin)" stroke="#8695A6" stroke-width="1.2" stroke-linejoin="round"/><path d="M25 27L26 51M32 27V51M39 27L38 51" stroke="#9AA8B8" stroke-width="2" stroke-linecap="round"/><rect x="11" y="16" width="42" height="7" rx="2.5" fill="url(#lid)"/><path d="M26 16V13.5A1.5 1.5 0 0 1 27.5 12H36.5A1.5 1.5 0 0 1 38 13.5V16" stroke="#8E9DAE" stroke-width="2" fill="none"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Patrone's Recycle Bin, empty: a Patrone-blue bin under a floating lid,
+       with a white loop of an arrow on it (what's in it can come back until
+       it's emptied). Patrone's own, neither a grey bin nor a wire basket. -->
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4da0fc"/>
+      <stop offset="1" stop-color="#1d5cc4"/>
+    </linearGradient>
+    <linearGradient id="lid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b5d8ff"/>
+      <stop offset="1" stop-color="#62abfc"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path d="M13 22H51L47.6 52.2A6 6 0 0 1 41.6 58H22.4A6 6 0 0 1 16.4 52.2Z" fill="url(#body)"/>
+  <path d="M13 22H31L29.6 58H22.4A6 6 0 0 1 16.4 52.2Z" fill="url(#shine)"/>
+  <path d="M38.9 35A8 8 0 1 1 32 31" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M37.4 31L32 26.8V35.2Z" fill="#ffffff"/>
+  <rect x="10" y="14" width="44" height="6" rx="3" fill="url(#lid)"/>
+  <rect x="26" y="9.2" width="12" height="5.6" rx="2.8" fill="none" stroke="#b5d8ff" stroke-width="2.4"/>
+</svg>

@@ -74,9 +74,12 @@ export class RecycleBin {
         rightClick.connect('recognize', () => this._openMenu());
         this.actor.add_action(rightClick);
 
+        // Dragging holds the pointer, or the windows it passes over (the
+        // desktop icons' covers the whole screen) take the rest of the drag
         this._pan = new Clutter.PanGesture();
         this._pan.connect('recognize', () => {
             this._dragFrom = [this.actor.x, this.actor.y];
+            this._grab = global.stage.grab(this.actor);
         });
         this._pan.connect('pan-update', () => {
             const delta = this._pan.get_accumulated_delta_abs();
@@ -84,8 +87,14 @@ export class RecycleBin {
                 Math.round(this._dragFrom[0] + delta.get_x()),
                 Math.round(this._dragFrom[1] + delta.get_y()));
         });
-        this._pan.connect('end', () => this._dropped());
-        this._pan.connect('cancel', () => this._place());
+        this._pan.connect('end', () => {
+            this._endGrab();
+            this._dropped();
+        });
+        this._pan.connect('cancel', () => {
+            this._endGrab();
+            this._place();
+        });
         this.actor.add_action(this._pan);
 
         this._buildMenu();
@@ -105,7 +114,10 @@ export class RecycleBin {
             'changed::recycle-bin-position', () => this._place(), this);
         global.display.connectObject(
             'workareas-changed', () => this._place(),
-            'restacked', () => this._queueRestack(), this);
+            'restacked', () => this._queueRestack(),
+            'window-created', (_, window) => this._watchWindow(window), this);
+        for (const actor of global.get_window_actors())
+            this._watchWindow(actor.meta_window);
         Main.layoutManager.connectObject('monitors-changed', () => this._place(), this);
         // Its size is only known once it's styled, after it's on the stage
         this.actor.connect('notify::width', () => this._place());
@@ -116,6 +128,7 @@ export class RecycleBin {
     }
 
     destroy() {
+        this._endGrab();
         this._monitor?.cancel();
         if (this._restackLater)
             global.compositor.get_laters().remove(this._restackLater);
@@ -172,6 +185,11 @@ export class RecycleBin {
         this.actor.set_position(Math.round(x), Math.round(y));
     }
 
+    _endGrab() {
+        this._grab?.dismiss();
+        this._grab = null;
+    }
+
     _dropped() {
         const area = Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex);
         const [width, height] = this.actor.get_size();
@@ -193,7 +211,22 @@ export class RecycleBin {
 
     // Just above the topmost desktop window (the desktop icons'), or the
     // wallpaper. GNOME Shell reorders the window actors whenever the windows
-    // restack, so this follows each time.
+    // restack, so this follows each time. The desktop icons' window starts
+    // as an ordinary one and only then becomes a desktop window and lowers
+    // itself, which isn't a restack when it's already the lowest: without
+    // following the type, the Recycle Bin stayed under that window, which
+    // covers the screen and took its clicks (the user found it couldn't be
+    // right-clicked or moved, 2026-10-26).
+    _watchWindow(window) {
+        window?.connectObject('notify::window-type', () => this._queueRestack(), this.actor);
+        this._queueRestack();
+    }
+
+    _isDesktop(window) {
+        return window?.get_window_type() === Meta.WindowType.DESKTOP ||
+            !!window?.customJS_ding?.keepAtBottom;
+    }
+
     _queueRestack() {
         if (this._restackLater)
             return;
@@ -206,8 +239,7 @@ export class RecycleBin {
 
     _restack() {
         const desktops = global.get_window_actors().filter(actor =>
-            actor.meta_window?.get_window_type() === Meta.WindowType.DESKTOP &&
-            actor.get_parent() === global.window_group);
+            this._isDesktop(actor.meta_window) && actor.get_parent() === global.window_group);
         const below = desktops.at(-1) ?? Main.layoutManager._backgroundGroup;
         global.window_group.set_child_above_sibling(this.actor, below);
     }

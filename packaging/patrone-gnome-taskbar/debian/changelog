@@ -1,3 +1,18 @@
+patrone-gnome-taskbar (0.3.4) resolute; urgency=medium
+
+  * The Recycle Bin can be clicked and dragged on a real desktop: it stayed
+    under the desktop icons' window, which covers the screen and took its
+    clicks, because that window becomes a desktop window only after it
+    appears. It now holds the pointer while dragged, too.
+  * A new Recycle Bin icon of Patrone's own: a Patrone Blue bin under a
+    floating lid with a white loop of an arrow, its lid lifted by paper
+    when something's in it.
+  * Royal's green Start button shows the Patrone P in light tones, where
+    its blues washed out.
+  * No more "already disposed" warnings from focus changes at sign-out.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:55:00 -0500
+
 patrone-gnome-taskbar (0.3.3) resolute; urgency=medium
 
   * A Recycle Bin on the desktop, docked to the bottom right corner: double-

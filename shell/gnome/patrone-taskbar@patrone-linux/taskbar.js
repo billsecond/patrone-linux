@@ -53,6 +53,12 @@ const START_ICONS = {
     spark: 'start-spark-symbolic.svg',
     terminal: 'start-terminal-symbolic.svg',
 };
+// The Patrone P's blues wash out on Royal's green Start button, so there
+// it's drawn in light tones (the user, 2026-10-26)
+const LIGHT_START_ICONS = {
+    patrone: 'patrone-start-light.svg',
+};
+const LIGHT_START_THEMES = ['royal'];
 const DESKTOP_SCHEMA = 'org.patrone.desktop';
 // The taskbar's settings: GNOME Settings' Patrone page, in Patrone's build
 // of GNOME Settings, or else Patrone Settings' own window
@@ -589,6 +595,7 @@ export class Taskbar {
             this.actor.remove_style_class_name(`theme-${name}`);
         this.actor.add_style_class_name(`theme-${this._theme}`);
         this._applyColor();
+        this._applyStartIcon();
     }
 
     // The bar's color: the wallpaper's, in the themes that take it, over
@@ -631,7 +638,11 @@ export class Taskbar {
     }
 
     _applyStartIcon() {
-        const file = START_ICONS[this.settings.get_string('start-icon')] ?? START_ICONS.patrone;
+        const name = START_ICONS[this.settings.get_string('start-icon')]
+            ? this.settings.get_string('start-icon')
+            : 'patrone';
+        const file = (LIGHT_START_THEMES.includes(this._theme) && LIGHT_START_ICONS[name]) ||
+            START_ICONS[name];
         this._startIcon.gicon = new Gio.FileIcon({file: this._iconsDir.get_child(file)});
     }
 
@@ -808,6 +819,10 @@ export class Taskbar {
     }
 
     _syncItems() {
+        // Focus changes as GNOME Shell exits come after it destroyed the
+        // buttons (signing out logged "already disposed" for each)
+        if (this._actorDestroyed)
+            return;
         for (const item of this._items.values())
             item.sync();
     }
