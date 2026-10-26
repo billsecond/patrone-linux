@@ -8,7 +8,7 @@ pools=/etc/chrony/sources.d/ubuntu-ntp-pools.sources
 if [ "$1" = configure ]; then
     # Ubuntu's chrony asks whether to keep its ntp.ubuntu.com pools in
     # sources.d. Answer no, and drop the file the way chrony's postinst does
-    # with that answer; Patrone's servers are in patrone-nts.sources.
+    # with that answer; the servers Patrone uses are in patrone-nts.sources.
     if dpkg-query -W -f='${Status}' chrony 2> /dev/null | grep -q ' installed$'; then
         db_set chrony/configure_ubuntu_pools_in_sourcesd false || true
         if command -v ucf > /dev/null; then
