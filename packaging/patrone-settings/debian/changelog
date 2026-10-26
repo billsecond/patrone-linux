@@ -11,6 +11,8 @@ patrone-settings (0.3.1) resolute; urgency=medium
   * The sign-in entry that writes the account's style sheets runs again:
     GNOME 50's session skips autostart entries with
     X-GNOME-Autostart-Phase, which it had.
+  * A clearer icon: a white gear on a Patrone Blue tile, bold enough to
+    read at 16 pixels in the Start menu and on the taskbar.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:20:00 -0500
 

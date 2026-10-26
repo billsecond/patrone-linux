@@ -214,14 +214,11 @@ class TaskbarItem extends St.Button {
         return this.entry ?? this.app?.get_id() ?? null;
     }
 
+    // A role slot shows the app it opens, like any pin, and the role's own
+    // icon only while no app does its job.
     _makeIcon(size) {
-        if (this.role) {
-            return new St.Icon({
-                icon_name: ROLES[this.role].icon,
-                icon_size: size,
-                fallback_gicon: this.app?.app_info?.get_icon() ?? null,
-            });
-        }
+        if (!this.app)
+            return new St.Icon({icon_name: ROLES[this.role].icon, icon_size: size});
         return this.app.create_icon_texture(size);
     }
 
@@ -461,6 +458,12 @@ export class Taskbar {
         global.display.connectObject('notify::focus-window', () => this._syncItems(), this);
         Main.layoutManager.connectObject('monitors-changed', () => this._relayout(), this);
         this.actor.connect('style-changed', () => this._relayout());
+        // When GNOME Shell exits (signing out), it destroys the bar without
+        // turning the extension off, and a rebuild already queued would
+        // touch the destroyed buttons
+        this.actor.connect('destroy', () => {
+            this._actorDestroyed = true;
+        });
 
         this._applySize();
         this._applyTheme();
@@ -682,7 +685,8 @@ export class Taskbar {
         this._rebuildLater = global.compositor.get_laters().add(
             Meta.LaterType.BEFORE_REDRAW, () => {
                 this._rebuildLater = 0;
-                this._rebuild();
+                if (!this._actorDestroyed)
+                    this._rebuild();
                 return GLib.SOURCE_REMOVE;
             });
     }

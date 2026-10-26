@@ -1,3 +1,13 @@
+patrone-gnome-taskbar (0.3.2) resolute; urgency=medium
+
+  * No more "already disposed" warnings when signing out: a rebuild queued
+    as GNOME Shell exited touched the bar's destroyed buttons.
+  * The browser, terminal, files and mail pins show the icon of the app
+    they open, as the Start menu does, instead of the icon theme's
+    generic one; the generic icon is only for a job no app does.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:20:00 -0500
+
 patrone-gnome-taskbar (0.3.1) resolute; urgency=medium
 
   * When an update replaces the taskbar's files, a notification says to
