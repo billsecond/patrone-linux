@@ -29,9 +29,21 @@ sudo patrone-remote-desktop enable
 sudo adduser NAME remote-desktop
 ```
 
-Then connect from Windows with `mstsc /v:HOSTNAME`, and give the Linux
-account's username and password. The first time, Remote Desktop Connection
-also asks you to trust the computer's certificate, which is self-signed.
+Then connect from Windows with a connection file made on the Patrone
+machine, and give the Linux account's username and password:
+
+```
+patrone-remote-desktop rdp-file > Patrone.rdp     # copy it to Windows, double-click
+```
+
+The file matters: by default Remote Desktop Connection sends no password to
+a server without NLA, expecting the server to show its own sign-in screen.
+The file's `enablecredsspsupport:i:0` and `prompt for credentials on
+client:i:1` make it ask on Windows and send what you type. (Microsoft's
+current list of RDP file settings doesn't include the second one; it comes
+from Remote Desktop Connection 6.0's era.) The first time, Remote Desktop
+Connection also asks you to trust the computer's certificate, which is
+self-signed.
 `patrone-remote-desktop status` shows whether it's on and who's in the group;
 `patrone-remote-desktop disable` turns it off.
 

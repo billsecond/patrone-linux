@@ -377,6 +377,20 @@ Findings:
   Desktop Sharing was disabled from starting at login (it took 3389 before).
   Still to do: lock the screen after idle (end the viewer, back to the login
   screen), and Patrone's own compositor doing this natively.
+- **Second try (0.2.0, 2026-10-26):** the proxy ran and listened on 3389,
+  but `mstsc` sent no password: the plugin logged "sent no username and
+  password". To a server without NLA, Remote Desktop Connection leaves
+  sign-in to the server's own screen. 0.2.1 adds `patrone-remote-desktop
+  rdp-file` (and `scripts/hyperv/PatroneDev.rdp`) with
+  `enablecredsspsupport:i:0` and `prompt for credentials on client:i:1`,
+  which should make it ask on Windows and send the credentials. Unverified:
+  Microsoft's current RDP file reference doesn't list the second setting.
+  The plugin now logs whether a username came without a password. If the
+  file doesn't work, the fallback is a sign-in screen served by Patrone
+  itself for clients that send nothing (as Windows does without NLA). Also,
+  the user was signed in on the screen with Ubuntu's session (GDM
+  preselects the last one), which would have been "busy"; they pick Patrone
+  Desktop from the gear menu.
 - The earlier per-user attempt (a `headless` mode in
   `setup-remote-desktop.sh` with the Linux password as GNOME's credentials,
   and `rdp-no-lock.sh`) was removed: it stored the password, which the user

@@ -11,10 +11,13 @@ if [ "$1" = configure ]; then
         adduser --system --quiet --group --no-create-home \
             --home /var/lib/patrone-remote-desktop/proxy patrone-rdp
     fi
-    # On an upgrade, a running proxy picks up the new plugin.
-    if [ -n "$2" ]; then
-        deb-systemd-invoke try-restart patrone-remote-desktop.service || true
-    fi
 fi
 
 #DEBHELPER#
+
+# On an upgrade, a running proxy picks up the new plugin. After #DEBHELPER#,
+# which reloads systemd's view of the changed unit files first.
+if [ "$1" = configure ] && [ -n "$2" ] && [ -d /run/systemd/system ]; then
+    systemctl --system daemon-reload > /dev/null || true
+    deb-systemd-invoke try-restart patrone-remote-desktop.service || true
+fi

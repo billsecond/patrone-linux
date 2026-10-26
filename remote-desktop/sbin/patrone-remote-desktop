@@ -4,6 +4,9 @@
 #   patrone-remote-desktop enable    start it, now and at every boot
 #   patrone-remote-desktop disable   stop it
 #   patrone-remote-desktop status    whether it's on, and who may sign in
+#   patrone-remote-desktop rdp-file [HOST] > NAME.rdp
+#                                    a Remote Desktop Connection file for this
+#                                    computer, to double-click on Windows
 #
 # Accounts in the remote-desktop group sign in with their own username and
 # password, checked each time: sudo adduser NAME remote-desktop
@@ -60,8 +63,24 @@ case ${1:-} in
         fi
         echo "Who may sign in (the remote-desktop group): $(members)"
         ;;
+    rdp-file)
+        # Patrone checks the password on the server, not through NLA, and
+        # Remote Desktop Connection only asks for it on the client, and sends
+        # it, when told to. Windows reads these files with CRLF line ends.
+        host=${2:-$(hostname).local}
+        printf '%s\r\n' \
+            "full address:s:$host" \
+            "username:s:${SUDO_USER:-$USER}" \
+            "enablecredsspsupport:i:0" \
+            "prompt for credentials on client:i:1" \
+            "authentication level:i:2" \
+            "screen mode id:i:2" \
+            "dynamic resolution:i:1" \
+            "redirectclipboard:i:1" \
+            "audiomode:i:0"
+        ;;
     *)
-        echo "Usage: patrone-remote-desktop enable|disable|status" >&2
+        echo "Usage: patrone-remote-desktop enable|disable|status|rdp-file [HOST]" >&2
         exit 1
         ;;
 esac

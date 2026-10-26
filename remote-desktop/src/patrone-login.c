@@ -138,7 +138,13 @@ static BOOL fetch_target(proxyPlugin* plugin, proxyData* pdata, void* param)
 	const char* password = freerdp_settings_get_string(front, FreeRDP_Password);
 	if (!user || !*user || !password || !*password)
 	{
-		WLog_WARN(TAG, "refused a connection from %s that sent no username and password", client);
+		/* Remote Desktop Connection sends them only when it asked for them on
+		 * the client (see patrone-remote-desktop rdp-file). */
+		if (user && *user)
+			WLog_WARN(TAG, "refused a connection from %s that sent the username \"%s\" but no password",
+			          client, user);
+		else
+			WLog_WARN(TAG, "refused a connection from %s that sent no username or password", client);
 		freerdp_settings_set_string(front, FreeRDP_Password, NULL);
 		return FALSE;
 	}

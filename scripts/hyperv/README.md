@@ -53,6 +53,10 @@ sudo patrone-remote-desktop enable
 sudo adduser $USER remote-desktop
 ```
 
+Then double-click `PatroneDev.rdp` (in this folder) on Windows: it makes
+Remote Desktop Connection ask for the Linux username and password and send
+them, which plain `mstsc /v:...` doesn't do for a server without NLA.
+
 GNOME Remote Desktop's own modes are below, for comparison and for plain
 Ubuntu. Nothing listens on port 3389 until one is configured, so Remote
 Desktop Connection can't reach the VM. In the VM, run one of these as

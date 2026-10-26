@@ -1,3 +1,13 @@
+patrone-remote-desktop (0.2.1) resolute; urgency=medium
+
+  * Add "patrone-remote-desktop rdp-file", a Remote Desktop Connection file
+    that makes Windows ask for the username and password on the client and
+    send them: by default it sends no password to a server without NLA.
+  * Log whether a refused client sent a username, or nothing.
+  * Reload systemd before restarting the proxy on an upgrade.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 11:00:00 -0500
+
 patrone-remote-desktop (0.2.0) resolute; urgency=medium
 
   * Windows-style sessions: each account's one desktop runs without a
