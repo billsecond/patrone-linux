@@ -351,6 +351,32 @@ Findings:
   unknown:** whether a GNOME session keeps drawing to its virtual monitor
   and taking input over RDP while another VT (the login screen) is on the
   machine's screen. Test that first, with the user.
+- **Built (0.2.0): Windows-style sessions.** The user, 2026-10-26: "I want
+  to make it MUCH MORE LIKE WINDOWS". The VT-switch plan above is dead:
+  Mutter 50.1's `meta_renderer_pause` (run when its session stops being the
+  one on screen) inhibits the frame clock of every view, RDP virtual
+  monitors included, so a background session freezes for RDP. Instead, each
+  account's one desktop is always GDM's headless GNOME session, and the
+  machine's screen is a viewer: the "Patrone Desktop" login session
+  (`/usr/share/wayland-sessions/patrone-desktop.desktop`) runs
+  `libexec/console`, which asks `auth --console` (over `console.sock`, account
+  from `SO_PEERCRED`, no password since GDM checked it) for the desktop and
+  shows it with `sdl-freerdp` in `cage`. GNOME Remote Desktop 50.2's headless
+  mode accepts a new client and then stops the others
+  (`on_session_post_connect` → `maybe_stop_session`, from its source), which
+  gives "last one in wins" in both directions. `prepare-session` answers
+  "busy" only for a plain GNOME session on the screen (it now looks for
+  `libexec/console` in the session's cgroup: logind's `Desktop` is empty for
+  GDM's sessions). Checked: the package builds, `make check` passes
+  (including `auth --console` refusing without a socket), the viewer check
+  calls the user's live GNOME session (5) a plain desktop. Not tried yet:
+  everything on the real screen and through `mstsc`. Possible snags: `cage`
+  (wlroots) on `hyperv_drm` (the viewer sets `WLR_NO_HARDWARE_CURSORS=1`;
+  `WLR_RENDERER=pixman` if it can't render), and whether FreeRDP's
+  `/from-stdin:force` reads the secret through `cage`. The user's own GNOME
+  Desktop Sharing was disabled from starting at login (it took 3389 before).
+  Still to do: lock the screen after idle (end the viewer, back to the login
+  screen), and Patrone's own compositor doing this natively.
 - The earlier per-user attempt (a `headless` mode in
   `setup-remote-desktop.sh` with the Linux password as GNOME's credentials,
   and `rdp-no-lock.sh`) was removed: it stored the password, which the user
