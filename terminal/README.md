@@ -51,6 +51,7 @@ To install it for your user, with a launcher entry and icon in GNOME:
 ```
 ./terminal/install-dev.sh             # the app
 ./terminal/install-dev.sh --default   # and use it instead of Ubuntu's terminal
+./terminal/install-dev.sh --autostart # and open it whenever you log in
 ./terminal/install-dev.sh --bashrc    # and give bash Patrone's prompt
 ./terminal/install-dev.sh --zshrc     # and use Patrone's zshrc and zprofile
 ```
@@ -59,6 +60,13 @@ To install it for your user, with a launcher entry and icon in GNOME:
 (through `~/.config/xdg-terminals.list`), swaps it into the dock, and hides
 Ubuntu's terminal (Ptyxis) from the app grid. Deleting
 `~/.local/share/applications/org.gnome.Ptyxis.desktop` brings that back.
+
+`--autostart` writes `~/.config/autostart/org.patrone.Terminal.desktop` from
+`data/autostart/`, so GNOME opens a terminal at every login. The package
+installs the same entry for everyone as
+`/etc/xdg/autostart/org.patrone.Terminal.desktop`. GNOME's login screen
+doesn't run autostart entries, and a Patrone Desktop session opens its own
+terminal from the compositor.
 
 The package is built with `packaging/build.sh patrone-terminal` (see
 `packaging/README.md`). The crate keeps `rust-version` at Ubuntu's rustc

@@ -5,6 +5,7 @@
 #   ./terminal/install-dev.sh            install the app and its launcher entry
 #   ./terminal/install-dev.sh --default  also make it GNOME's terminal in place of
 #                                        Ubuntu's (Ptyxis), for this user only
+#   ./terminal/install-dev.sh --autostart  also open it whenever you log in
 #   ./terminal/install-dev.sh --bashrc   also give bash Patrone's prompt
 #   ./terminal/install-dev.sh --zshrc    also install Patrone's zshrc as ~/.zshrc
 set -euo pipefail
@@ -12,11 +13,13 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 config="$here/../shell-config"
 make_default=false
+autostart=false
 install_bashrc=false
 install_zshrc=false
 for arg in "$@"; do
     case $arg in
         --default) make_default=true ;;
+        --autostart) autostart=true ;;
         --bashrc) install_bashrc=true ;;
         --zshrc) install_zshrc=true ;;
         *) echo "Unknown option: $arg" >&2; exit 1 ;;
@@ -60,6 +63,13 @@ print(apps)
 ' "$favorites")
     gsettings set org.gnome.shell favorite-apps "$favorites"
     echo "Patrone Terminal now replaces Ubuntu's terminal: Ctrl+Alt+T, the dock and the app grid."
+fi
+
+if $autostart; then
+    mkdir -p ~/.config/autostart
+    sed "s|^Exec=patrone-terminal|Exec=$HOME/.local/bin/patrone-terminal|" \
+        "$here/data/autostart/org.patrone.Terminal.desktop" > ~/.config/autostart/org.patrone.Terminal.desktop
+    echo "Patrone Terminal now opens whenever you log in."
 fi
 
 if $install_bashrc; then

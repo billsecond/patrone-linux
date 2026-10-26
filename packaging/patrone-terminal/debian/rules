@@ -20,6 +20,8 @@ override_dh_auto_install:
 	install -Dm755 target/release/patrone-terminal $(pkg)/usr/bin/patrone-terminal
 	install -Dm644 data/org.patrone.Terminal.desktop $(pkg)/usr/share/applications/org.patrone.Terminal.desktop
 	install -Dm644 data/org.patrone.Terminal.svg $(pkg)/usr/share/icons/hicolor/scalable/apps/org.patrone.Terminal.svg
+	# Opens a terminal at every login
+	install -Dm644 data/autostart/org.patrone.Terminal.desktop $(pkg)/etc/xdg/autostart/org.patrone.Terminal.desktop
 	# The terminal xdg-terminal-exec picks in a Patrone Desktop session
 	install -d $(pkg)/usr/share/xdg-terminal-exec
 	echo org.patrone.Terminal.desktop > $(pkg)/usr/share/xdg-terminal-exec/patrone-xdg-terminals.list
