@@ -118,9 +118,11 @@ pub enum Column {
     Origin,
     /// Search results' "Folder".
     Folder,
+    /// What a system folder is for, with System folder hints on.
+    Purpose,
 }
 
-pub const COLUMNS: [Column; 11] = [
+pub const COLUMNS: [Column; 12] = [
     Column::Name,
     Column::Modified,
     Column::Created,
@@ -132,6 +134,7 @@ pub const COLUMNS: [Column; 11] = [
     Column::Deleted,
     Column::Origin,
     Column::Folder,
+    Column::Purpose,
 ];
 
 impl Column {
@@ -148,6 +151,7 @@ impl Column {
             Column::Deleted => "deleted",
             Column::Origin => "origin",
             Column::Folder => "folder",
+            Column::Purpose => "purpose",
         }
     }
 
@@ -168,6 +172,7 @@ impl Column {
             Column::Deleted => "Date deleted",
             Column::Origin => "Original location",
             Column::Folder => "Folder",
+            Column::Purpose => "Purpose",
         }
     }
 
@@ -180,6 +185,7 @@ impl Column {
             Column::Owner => 110,
             Column::Permissions => 110,
             Column::Origin | Column::Folder => 260,
+            Column::Purpose => 190,
         }
     }
 }

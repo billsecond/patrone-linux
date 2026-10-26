@@ -2,7 +2,7 @@
 //! with breadcrumbs whose chevrons list each folder's subfolders, and which
 //! turns into a text field when clicked; and the search box.
 
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::rc::{Rc, Weak};
 use std::time::Duration;
 
@@ -32,13 +32,145 @@ pub enum AddressEvent {
     },
 }
 
+/// Lays out the breadcrumbs: from the end, as many folders as fit, each
+/// with the chevron after it; the rest fold into the « button (the first
+/// child), and `hidden` says how many folders it holds.
+mod imp {
+    use super::*;
+    use gtk::subclass::prelude::*;
+
+    #[derive(Default)]
+    pub struct CrumbLayout {
+        pub hidden: RefCell<Option<Rc<Cell<usize>>>>,
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for CrumbLayout {
+        const NAME: &'static str = "PfmCrumbLayout";
+        type Type = super::CrumbLayout;
+        type ParentType = gtk::LayoutManager;
+    }
+
+    impl ObjectImpl for CrumbLayout {}
+
+    impl LayoutManagerImpl for CrumbLayout {
+        fn measure(
+            &self,
+            widget: &gtk::Widget,
+            orientation: gtk::Orientation,
+            _for_size: i32,
+        ) -> (i32, i32, i32, i32) {
+            let (mut minimum, mut natural_size) = (0, 0);
+            for child in children(widget) {
+                let (min, nat, _, _) = child.measure(orientation, -1);
+                if orientation == gtk::Orientation::Vertical {
+                    minimum = minimum.max(min);
+                    natural_size = natural_size.max(nat);
+                } else if child.has_css_class("crumb-overflow") {
+                    // At the least, « and whatever of the end fits.
+                    minimum = nat;
+                } else {
+                    natural_size += nat;
+                }
+            }
+            (minimum, natural_size.max(minimum), -1, -1)
+        }
+
+        fn allocate(&self, widget: &gtk::Widget, width: i32, height: i32, _baseline: i32) {
+            let children = children(widget);
+            let Some((overflow, rest)) = children.split_first() else {
+                return;
+            };
+            // A folder and the chevron after it go together; the leading
+            // chevron (the top-level places) is a part of its own.
+            let mut parts: Vec<Vec<gtk::Widget>> = Vec::new();
+            for child in rest {
+                match parts.last_mut() {
+                    Some(part) if !child.has_css_class("crumb") => part.push(child.clone()),
+                    _ => parts.push(vec![child.clone()]),
+                }
+            }
+            let part_width = |part: &[gtk::Widget]| part.iter().map(natural).sum::<i32>();
+            let total: i32 = parts.iter().map(|part| part_width(part)).sum();
+            let mut first_shown = 0;
+            if total > width {
+                let room = width - natural(overflow);
+                let mut used = 0;
+                first_shown = parts.len();
+                for (index, part) in parts.iter().enumerate().rev() {
+                    let part = part_width(part);
+                    // The current folder always shows, cut short if need be.
+                    if used + part > room && first_shown < parts.len() {
+                        break;
+                    }
+                    used += part;
+                    first_shown = index;
+                }
+            }
+            let mut x = 0;
+            overflow.set_child_visible(first_shown > 0);
+            if first_shown > 0 {
+                let w = natural(overflow);
+                overflow.size_allocate(&gtk::Allocation::new(0, 0, w, height), -1);
+                x = w;
+            }
+            let mut folded = 0;
+            for (index, part) in parts.iter().enumerate() {
+                for child in part {
+                    let shown = index >= first_shown;
+                    child.set_child_visible(shown);
+                    if shown {
+                        let w = natural(child);
+                        child.size_allocate(&gtk::Allocation::new(x, 0, w, height), -1);
+                        x += w;
+                    } else if child.has_css_class("crumb") {
+                        folded += 1;
+                    }
+                }
+            }
+            if let Some(hidden) = self.hidden.borrow().as_ref() {
+                hidden.set(folded);
+            }
+        }
+    }
+
+    fn natural(widget: &gtk::Widget) -> i32 {
+        widget.measure(gtk::Orientation::Horizontal, -1).1
+    }
+}
+
+glib::wrapper! {
+    pub struct CrumbLayout(ObjectSubclass<imp::CrumbLayout>) @extends gtk::LayoutManager;
+}
+
+fn crumb_layout(hidden: Rc<Cell<usize>>) -> CrumbLayout {
+    use gtk::subclass::prelude::ObjectSubclassIsExt;
+    let layout: CrumbLayout = glib::Object::new();
+    layout.imp().hidden.replace(Some(hidden));
+    layout
+}
+
+fn children(widget: &gtk::Widget) -> Vec<gtk::Widget> {
+    let mut children = Vec::new();
+    let mut child = widget.first_child();
+    while let Some(current) = child {
+        child = current.next_sibling();
+        children.push(current);
+    }
+    children
+}
+
 pub struct AddressBar {
     pub widget: gtk::Box,
     field: gtk::Overlay,
     stack: gtk::Stack,
     icon: gtk::Image,
     crumbs: gtk::Box,
-    scroller: gtk::ScrolledWindow,
+    /// The « button, and how many of the path's folders it holds.
+    overflow: gtk::Button,
+    hidden: Rc<Cell<usize>>,
+    /// Each breadcrumb's name and place, from the top.
+    targets: RefCell<Vec<(String, Location)>>,
     entry: gtk::Entry,
     search: gtk::Entry,
     progress: gtk::ProgressBar,
@@ -69,20 +201,23 @@ impl AddressBar {
 
         let icon = gtk::Image::new();
         icon.add_css_class("address-icon");
+        // The whole path, filled in from the end; what doesn't fit folds
+        // into the « button at the start, as on Windows.
+        let hidden = Rc::new(Cell::new(0));
         let crumbs = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         crumbs.add_css_class("crumbs");
-        let scroller = gtk::ScrolledWindow::builder()
-            .child(&crumbs)
-            .hscrollbar_policy(gtk::PolicyType::External)
-            .vscrollbar_policy(gtk::PolicyType::Never)
-            .hexpand(true)
-            .build();
-        scroller.add_css_class("crumb-scroller");
+        crumbs.set_hexpand(true);
+        crumbs.set_overflow(gtk::Overflow::Hidden);
+        crumbs.set_layout_manager(Some(crumb_layout(hidden.clone())));
+        let overflow = gtk::Button::with_label("\u{ab}");
+        overflow.add_css_class("flat");
+        overflow.add_css_class("crumb-overflow");
+        overflow.set_tooltip_text(Some("The rest of the path"));
         let history_button = glyph::button("chevron-down", "Previous locations");
         history_button.add_css_class("history-button");
         let crumb_row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         crumb_row.append(&icon);
-        crumb_row.append(&scroller);
+        crumb_row.append(&crumbs);
         let entry = gtk::Entry::builder().hexpand(true).build();
         entry.add_css_class("address-entry");
         let stack = gtk::Stack::builder().hexpand(true).build();
@@ -124,7 +259,9 @@ impl AddressBar {
             stack,
             icon,
             crumbs,
-            scroller,
+            overflow,
+            hidden,
+            targets: RefCell::default(),
             entry,
             search,
             progress,
@@ -153,6 +290,20 @@ impl AddressBar {
     }
 
     fn connect_signals(&self, history_button: &gtk::Button) {
+        // « lists the folders that didn't fit, nearest first, as Windows does.
+        let weak = self.me.borrow().clone();
+        self.overflow.connect_clicked(move |button| {
+            let Some(bar) = weak.upgrade() else { return };
+            let menu = Menu::new();
+            menu.popover.add_css_class("crumb-menu");
+            let targets = bar.targets.borrow().clone();
+            let hidden = bar.hidden.get().min(targets.len());
+            for (label, target) in targets[..hidden].iter().rev() {
+                bar.navigate_item(&menu, target.small_icon(), label, target.clone());
+            }
+            menu.popup_below(button);
+        });
+
         // Clicking the address bar's empty space edits the path.
         let click = gtk::GestureClick::new();
         let weak = self.me.borrow().clone();
@@ -259,9 +410,11 @@ impl AddressBar {
         while let Some(child) = self.crumbs.first_child() {
             self.crumbs.remove(&child);
         }
+        self.crumbs.append(&self.overflow);
         // The first chevron lists the top-level places.
         self.crumbs.append(&self.chevron(None));
         let crumbs = location.crumbs();
+        self.targets.replace(crumbs.clone());
         for (index, (label, target)) in crumbs.iter().enumerate() {
             let button = gtk::Button::with_label(label);
             button.add_css_class("flat");
@@ -277,12 +430,6 @@ impl AddressBar {
                 self.crumbs.append(&self.chevron(Some(target.clone())));
             }
         }
-        // Long paths keep their end in view, as on Windows.
-        let scroller = self.scroller.clone();
-        glib::idle_add_local_once(move || {
-            let adjustment = scroller.hadjustment();
-            adjustment.set_value(adjustment.upper());
-        });
         let placeholder = match location {
             Location::Search { root, .. } => format!("Search {}", places::display_name(root)),
             other => format!("Search {}", other.title()),

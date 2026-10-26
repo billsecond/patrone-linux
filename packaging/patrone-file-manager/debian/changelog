@@ -1,3 +1,16 @@
+patrone-file-manager (0.2.1) resolute; urgency=medium
+
+  * Folder Options closes again after being reopened: a closed dialog
+    stayed alive, held by its own close button, and came back with dead
+    OK and Cancel buttons. Dialogs now hold themselves weakly.
+  * System folder hints show what a folder is for in a plain Purpose
+    column in Details (and after the type in Tiles and Content, and in
+    tooltips) instead of a tag beside the name.
+  * The address bar shows the whole path from This PC, as Windows does;
+    what doesn't fit folds into a << button that lists it.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 15:45:00 -0500
+
 patrone-file-manager (0.2.0) resolute; urgency=medium
 
   * Tabs keep a fixed width. Dragging a window's only tab moves the window;

@@ -170,7 +170,11 @@ fn restore_button(form: &Rc<Form>, tab: usize) -> gtk::Button {
 }
 
 pub fn show(window: &Window) {
-    let existing = OPEN.with(|open| open.borrow().as_ref().and_then(|weak| weak.upgrade()));
+    // Only a dialog still on screen is brought forward; a closed one may
+    // linger until GTK frees it.
+    let existing = OPEN
+        .with(|open| open.borrow().as_ref().and_then(|weak| weak.upgrade()))
+        .filter(|window| window.is_visible());
     if let Some(existing) = existing {
         existing.present();
         return;

@@ -232,6 +232,14 @@ button:disabled label {
   font-weight: normal;
 }
 
+.crumb-overflow {
+  min-width: 24px;
+  min-height: 26px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-weight: normal;
+}
+
 .crumb-chevron {
   min-width: 18px;
   min-height: 26px;
@@ -565,21 +573,8 @@ listview.content-view > row:not(:last-child) {
   color: var(--text-secondary);
 }
 
-/* System folder hints: a tag beside the name, and a banner above the list. */
-.folder-hint {
-  margin: 0 4px;
-  padding: 0 7px;
-  border-radius: 9px;
-  background-color: var(--selected);
-  color: var(--accent-text);
-  font-size: 8pt;
-  font-weight: 600;
-}
-
-.grid-cell .folder-hint {
-  margin-top: 2px;
-}
-
+/* System folder hints: the banner above the list. (What each folder is for
+   is a plain Purpose column in Details.) */
 .hint-banner {
   padding: 10px 12px 10px 16px;
   background-color: var(--layer);

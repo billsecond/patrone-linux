@@ -107,9 +107,16 @@ impl Dialog {
             sender,
             receiver: RefCell::new(Some(receiver)),
         });
+        // The window's own controls hold it weakly: a strong reference from
+        // its children kept every closed dialog alive, and Folder Options
+        // then showed the old, dead one again.
         {
-            let window = dialog.window.clone();
-            close.connect_clicked(move |_| window.close());
+            let window = dialog.window.downgrade();
+            close.connect_clicked(move |_| {
+                if let Some(window) = window.upgrade() {
+                    window.close();
+                }
+            });
         }
         {
             let sender = dialog.sender.clone();
@@ -120,10 +127,12 @@ impl Dialog {
         }
         let keys = gtk::EventControllerKey::new();
         {
-            let window = dialog.window.clone();
+            let window = dialog.window.downgrade();
             keys.connect_key_pressed(move |_, key, _, _| {
                 if key == gdk::Key::Escape {
-                    window.close();
+                    if let Some(window) = window.upgrade() {
+                        window.close();
+                    }
                     glib::Propagation::Stop
                 } else {
                     glib::Propagation::Proceed

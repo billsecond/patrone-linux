@@ -142,19 +142,9 @@ impl Location {
             crumbs.extend(chain(&root));
             return crumbs;
         }
-        // Inside a user folder, it starts there, as Windows starts at
-        // Documents; elsewhere in the home folder, at the home folder.
-        for (special, _) in places::USER_FOLDERS {
-            if let Some(folder) = places::user_folder(*special)
-                && (folder.equal(file) || file.has_prefix(&folder))
-            {
-                return chain(&folder);
-            }
-        }
-        let home = places::home();
-        if home.equal(file) || file.has_prefix(&home) {
-            return chain(&home);
-        }
+        // The whole path from This PC and the drive, as Windows shows
+        // This PC > Local Disk (C:) > Users > name; the address bar folds
+        // what doesn't fit into its « button.
         let anchor = places::mount_containing(file)
             .map(|mount| mount.root())
             .unwrap_or_else(places::root);

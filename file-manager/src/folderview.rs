@@ -430,7 +430,12 @@ impl FolderView {
             .set(config::flag("hide-extensions"));
         self.context.tooltips.set(config::flag("show-tooltips"));
         self.context.checkboxes.set(config::flag("item-checkboxes"));
-        self.context.hints.set(crate::hints::enabled());
+        let hints = crate::hints::enabled();
+        if self.context.hints.replace(hints) != hints && self.view.borrow().is_some() {
+            // Details gains or loses its Purpose column.
+            self.built.set(None);
+            self.set_state(self.state.get(), false);
+        }
         let folder = match self.location.borrow().as_ref() {
             Some(Location::Folder(file)) => Some(file.clone()),
             _ => None,
@@ -863,10 +868,23 @@ impl FolderView {
             .strv("details-columns")
             .iter()
             .filter_map(|id| Column::from_id(id))
-            .filter(|column| !matches!(column, Column::Deleted | Column::Origin | Column::Folder))
+            .filter(|column| {
+                !matches!(
+                    column,
+                    Column::Deleted | Column::Origin | Column::Folder | Column::Purpose
+                )
+            })
             .collect();
         if !columns.contains(&Column::Name) {
             columns.insert(0, Column::Name);
+        }
+        // System folder hints add what each folder is for, after the name.
+        if self.context.hints.get() {
+            let after_name = columns
+                .iter()
+                .position(|c| *c == Column::Name)
+                .map_or(0, |i| i + 1);
+            columns.insert(after_name, Column::Purpose);
         }
         if matches!(
             self.location.borrow().as_ref(),
@@ -1399,12 +1417,14 @@ pub fn compare(a: &gio::FileInfo, b: &gio::FileInfo, state: &ViewState) -> Order
         Column::Type => filecell::type_text(a)
             .to_lowercase()
             .cmp(&filecell::type_text(b).to_lowercase()),
-        column @ (Column::Owner | Column::Permissions | Column::Origin | Column::Folder) => {
-            util::natural_cmp(
-                &filecell::column_text(a, column, false),
-                &filecell::column_text(b, column, false),
-            )
-        }
+        column @ (Column::Owner
+        | Column::Permissions
+        | Column::Origin
+        | Column::Folder
+        | Column::Purpose) => util::natural_cmp(
+            &filecell::column_text(a, column, false),
+            &filecell::column_text(b, column, false),
+        ),
     };
     let order = folders_first.then(by_key).then_with(by_name);
     if state.descending {

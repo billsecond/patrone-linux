@@ -272,6 +272,14 @@ const SYSTEM: &[(&[&str], Hint)] = &[
         ),
     ),
     (
+        &["/cdrom"],
+        hint(
+            "Disc drive",
+            "An old place for a CD or DVD; discs now appear under /media when inserted.",
+            "The disc drive's letter (D:)",
+        ),
+    ),
+    (
         &["/srv"],
         hint(
             "Server data",

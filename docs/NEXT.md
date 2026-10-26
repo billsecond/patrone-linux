@@ -91,33 +91,21 @@ Waiting on the user:
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
-- **Installed 2026-10-26 by the user**: `patrone-gnome-taskbar` 0.2.0,
-  `patrone-settings` 0.1.0, `patrone-branding` 0.1.4, `patrone-remote-desktop`
-  0.4.3, `patrone-desktop` 0.1.0 and `patrone-file-manager` 0.2.0. Still to
-  hear how they went: the Super key, the network menu's chevron, Shut down
-  in a real session, Chromium's pages in Noto Sans, and the wallpapers in
-  Settings → Appearance. They found Patrone Settings' clicks didn't change
-  the taskbar: their GNOME Shell had started at 13:27, before the 14:59
-  install, so it ran the old taskbar and didn't know the theme setting. The
-  settings were written. **They sign out from inside the desktop (Start →
-  account picture → Sign out) and back in.**
-- **Install GNOME Settings' build dependencies** (section 9), so Patrone's
-  build of GNOME Settings can be built (the user types their password):
-  `sudo apt install blueprint-compiler gnome-pkg-tools gnome-settings-daemon-dev gobject-introspection gsettings-desktop-schemas-dev gtk-doc-tools libaccountsservice-dev libadwaita-1-dev libcolord-dev libcolord-gtk4-dev libcups2-dev libgcr-4-dev libgnome-bg-4-dev libgnome-bluetooth-ui-3.0-dev libgnome-desktop-4-dev libgoa-1.0-dev libgoa-backend-1.0-dev libgsound-dev libgtop2-dev libhandy-1-dev libibus-1.0-dev libinsights-dev libjson-glib-dev libkrb5-dev libmalcontent-0-dev libmm-glib-dev libnma-gtk4-dev libnm-dev libpolkit-gobject-1-dev libpulse-dev libpwquality-dev libsecret-1-dev libsmbclient-dev libsoup-3.0-dev libudisks2-dev libupower-glib-dev libwhoopsie-preferences-dev libxml2-utils python3-dbusmock`.
-  Then run `gnome-settings/build.sh`, try the page in the throwaway shell,
-  and hand over the packages.
-- **Install `patrone-gnome-taskbar` 0.3.0 and `patrone-settings` 0.2.0**
-  (sections 7 and 9: layouts, Start icons, Royal and the plainer Classic),
-  then sign out and back in.
-- **Install `patrone-branding` 0.1.5** (section 12), which takes out
-  Ubuntu's wallpapers:
-  `sudo apt install ~/src/patrone-linux/out/patrone-branding_0.1.5_all.deb`.
-- **Install `patrone-desktop` 0.1.1** (section 11), which moves the clock and
-  the network check off Canonical's servers and turns off Ubuntu's upgrade
-  offers:
-  `sudo apt install ~/src/patrone-linux/out/patrone-desktop_0.1.1_all.deb`.
-  Then `chronyc sources` should list the four NTS servers and no
-  `ntp.ubuntu.com`.
+- **Installed 2026-10-26 by the user**: `patrone-gnome-taskbar` 0.3.0,
+  `patrone-settings` 0.2.0, `patrone-branding` 0.1.5, `patrone-remote-desktop`
+  0.4.3, `patrone-desktop` 0.1.1 and `patrone-file-manager` 0.2.0, and
+  GNOME Settings' build dependencies. Still to hear how they went: the
+  Super key, the network menu's chevron, Shut down in a real session,
+  Chromium's pages in Noto Sans, the wallpapers in Settings → Appearance,
+  and the taskbar's layouts, Start icons and themes. (Earlier, Patrone
+  Settings' clicks didn't change the taskbar because their GNOME Shell had
+  started at 13:27, before the 14:59 install; they signed out and back in
+  at 15:26. Each new taskbar needs that again.)
+- **Install Patrone's GNOME Settings** (section 9), with the Patrone page
+  and no Telemetry page:
+  `sudo apt install ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone1_amd64.deb ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone1_all.deb`
+  (a dry run upgrades just those two). No sign-out needed: Settings shows
+  the page the next time it opens.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -129,13 +117,13 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.0** (section 8), from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.0_amd64.deb`
-  (and `patrone-default-apps_0.1.2_all.deb` beside it if it isn't installed
-  yet), then close every File Manager window so the new version starts. Try
-  tab dragging between windows, a command in the address bar, View → Show →
-  System folder hints, and Properties → Permissions on a script (Apply asks
-  for your password when it needs administrator rights).
+- **Install Patrone File Manager 0.2.1** (section 8; the user runs 0.2.0),
+  from SSH or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.1_amd64.deb`,
+  then close every File Manager window so the new version starts. Try
+  Folder Options twice, the Purpose column with View → Show → System folder
+  hints, the full path in the address bar, and Properties → Permissions on a
+  script (Apply asks for your password when it needs administrator rights).
 
 ## 1. Patrone Terminal
 
@@ -956,7 +944,32 @@ Findings:
 - Pango adds a hyphen where it breaks a word, which reads as part of a path;
   path and command labels turn hyphens off.
 
-Next: the user's verdict on 0.2.0, then the gaps in the README's "Not done
+### 0.2.1 (2026-10-26, the user's notes on 0.2.0)
+
+- "I can't close the folder options menu": a closed dialog was never freed
+  (its own close button and Escape handler held the window strongly), so
+  reopening Folder Options brought back the old one, whose OK and Cancel
+  were dead. Dialogs now hold their window weakly, and Folder Options only
+  reuses a dialog that's still on screen. Verified with real clicks: close,
+  reopen, Cancel; reopen, OK.
+- "Instead of using a tag ... add a column ... use a field that blends in":
+  a Purpose column after Name in Details while hints are on (plain text like
+  the other columns, sortable, with the explanation as its tooltip); Tiles
+  and Content add it after the type; the other views put it in the tooltip.
+  Screenshots of `/` in Details and Tiles.
+- "In the path bar, I should be able to see the full path as breadcrumbs to
+  a point (just like in windows)": the breadcrumbs start at This PC and the
+  drive for every local folder (they used to start at the home or user
+  folder); a layout manager (`CrumbLayout` in `addressbar.rs`) shows as many
+  as fit from the end and folds the rest into a « button that lists them.
+  Verified with real clicks: a parent breadcrumb goes up, « lists the folded
+  folders nearest first, and a maximized window shows the whole path.
+- Asked how to give a user named "base" access: there's no such account on
+  the VM. The Permissions tab follows Linux's owner, group and everyone
+  else; giving one more named person access needs an ACL (`setfacl`, in the
+  `acl` package, which is installed), which the tab doesn't offer yet.
+
+Next: the user's verdict on 0.2.1, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 
@@ -990,11 +1003,20 @@ build of GNOME Settings over shortcuts or making Patrone Settings the main
 Settings). `gnome-settings/` has the page (C, libadwaita, GPL-2.0-or-later
 like GNOME Settings), the patches that register it and hide the Telemetry
 page, and `build.sh`, which builds Ubuntu's source with them as
-`gnome-control-center` `...patrone1`. Written against Ubuntu's 50.3 source
-(the patches were made from it), but not built yet: it waits on the build
-dependencies above. Then: build, run the built Settings in the throwaway
-shell, check every choice writes its setting and follows changes made
-elsewhere, and that Privacy & Security has no Telemetry row.
+`gnome-control-center` `1:50.3-0ubuntu0.2patrone1`. Built on the VM once
+the user had installed the build dependencies: the patches applied
+cleanly, the page compiled with no warnings, and `dh_missing` found nothing
+left out. Checked by running the built Settings, unpacked, in the throwaway
+shell: the Patrone row after Ubuntu's Desktop page, every section with its
+pictures and the current values picked; clicking Large, Orb, Top Left and
+Royal set `size`, `start-icon`, `button-layout` and `theme` (and Royal's
+`@import` in `gtk.css`, through `patrone-settings --set-theme`); setting
+the layout elsewhere moved the page's pick to Top, while the taskbar moved
+to the top and Settings' own buttons to the top left; Privacy & Security
+has no Telemetry row. (There the sidebar said "Ubuntu Desktop": the
+unpacked package's own desktop file came first. Installed, Ubuntu's file is
+diverted by `patrone-branding`.) Not checked until installed: the real
+desktop.
 
 ## 10. Typeface and Settings' Ubuntu wording (patrone-branding 0.1.3, 0.1.4)
 

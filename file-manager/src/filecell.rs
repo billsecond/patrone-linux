@@ -41,7 +41,7 @@ pub struct CellContext {
     pub hide_extensions: Cell<bool>,
     pub tooltips: Cell<bool>,
     pub checkboxes: Cell<bool>,
-    /// "System folder hints": tag system folders with what they're for.
+    /// "System folder hints": say what system folders are for.
     pub hints: Cell<bool>,
     pub in_trash: Cell<bool>,
     pub cells: RefCell<Vec<glib::WeakRef<FileCell>>>,
@@ -129,6 +129,16 @@ pub fn shown_name(info: &gio::FileInfo, hide_extensions: bool) -> String {
     }
 }
 
+/// A system folder hint as a tooltip: what it's for, and what plays the
+/// same part on Windows.
+fn hint_text(hint: &crate::hints::Hint) -> String {
+    let mut text = format!("{}: {}", hint.tag, hint.about);
+    if let Some(windows) = hint.windows {
+        text.push_str(&format!("\nOn Windows: {windows}"));
+    }
+    text
+}
+
 /// The Type column: "File folder", "PNG image"...
 pub fn type_text(info: &gio::FileInfo) -> String {
     if util::is_dir(info) {
@@ -179,6 +189,10 @@ pub fn column_text(info: &gio::FileInfo, column: Column, hide_extensions: bool) 
         Column::Folder => util::file_of(info)
             .and_then(|file| file.parent())
             .map(|parent| util::display_path(&parent))
+            .unwrap_or_default(),
+        Column::Purpose => util::file_of(info)
+            .and_then(|file| crate::hints::for_file(&file))
+            .map(|hint| hint.tag.to_owned())
             .unwrap_or_default(),
     }
 }
@@ -239,8 +253,6 @@ mod imp {
         pub icon: RefCell<Option<gtk::Image>>,
         pub link: RefCell<Option<Glyph>>,
         pub name: RefCell<Option<gtk::Label>>,
-        /// The system folder hint's tag.
-        pub tag: RefCell<Option<gtk::Label>>,
         pub lines: RefCell<Vec<gtk::Label>>,
         pub check: RefCell<Option<gtk::CheckButton>>,
         pub editor: RefCell<Option<gtk::Entry>>,
@@ -306,12 +318,6 @@ impl FileCell {
 
         let name = gtk::Label::builder().xalign(0.0).build();
         name.add_css_class("item-name");
-        let tag = gtk::Label::builder()
-            .valign(gtk::Align::Center)
-            .halign(gtk::Align::Start)
-            .visible(false)
-            .build();
-        tag.add_css_class("folder-hint");
 
         match kind {
             CellKind::Grid(size) => {
@@ -350,9 +356,6 @@ impl FileCell {
                 name.set_max_width_chars(1);
                 name.set_width_request(width - 8);
                 cell.append(&name);
-                tag.set_halign(gtk::Align::Center);
-                cell.append(&tag);
-                imp.tag.replace(Some(tag));
                 imp.icon.replace(Some(icon));
                 imp.link.replace(Some(link));
             }
@@ -381,11 +384,8 @@ impl FileCell {
                 if kind == CellKind::Row {
                     name.set_max_width_chars(28);
                 }
+                name.set_hexpand(true);
                 cell.append(&name);
-                // The tag sits just after the name and takes the spare room.
-                tag.set_hexpand(true);
-                cell.append(&tag);
-                imp.tag.replace(Some(tag));
                 imp.icon.replace(Some(icon));
                 imp.link.replace(Some(link));
             }
@@ -414,8 +414,6 @@ impl FileCell {
                     name.set_max_width_chars(24);
                 }
                 text.append(&name);
-                text.append(&tag);
-                imp.tag.replace(Some(tag));
                 let mut lines = Vec::new();
                 let count = if kind == CellKind::Tile { 2 } else { 1 };
                 for _ in 0..count {
@@ -534,41 +532,46 @@ impl FileCell {
             link.set_visible(info.is_symlink());
         }
 
-        if let Some(tag) = imp.tag.borrow().as_ref() {
-            let hint = context
-                .hints
-                .get()
-                .then(|| util::file_of(info))
-                .flatten()
-                .and_then(|file| crate::hints::for_file(&file));
-            tag.set_visible(hint.is_some());
-            if let Some(hint) = hint {
-                tag.set_label(hint.tag);
-                let mut tip = hint.about.to_owned();
-                if let Some(windows) = hint.windows {
-                    tip.push_str(&format!("\n\nOn Windows: {windows}"));
-                }
-                tag.set_tooltip_text(Some(&tip));
-            }
-        }
+        let hint = context
+            .hints
+            .get()
+            .then(|| util::file_of(info))
+            .flatten()
+            .and_then(|file| crate::hints::for_file(&file));
 
         if let Some(check) = imp.check.borrow().as_ref() {
             check.set_visible(context.checkboxes.get());
             check.set_active(selected);
         }
 
-        if !matches!(kind, CellKind::Detail(_)) {
-            if context.tooltips.get() && !matches!(kind, CellKind::DetailName) {
-                self.set_tooltip_text(Some(&tooltip_text(info)));
-            } else {
-                self.set_tooltip_text(None);
+        match kind {
+            // The Purpose column explains itself when pointed at.
+            CellKind::Detail(Column::Purpose) => {
+                self.set_tooltip_text(hint.map(hint_text).as_deref());
+            }
+            CellKind::Detail(_) => {}
+            _ => {
+                if context.tooltips.get() && kind != CellKind::DetailName {
+                    let mut tip = tooltip_text(info);
+                    if let Some(hint) = hint {
+                        tip = format!("{}\n{tip}", hint_text(hint));
+                    }
+                    self.set_tooltip_text(Some(&tip));
+                } else {
+                    self.set_tooltip_text(None);
+                }
             }
         }
+        // Tiles and Content say it after the type: "File folder · Settings".
+        let type_line = match hint {
+            Some(hint) => format!("{} \u{b7} {}", type_text(info), hint.tag),
+            None => type_text(info),
+        };
 
         let lines = imp.lines.borrow();
         match kind {
             CellKind::Tile => {
-                lines[0].set_label(&type_text(info));
+                lines[0].set_label(&type_line);
                 lines[1].set_label(&if util::is_dir(info) {
                     String::new()
                 } else {
@@ -580,7 +583,7 @@ impl FileCell {
                 lines[0].set_label(&if in_search {
                     column_text(info, Column::Folder, hide)
                 } else {
-                    type_text(info)
+                    type_line
                 });
                 lines[1].set_label(
                     &util::modified(info)

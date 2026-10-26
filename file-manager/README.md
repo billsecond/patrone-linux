@@ -11,8 +11,12 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
 - **Window:** tabs in the title bar (new, close, middle-click to close, a
   right-click menu with Duplicate, Move to new window, Move to window ▸,
   Close other tabs and Close tabs to the right); Back, Forward, Up and
-  Refresh; breadcrumbs whose chevrons list each folder's subfolders, which
-  turn into a path field when clicked; "Previous locations"; the search box.
+  Refresh; breadcrumbs of the whole path from This PC (This PC › Local Disk
+  (/) › home › you › folder), any of which goes there when clicked, with
+  chevrons listing each folder's subfolders; when the path doesn't fit, its
+  start folds into a « button that lists it, as on Windows. Clicking the
+  empty space turns it into a path field. "Previous locations"; the search
+  box.
 - **Dragging tabs**, as in Windows 11: a window's only tab moves the window,
   like the title bar. With several tabs, dragging along the strip reorders
   them; pulling a tab out of the strip (or holding Ctrl) picks it up, and
@@ -93,9 +97,11 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   not make yourself is made as administrator after the system asks for your
   password (pkexec).
 - **System folder hints** (View → Show, or Folder Options → View), for
-  people who know Windows: system folders and well-known files get a tag
-  saying what they're for (`/etc` "Settings", `/usr/bin` "Programs",
-  `~/.config` "App settings"), and inside one a banner explains it and names
+  people who know Windows: Details gains a Purpose column saying what system
+  folders and well-known files are for (`/etc` "Settings", `/usr/bin`
+  "Programs", `~/.config` "App settings"; pointing at it explains more),
+  Tiles and Content add it after the type ("File folder · Settings"), the
+  other views put it in the tooltip, and inside one a banner explains it and names
   what plays the same part on Windows (`/etc`: the Registry's
   HKEY_LOCAL_MACHINE and `C:\ProgramData`). Permissions then also shows the
   `chmod` and `chown` commands for its settings, with `sudo` when they need

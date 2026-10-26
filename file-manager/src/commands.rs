@@ -667,14 +667,15 @@ pub fn extract(window: &Window) {
         dialog.body.append(&show);
         {
             let entry = entry.clone();
-            let parent = dialog.window.clone();
+            let parent = dialog.window.downgrade();
             browse.connect_clicked(move |_| {
                 let entry = entry.clone();
                 let chooser = gtk::FileDialog::builder()
                     .title("Select a destination")
                     .modal(true)
                     .build();
-                chooser.select_folder(Some(&parent), gio::Cancellable::NONE, move |result| {
+                let parent = parent.upgrade();
+                chooser.select_folder(parent.as_ref(), gio::Cancellable::NONE, move |result| {
                     if let Ok(folder) = result {
                         entry.set_text(&util::display_path(&folder));
                     }
