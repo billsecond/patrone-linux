@@ -174,12 +174,12 @@ pub fn is_dir(info: &gio::FileInfo) -> bool {
 }
 
 pub fn content_type(info: &gio::FileInfo) -> String {
-    info.content_type()
-        .map(String::from)
-        .or_else(|| {
-            info.attribute_string("standard::fast-content-type")
-                .map(String::from)
-        })
+    // Asking a FileInfo for an attribute it wasn't given logs a critical
+    // warning, so look first.
+    ["standard::content-type", "standard::fast-content-type"]
+        .into_iter()
+        .filter(|attribute| info.has_attribute(attribute))
+        .find_map(|attribute| info.attribute_string(attribute).map(String::from))
         .unwrap_or_else(|| "application/octet-stream".to_owned())
 }
 

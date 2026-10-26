@@ -161,14 +161,14 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.7** (section 8; the user runs 0.2.5),
+- **Install Patrone File Manager 0.2.8** (section 8; the user runs 0.2.7),
   from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.7_amd64.deb`,
-  then close every File Manager window so the new version starts. Its title
-  bars should follow the title bar style chosen in Patrone Settings (Studio:
-  raised grey when active, flat when not), like Terminal's; the search box
-  is narrower and fixed; and with Patrone Unpack installed, any archive gets
-  Extract All… and Extract here.
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.8_amd64.deb`,
+  then close every File Manager window so the new version starts. GNOME's
+  Files disappears from the app menu and search (Nautilus stays installed
+  for the session and Snap/Flatpak file dialogs), "Show in folder" opens
+  File Manager, Home's Recent columns line up, and Open with no longer
+  picks an app by itself.
 - **Install Patrone Unpack** (section 13), from SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.1_amd64.deb
   ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
@@ -1105,7 +1105,36 @@ whole path from This PC, the search box 240 pixels). Not checked: rar and
 7z (no tool on the VM to make them), single compressed files, and Extract
 here on several archives at once.
 
-Next: the user's verdict on 0.2.7, then the gaps in the README's "Not done
+### 0.2.8 (2026-10-26)
+
+- "Remove the old filemanager": `apt-get -s remove nautilus` also removes
+  `ubuntu-session`, `xdg-desktop-portal-gnome` (GNOME 50's file dialogs for
+  Snap and Flatpak apps are Nautilus), `ubuntu-desktop-minimal` and
+  `patrone-desktop`, so Nautilus is retired instead: patrone-file-manager
+  diverts its menu entry (replaced by a hidden one with no MimeType) and its
+  `org.freedesktop.FileManager1` D-Bus service (replaced by one that runs
+  `patrone-file-manager --gapplication-service`; the app now waits 10 s for
+  the call, and owns the name with ALLOW_REPLACEMENT | REPLACE). Nautilus
+  still runs on demand: DING (desktop icons) activates org.gnome.Nautilus
+  at sign-in, and Nautilus then holds FileManager1 itself until it idles
+  out. Verified in the headless shell: with the new service file first in
+  XDG_DATA_DIRS and no File Manager running, a FileManager1.ShowItems call
+  started it and showed the folder with the file selected.
+- "It didn't open flatpak": the user's own mimeapps.list said
+  nm-connection-editor opens application/vnd.flatpak, set by File Manager's
+  Open with: it pre-selected the first of "More apps" (Advanced Network
+  Configuration), so Always made that the default. Removed from
+  ~/.config/mimeapps.list on the VM (backup beside it,
+  mimeapps.list.before-pfm-fix); Unpack is now the default. Open with
+  selects nothing when nothing is suggested, and Always / Just once wait for
+  a pick (checked on screen with an unknown file type).
+- Home's Recent and Favorites columns were laid out per row from their
+  text, so they didn't line up; every column now asks for a fixed width.
+  Checked on screen.
+- `util::content_type` asked FileInfos for an attribute they lacked,
+  logging "GFileInfo created without standard::content-type".
+
+Next: the user's verdict on 0.2.8, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 

@@ -117,7 +117,11 @@ fn run(window: &Window, files: Vec<gio::File>, mime: String, default_only: bool)
         list.append(&row);
         rows.push((row, app.clone()));
     }
-    if let Some((first, _)) = rows.first() {
+    // The current or a recommended app starts selected; among "More apps"
+    // nothing does, so Always can't make an app nobody chose the default.
+    if !suggested.is_empty()
+        && let Some((first, _)) = rows.first()
+    {
         list.select_row(Some(first));
     }
     let scroller = gtk::ScrolledWindow::builder()
@@ -126,13 +130,25 @@ fn run(window: &Window, files: Vec<gio::File>, mime: String, default_only: bool)
         .min_content_height(300)
         .build();
     dialog.body.append(&scroller);
-    if default_only {
-        dialog.add_button("OK", ALWAYS, true);
+    let choosing = if default_only {
+        let ok = dialog.add_button("OK", ALWAYS, true);
         dialog.add_button("Cancel", -1, false);
+        vec![ok]
     } else {
-        dialog.add_button("_Always", ALWAYS, true);
-        dialog.add_button("_Just once", JUST_ONCE, false);
+        vec![
+            dialog.add_button("_Always", ALWAYS, true),
+            dialog.add_button("_Just once", JUST_ONCE, false),
+        ]
+    };
+    // They wait for an app to be picked.
+    for button in &choosing {
+        button.set_sensitive(list.selected_row().is_some());
     }
+    list.connect_row_selected(move |_, row| {
+        for button in &choosing {
+            button.set_sensitive(row.is_some());
+        }
+    });
     {
         let dialog = Rc::downgrade(&dialog);
         list.connect_row_activated(move |_, _| {

@@ -69,6 +69,9 @@ fn main() -> glib::ExitCode {
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::HANDLES_COMMAND_LINE)
         .build();
+    // Started by D-Bus (`--gapplication-service`, for "show in folder"), it
+    // waits a while for the call; after the last window closes, too.
+    app.set_inactivity_timeout(10_000);
     app.connect_startup(startup);
     app.connect_command_line(command_line);
     app.run()

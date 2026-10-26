@@ -70,6 +70,31 @@ pub fn section(title: &str, content: &impl IsA<gtk::Widget>) -> (gtk::Box, gtk::
     (outer, label)
 }
 
+/// A column of a Home list or its header. Each row is laid out on its own,
+/// so a column's width mustn't depend on its text: every column asks for
+/// the same width in every row (`max_width_chars(1)` keeps the text's
+/// length out of it), and the name and location columns share the spare
+/// width equally. Longer text is cut short with "…".
+fn column(
+    text: &str,
+    width: i32,
+    expand: bool,
+    ellipsize: gtk::pango::EllipsizeMode,
+) -> gtk::Label {
+    gtk::Label::builder()
+        .label(text)
+        .xalign(0.0)
+        .ellipsize(ellipsize)
+        .max_width_chars(1)
+        .width_request(width)
+        .hexpand(expand)
+        .build()
+}
+
+const NAME_WIDTH: i32 = 160;
+const DATE_WIDTH: i32 = 160;
+const LOCATION_WIDTH: i32 = 80;
+
 /// A row of a Home list: icon and name, a date, and where the file is.
 fn list_row(
     info: &gio::FileInfo,
@@ -79,35 +104,35 @@ fn list_row(
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     row.add_css_class("home-row");
     let name_box = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    name_box.set_size_request(160, -1);
+    name_box.set_size_request(NAME_WIDTH, -1);
     name_box.set_hexpand(true);
     name_box.append(&icons::image(icons::for_info(info), 16));
-    let name = gtk::Label::builder()
-        .label(filecell::shown_name(info, hide_extensions))
-        .xalign(0.0)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .hexpand(true)
-        .build();
+    let name = column(
+        &filecell::shown_name(info, hide_extensions),
+        -1,
+        true,
+        gtk::pango::EllipsizeMode::End,
+    );
     name_box.append(&name);
     row.append(&name_box);
-    let date = gtk::Label::builder()
-        .label(date.map(|d| util::date_time(&d)).unwrap_or_default())
-        .xalign(0.0)
-        .width_request(160)
-        .build();
+    let date = column(
+        &date.map(|d| util::date_time(&d)).unwrap_or_default(),
+        DATE_WIDTH,
+        false,
+        gtk::pango::EllipsizeMode::End,
+    );
     date.add_css_class("item-detail");
     row.append(&date);
     let location = util::file_of(info)
         .and_then(|file| file.parent())
         .map(|folder| util::display_path(&folder))
         .unwrap_or_default();
-    let location = gtk::Label::builder()
-        .label(location)
-        .xalign(0.0)
-        .ellipsize(gtk::pango::EllipsizeMode::Middle)
-        .hexpand(true)
-        .width_request(80)
-        .build();
+    let location = column(
+        &location,
+        LOCATION_WIDTH,
+        true,
+        gtk::pango::EllipsizeMode::Middle,
+    );
     location.add_css_class("item-detail");
     row.append(&location);
     let list_row = gtk::ListBoxRow::builder().child(&row).build();
@@ -122,23 +147,10 @@ fn list_row(
 fn header_row(date: &str) -> gtk::Box {
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     row.add_css_class("home-header");
-    let name = gtk::Label::builder()
-        .label("Name")
-        .xalign(0.0)
-        .hexpand(true)
-        .width_request(160)
-        .build();
-    let date = gtk::Label::builder()
-        .label(date)
-        .xalign(0.0)
-        .width_request(160)
-        .build();
-    let location = gtk::Label::builder()
-        .label("File location")
-        .xalign(0.0)
-        .hexpand(true)
-        .width_request(80)
-        .build();
+    let end = gtk::pango::EllipsizeMode::End;
+    let name = column("Name", NAME_WIDTH, true, end);
+    let date = column(date, DATE_WIDTH, false, end);
+    let location = column("File location", LOCATION_WIDTH, true, end);
     row.append(&name);
     row.append(&date);
     row.append(&location);

@@ -59,10 +59,12 @@ pub fn register(app: &gtk::Application) {
         })
         .build();
     if registered.is_ok() {
+        // Nautilus may own the name too (it still runs for GNOME's file
+        // dialogs); take it over where it allows, or wait for it.
         gio::bus_own_name_on_connection(
             &connection,
             "org.freedesktop.FileManager1",
-            gio::BusNameOwnerFlags::NONE,
+            gio::BusNameOwnerFlags::ALLOW_REPLACEMENT | gio::BusNameOwnerFlags::REPLACE,
             |_, _| {},
             |_, _| {},
         );

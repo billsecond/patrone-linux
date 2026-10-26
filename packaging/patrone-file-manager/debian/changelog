@@ -1,3 +1,20 @@
+patrone-file-manager (0.2.8) resolute; urgency=medium
+
+  * GNOME's Files (Nautilus) is retired without being removed: Ubuntu's
+    session and GNOME's file dialogs for Snap and Flatpak apps need it.
+    Its menu entry is replaced by a hidden one that opens no file types,
+    and the org.freedesktop.FileManager1 D-Bus service ("show in folder")
+    starts File Manager instead (--gapplication-service). Nautilus's own
+    files are diverted to *.nautilus and come back when this package goes.
+  * Open with no longer selects the first of "More apps" when nothing is
+    suggested, and Always and Just once wait for an app to be picked;
+    pressing Always had made Advanced Network Configuration the app for
+    Flatpak files.
+  * Home's Recent and Favorites columns line up with their headings.
+  * No more "GFileInfo created without standard::content-type" warnings.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:40:00 -0500
+
 patrone-file-manager (0.2.7) resolute; urgency=medium
 
   * Extract All... and a new Extract here work for every archive Patrone

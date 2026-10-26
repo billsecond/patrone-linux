@@ -139,7 +139,14 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   freedesktop.org thumbnail spec (shared with other apps), made here for
   pictures and by the system's thumbnailers for everything else.
 - `org.freedesktop.FileManager1` on D-Bus, so apps can ask it to show a file
-  in its folder.
+  in its folder (a browser's "Show in folder"). The package's D-Bus service
+  file starts it for that (`--gapplication-service`) in place of Nautilus's.
+- **GNOME's Files (Nautilus) is retired, not removed:** removing the package
+  would take Ubuntu's session (`ubuntu-session`) and GNOME's file dialogs for
+  Snap and Flatpak apps (`xdg-desktop-portal-gnome`, which Nautilus draws)
+  with it. The package diverts two of its files (`dpkg-divert`, kept as
+  `*.nautilus`): its menu entry, replaced by a hidden one that opens no file
+  types (`data/retire-nautilus/`), and its `FileManager1` D-Bus service.
 
 Hidden files (names starting with a dot, and names listed in a folder's
 `.hidden` file) stay hidden unless Folder Options or View → Show → Hidden
