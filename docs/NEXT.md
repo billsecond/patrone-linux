@@ -98,11 +98,13 @@ Waiting on the user:
   taskbar installed (2026-10-26). Then try the Super key, the network
   menu's chevron, Shut down in a real session, and Chromium's pages in
   Inter.
-- **Canonical's reporting in Settings → Privacy** ("Send error reports to
-  Canonical", "...when upgrading to a new Ubuntu version"): Ubuntu's
-  `whoopsie` and `ubuntu-insights` are installed, and
-  `ubuntu-desktop-minimal` depends on them. Ask whether Patrone's own
-  desktop metapackage should leave them out (and with them the wording).
+- **Install `patrone-desktop` 0.1.0** (section 11), which takes out
+  Canonical's reporting:
+  `sudo apt install ~/src/patrone-linux/out/patrone-desktop_0.1.0_all.deb`.
+  apt removes whoopsie, ubuntu-insights, ubuntu-report and apport-gtk, and
+  nothing else. Then decide on what still reaches Canonical's servers
+  (section 11): the network check, the clock, release-upgrade offers, and
+  first-login setup's Ubuntu Pro page.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -890,7 +892,69 @@ Noto Sans first for sans-serif, so Patrone's rule is numbered 05.
 The user also saw "Ubuntu Desktop" in Settings: GNOME Settings names each
 page from its desktop file, so `patrone-branding` puts its own
 `gnome-ubuntu-panel.desktop` ("Desktop") in place of Ubuntu's. The rest of
-Settings' Ubuntu wording is Canonical's reporting (Waiting on the user).
+Settings' Ubuntu wording is Canonical's reporting (section 11).
+
+## 11. Nothing to Canonical (patrone-desktop)
+
+Asked for 2026-10-26: drop whoopsie and ubuntu-insights "so it sends nothing
+to Canonical". `patrone-desktop` 0.1.0 is Patrone's desktop metapackage:
+Ubuntu's desktop and `patrone-branding`, Patrone's apps recommended, and the
+programs that report to Canonical removed. `desktop/README.md` lists what
+reports to Canonical, what happens to each, and what else still reaches
+Canonical's servers.
+
+Checked on the VM:
+
+- `apt-get -s install` (a simulation) removes exactly apport-gtk,
+  ubuntu-insights, ubuntu-report and whoopsie. `ubuntu-desktop-minimal`,
+  Settings, `ubuntu-dev-tools` and apport stay. Without apport in
+  Recommends, apt would have left apport to `apt autoremove`.
+- First-login setup in the throwaway shell, with Patrone's `vendor.conf`
+  bound over Ubuntu's by bwrap: Welcome, Ubuntu Pro, Location Services, then
+  Appearance. With Ubuntu's, "Help Improve Ubuntu" comes after Location
+  Services. (Setup reads `/etc/gnome-initial-setup/vendor.conf` before
+  `/usr/share`'s, per its source.)
+- The Ubuntu Pro drop-in passes `systemd-analyze verify`, and its condition
+  fails on the VM, which isn't attached to Ubuntu Pro.
+
+Not checked until installed: the removal itself, and systemd applying the
+drop-ins after `daemon-reload`.
+
+Findings:
+
+- Nothing had been sent from the VM. There's no Insights consent file, so
+  its weekly upload had nothing to send, and the crash reports in
+  `/var/crash` aren't marked for upload. `/etc/whoopsie` did have
+  `report_metrics=true`.
+- Ubuntu builds Settings' Telemetry page (Privacy & Security → Telemetry:
+  "Send error reports to Canonical", system reports) with whoopsie and
+  Insights support compiled in, and shows it whether or not they're
+  installed (`debian/patches/ubuntu/telemetry-Repurpose-diagnostics-panel-for-all-telemetry-a.patch`).
+  Settings depends on `whoopsie-preferences` and `libinsights0`, so those
+  stay. Hiding the page takes a Patrone build of Settings.
+- Neither Settings nor first-login setup calls libinsights' upload. They
+  record consent and build reports locally, and ubuntu-insights' timer
+  uploaded them.
+- `motd-news` is already off: there's no `/etc/default/motd-news`, so
+  `ENABLED` isn't 1. But since `patrone-branding` moved `50-motd-news`
+  aside, `motd-news.timer` starts a script that isn't there, so
+  `motd-news.service` will fail twice a day. Fix in `patrone-branding`: a
+  drop-in with `ConditionPathExists=/etc/update-motd.d/50-motd-news`.
+- First-login setup still says Ubuntu: the Welcome page shows 26.04's
+  raccoon, then the Ubuntu Pro page, then "Choose how Ubuntu looks". A job
+  for `patrone-branding`.
+- `firefox` is only recommended by `ubuntu-desktop-minimal` 1.570.4
+  (section 4 says it depends on it), so a Patrone package could remove it
+  the same way.
+- `/var/crash` holds a root-only `patrone-remote-desktop.0.crash` from 10:03
+  that day: apport's name for a package that failed to install or
+  configure. Read it with sudo.
+
+Still to decide (the user): whether the network check
+(`connectivity-check.ubuntu.com`), the clock (`ntp.ubuntu.com`, with NTS),
+release-upgrade offers (`changelogs.ubuntu.com`) and the Ubuntu Pro page in
+first-login setup should move off Canonical or go. The update archive and
+the Snap Store stay.
 
 ## Suggested order
 

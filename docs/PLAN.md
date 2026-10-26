@@ -70,8 +70,10 @@ real hardware before a release.
 - **Packages:** each component becomes a `.deb` (`patrone-compositor`,
   `patrone-shell`, `patrone-settings`, `patrone-session`, and the
   `patrone-desktop` metapackage), built in a clean chroot with `sbuild`.
-  `patrone-terminal`, `patrone-shell-config` and `patrone-branding` exist
-  already (see `packaging/README.md`).
+  `patrone-terminal`, `patrone-shell-config`, `patrone-branding` and others
+  exist already (see `packaging/README.md`). So does `patrone-desktop`: today
+  it's Ubuntu's GNOME desktop with Patrone's packages and without anything
+  that reports to Canonical (see `desktop/README.md`).
 - **Apt repository:** a private repo generated with `reprepro`. Launchpad PPAs
   are always public, so they're out while the project is private.
 - **ISO:** remaster the official 26.04.1 desktop ISO. Add our packages, make
@@ -96,6 +98,8 @@ docs/                  plan, decisions, how-to notes
 branding/              logo, colors and artwork, and the system files that
                        replace Ubuntu's branding (patrone-branding)
 default-apps/          default browser and favorites (patrone-default-apps)
+desktop/               the desktop metapackage's defaults: nothing reports
+                       to Canonical (patrone-desktop)
 remote-desktop/        RDP sign-in with each account's own password
                        (patrone-remote-desktop)
 compositor/            the Patrone compositor

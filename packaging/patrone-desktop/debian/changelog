@@ -1,0 +1,8 @@
+patrone-desktop (0.1.0) resolute; urgency=medium
+
+  * First package: Ubuntu's desktop with Patrone's branding and apps, without
+    whoopsie, ubuntu-insights, ubuntu-report or apport-gtk. First-login setup
+    skips Ubuntu's reporting page, and Ubuntu Pro's apt news and ESM check
+    run only on a machine attached to Ubuntu Pro.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 14:45:00 -0500

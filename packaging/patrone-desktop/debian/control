@@ -1,0 +1,29 @@
+Source: patrone-desktop
+Section: metapackages
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-desktop
+Architecture: all
+Depends: ${misc:Depends}, patrone-branding, ubuntu-desktop-minimal
+Recommends: apport,
+            patrone-default-apps,
+            patrone-file-manager,
+            patrone-gnome-taskbar,
+            patrone-remote-desktop,
+            patrone-settings,
+            patrone-shell-config,
+            patrone-terminal
+Conflicts: apport-gtk, ubuntu-insights, ubuntu-report, whoopsie
+Description: Patrone Linux's desktop
+ Ubuntu's desktop with Patrone's branding and apps, and nothing that reports
+ to Canonical: no whoopsie (error reports), ubuntu-insights or ubuntu-report
+ (system reports), and no apport-gtk, the crash dialog that offered to send
+ them. Crash reports still collect in /var/crash for debugging, and nothing
+ sends them. First-login setup skips Ubuntu's page that asks to send reports,
+ and Ubuntu Pro's apt news and ESM check run only on a machine attached to
+ Ubuntu Pro.

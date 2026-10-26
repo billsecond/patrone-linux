@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+pkg = debian/patrone-desktop
+dropins = $(pkg)/usr/lib/systemd/system
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm644 gnome-initial-setup/vendor.conf \
+	    $(pkg)/etc/gnome-initial-setup/vendor.conf
+	install -Dm644 systemd/ubuntu-pro-only.conf \
+	    $(dropins)/apt-news.service.d/patrone-ubuntu-pro-only.conf
+	install -Dm644 systemd/ubuntu-pro-only.conf \
+	    $(dropins)/esm-cache.service.d/patrone-ubuntu-pro-only.conf
