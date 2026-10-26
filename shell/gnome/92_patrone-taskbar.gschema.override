@@ -4,3 +4,11 @@
 # Ubuntu doesn't set this key for its own session, so one section is enough.
 [org.gnome.shell]
 enabled-extensions=['patrone-taskbar@patrone-linux']
+
+# Patrone draws the Recycle Bin on the desktop itself (recycleBin.js), so it
+# can stay docked to a corner; the desktop icons extension shows neither its
+# own trash nor a Home icon (the user, 2026-10-26). Ubuntu doesn't set these
+# for its own session either. Without that extension the section is ignored.
+[org.gnome.shell.extensions.ding]
+show-home=false
+show-trash=false

@@ -1,3 +1,14 @@
+patrone-gnome-taskbar (0.3.3) resolute; urgency=medium
+
+  * A Recycle Bin on the desktop, docked to the bottom right corner: double-
+    click opens it, and its right-click menu empties it (after asking) or
+    docks it to another corner, or leaves it wherever it's dragged. Its icon
+    fills when something's in it.
+  * The desktop icons extension no longer shows the Home folder, or a trash
+    of its own.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:30:00 -0500
+
 patrone-gnome-taskbar (0.3.2) resolute; urgency=medium
 
   * No more "already disposed" warnings when signing out: a rebuild queued

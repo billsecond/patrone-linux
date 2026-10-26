@@ -90,6 +90,38 @@
         app each one opens. Patrone Settings sets it.
       </description>
     </key>
+    <key name="show-recycle-bin" type="b">
+      <default>true</default>
+      <summary>Show the Recycle Bin on the desktop</summary>
+      <description>
+        Patrone's own, in place of the desktop icons extension's trash.
+      </description>
+    </key>
+    <key name="recycle-bin-dock" type="s">
+      <choices>
+        <choice value="bottom-right"/>
+        <choice value="bottom-left"/>
+        <choice value="top-right"/>
+        <choice value="top-left"/>
+        <choice value="none"/>
+      </choices>
+      <default>'bottom-right'</default>
+      <summary>The corner the Recycle Bin stays docked to</summary>
+      <description>
+        A corner of the primary screen, inside the taskbar, or "none" to
+        leave it wherever it's dragged (recycle-bin-position). Its
+        right-click menu sets it; dragged while docked, it docks to the
+        nearest corner.
+      </description>
+    </key>
+    <key name="recycle-bin-position" type="(dd)">
+      <default>(1.0, 1.0)</default>
+      <summary>Where the Recycle Bin is when it isn't docked</summary>
+      <description>
+        Across and down the screen's free area, each from 0 to 1, so it
+        stays in place when the screen size changes.
+      </description>
+    </key>
     <key name="terminal-app" type="s">
       <default>''</default>
       <summary>The app the terminal slot opens</summary>

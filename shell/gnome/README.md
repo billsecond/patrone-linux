@@ -113,6 +113,30 @@ A Windows 11 Start menu in a smaller size (540 pixels wide):
 
 Right-click an app in the menu to pin it to Start or the taskbar.
 
+### The Recycle Bin on the desktop
+
+Ubuntu's desktop icons extension shows the account's desktop files, but
+Patrone turns off its Home and Trash icons (`92_patrone-taskbar.gschema.override`,
+`show-home` and `show-trash`), and the taskbar draws its own **Recycle Bin**
+(`recycleBin.js`), as the user asked on 2026-10-26, so it can stay docked to
+a corner: bottom right unless moved, inside the taskbar.
+
+- Double-click opens it in the file manager (`trash:///`, which opens in
+  whatever opens folders: Patrone File Manager).
+- Its icon fills when something's in it (File Manager's own drawings,
+  copied into `icons/recycle-bin*.svg`).
+- Right-click: **Open**, **Empty Recycle Bin** (after asking; Cancel is the
+  default), and **Keep docked to** Bottom right, Bottom left, Top right, Top
+  left, or Not docked.
+- Dragged while docked, it docks to the nearest corner; not docked, it stays
+  where it's dropped.
+- It sits above the wallpaper and the desktop icons' window and below every
+  other window, and follows the free area when the screen size changes.
+
+Not done: dropping files onto it (GNOME Shell takes no drops from apps), and
+docked top left it can cover the first desktop file, since the desktop icons
+start there.
+
 ### Settings
 
 `org.gnome.shell.extensions.patrone-taskbar` (Patrone Settings sets the
@@ -127,6 +151,9 @@ the taskbar follows when it's installed):
 | `start-icon` | `'patrone'` | The Start button's icon, from `icons/` |
 | `color` | `'wallpaper'` | `wallpaper` (the wallpaper's hue, in Patrone, Modern and Studio) or `theme` (the theme's grey) |
 | `pin-icons` | `'patrone'` | `patrone` (Patrone's icons for the web, terminal, files and mail slots) or `app` (the icons of the apps they open) |
+| `show-recycle-bin` | `true` | Show the Recycle Bin on the desktop |
+| `recycle-bin-dock` | `'bottom-right'` | `bottom-right`, `bottom-left`, `top-right`, `top-left`, or `none` (where it's dropped) |
+| `recycle-bin-position` | `(1.0, 1.0)` | Where it is when not docked, across and down the free area from 0 to 1 |
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
 | `web-search-url` | `'https://www.google.com/search?q=%s'` | Where web searches go |
 
@@ -178,6 +205,7 @@ the taskbar follows when it's installed):
 | `jumpList.js` | The buttons' right-click menus |
 | `roles.js` | The slots, and which app each one opens |
 | `tint.js` | The bar's color from the wallpaper |
+| `recycleBin.js` | The Recycle Bin on the desktop |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
 | `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
 | `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, the `-symbolic` ones drawn in the bar's text color. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |

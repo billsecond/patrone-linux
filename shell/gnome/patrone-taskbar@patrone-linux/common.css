@@ -448,3 +448,25 @@
 .patrone-account-detail {
   font-size: 9pt;
 }
+
+/* The Recycle Bin on the desktop (recycleBin.js): a white name with a
+ * shadow, readable on any wallpaper, light style or dark */
+.patrone-desktop-icon {
+  width: 84px;
+  padding: 6px 4px;
+  border-radius: 6px;
+}
+
+.patrone-desktop-icon:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.patrone-desktop-icon:active {
+  background-color: rgba(255, 255, 255, 0.24);
+}
+
+.patrone-desktop-icon-label {
+  margin-top: 4px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}

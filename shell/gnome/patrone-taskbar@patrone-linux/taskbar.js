@@ -23,6 +23,7 @@ import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.j
 
 import {JumpList} from './jumpList.js';
 import {RecentFiles} from './recent.js';
+import {RecycleBin} from './recycleBin.js';
 import {ROLES, appForRole, roleOf} from './roles.js';
 import {StartMenu} from './startMenu.js';
 import {WallpaperColor} from './tint.js';
@@ -451,6 +452,7 @@ export class Taskbar {
         Main.ctrlAltTabManager.addGroup(this.actor, 'Taskbar', 'shell-focus-top-bar-symbolic',
             {sortGroup: CtrlAltTab.SortGroup.TOP});
 
+        this.recycleBin = new RecycleBin(this.settings, this._iconsDir);
         this.startMenu = new StartMenu(this, this._startButton);
         this._startButton.connect('clicked', () => this.startMenu.toggle('start'));
         this._searchButton.connect('clicked', () => this.startMenu.toggle('search'));
@@ -525,6 +527,7 @@ export class Taskbar {
         Main.layoutManager.disconnectObject(this);
 
         this.startMenu.destroy();
+        this.recycleBin.destroy();
         this._backgroundMenu.destroy();
         Main.ctrlAltTabManager.removeGroup(this.actor);
         this.actor.destroy();
