@@ -1,0 +1,7 @@
+patrone-unpack (0.1.0) resolute; urgency=medium
+
+  * First package: archives (zip, tar with gzip, xz, bzip2 or zstd, 7z,
+    rar) open as folders with Extract all and Extract here; .deb packages
+    and Flatpak files open with what they are and an Install button.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:00:00 -0500

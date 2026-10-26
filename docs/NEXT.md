@@ -159,6 +159,14 @@ Waiting on the user:
   give a person or group access by name (an account named "base" has to be
   created first; there isn't one). Apply asks for your password when it
   needs administrator rights.
+- **Install Patrone Unpack** (section 13), from SSH or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.0_amd64.deb
+  ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
+  Flatpak, which `patrone-unpack` recommends). Then open a zip or tar.gz from
+  File Manager, try Extract all and Extract here, and open a `.deb`: Install
+  should ask for your password with "Installing software for everyone on
+  this computer needs an administrator's password". A `.flatpakref` from
+  flathub.org (its Install button) should install the app for everyone.
 
 ## 1. Patrone Terminal
 
@@ -1307,6 +1315,66 @@ Findings:
   bottom-left details' box overlaps the logo's, so its left rule counted
   as a detail. The cleared background refills the logo's whole area from
   its surroundings, and the details leave the logo's box alone.
+
+## 13. Patrone Unpack (patrone-unpack)
+
+Asked for 2026-10-26: "a minimal flatpack app that can be used to uncompress
+and install things. Make it default, we removed ubuntus". Asked what
+"flatpack" meant, the user chose a normal Patrone `.deb` app that also
+installs Flatpak apps (Patrone had no Flatpak at all). "Ubuntu's": Ubuntu
+26.04 ships no archive app (File Roller was never installed); archives
+opened in Nautilus, which File Manager replaced, and `.deb` packages in
+Canonical's App Center (`snap-store`). Patrone Unpack (`unpack/`, its
+README has the details) does both: an archive opens as a folder with
+Extract all (Windows' dialog) and Extract here; a `.deb` or Flatpak file
+opens with what it is, what else installing it changes (apt's simulation),
+and Install. `patrone-default-apps` 0.1.3 makes it the default for all of
+them, with Nautilus and App Center as fallbacks.
+
+How: Rust and GTK 4; libarchive for every archive format, rar included
+(its own free code, no `unrar`), linked by its run-time name; extraction
+written by Unpack itself so nothing lands outside the destination; `.deb`
+installs through `pkexec` and a root helper running apt, under a polkit
+action of its own (`auth_admin`, every time); Flatpak through `flatpak
+install --system`, whose own polkit rules ask.
+
+Checked on the VM: the package builds and its build runs 18 tests (real zip,
+7z and tar archives made with libarchive's writer, paths that try to leave
+the destination, passwords, apt's output, Flatpak files); Clippy and
+rustfmt are clean; the desktop file validates; `gio mime` picks Unpack for
+every type with the new list and the session's paths. In a throwaway GNOME
+Shell with real clicks: the archive window, Extract all into the suggested
+folder (and the folder opened in File Manager), Extract here naming
+"(2)", the replace/skip question, opening a file from the archive,
+`--extract-here`, a `.deb` up to polkit's password prompt and Cancel, a
+`.deb` apt can't install, a `.flatpakref` without Flatpak, light and dark.
+Not checked: a real install (needs the password), the installed policy's
+message, Flatpak installs and real `.flatpak` bundles (no Flatpak on the
+VM), rar files.
+
+Findings:
+
+- libarchive's mtree reader takes any line of text for an archive: a
+  gzipped one-line text file listed as an "mtree" archive holding an empty
+  file. Unpack turns on the other formats one by one instead of
+  `archive_read_support_format_all`.
+- GTK 4.22's Default theme stayed light in a dark session although
+  `gtk-interface-color-scheme` was dark (an app style sheet bound to it went
+  dark). Unpack sets `gtk-application-prefer-dark-theme` from it. Other
+  plain GTK 4 apps on the Default theme may need the same.
+- `apt-get --simulate install ./file.deb` works without root and lists
+  `Inst`/`Remv` lines; apt 3's solver adds "Reached two conflicting
+  assignments" and its reasoning to the error, which Unpack leaves out when
+  the unmet dependency is already listed.
+- Ubuntu's Flatpak lets `sudo` members install without a password only in
+  local sessions (with a seat). Patrone's seatless desktops get Flatpak's
+  defaults: an administrator's password.
+- To reach a throwaway shell's polkit agent, start the app from inside the
+  shell (`Gio.Subprocess` through `headless.sh eval`): pkexec asks the agent
+  of its own login session, and each SSH command is a session of its own.
+- File Manager has its own Extract All for zip and tar; it could hand 7z,
+  rar and Extract here to `patrone-unpack --extract-here` /
+  `--extract-to DIR` (its session was told).
 
 ## Suggested order
 

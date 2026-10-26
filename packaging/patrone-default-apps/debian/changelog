@@ -1,3 +1,10 @@
+patrone-default-apps (0.1.3) resolute; urgency=medium
+
+  * Open archives, .deb packages and Flatpak files with Patrone Unpack, in
+    place of Ubuntu's Files and Canonical's App Center.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:00:00 -0500
+
 patrone-default-apps (0.1.2) resolute; urgency=medium
 
   * Open folders with Patrone File Manager, and put it in the favorites in

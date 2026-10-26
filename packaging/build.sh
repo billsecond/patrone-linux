@@ -10,6 +10,7 @@
 #   ./packaging/build.sh patrone-gnome-taskbar
 #   ./packaging/build.sh patrone-settings -d
 #   ./packaging/build.sh patrone-desktop
+#   ./packaging/build.sh patrone-unpack -d
 #
 # The packages land in out/. For a Rust package the crates are vendored into
 # the source tree first, so the build itself runs offline, as it will in a
@@ -31,6 +32,7 @@ case $package in
     patrone-gnome-taskbar) source_dir=shell/gnome ;;
     patrone-settings) source_dir=settings ;;
     patrone-desktop) source_dir=desktop ;;
+    patrone-unpack) source_dir=unpack ;;
     *)
         echo "Unknown package: $package" >&2
         exit 1

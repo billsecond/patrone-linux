@@ -37,6 +37,7 @@ session. A Patrone login screen can come later.
 | --- | --- | --- |
 | Terminal | Patrone Terminal | Ours (`terminal/`) |
 | File manager | Patrone File Manager, replacing Ubuntu's Files (decided 2026-10-26) | Ours (`file-manager/`); `patrone-default-apps` makes it the app for folders (`inode/directory`) |
+| Archives and installers | Patrone Unpack (decided 2026-10-26), in place of Ubuntu's Files for archives and Canonical's App Center for `.deb` packages | Ours (`unpack/`); `patrone-default-apps` makes it the app for zip, tar, 7z, rar and compressed files, `.deb` packages and Flatpak files. Installs `.deb` packages with apt (pkexec, an administrator's password) and Flatpak apps for everyone; `patrone-unpack` recommends `flatpak` |
 | Shell | bash with Patrone's two-line prompt (decided 2026-10-26); zsh set up the same way for those who choose it | `patrone-shell-config` |
 | Web browser | Chromium, replacing Firefox (decided 2026-10-25) | Canonical's Chromium snap, kept current automatically by snapd. Not forked or rebranded: Chromium ships security fixes about weekly and a major release every four weeks, and a fork would make us responsible for every one of them. Patrone's look and defaults come from Chromium's enterprise policies instead, in `/etc/chromium-browser/policies/managed/` (the snap's `etc-chromium-browser-policies` plug reads that folder). |
 

@@ -1,11 +1,42 @@
 # Patrone's default apps, installed as /etc/xdg/mimeapps.list: Chromium for
-# the web, Patrone File Manager for folders (Nautilus only as a fallback, when
-# File Manager isn't installed). It's read before Ubuntu's lists in
-# /usr/share/applications, and a user's own choices (~/.config/mimeapps.list)
-# still win.
+# the web, Patrone File Manager for folders, and Patrone Unpack for
+# archives, .deb packages and Flatpak files. The apps after each Patrone app
+# are fallbacks for when it isn't installed (Nautilus, Ubuntu's Files,
+# extracts archives itself; App Center is Canonical's snap-store). It's read
+# before Ubuntu's lists in /usr/share/applications, and a user's own choices
+# (~/.config/mimeapps.list) still win.
 [Default Applications]
 application/xhtml+xml=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
 text/html=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
 inode/directory=org.patrone.FileManager.desktop;org.gnome.Nautilus.desktop;
 x-scheme-handler/http=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
 x-scheme-handler/https=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
+application/zip=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-zip-compressed=org.patrone.Unpack.desktop;
+application/x-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-compressed-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-xz-compressed-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-bzip-compressed-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-bzip2-compressed-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-zstd-compressed-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-lzma-compressed-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-lzip-compressed-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-tarz=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-7z-compressed=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/vnd.rar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-rar=org.patrone.Unpack.desktop;
+application/x-rar-compressed=org.patrone.Unpack.desktop;
+application/gzip=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-gzip=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-xz=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-bzip=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-bzip2=org.patrone.Unpack.desktop;
+application/zstd=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-lzma=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-lzip=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/x-cpio=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
+application/vnd.ms-cab-compressed=org.patrone.Unpack.desktop;
+application/vnd.debian.binary-package=org.patrone.Unpack.desktop;snap-store_snap-store.desktop;
+application/vnd.flatpak=org.patrone.Unpack.desktop;
+application/vnd.flatpak.ref=org.patrone.Unpack.desktop;
+application/vnd.flatpak.repo=org.patrone.Unpack.desktop;
