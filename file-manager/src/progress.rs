@@ -238,7 +238,7 @@ impl ProgressWindow {
         window.add_css_class("progress-window");
         let title = gtk::Label::builder().xalign(0.0).hexpand(true).build();
         title.add_css_class("dialog-title");
-        let bar = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        let bar = util::header_box();
         bar.add_css_class("dialog-titlebar");
         bar.append(&util::window_controls(gtk::PackType::Start));
         bar.append(&title);

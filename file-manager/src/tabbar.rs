@@ -104,7 +104,7 @@ impl TabBar {
         new_tab.set_valign(gtk::Align::Center);
         let spacer = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         spacer.set_hexpand(true);
-        let bar = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        let bar = util::header_box();
         bar.add_css_class("tab-bar");
         // The window's buttons before the tabs or after the spacer, wherever
         // the account's button-layout puts them (each set is empty, and

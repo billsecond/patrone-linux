@@ -1,3 +1,14 @@
+patrone-file-manager (0.2.6) resolute; urgency=medium
+
+  * The title bars follow the title bar style chosen in Patrone Settings,
+    as every other app's do: raised when the window is active (Studio's
+    grey gradient, Royal's glossy blue) and flat when it isn't. The tab
+    strip and the dialogs' title bars are header bars for style sheets now
+    (util::header_box), and the selected tab keeps its own colors on any
+    style.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:20:00 -0500
+
 patrone-file-manager (0.2.5) resolute; urgency=medium
 
   * A clearer icon: a yellow folder with a band of Patrone Blue along its

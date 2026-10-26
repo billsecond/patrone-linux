@@ -103,6 +103,15 @@ fn startup(app: &gtk::Application) {
         &css,
         gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
+    // The title bar style in the account's gtk.css paints the title bar;
+    // these few rules, just above it, keep the tabs readable on any style.
+    let over_theme = gtk::CssProvider::new();
+    over_theme.load_from_resource("/org/patrone/FileManager/over-theme.css");
+    gtk::style_context_add_provider_for_display(
+        &display,
+        &over_theme,
+        gtk::STYLE_PROVIDER_PRIORITY_USER + 1,
+    );
     gtk::Window::set_default_icon_name(APP_ID);
     window::set_accels(app);
     dbus::register(app);

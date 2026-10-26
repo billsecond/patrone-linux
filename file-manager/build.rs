@@ -24,7 +24,8 @@ fn main() {
     let mut xml = String::from(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gresources>\n  \
          <gresource prefix=\"/org/patrone/FileManager\">\n    \
-         <file>style.css</file>\n",
+         <file>style.css</file>\n    \
+         <file>over-theme.css</file>\n",
     );
     for icon in &icons {
         writeln!(xml, "    <file>icons/{icon}</file>").unwrap();

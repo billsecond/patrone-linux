@@ -80,7 +80,7 @@ impl Dialog {
             .hexpand(true)
             .build();
         title_label.add_css_class("dialog-title");
-        let bar = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        let bar = util::header_box();
         bar.add_css_class("dialog-titlebar");
         bar.append(&util::window_controls(gtk::PackType::Start));
         bar.append(&title_label);

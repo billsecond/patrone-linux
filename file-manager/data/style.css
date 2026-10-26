@@ -85,8 +85,19 @@ window.fluent-dialog.csd {
   border-radius: 8px;
 }
 
-.tab-bar {
+/* The title bar is a headerbar node (util::header_box), so the title bar
+   style in the account's gtk.css (Patrone Settings) paints it, active and
+   inactive, as it paints every app's. These are the looks without one;
+   that style sheet comes later and wins. Unselected tabs take the title
+   bar's text color; the selected tab is part of the window below it. */
+headerbar.tab-bar,
+headerbar.tab-bar:backdrop {
   background-color: var(--mica);
+  background-image: none;
+  color: var(--text-secondary);
+  box-shadow: none;
+  border: none;
+  border-spacing: 0;
   min-height: 40px;
   padding: 6px 0 0 8px;
 }
@@ -96,7 +107,6 @@ window.fluent-dialog.csd {
   min-width: 140px;
   padding: 0 4px 0 12px;
   border-radius: 8px 8px 0 0;
-  color: var(--text-secondary);
   transition: background-color 120ms ease-out;
 }
 
@@ -878,10 +888,16 @@ window.fluent-dialog {
   background-color: var(--surface);
 }
 
-.dialog-titlebar {
+headerbar.dialog-titlebar,
+headerbar.dialog-titlebar:backdrop {
   background-color: var(--mica);
+  background-image: none;
+  color: var(--text);
+  box-shadow: none;
+  border: none;
+  border-spacing: 0;
   min-height: 32px;
-  padding-left: 14px;
+  padding: 0 0 0 14px;
 }
 
 .dialog-title {

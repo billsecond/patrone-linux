@@ -148,17 +148,12 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.4** (section 8; the user runs 0.2.0),
+- **Install Patrone File Manager 0.2.6** (section 8; the user runs 0.2.5),
   from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.4_amd64.deb`,
-  then close every File Manager window so the new version starts (with
-  "Restore previous folder windows at sign-in" on, the next sign-in should
-  reopen them). Try
-  Folder Options twice, the Purpose column with View → Show → System folder
-  hints, the full path in the address bar, and Properties → Permissions:
-  give a person or group access by name (an account named "base" has to be
-  created first; there isn't one). Apply asks for your password when it
-  needs administrator rights.
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.6_amd64.deb`,
+  then close every File Manager window so the new version starts. Its title
+  bars should now follow the title bar style chosen in Patrone Settings
+  (Studio: raised grey when active, flat when not), like Terminal's.
 - **Install Patrone Unpack** (section 13), from SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.0_amd64.deb
   ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
@@ -1049,7 +1044,28 @@ no longer sets the phase. Checked by running
 and new entries: the old unit's condition exits 1 for `ubuntu:GNOME`, the
 new unit has none. Not yet seen across a real sign-in.
 
-Next: the user's verdict on 0.2.4, then the gaps in the README's "Not done
+### 0.2.6 (2026-10-26)
+
+The user picked a more 3D title bar style in Patrone Settings (Studio, Wide
+buttons); Terminal's title bar turned raised but File Manager's stayed flat.
+Patrone Settings' styles draw GTK's `headerbar` (raised gradient when
+active, flat under `:backdrop`), and File Manager's tab strip and dialog
+title bars were plain boxes painted flat by its own style sheet. They are
+now boxes whose CSS node is `headerbar` (`util::header_box`), with File
+Manager's look as the default that the account's gtk.css overrides. Classic
+and Royal also restyle labels and buttons inside a header bar (bold, white),
+so a small style sheet (`data/over-theme.css`) at priority USER + 1 keeps
+tab names in their usual weight and the selected tab's text and close
+button in File Manager's colors.
+
+Verified in the headless GNOME Shell with the account's gtk.css set as
+Patrone Settings sets it: Studio with Wide buttons in dark mode, two windows
+(the active one a gradient from #42424a to #313135, the inactive one flat
+#2c2c30, Studio's colors), and Royal with Glossy buttons in light mode
+(glossy blue when active, pale blue when not, the selected tab readable;
+a Properties dialog's title bar royal blue with a bold white title).
+
+Next: the user's verdict on 0.2.6, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 

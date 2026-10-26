@@ -14,7 +14,11 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   here, Windows 11's, and so ignored both.)
 - **Window:** tabs in the title bar (new, close, middle-click to close, a
   right-click menu with Duplicate, Move to new window, Move to window ▸,
-  Close other tabs and Close tabs to the right); Back, Forward, Up and
+  Close other tabs and Close tabs to the right). The title bar, and the
+  dialogs', take the title bar style chosen in Patrone Settings like every
+  other app's (raised when active, flat when not): they're `headerbar`
+  nodes for style sheets (`util::header_box`), and `data/over-theme.css`
+  keeps the tabs readable on any style. Back, Forward, Up and
   Refresh; breadcrumbs of the whole path from This PC (This PC › Local Disk
   (/) › home › you › folder), any of which goes there when clicked, with
   chevrons listing each folder's subfolders; when the path doesn't fit, its

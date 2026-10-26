@@ -7,6 +7,42 @@ use gtk::{gio, glib, prelude::*};
 /// Where a widget sends its events: one handler, set once.
 pub type Handler<T> = std::cell::RefCell<Option<std::rc::Rc<dyn Fn(T)>>>;
 
+mod header_box {
+    use super::*;
+    use gtk::subclass::prelude::*;
+
+    #[derive(Default)]
+    pub struct HeaderBox;
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for HeaderBox {
+        const NAME: &'static str = "PfmHeaderBox";
+        type Type = super::HeaderBox;
+        type ParentType = gtk::Box;
+
+        fn class_init(klass: &mut Self::Class) {
+            klass.set_css_name("headerbar");
+        }
+    }
+
+    impl ObjectImpl for HeaderBox {}
+    impl WidgetImpl for HeaderBox {}
+    impl BoxImpl for HeaderBox {}
+}
+
+glib::wrapper! {
+    pub struct HeaderBox(ObjectSubclass<header_box::HeaderBox>)
+        @extends gtk::Box, gtk::Widget,
+        @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
+}
+
+/// The row of a title bar, named `headerbar` for style sheets, so the title
+/// bar style chosen in Patrone Settings (or any GTK theme) draws it as it
+/// draws every other app's title bar, active and inactive.
+pub fn header_box() -> gtk::Box {
+    glib::Object::new::<HeaderBox>().upcast()
+}
+
 /// GTK's own minimize, maximize and close buttons for one end of a title
 /// bar. Like every other app's, they show in the corner the account chose
 /// (GNOME's button-layout; the other end's set is empty and hidden), only
