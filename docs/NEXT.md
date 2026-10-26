@@ -1,7 +1,7 @@
 # Next steps
 
-Last updated 2026-10-25, at the end of the second Patrone Terminal and Hyper-V
-session.
+Last updated 2026-10-26, after the branding, one-sign-in RDP and terminal
+autostart work.
 
 ## Where things stand
 
@@ -28,8 +28,19 @@ Done:
   prompt, loaded from `~/.bash_aliases`; installed for the user
   (`install-dev.sh --bashrc`) and checked in an interactive bash in a pty.
   `shell-config/zshrc` and `zprofile` remain for anyone who picks zsh.
-- **Packages** (`packaging/`): `patrone-terminal` and `patrone-shell-config`
-  build on the VM. Not installed anywhere yet.
+- **Packages** (`packaging/`): `patrone-terminal` (0.1.1, now with a login
+  autostart entry), `patrone-shell-config` and `patrone-branding` build on
+  the VM. Not installed anywhere yet.
+- **Branding** (section 6): `patrone-branding` replaces Ubuntu's name and
+  logos (boot splash, boot menu, login screen, About, console banner, login
+  message), restyles the login screen, makes blue the accent color and turns
+  Ubuntu's dock off. Built and inspected; not installed yet.
+- **Terminal at login:** GNOME opens Patrone Terminal at every login, for the
+  user now (`install-dev.sh --autostart`) and for everyone once
+  `patrone-terminal` is installed. The Patrone Desktop session's compositor
+  already opens one.
+- **No screen lock over RDP:** done for the user, and applied live to their
+  Remote Login session (section 3).
 - **Remote Desktop:** Remote Desktop Connection works, at full 4K with Remote
   Login. The Hyper-V daemons are running.
 - **fastfetch** shows the Patrone logo for the user (`branding/fastfetch/`,
@@ -42,6 +53,19 @@ Done:
 
 Waiting on the user:
 
+- **Install the branding and reboot** (needs their sudo password):
+  `sudo apt install ./out/patrone-branding_0.1.0_all.deb ./out/patrone-terminal_0.1.1_amd64.deb`
+  in `~/src/patrone-linux`, then `sudo reboot`. Then check (section 6).
+- **One-sign-in RDP:** from SSH or the VM's console, not from inside RDP,
+  log out of the Remote Login desktop and run
+  `./scripts/hyperv/guest/setup-remote-desktop.sh headless`, entering their
+  Linux username and password when asked. Then connect with `mstsc` (More
+  choices → Use a different account if it offers old credentials).
+- **Login screen style:** the user asked for an "enterprise and/or school"
+  look. It now keeps the list of users, restyled. Ask whether they'd rather
+  have the username-and-password form schools and companies use
+  (`disable-user-list=true` in `system/gdm/95-patrone-settings`), and
+  whether to add a banner message.
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
@@ -231,6 +255,27 @@ Findings:
   `VMBus` transport. Linux guests need `HvSocket`.
 - `freerdp-proxy` (FreeRDP 3.32) runs headless and could sit between VMConnect
   and GNOME Remote Desktop (TLS in, NLA out).
+- **One sign-in** (the user's request, 2026-10-26: `mstsc` asks for the
+  credentials and they open the desktop). Remote Login can't do it: its NLA
+  credentials are GNOME Remote Desktop's own, then GDM asks again. The
+  `headless` mode of `setup-remote-desktop.sh` does: GDM 50's
+  `gnome-headless-session@USER.service` runs the user's desktop from boot
+  with no monitor, and `gnome-remote-desktop-headless.service` (a user unit,
+  `WantedBy=gnome-session.target`, conflicts with Desktop Sharing's) serves
+  it with `grdctl --headless` settings. The RDP credentials are a separate
+  copy the user sets equal to their Linux account's; GNOME Remote Desktop 50
+  can only check its own copy or Kerberos (`set-auth-methods`), not PAM. With
+  no TPM in the VM (`/dev/tpm*` absent) it keeps them in
+  `credentials.ini`. Written and syntax-checked, and its "other desktop
+  sessions" check finds the user's Remote Login session (425) and ignores
+  the tty3 text session. Not run yet: it needs the user's sudo password and
+  their credentials, and it ends the RDP connection they're using.
+- **Screen lock over RDP:** the user doesn't expect an RDP session to lock.
+  `scripts/hyperv/guest/rdp-no-lock.sh` runs at login and, in a session with
+  no seat (Remote Login and headless sessions have none; `Remote=yes` for
+  Remote Login), sets `lock-enabled=false` and `idle-delay=0`; on the console
+  it resets them. Installed for the user and run once against their Remote
+  Login session: both settings read back as `false` and `0`.
 
 Plan:
 
@@ -270,11 +315,62 @@ checked), customized with enterprise policies rather than forked or rebranded.
 ## 5. fastfetch logo
 
 `branding/fastfetch/` has the system-wide config (fastfetch 2.57 reads
-`/etc/xdg/fastfetch/config.jsonc`) and a placeholder logo. When the user's
-ASCII logo arrives, redraw it as text in `logo.txt`, reuse it for
-`/etc/issue`, and package both (for example in a `patrone-branding` package
-with the wallpaper). With its own `/etc/os-release` (`ID=patrone`,
-`ID_LIKE=ubuntu`) Patrone would otherwise get Ubuntu's logo.
+`/etc/xdg/fastfetch/config.jsonc`) and the traced logo; `patrone-branding`
+installs both. With Patrone's own `os-release` (`ID=patrone`), fastfetch
+would otherwise fall back to Ubuntu's logo through `ID_LIKE`.
+
+## 6. Branding (patrone-branding)
+
+The user asked (2026-10-26) to remove the Ubuntu logo everywhere, then for a
+login screen and avatar that don't look like Ubuntu, "more enterprise and/or
+school". `branding/README.md` has the table of what replaces what. What was
+checked: the package builds; its file list, conffiles and maintainer scripts
+were inspected; the settings override compiles with `glib-compile-schemas
+--strict` against Ubuntu's schemas and gives the new defaults (with no user
+settings: the Patrone wallpaper, the dock in `disabled-extensions`); the
+login theme has all 11 of Yaru's resources plus Patrone's rules at the end of
+`gdm.css`; `agetty --show-issue` renders the console banner as
+"Patrone Linux 0.1" over "DevDistro-PatroneLinux (10.0.0.61) on tty1". Not
+checked until the user installs it and reboots: the boot splash, the boot
+menu name, the login screen's look, Settings → About, the login message, and
+that the dock goes away.
+
+After the reboot: `vmshot.ps1` on the login screen (before anyone logs in on
+the console); `cat /etc/os-release`; `update-alternatives --query
+default.plymouth`, `text.plymouth` and `gdm-theme.gresource`; `grep -i
+patrone /boot/grub/grub.cfg`; an SSH login for the message; the RDP desktop
+for the dock, the accent and the terminal opening by itself.
+
+Findings:
+
+- Ubuntu's login screen looked like Ubuntu through four things: its logo,
+  the orange accent (`accent-color='orange'` from
+  `10_ubuntu-settings.gschema.override`, used 211 times in Yaru's login
+  CSS), Yaru's warm grey background (`#lockDialogGroup`, `#222222`) and the
+  Ubuntu Sans typeface.
+- Plymouth's initramfs hook copies the theme folder with `cp -a`, keeping
+  symlinks as symlinks, and copies another folder only if `ImageDir` names
+  it. Links from the Patrone theme to the spinner's images would have
+  dangled at boot, so the package copies them.
+- GDM's greeter (`gnome-session-service --session=gnome-login`) doesn't run
+  `/etc/xdg/autostart` entries; the user's GNOME session does (it ran
+  `evolution-alarm-notify` and `snap userd`, the greeter didn't). No systemd
+  `app-*@autostart` units exist: GNOME 50's session starts them itself.
+- `desktop-file-validate` rejects `NotShowIn=Patrone;`: unregistered desktop
+  names need an `X-` prefix. `XDG_CURRENT_DESKTOP=Patrone` works anyway, but
+  matters if Patrone's session ever reads autostart entries.
+- Non-interactive SSH commands run in the user's login shell, still zsh,
+  which doesn't load `~/.cargo/env`: prefix `PATH=$HOME/.cargo/bin:$PATH` for
+  builds over SSH.
+- The dock is turned off through `disabled-extensions`, whose description
+  (`gsettings describe org.gnome.shell disabled-extensions`) says it applies
+  "even if loaded as part of the current mode" (the `ubuntu` mode loads the
+  dock). Confirm after the reboot. A session that's
+  already running keeps its dock until the next login.
+
+Later: the desktop's own typeface (still Ubuntu Sans; part of the design
+discussion), the lock screen inside a GNOME session (Yaru's, with the new
+blue accent), and a Patrone-made avatar set for Settings → Users.
 
 ## Suggested order
 
