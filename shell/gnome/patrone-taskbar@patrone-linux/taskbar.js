@@ -24,7 +24,9 @@ import {ROLES, appForRole, roleOf} from './roles.js';
 import {StartMenu} from './startMenu.js';
 import {taskbarWindows} from './util.js';
 
-const ICON_SIZE = 20;
+// A third larger than the first 20 and 16 pixels, with the bar (common.css)
+const ICON_SIZE = 26;
+const SEARCH_ICON_SIZE = 21;
 const TOOLTIP_DELAY = 500; // ms
 
 const TASK_MANAGERS = [
@@ -329,7 +331,7 @@ export class Taskbar {
         this.actor.add_child(this._startButton);
 
         this._searchButton = makeButton(this, 'patrone-taskbar-search',
-            new St.Icon({icon_name: 'system-search-symbolic', icon_size: 16}), 'Search');
+            new St.Icon({icon_name: 'system-search-symbolic', icon_size: SEARCH_ICON_SIZE}), 'Search');
         this.actor.add_child(this._searchButton);
 
         this._appsBox = new St.BoxLayout({style_class: 'patrone-taskbar-apps'});

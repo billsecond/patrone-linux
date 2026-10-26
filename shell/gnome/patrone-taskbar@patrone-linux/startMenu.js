@@ -13,7 +13,6 @@ import AccountsService from 'gi://AccountsService';
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import GObject from 'gi://GObject';
 import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
@@ -178,7 +177,7 @@ export class StartMenu {
 
     destroy() {
         this._cancelSearch();
-        this._appMenu?.destroy();
+        this._subMenu?.destroy();
         this.menu.destroy();
     }
 
@@ -211,17 +210,17 @@ export class StartMenu {
             this._taskbar.tooltip.hide();
             this._reset();
             this._avatar.update();
+            this._powerButton.visible = this._powerActions().length > 0;
             this._entry.grab_key_focus();
         } else {
             this._cancelSearch();
-            this._appMenu?.close();
+            this._subMenu?.close();
             this._entry.set_text('');
         }
     }
 
     _reset() {
         this._entry.set_text('');
-        this._powerRow.hide();
         this._fillHome();
         this._showPage(this._homePage);
         this.actor.remove_style_class_name(this._mode === 'start' ? 'search-mode' : 'start-mode');
@@ -467,15 +466,50 @@ export class StartMenu {
         actor.add_action(gesture);
     }
 
-    _popupAppMenu(actor, app) {
-        this._appMenu?.destroy();
+    /**
+     * A menu over the Start menu (an app's right-click menu, the account
+     * menu, the power menu), one at a time, gone once it closes.
+     *
+     * @param {Clutter.Actor} sourceActor - what it opens from
+     * @param {number} alignment - along the source: 0 left, 0.5 centered
+     * @param {St.Side} side - St.Side.BOTTOM opens it above the source
+     * @returns {PopupMenu.PopupMenu}
+     */
+    _makeSubMenu(sourceActor, alignment, side) {
+        this._subMenu?.destroy();
 
-        const menu = new PopupMenu.PopupMenu(actor, 0.5, St.Side.TOP);
+        const menu = new PopupMenu.PopupMenu(sourceActor, alignment, side);
         menu.actor.add_style_class_name('patrone-menu');
         Main.uiGroup.add_child(menu.actor);
         menu.actor.hide();
-        const manager = new PopupMenu.PopupMenuManager(actor);
+        const manager = new PopupMenu.PopupMenuManager(sourceActor);
         manager.addMenu(menu);
+
+        menu.connect('menu-closed', () => {
+            if (this._subMenu === menu)
+                this._subMenu = null;
+            menu.destroy();
+        });
+        this._subMenu = menu;
+        return menu;
+    }
+
+    /**
+     * Closes the Start menu, then does something that may take over the
+     * screen (lock, sign out), once the menus have let go of it.
+     *
+     * @param {Function} action
+     */
+    _closeThen(action) {
+        this.close();
+        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            action();
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _popupAppMenu(actor, app) {
+        const menu = this._makeSubMenu(actor, 0.5, St.Side.TOP);
 
         const id = app.get_id();
         menu.addAction('Open', () => this.launch(app), app.app_info?.get_icon() ?? undefined);
@@ -495,12 +529,6 @@ export class StartMenu {
                 'view-pin-symbolic');
         }
 
-        menu.connect('menu-closed', () => {
-            if (this._appMenu === menu)
-                this._appMenu = null;
-            menu.destroy();
-        });
-        this._appMenu = menu;
         menu.open(BoxPointer.PopupAnimation.FULL);
     }
 
@@ -698,64 +726,41 @@ export class StartMenu {
         this._resultRows[this._selected]?.activate();
     }
 
-    // Footer: the account, Settings and power
+    // Footer, as on Windows 11: the account (its menu has Lock and Sign
+    // out), Settings, and power (Disconnect, Sleep, Shut down, Restart)
 
     _buildFooter() {
-        const systemActions = SystemActions.getDefault();
-
-        this._powerRow = new St.BoxLayout({style_class: 'patrone-start-power-row', visible: false});
-        const powerActions = [
-            ['Lock', 'system-lock-screen-symbolic', 'can-lock-screen', () => systemActions.activateLockScreen()],
-            ['Sign out', 'system-log-out-symbolic', 'can-logout', () => systemActions.activateLogout()],
-            ['Sleep', 'media-playback-pause-symbolic', 'can-suspend', () => systemActions.activateSuspend()],
-            ['Restart', 'system-reboot-symbolic', 'can-restart', () => systemActions.activateRestart()],
-            ['Shut down', 'system-shutdown-symbolic', 'can-power-off', () => systemActions.activatePowerOff()],
-        ];
-        for (const [text, iconName, property, activate] of powerActions) {
-            const box = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL});
-            box.add_child(new St.Icon({icon_name: iconName, icon_size: 16, x_align: Clutter.ActorAlign.CENTER}));
-            box.add_child(makeLabel(text, 'patrone-start-power-label', {x_align: Clutter.ActorAlign.CENTER}));
-            const button = new St.Button({
-                style_class: 'patrone-start-power-button',
-                child: box,
-                can_focus: true,
-                track_hover: true,
-                x_expand: true,
-                accessible_name: text,
-            });
-            button.connect('clicked', () => {
-                this.close();
-                activate();
-            });
-            systemActions.bind_property(property, button, 'visible', GObject.BindingFlags.SYNC_CREATE);
-            this._powerRow.add_child(button);
-        }
-        this.actor.add_child(this._powerRow);
-
         const footer = new St.BoxLayout({style_class: 'patrone-start-footer', x_expand: true});
 
         const userManager = AccountsService.UserManager.get_default();
-        const user = userManager.get_user(GLib.get_user_name());
+        this._user = userManager.get_user(GLib.get_user_name());
         // Not the theme's .user-icon style, which is for the login screen
-        this._avatar = new UserWidget.Avatar(user, {
+        this._avatar = new UserWidget.Avatar(this._user, {
             iconSize: 28,
             styleClass: 'patrone-start-avatar',
         });
-        const name = makeLabel('', 'patrone-start-user-name', {x_expand: true});
+        const name = makeLabel('', 'patrone-start-user-name');
         const updateUser = () => {
-            name.text = user.is_loaded && user.get_real_name()
-                ? user.get_real_name()
-                : GLib.get_real_name() || GLib.get_user_name();
+            name.text = this._realName();
             this._avatar.update();
         };
-        user.connectObject(
+        this._user.connectObject(
             'notify::is-loaded', updateUser,
             'changed', updateUser, this.actor);
         updateUser();
-        const userBox = new St.BoxLayout({style_class: 'patrone-start-user', x_expand: true});
+        const userBox = new St.BoxLayout({style_class: 'patrone-start-user-box'});
         userBox.add_child(this._avatar);
         userBox.add_child(name);
-        footer.add_child(userBox);
+        const userButton = new St.Button({
+            style_class: 'patrone-start-user',
+            child: userBox,
+            can_focus: true,
+            track_hover: true,
+            accessible_name: 'Account',
+        });
+        userButton.connect('clicked', () => this._popupAccountMenu(userButton));
+        footer.add_child(userButton);
+        footer.add_child(new St.Widget({x_expand: true}));
 
         const settings = new St.Button({
             style_class: 'patrone-start-footer-button',
@@ -771,18 +776,113 @@ export class StartMenu {
         });
         footer.add_child(settings);
 
-        const power = new St.Button({
+        this._powerButton = new St.Button({
             style_class: 'patrone-start-footer-button',
             child: new St.Icon({icon_name: 'system-shutdown-symbolic', icon_size: 16}),
             can_focus: true,
             track_hover: true,
             accessible_name: 'Power',
         });
-        power.connect('clicked', () => {
-            this._powerRow.visible = !this._powerRow.visible;
-        });
-        footer.add_child(power);
+        this._powerButton.connect('clicked', () => this._popupPowerMenu(this._powerButton));
+        footer.add_child(this._powerButton);
 
         this.actor.add_child(footer);
+    }
+
+    _realName() {
+        if (this._user.is_loaded && this._user.get_real_name())
+            return this._user.get_real_name();
+        return GLib.get_real_name() || GLib.get_user_name();
+    }
+
+    /** The account's menu: who's signed in, account settings, Lock, Sign out. */
+    _popupAccountMenu(sourceActor) {
+        const systemActions = SystemActions.getDefault();
+        const menu = this._makeSubMenu(sourceActor, 0, St.Side.BOTTOM);
+
+        // Not a menu item: those are greyed out when they can't be clicked
+        const header = new St.BoxLayout({style_class: 'patrone-account-header'});
+        header.add_child(new UserWidget.Avatar(this._user, {
+            iconSize: 40,
+            styleClass: 'patrone-account-avatar',
+        }));
+        const labels = new St.BoxLayout({
+            orientation: Clutter.Orientation.VERTICAL,
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        labels.add_child(makeLabel(this._realName(), 'patrone-account-name'));
+        const detail = makeLabel(GLib.get_user_name(), 'patrone-account-detail');
+        detail.opacity = 170;
+        labels.add_child(detail);
+        header.add_child(labels);
+        header.get_first_child().update();
+        menu.box.add_child(header);
+
+        menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        menu.addAction('Change account settings', () => this._closeThen(() => {
+            const context = global.create_app_launch_context(global.get_current_time(), -1);
+            try {
+                Gio.DesktopAppInfo.new('gnome-users-panel.desktop')?.launch([], context);
+            } catch (e) {
+                logError(e, 'Patrone taskbar: can\'t open account settings');
+            }
+        }), 'system-users-symbolic');
+
+        const sessionItems = [
+            ['Lock', 'system-lock-screen-symbolic', systemActions.canLockScreen,
+                () => systemActions.activateLockScreen()],
+            ['Sign out', 'system-log-out-symbolic', systemActions.canLogout,
+                () => systemActions.activateLogout()],
+        ].filter(([, , available]) => available);
+        if (sessionItems.length)
+            menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        for (const [text, iconName, , activate] of sessionItems)
+            menu.addAction(text, () => this._closeThen(activate), iconName);
+
+        menu.open(BoxPointer.PopupAnimation.FULL);
+    }
+
+    /**
+     * What the power menu offers, as on Windows: Disconnect when the desktop
+     * is being seen through Remote Desktop (which leaves it running for next
+     * time), then Sleep, Shut down and Restart, where the system allows them.
+     *
+     * @returns {Array} [text, icon name, action] for each
+     */
+    _powerActions() {
+        const systemActions = SystemActions.getDefault();
+        const actions = [];
+
+        // Patrone's desktops have no screen of their own: every screen and
+        // client sees them through GNOME Remote Desktop, whose connections
+        // GNOME counts as screen sharing. Stopping that is a disconnect.
+        const sharing = Main.panel.statusArea.screenSharing;
+        if (global.backend.is_headless() && sharing?._handles?.size) {
+            actions.push(['Disconnect', 'network-wired-disconnected-symbolic',
+                () => sharing._stopSharing()]);
+        }
+        if (systemActions.canSuspend) {
+            actions.push(['Sleep', 'weather-clear-night-symbolic',
+                () => systemActions.activateSuspend()]);
+        }
+        if (systemActions.canPowerOff) {
+            actions.push(['Shut down', 'system-shutdown-symbolic',
+                () => systemActions.activatePowerOff()]);
+        }
+        if (systemActions.canRestart) {
+            actions.push(['Restart', 'system-reboot-symbolic',
+                () => systemActions.activateRestart()]);
+        }
+        return actions;
+    }
+
+    _popupPowerMenu(sourceActor) {
+        const actions = this._powerActions();
+        if (actions.length === 0)
+            return;
+        const menu = this._makeSubMenu(sourceActor, 1, St.Side.BOTTOM);
+        for (const [text, iconName, activate] of actions)
+            menu.addAction(text, () => this._closeThen(activate), iconName);
+        menu.open(BoxPointer.PopupAnimation.FULL);
     }
 }

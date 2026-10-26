@@ -94,7 +94,7 @@
 
 .patrone-start-tile,
 .patrone-start-row,
-.patrone-start-power-button,
+.patrone-start-user,
 .patrone-start-footer-button {
   color: #1b1d22;
 }
@@ -104,8 +104,8 @@
 .patrone-start-row:hover,
 .patrone-start-row:focus,
 .patrone-start-row:selected,
-.patrone-start-power-button:hover,
-.patrone-start-power-button:focus,
+.patrone-start-user:hover,
+.patrone-start-user:focus,
 .patrone-start-footer-button:hover,
 .patrone-start-footer-button:focus {
   background-color: rgba(255, 255, 255, 0.9);
@@ -124,16 +124,13 @@
   color: #1f6fd1;
 }
 
-.patrone-start-power-row {
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
-
 .patrone-start-footer {
   background-color: #e9eaee;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.patrone-start-avatar {
+.patrone-start-avatar,
+.patrone-account-avatar {
   background-color: #288bfa;
   color: #ffffff;
 }

@@ -7,13 +7,14 @@ shell (`shell/`, GTK4) replaces GNOME Shell. The design carries over to that
 shell.
 
 Installing the package turns it on for every account, but GNOME Shell only
-loads extensions when it starts: log out from inside the desktop (power
-menu → Log Out) and sign in again. Disconnecting Remote Desktop or signing
+loads extensions when it starts: log out from inside the desktop (Start →
+the account picture → Sign out, or GNOME's top bar's power menu → Log Out)
+and sign in again. Disconnecting Remote Desktop or signing
 out of the screen's session leaves the desktop, and its old shell, running.
 
 ## What it does
 
-One compact bar (32 pixels) along the bottom of the primary monitor, in place
+One compact bar (42 pixels) along the bottom of the primary monitor, in place
 of GNOME's top bar, which it hides. From the left:
 
 - **Start** (the Patrone "P", or the Super key) opens the Start menu with
@@ -66,8 +67,14 @@ A Windows 11 Start menu in a smaller size (540 pixels wide):
 - **Pinned**: GNOME's favorites (the same list as the Activities overview's
   dash), up to 18. **All apps** lists every app, A to Z.
 - **Recommended**: recently used files.
-- At the bottom: the account's picture and name, Settings, and power (Lock,
-  Sign out, Sleep, Restart, Shut down: whichever the system allows).
+- At the bottom, as on Windows 11: the **account** (picture and name), whose
+  menu shows who's signed in, Change account settings (Settings → Users),
+  **Lock** and **Sign out**; Settings; and **power**, whose menu has
+  **Disconnect** while the desktop is seen through Remote Desktop (as on a
+  Windows remote session: it ends the connection, or the screen's view, and
+  leaves the desktop running for next time), then **Sleep**, **Shut down**
+  and **Restart**, whichever the system allows. With none of those, the
+  power button is hidden.
 
 Right-click an app in the menu to pin it to Start or the taskbar.
 
@@ -85,6 +92,11 @@ Right-click an app in the menu to pin it to Start or the taskbar.
 
 - Left-aligned, as Windows 11 can be set ("option C"), and **compact**: the
   user wanted it smaller than the first mockup, to take less of the screen.
+  Built at 32 pixels, then made a third larger, icons and all, once they'd
+  used it (42 pixels).
+- The account picture opens Lock and Sign out, and the power button Sleep,
+  Shut down and Restart, as on Windows 11, with Disconnect for Remote
+  Desktop.
 - The Start button is the logo's "P", and clicking it lets you type to search
   at once. The search button stays, hooked to GNOME's search providers.
 - Pinned slots open the default app for their job, which then shows under the

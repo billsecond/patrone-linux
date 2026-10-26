@@ -84,12 +84,13 @@ Waiting on the user:
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
-- **Install `patrone-gnome-taskbar` 0.1.2, then Start → power → Sign out
-  and sign in again** (section 7). 0.1.1 ran in the user's desktop (after
-  they logged out from inside it) and showed GNOME's screen-sharing
-  indicator, which cut their Remote Desktop connection when clicked; 0.1.2
-  hides it. Then try the Super key, typing in Start, the jump lists and
-  the tray.
+- **Install `patrone-gnome-taskbar` 0.1.3, then Start → power → Sign out
+  and sign in again** (section 7): the account and power menus, and the bar
+  a third larger, both asked for after using 0.1.2 (installed, 2026-10-26).
+  0.1.1 had shown GNOME's screen-sharing indicator, which cut their Remote
+  Desktop connection when clicked; 0.1.2 hides it. Then try the Super key,
+  typing in Start, the jump lists, the tray, and the power menu's
+  Disconnect and Shut down in a real session.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -652,7 +653,8 @@ blue accent), and a Patrone-made avatar set for Settings → Users.
 
 The user's taskbar decisions (2026-10-26) and how it works are in
 `shell/gnome/README.md`. In short: Windows 11's taskbar, left-aligned and
-compact (32 pixels; "smaller, not taking up so much real estate"), in place
+compact ("smaller, not taking up so much real estate"; built at 32 pixels,
+then made a third larger, 42, once the user had used it), in place
 of GNOME's top bar; the logo's "P" opens Start, where typing searches at
 once (GNOME's search providers, then the web); a search button; pinned slots
 that open the default web browser, terminal, file manager and mail app, with
@@ -673,11 +675,13 @@ options a real session allows, and the RDP and console views.
 To install and load it:
 
 ```
-sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.2_all.deb
+sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.3_all.deb
 ```
 
-then **log out from inside the desktop** (the power menu, top right, → Log
-Out) and sign in again: GNOME Shell loads extensions only when it starts.
+then **log out from inside the desktop** and sign in again: GNOME Shell
+loads extensions only when it starts. With the taskbar, that's Start → the
+account picture → Sign out (in 0.1.2 and before, Start → power → Sign out);
+with GNOME's top bar, its power menu, top right, → Log Out.
 With Patrone's Windows-style sessions, disconnecting Remote Desktop or
 signing out of the screen's session only disconnects, and the desktop, with
 its old shell, keeps running; until it's restarted, `gnome-extensions info

@@ -2,40 +2,41 @@
  * stylesheet-dark.css, which GNOME Shell picks between by the style
  * (Settings → Appearance), and which both import this file. */
 
-/* The bar: 32px, a compact Windows 11 taskbar */
+/* The bar: 42px, a compact Windows 11 taskbar (it was 32px; the user had it
+ * made a third larger, icons and all). The icons' sizes are in taskbar.js. */
 .patrone-taskbar {
-  height: 32px;
-  padding: 0 0 0 4px;
-  font-size: 9pt;
+  height: 42px;
+  padding: 0 0 0 5px;
+  font-size: 11pt;
 }
 
 .patrone-taskbar-button {
-  min-width: 34px;
-  margin: 2px 1px;
-  border-radius: 4px;
+  min-width: 45px;
+  margin: 3px 1px;
+  border-radius: 5px;
   transition-duration: 100ms;
 }
 
 .patrone-taskbar-start {
-  min-width: 36px;
+  min-width: 48px;
 }
 
 .patrone-taskbar-apps {
   spacing: 0;
-  margin-left: 2px;
+  margin-left: 3px;
 }
 
 /* Under a running app: a short line, longer for the app in front */
 .patrone-taskbar-indicator {
-  width: 6px;
-  height: 3px;
+  width: 8px;
+  height: 4px;
   border-radius: 2px;
   margin-bottom: 1px;
   transition-duration: 150ms;
 }
 
 .patrone-taskbar-item.focused .patrone-taskbar-indicator {
-  width: 14px;
+  width: 18px;
 }
 
 /* The tray: the top bar's own status icons and menus, and the clock */
@@ -44,21 +45,21 @@
 }
 
 .patrone-taskbar-tray .panel-button {
-  -natural-hpadding: 6px;
-  -minimum-hpadding: 4px;
-  margin: 2px 0;
-  border-radius: 4px;
+  -natural-hpadding: 8px;
+  -minimum-hpadding: 5px;
+  margin: 3px 0;
+  border-radius: 5px;
   font-weight: normal;
   transition-duration: 100ms;
 }
 
 .patrone-taskbar-tray .system-status-icon {
-  icon-size: 16px;
-  padding: 0 2px;
+  icon-size: 20px;
+  padding: 0 3px;
 }
 
 .patrone-taskbar-tray .panel-status-indicators-box {
-  spacing: 2px;
+  spacing: 3px;
 }
 
 /* Screen recording and sharing (outside GNOME's top bar, the theme's style
@@ -66,7 +67,7 @@
 .patrone-taskbar-tray .panel-button.screen-recording-indicator,
 .patrone-taskbar-tray .panel-button.screen-sharing-indicator {
   color: #ffffff;
-  -natural-hpadding: 8px;
+  -natural-hpadding: 10px;
 }
 
 /* (.panel-button too, to beat the tray buttons' hover colors) */
@@ -90,40 +91,40 @@
 
 .patrone-taskbar-tray .screen-recording-indicator StBoxLayout,
 .patrone-taskbar-tray .screen-sharing-indicator StBoxLayout {
-  spacing: 6px;
+  spacing: 8px;
 }
 
 .patrone-taskbar-tray .screen-recording-indicator StIcon,
 .patrone-taskbar-tray .screen-sharing-indicator StIcon {
-  icon-size: 14px;
+  icon-size: 18px;
 }
 
 .patrone-taskbar-tray .clock-display-box {
-  spacing: 4px;
+  spacing: 5px;
 }
 
 .patrone-taskbar-tray .messages-indicator {
-  icon-size: 12px;
+  icon-size: 16px;
 }
 
 .patrone-clock-time,
 .patrone-clock-date {
-  font-size: 8.5pt;
+  font-size: 10.5pt;
   text-align: right;
 }
 
 /* Show desktop: the sliver at the far right */
 .patrone-taskbar-show-desktop {
-  min-width: 6px;
-  width: 6px;
-  margin: 0 0 0 6px;
+  min-width: 8px;
+  width: 8px;
+  margin: 0 0 0 8px;
   border-radius: 0;
 }
 
 .patrone-taskbar-tooltip {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 9pt;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 10pt;
 }
 
 /* The tray's menus open upward, so their gap goes at the top */
@@ -237,28 +238,19 @@
   font-size: 9pt;
 }
 
-.patrone-start-power-row {
-  padding: 6px 16px;
-  spacing: 4px;
-}
-
-.patrone-start-power-button {
-  padding: 6px 4px;
-  border-radius: 6px;
-}
-
-.patrone-start-power-label {
-  font-size: 8pt;
-  padding-top: 4px;
-}
-
 .patrone-start-footer {
-  padding: 10px 20px;
+  padding: 8px 16px;
   spacing: 4px;
   border-radius: 0 0 8px 8px;
 }
 
+/* The account button: picture and name; it opens the account menu */
 .patrone-start-user {
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.patrone-start-user-box {
   spacing: 10px;
 }
 
@@ -275,4 +267,23 @@
   width: 32px;
   height: 32px;
   border-radius: 4px;
+}
+
+/* The account menu's header: picture, name, username */
+.patrone-account-header {
+  spacing: 12px;
+  padding: 8px 12px;
+}
+
+.patrone-account-avatar {
+  icon-size: 40px;
+  border-radius: 99px;
+}
+
+.patrone-account-name {
+  font-weight: bold;
+}
+
+.patrone-account-detail {
+  font-size: 9pt;
 }
