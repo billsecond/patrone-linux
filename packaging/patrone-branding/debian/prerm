@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+themes=/usr/share/plymouth/themes
+
+if [ "$1" = remove ] || [ "$1" = deconfigure ]; then
+    update-alternatives --remove default.plymouth $themes/patrone/patrone.plymouth
+    update-alternatives --remove text.plymouth $themes/patrone-text/patrone-text.plymouth
+    update-alternatives --remove gdm-theme.gresource \
+        /usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
+fi
+
+#DEBHELPER#

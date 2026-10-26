@@ -1,0 +1,28 @@
+Source: patrone-branding
+Section: misc
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               libgio-2.0-dev-bin,
+               libglib2.0-bin,
+               plymouth-theme-spinner,
+               yaru-theme-gnome-shell
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-branding
+Architecture: all
+Depends: ${misc:Depends},
+         fonts-noto-core,
+         plymouth-theme-spinner,
+         plymouth-theme-ubuntu-text
+Description: Patrone Linux's name, logos and artwork
+ Names the system Patrone Linux and puts Patrone's logo where Ubuntu's was:
+ the boot splash, the boot menu, the login screen, Settings > About, the text
+ console's banner and the welcome message at login, which also loses Ubuntu's
+ help links, news and Ubuntu Pro advertising. The login screen gets Patrone's
+ colors, a neutral typeface and a blue default avatar. It installs the
+ Patrone wallpaper as the default, makes blue the accent color in place of
+ Ubuntu's orange, turns Ubuntu's dock off by default, and sets up fastfetch
+ with the Patrone logo. Removing the package puts Ubuntu's files back.

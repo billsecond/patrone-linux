@@ -1,0 +1,23 @@
+/* Patrone's login screen. tools/make_gdm_theme.sh adds this to the end of
+   Yaru's login-screen stylesheet (gdm.css), so these rules win. Focus rings
+   and buttons follow accent-color, set to blue in 95-patrone-settings. */
+
+/* A plain background: deep navy at the top fading to near-black, in place of
+   Ubuntu's warm grey */
+#lockDialogGroup {
+  background-color: #030303;
+  background-gradient-direction: vertical;
+  background-gradient-start: #0c1a30;
+  background-gradient-end: #030303; }
+
+/* An account with no picture: a white figure on Patrone's blues */
+.user-icon {
+  background-gradient-direction: vertical;
+  background-gradient-start: #4da0fc;
+  background-gradient-end: #1851a8;
+  color: white; }
+
+/* An account with a picture shows just the picture */
+.user-icon.user-avatar {
+  background-gradient-direction: none;
+  background-color: transparent; }

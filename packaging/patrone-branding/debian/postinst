@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+themes=/usr/share/plymouth/themes
+
+if [ "$1" = configure ]; then
+    # Above Ubuntu's themes, so they're the defaults unless an admin chose
+    # others. The text theme is the one shown when graphics aren't available.
+    update-alternatives --install $themes/default.plymouth default.plymouth \
+        $themes/patrone/patrone.plymouth 200
+    update-alternatives --install $themes/text.plymouth text.plymouth \
+        $themes/patrone-text/patrone-text.plymouth 200
+    # The login screen's theme, over Yaru's (priority 15). GDM loads it
+    # when it next starts.
+    update-alternatives --install /usr/share/gnome-shell/gdm-theme.gresource \
+        gdm-theme.gresource /usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource 200
+    # The boot splash is in the initramfs, and the boot menu takes its name
+    # from os-release.
+    if command -v update-initramfs > /dev/null; then
+        update-initramfs -u
+    fi
+    if command -v update-grub > /dev/null; then
+        update-grub
+    fi
+fi
+
+#DEBHELPER#

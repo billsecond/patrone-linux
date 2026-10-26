@@ -1,0 +1,47 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: patrone-branding
+Source: https://github.com/billsecond/patrone-linux
+
+Files: *
+Copyright: 2026 William Daugherty
+License: GPL-3+
+
+Files: usr/share/plymouth/themes/patrone/animation-*.png
+       usr/share/plymouth/themes/patrone/throbber-*.png
+       usr/share/plymouth/themes/patrone/bullet.png
+       usr/share/plymouth/themes/patrone/capslock.png
+       usr/share/plymouth/themes/patrone/entry.png
+       usr/share/plymouth/themes/patrone/keyboard.png
+       usr/share/plymouth/themes/patrone/keymap-render.png
+       usr/share/plymouth/themes/patrone/lock.png
+Copyright: 2006-2008 Red Hat, Inc.
+           2007-2008 Ray Strode <halfline@gmail.com>
+           2003 University of Southern California
+           2003 Charlie Brej <cbrej@cs.man.ac.uk>
+Comment: Copied at build time from Plymouth's spinner theme
+ (plymouth-theme-spinner).
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 2 can be found in "/usr/share/common-licenses/GPL-2".
+
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 3 can be found in "/usr/share/common-licenses/GPL-3".

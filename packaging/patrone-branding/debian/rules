@@ -1,0 +1,46 @@
+#!/usr/bin/make -f
+
+pkg = debian/patrone-branding
+theme = $(pkg)/usr/share/plymouth/themes/patrone
+spinner = /usr/share/plymouth/themes/spinner
+
+yaru = /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource
+
+%:
+	dh $@
+
+# The login screen's theme: Yaru's with Patrone's stylesheet added
+override_dh_auto_build:
+	sh tools/make_gdm_theme.sh $(yaru) system/gdm/patrone-gdm.css build/gnome-shell-theme.gresource
+
+override_dh_auto_clean:
+	rm -rf build
+
+override_dh_auto_install:
+	install -Dm644 system/os-release $(pkg)/usr/lib/os-release
+	install -Dm644 system/issue $(pkg)/etc/issue
+	install -Dm644 system/issue.net $(pkg)/etc/issue.net
+	install -Dm755 system/motd/00-header $(pkg)/etc/update-motd.d/00-header
+	install -Dm644 system/plymouth/patrone.plymouth $(theme)/patrone.plymouth
+	install -Dm644 logos/patrone-splash.png $(theme)/watermark.png
+	# The spinner's frames and prompt images, copied from Plymouth's spinner
+	# theme. Copies, not links: the initramfs hook copies the theme folder
+	# with cp -a, so links to the spinner folder would dangle at boot.
+	for image in $(spinner)/*.png; do \
+	    name=$$(basename $$image); \
+	    case $$name in watermark.png | bgrt-fallback.png) ;; \
+	    *) install -m644 $$image $(theme)/$$name ;; esac; \
+	done
+	install -Dm644 system/plymouth/patrone-text.plymouth \
+	    $(pkg)/usr/share/plymouth/themes/patrone-text/patrone-text.plymouth
+	install -Dm644 system/gdm/95-patrone-settings $(pkg)/usr/share/gdm/dconf/95-patrone-settings
+	install -Dm644 build/gnome-shell-theme.gresource \
+	    $(pkg)/usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
+	install -Dm644 system/schemas/90_patrone.gschema.override \
+	    $(pkg)/usr/share/glib-2.0/schemas/90_patrone.gschema.override
+	install -Dm644 -t $(pkg)/usr/share/pixmaps \
+	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png
+	install -Dm644 wallpapers/patrone-back-01-8k.png \
+	    $(pkg)/usr/share/backgrounds/patrone/patrone-back-01-8k.png
+	install -Dm644 fastfetch/config.jsonc $(pkg)/etc/xdg/fastfetch/config.jsonc
+	install -Dm644 fastfetch/logo.txt $(pkg)/usr/share/patrone/fastfetch/logo.txt

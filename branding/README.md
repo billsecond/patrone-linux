@@ -25,6 +25,50 @@ Intended for:
 The image here is a picture of ASCII art. The real terminal logo has to be
 written as actual text characters so terminals can print it.
 
+## Logo files
+
+`logos/` holds transparent PNGs cut from the concept by
+`tools/make_logos.py`:
+
+| File | Size | Use |
+| --- | --- | --- |
+| `patrone-logo.png` | 420×420 | The mark alone (Settings → About, `LOGO=` in `os-release`) |
+| `patrone-logo-text-dark.png` | 1146×248 | Mark beside the wordmark, light text, for dark backgrounds (login screen) |
+| `patrone-logo-text.png` | 1146×248 | The same with dark text, for light backgrounds |
+| `patrone-logo-stacked.png` | 840×507 | The whole primary logo, as in the concept |
+| `patrone-splash.png` | 380×220 | The stacked logo at boot-splash size |
+
+The concept is drawn on near-black, so each pixel's brightest channel becomes
+its opacity and the color is recovered by undoing the blend with black. To
+regenerate them:
+
+```
+python tools/make_logos.py concepts/logo-concept-01.webp logos/
+```
+
+These are stopgaps cut from a raster image; the vector masters (below)
+replace them.
+
+## In the system: the patrone-branding package
+
+`packaging/patrone-branding` installs everything in `system/`, the logos, the
+wallpaper and the fastfetch setup, replacing Ubuntu's branding:
+
+| What you see | Patrone's version | How |
+| --- | --- | --- |
+| The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "Patrone Linux 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"` | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
+| Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over a spinner on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the spinner frames are copied from Plymouth's spinner theme |
+| Boot splash without graphics | `system/plymouth/patrone-text.plymouth`: "Patrone Linux 0.1" in Patrone's colors | Plymouth text theme, made the default |
+| Login screen | Patrone logo; a navy-to-black background; blue accents; Noto Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
+| Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
+| Welcome message at login (SSH, console) | `system/motd/00-header`: "Welcome to Patrone Linux 0.1 (...)" | Replaces Ubuntu's header; Ubuntu's help links, news and Ubuntu Pro ads are moved aside |
+| Desktop | The Patrone wallpaper, blue accent color, Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
+
+The login-screen theme is built from the Yaru that's installed when the
+package is built, so rebuild the package when Yaru's GNOME Shell theme
+changes. Accent colors are GNOME's named ones; `blue` is the closest to
+Patrone Blue.
+
 ## Wallpaper 01
 
 ![Wallpaper 01](wallpapers/patrone-back-01-8k.png)
@@ -60,8 +104,8 @@ native 8K export from that would be better still.
 `fastfetch/config.jsonc` is the system-wide fastfetch setup (installed as
 `/etc/xdg/fastfetch/config.jsonc`, a path fastfetch 2.57 searches). It shows
 `fastfetch/logo.txt` in Patrone Blue and Highlight, with the keys in
-Highlight. Nothing installs it system-wide yet, so plain `fastfetch` still
-shows Ubuntu's logo until you either install it for your user:
+Highlight. The `patrone-branding` package installs it system-wide. Without
+the package, install it for your user:
 
 ```
 ./branding/fastfetch/install-dev.sh

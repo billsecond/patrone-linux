@@ -68,6 +68,8 @@ real hardware before a release.
 - **Packages:** each component becomes a `.deb` (`patrone-compositor`,
   `patrone-shell`, `patrone-settings`, `patrone-session`, and the
   `patrone-desktop` metapackage), built in a clean chroot with `sbuild`.
+  `patrone-terminal`, `patrone-shell-config` and `patrone-branding` exist
+  already (see `packaging/README.md`).
 - **Apt repository:** a private repo generated with `reprepro`. Launchpad PPAs
   are always public, so they're out while the project is private.
 - **ISO:** remaster the official 26.04.1 desktop ISO. Add our packages, make

@@ -1,0 +1,4 @@
+#!/bin/sh
+# The welcome line at login, from patrone-branding in place of Ubuntu's.
+. /etc/os-release
+printf "Welcome to %s (%s %s %s)\n" "$PRETTY_NAME" "$(uname -o)" "$(uname -r)" "$(uname -m)"

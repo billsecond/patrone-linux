@@ -1,0 +1,65 @@
+[Plymouth Theme]
+Name=Patrone
+Description=The Patrone logo and a spinner on Patrone's near-black
+ModuleName=two-step
+
+[two-step]
+# watermark.png is the Patrone logo; the spinner's images come from Ubuntu's
+# spinner theme, linked into this folder.
+ImageDir=/usr/share/plymouth/themes/patrone
+WatermarkHorizontalAlignment=.5
+WatermarkVerticalAlignment=.42
+HorizontalAlignment=.5
+VerticalAlignment=.72
+DialogHorizontalAlignment=.5
+DialogVerticalAlignment=.72
+TitleHorizontalAlignment=.5
+TitleVerticalAlignment=.382
+Transition=none
+TransitionDuration=0.0
+BackgroundStartColor=0x030303
+BackgroundEndColor=0x030303
+ProgressBarBackgroundColor=0x1c2230
+ProgressBarForegroundColor=0x288bfa
+DialogClearsFirmwareBackground=true
+MessageBelowAnimation=true
+
+[boot-up]
+UseEndAnimation=false
+UseFirmwareBackground=false
+
+[shutdown]
+UseEndAnimation=false
+UseFirmwareBackground=false
+
+[reboot]
+UseEndAnimation=false
+UseFirmwareBackground=false
+
+[updates]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Installing Updates...
+SubTitle=Do not turn off your computer
+
+[system-upgrade]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Upgrading System...
+SubTitle=Do not turn off your computer
+
+[firmware-upgrade]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Upgrading Firmware...
+SubTitle=Do not turn off your computer
+
+[system-reset]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Resetting System...
+SubTitle=Do not turn off your computer

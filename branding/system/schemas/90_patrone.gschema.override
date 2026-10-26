@@ -1,0 +1,21 @@
+# Patrone's defaults for GNOME, over Ubuntu's (10_ubuntu-settings). Users'
+# own settings still win.
+
+# Ubuntu's dock is off: Patrone will have its own panel.
+[org.gnome.shell]
+disabled-extensions=['ubuntu-dock@ubuntu.com']
+
+# Patrone blue in place of Ubuntu's orange accent
+[org.gnome.desktop.interface]
+accent-color='blue'
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-uri-dark='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-options='zoom'
+primary-color='#030303'
+
+[org.gnome.desktop.screensaver]
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-options='zoom'
+primary-color='#030303'
