@@ -17,6 +17,14 @@ Depends: ${misc:Depends},
          fonts-noto-core,
          plymouth-theme-spinner,
          plymouth-theme-ubuntu-text
+# Patrone's wallpapers in place of Ubuntu's: GNOME Shell depends on
+# ubuntu-wallpapers (for its default wallpaper), so this package stands in
+# for it, and apt removes Ubuntu's (Policy 7.6.2, replacing a package).
+Provides: ubuntu-wallpapers
+Conflicts: ubuntu-wallpapers,
+           ubuntu-wallpapers-resolute
+Replaces: ubuntu-wallpapers,
+          ubuntu-wallpapers-resolute
 Description: Patrone Linux's name, logos and artwork
  Names the system Patrone Linux and puts Patrone's logo where Ubuntu's was:
  the boot splash, the boot menu, the login screen, Settings > About, the text
@@ -26,7 +34,8 @@ Description: Patrone Linux's name, logos and artwork
  the desktop, apps, the login screen, and web pages that ask for Segoe UI or
  a plain sans-serif font, Chromium's included. It installs the Patrone
  wallpaper as the default, light in the light style and dark in the dark
- one, with variants to choose from in Settings, makes blue the accent color
+ one, with variants to choose from in Settings in place of Ubuntu's
+ wallpapers (it replaces ubuntu-wallpapers), makes blue the accent color
  in place of Ubuntu's orange, turns Ubuntu's dock off by default, and sets
  up fastfetch with the Patrone logo. Removing the package puts Ubuntu's
  files back.

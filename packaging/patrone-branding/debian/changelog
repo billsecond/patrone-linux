@@ -1,3 +1,12 @@
+patrone-branding (0.1.5) resolute; urgency=medium
+
+  * Remove Ubuntu's wallpapers (ubuntu-wallpapers and
+    ubuntu-wallpapers-resolute, 63 MB), so Settings > Appearance offers only
+    Patrone's. GNOME Shell depends on ubuntu-wallpapers, so this package
+    provides it in their place.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 22:00:00 -0500
+
 patrone-branding (0.1.4) resolute; urgency=medium
 
   * Noto Sans, the font of Patrone File Manager, as the typeface in place

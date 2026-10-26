@@ -91,24 +91,18 @@ Waiting on the user:
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
-- **Install this round's packages, then sign out and back in**:
-  `patrone-gnome-taskbar` 0.2.0 (dragging, sizes, themes; section 7),
-  `patrone-settings` 0.1.0 (section 9), `patrone-branding` 0.1.4 (Noto
-  Sans, the wallpaper family, Settings' "Desktop" page; sections 10 and
-  12) and `patrone-remote-desktop` 0.4.3 (the polkit rule that brings back
-  the quick settings' network menu; section 3). The user had 0.1.3 of the
-  taskbar and 0.1.2 of the branding installed (2026-10-26); 0.1.3 of the
-  branding (Inter) was never installed. Then try the Super key, the network
-  menu's chevron, Shut down in a real session, Chromium's pages in Noto
-  Sans, and the wallpapers in Settings → Appearance (their own wallpaper is
-  a copy in `~/Pictures`, so Patrone's new default doesn't reach them).
-- **Install `patrone-desktop` 0.1.0** (section 11), which takes out
-  Canonical's reporting:
-  `sudo apt install ~/src/patrone-linux/out/patrone-desktop_0.1.0_all.deb`.
-  apt removes whoopsie, ubuntu-insights, ubuntu-report and apport-gtk, and
-  nothing else. Then decide on what still reaches Canonical's servers
-  (section 11): the network check, the clock, release-upgrade offers, and
-  first-login setup's Ubuntu Pro page.
+- **Installed 2026-10-26 by the user**: `patrone-gnome-taskbar` 0.2.0,
+  `patrone-settings` 0.1.0, `patrone-branding` 0.1.4, `patrone-remote-desktop`
+  0.4.3, `patrone-desktop` 0.1.0 and `patrone-file-manager` 0.2.0. Still to
+  hear how they went: the Super key, the network menu's chevron, Shut down
+  in a real session, Chromium's pages in Noto Sans, and the wallpapers in
+  Settings → Appearance.
+- **Install `patrone-branding` 0.1.5** (section 12), which takes out
+  Ubuntu's wallpapers:
+  `sudo apt install ~/src/patrone-linux/out/patrone-branding_0.1.5_all.deb`.
+- **Decide on what still reaches Canonical's servers** (section 11): the
+  network check, the clock, release-upgrade offers, and first-login setup's
+  Ubuntu Pro page.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -1068,6 +1062,15 @@ the light version first.
 has no NumPy or OpenCV. Its parts come from `tools/wallpaper_layers.py`,
 taken out of `upscale_wallpaper.py`, which still makes the 8K wallpaper
 byte for byte (checked).
+
+The user installed 0.1.4 and asked to "remove the ubuntu images". GNOME
+Shell depends on `ubuntu-wallpapers` (Ubuntu's patch, for its default
+wallpaper), so 0.1.5 provides it, and conflicts with and replaces
+`ubuntu-wallpapers` and `ubuntu-wallpapers-resolute`: 63 MB of images, and
+both lists in Settings. Only GNOME's default-wallpaper settings point at
+those files (Ubuntu's override, which Patrone's beats); first-login setup
+doesn't use them. `apt-get -s install` of 0.1.5 removes exactly those two
+packages. An account whose wallpaper was one of Ubuntu's gets a plain color.
 
 Checked: the package builds (63 MB, 33 of them the 8K original), every file
 the list names is in it, and the list parses; in the throwaway shell,
