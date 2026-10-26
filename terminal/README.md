@@ -62,6 +62,15 @@ To install it for your user, with a launcher entry and icon in GNOME:
 ./terminal/install-dev.sh --zshrc     # and use Patrone's zshrc and zprofile
 ```
 
+This copy is in the account (`~/.local/bin/patrone-terminal`, with its own
+launcher, autostart entry and icon in `~/.local/share` and
+`~/.config/autostart`), and it wins over the package's: once
+`patrone-terminal` is installed, move those four files away, or the old
+build keeps running. That happened on the dev VM on 2026-10-26: 0.1.3 was
+installed but the account's copy from that morning ran, so the user saw no
+transparency and the old icon. They were moved to
+`~/.local/share/patrone-dev-backup/terminal/`.
+
 `--default` points Ctrl+Alt+T and "Open in Terminal" at Patrone Terminal
 (through `~/.config/xdg-terminals.list`), swaps it into the dock, and hides
 Ubuntu's terminal (Ptyxis) from the app grid. Deleting
