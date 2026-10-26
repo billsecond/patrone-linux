@@ -428,6 +428,16 @@ Findings:
   "Accepted client" (NLA passed), a wrong one `ERRCONNECT_LOGON_FAILURE`
   (NTLM's MIC check failed). Not yet: `pam-auth-update` on the VM, a real
   hash from a real sign-in, and `mstsc`.
+- **0.3.0 on the VM (2026-10-26):** NLA and PAM both worked with the
+  user's real password through `mstsc` ("signed in wdaugherty from
+  10.0.0.57"). First refusal: they were signed in on the screen with
+  Ubuntu's session, so "busy". Second: the headless desktop never started,
+  `gdm-new-session: Failed: The connection is closed`, which is Ubuntu bug
+  2171951 (filed October 2026): GDM's `gnome-headless-session@.service` runs
+  as a DynamicUser, and systemd starts the system bus daemon with
+  `SYSTEMD_NSS_DYNAMIC_BYPASS=1`, so the bus can't resolve it and drops the
+  connection. 0.3.1 ships the bug's workaround as a drop-in (run it as
+  `gdm`), and `prepare-session` now gives up as soon as the unit fails.
 - Packaging lessons: debhelper replaces `#DEBHELPER#` even inside comments
   (0.2.1's install failed; `build.sh` now refuses it), and for units
   installed with `--no-start` its generated `preinst` stops them on every

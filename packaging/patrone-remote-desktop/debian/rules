@@ -27,6 +27,8 @@ override_dh_auto_install:
 	install -Dm644 -t $(pkg)/usr/lib/systemd/system data/patrone-remote-desktop.service \
 	    data/patrone-remote-desktop-auth.socket data/patrone-remote-desktop-auth@.service \
 	    data/patrone-remote-desktop-console.socket data/patrone-remote-desktop-console@.service
+	install -Dm644 data/gnome-headless-session-static-user.conf \
+	    $(pkg)/usr/lib/systemd/system/gnome-headless-session@.service.d/patrone-static-user.conf
 	install -Dm644 README.md $(pkg)/usr/share/doc/patrone-remote-desktop/README.md
 
 # The machine's own screen always works. Remote Desktop is off until an

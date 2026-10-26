@@ -136,6 +136,11 @@ them back at the next login in a plain GNOME session on the screen.
 - **A brand-new member can't connect until a password sign-in** records the
   hash. Changing a password with `usermod -p` or by editing `/etc/shadow`
   skips PAM, so the next password sign-in brings the hash up to date.
+- **Ubuntu bug 2171951:** GDM's headless session unit runs as a
+  DynamicUser that the system bus can't look up, so on Ubuntu 26.04 it never
+  starts ("Failed: The connection is closed"). The package's drop-in
+  (`gnome-headless-session@.service.d/patrone-static-user.conf`) runs it as
+  the `gdm` account; drop it once Ubuntu fixes the unit.
 - **The login keyring stays locked.** Nothing unlocks it when the desktop
   starts, so apps that keep passwords there may ask for it.
 - **The screen doesn't lock by itself yet.** Leaving the machine, sign out

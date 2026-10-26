@@ -116,11 +116,20 @@ if ! systemctl is-active --quiet "$session"; then
                 ;;
         esac
     done
+    # A unit that failed before (too many restarts) won't start until reset
+    systemctl reset-failed "$session" 2> /dev/null || true
     systemctl start "$session"
 fi
 
-wait_for 120 as_user systemctl --user --quiet is-active gnome-session.target ||
-    fail "the desktop session didn't start"
+# Ready once GNOME's session target is up; give up at once if the session's
+# unit fails, rather than leave the client waiting.
+desktop_ready() {
+    if systemctl is-failed --quiet "$session"; then
+        fail "the desktop session failed to start (journalctl -u $session)"
+    fi
+    as_user systemctl --user --quiet is-active gnome-session.target
+}
+wait_for 120 desktop_ready || fail "the desktop session didn't start"
 as_user systemctl --user start gnome-remote-desktop-headless.service
 wait_for 60 port_open || fail "GNOME Remote Desktop isn't listening on port $port"
 
