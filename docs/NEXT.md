@@ -141,7 +141,8 @@ only two window capabilities (maximize, fullscreen); GTK then greys out its
 minimize button. Not verified (needs input): Super+Up and Super+F11, and
 dragging a maximized window off its maximized state.
 
-**Milestone 3, written but not yet run on the screen:** `src/udev.rs` is a
+**Milestone 3 runs on the real screen** (2026-10-26, on the Hyper-V console
+from tty3): `src/udev.rs` is a
 DRM/KMS + GBM + libinput backend with a libseat session (based on anvil, cut
 down to one GPU and one screen), chosen automatically when there's no
 `WAYLAND_DISPLAY`/`DISPLAY`. It accepts software rendering (anvil refuses
@@ -157,14 +158,32 @@ clean, nested mode still behaves the same (window-states sequence and a
 screenshot), and over SSH it finds `/dev/dri/card1` and fails with a clear
 message, since only the session on the screen may open it.
 
-**Next: the console test, with the user.** From SSH the display device can't
-be opened (it belongs to the console's session, now the GDM greeter), so the
-user logs in on a text console: VMConnect, Ctrl+Alt+F3 (can be sent with
-`scripts/hyperv/vminput.ps1 -Combo Ctrl+Alt+F3`), then run
+**Console test results.** The user logged in on tty3 in VMConnect (Ctrl+Alt+F3
+can be sent with `scripts/hyperv/vminput.ps1 -Combo Ctrl+Alt+F3`) and ran
 `~/src/patrone-linux/compositor/target/release/patrone-compositor 2> ~/patrone.log`.
-`vmshot.ps1` then shows what the compositor drew, and `~/patrone.log` can be
-read over SSH. After that: the login-screen session, primary selection, and
-a keyboard layout from the system settings.
+It took the screen at 1920×1080 ("using /dev/dri/card1 (hyperv_drm), drawing
+on the CPU"), drew the wallpaper, Patrone Terminal and the pointer, and a
+click (sent with `vminput.ps1 -Click`) focused the terminal, which then took
+keyboard input; `vmshot.ps1` showed each change. Findings:
+
+- The first run froze after its first frames: no vblank arrived and the
+  compositor waited forever. A 50 ms vblank timeout now keeps it going; on
+  the second run the display did report vblank ("the display sends vblank
+  events") and no timeout was logged, so the cause isn't fully pinned down.
+  Watch the log for "no vblank" warnings.
+- Harmless warnings on hyperv_drm: "Unable to become drm master" (logind
+  already made the fd master), "failed to create signaled syncobj" (no sync
+  objects), "Failed to destroy old mode property blob".
+- Stopping it with SIGTERM from SSH hands the screen back cleanly; the
+  console returns to its text prompt.
+- Started from a terminal inside the RDP desktop, it runs nested instead, as
+  designed: the log's first line says which.
+
+Not tried yet: dragging and resizing windows, the shortcuts, and switching
+virtual terminals while it runs. Then: the login-screen session
+(`install-dev-session.sh`, needs sudo; a login there as the same user ends
+the Remote Login session), primary selection, and a keyboard layout from the
+system settings.
 
 ## 3. Hyper-V guest support
 
