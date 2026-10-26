@@ -32,6 +32,8 @@ export class JumpList extends PopupMenu.PopupMenu {
 
     popup() {
         this._rebuild();
+        // Above the button, or below it when the taskbar is at the top
+        this._boxPointer.updateArrowSide(this._item.taskbar.menuSide);
         this.open(BoxPointer.PopupAnimation.FULL);
     }
 

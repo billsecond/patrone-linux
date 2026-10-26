@@ -1,3 +1,18 @@
+patrone-settings (0.2.0) resolute; urgency=medium
+
+  * The Taskbar page also sets the layout (Left, Centered, Split with Start
+    on the left and the apps in the middle, or Top) and the Start button's
+    icon (eight to pick from). Themes no longer move the taskbar's buttons.
+  * Royal: the old Classic, glossy royal blue with a green Start button, no
+    longer saying "start". Classic is now plain and square, with solid
+    title bars.
+  * --set-theme THEME applies a theme without a window, and
+    --export-previews DIR saves the choices' pictures; the package installs
+    them in /usr/share/patrone/settings/previews. GNOME Settings' Patrone
+    page uses both.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 23:00:00 -0500
+
 patrone-settings (0.1.0) resolute; urgency=medium
 
   * First package: Patrone Settings, with a Taskbar page (small, medium or

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Patrone
+Comment=Taskbar size, layout and Start button, title bar buttons, and theme
+Exec=gnome-control-center patrone
+Icon=org.patrone.Settings-symbolic
+Terminal=false
+Type=Application
+NoDisplay=true
+StartupNotify=true
+Categories=GNOME;GTK;Settings;DesktopSettings;X-GNOME-Settings-Panel;X-GNOME-PersonalSettings;X-GNOME-PersonalizationSettings;
+# Search terms that find the Patrone page
+Keywords=Patrone;Taskbar;Start;Layout;Centered;Top;Theme;Classic;Royal;Modern;Studio;Title;Buttons;Minimize;Maximize;Close;

@@ -25,6 +25,44 @@
         match. Patrone Settings sets it.
       </description>
     </key>
+    <key name="layout" type="s">
+      <choices>
+        <choice value="left"/>
+        <choice value="center"/>
+        <choice value="split"/>
+        <choice value="top"/>
+      </choices>
+      <default>'left'</default>
+      <summary>Where the taskbar and its buttons go</summary>
+      <description>
+        "left": along the bottom, Start and the apps on the left. "center":
+        Start and the apps in the middle. "split": Start on the left, the
+        apps in the middle. "top": along the top of the screen, Start and
+        the apps on the left, menus opening downward. The theme doesn't
+        change it. Patrone Settings sets it.
+      </description>
+    </key>
+    <key name="start-icon" type="s">
+      <choices>
+        <choice value="patrone"/>
+        <choice value="mono"/>
+        <choice value="orb"/>
+        <choice value="grid"/>
+        <choice value="menu"/>
+        <choice value="circle"/>
+        <choice value="spark"/>
+        <choice value="terminal"/>
+      </choices>
+      <default>'patrone'</default>
+      <summary>The Start button's icon</summary>
+      <description>
+        "patrone" is the Patrone P in its colors, "orb" a blue orb with a
+        white P. The others take the taskbar's text color: "mono" (the P),
+        "grid" (a grid of dots), "menu" (three lines), "circle", "spark" (a
+        four-pointed star) and "terminal" (a prompt). Patrone Settings sets
+        it.
+      </description>
+    </key>
     <key name="terminal-app" type="s">
       <default>''</default>
       <summary>The app the terminal slot opens</summary>

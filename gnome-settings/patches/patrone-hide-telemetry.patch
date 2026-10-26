@@ -1,0 +1,19 @@
+Description: Hide Privacy & Security's Telemetry page
+ Its switches send error reports and system information to Canonical,
+ which Patrone does not (patrone-desktop removes whoopsie, ubuntu-insights
+ and ubuntu-report), so the page would offer settings that do nothing.
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: not-needed
+---
+--- a/panels/privacy/cc-privacy-panel.blp
++++ b/panels/privacy/cc-privacy-panel.blp
+@@ -49,7 +49,8 @@
+             show-arrow: true;
+             action-name: "navigation.push";
+             action-target: "'telemetry'";
+-            visible: bind telemetry_page.visible;
++            // Patrone sends nothing to Canonical: no Telemetry page
++            visible: false;
+           }
+ 
+           $CcListRow {

@@ -112,14 +112,19 @@ the taskbar follows when it's installed):
   Shut down and Restart, as on Windows 11, with Disconnect for Remote
   Desktop.
 - Icons are dragged to reorder them, on the taskbar and in Start.
-- Patrone Settings sets the size (small, medium, large) and a theme: a
-  handful of looks with plain names, one like Patrone's own, one modern
-  and flat, one classic with a blue bar and green Start button, one soft
-  and translucent with round colored window buttons. Which corner the
-  window buttons go in is a separate choice of the user's, which themes
-  don't change.
-- The Start button is the logo's "P", and clicking it lets you type to search
-  at once. The search button stays, hooked to GNOME's search providers.
+- Patrone Settings sets the size (small, medium, large), the layout, the
+  Start button's icon and a theme. Themes are a handful of looks with plain
+  names: Patrone's own, Modern (flat and round), Classic (plain and square),
+  Royal (glossy royal blue, a green Start button with no "start" on it) and
+  Studio (soft and translucent). They change only the look: the layout
+  (Left, Centered, Split with Start on the left and the apps in the middle,
+  or Top, along the top of the screen) and which corner the window buttons
+  go in are separate choices, which themes don't change.
+- The Start button is the logo's "P", or one of seven other icons (a
+  one-color P, an orb, a grid, three lines, a circle, a spark, a prompt);
+  the one-color ones take the bar's text color. Clicking it lets you type to
+  search at once. The search button stays, hooked to GNOME's search
+  providers.
 - Pinned slots open the default app for their job, which then shows under the
   slot instead of with its own icon; slots can be unpinned, and running apps
   pinned.
@@ -141,7 +146,8 @@ the taskbar follows when it's installed):
 | `jumpList.js` | The buttons' right-click menus |
 | `roles.js` | The slots, and which app each one opens |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
-| `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the classic theme's) goes in both of them, after it |
+| `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
+| `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, the `-symbolic` ones drawn in the bar's text color |
 | `tests/headless.sh` | The throwaway GNOME Shell (below) |
 
 - **Dragging** uses GNOME Shell's own drag and drop (`ui/dnd.js`): the

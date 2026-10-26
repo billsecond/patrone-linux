@@ -96,7 +96,19 @@ Waiting on the user:
   0.4.3, `patrone-desktop` 0.1.0 and `patrone-file-manager` 0.2.0. Still to
   hear how they went: the Super key, the network menu's chevron, Shut down
   in a real session, Chromium's pages in Noto Sans, and the wallpapers in
-  Settings → Appearance.
+  Settings → Appearance. They found Patrone Settings' clicks didn't change
+  the taskbar: their GNOME Shell had started at 13:27, before the 14:59
+  install, so it ran the old taskbar and didn't know the theme setting. The
+  settings were written. **They sign out from inside the desktop (Start →
+  account picture → Sign out) and back in.**
+- **Install GNOME Settings' build dependencies** (section 9), so Patrone's
+  build of GNOME Settings can be built (the user types their password):
+  `sudo apt install blueprint-compiler gnome-pkg-tools gnome-settings-daemon-dev gobject-introspection gsettings-desktop-schemas-dev gtk-doc-tools libaccountsservice-dev libadwaita-1-dev libcolord-dev libcolord-gtk4-dev libcups2-dev libgcr-4-dev libgnome-bg-4-dev libgnome-bluetooth-ui-3.0-dev libgnome-desktop-4-dev libgoa-1.0-dev libgoa-backend-1.0-dev libgsound-dev libgtop2-dev libhandy-1-dev libibus-1.0-dev libinsights-dev libjson-glib-dev libkrb5-dev libmalcontent-0-dev libmm-glib-dev libnma-gtk4-dev libnm-dev libpolkit-gobject-1-dev libpulse-dev libpwquality-dev libsecret-1-dev libsmbclient-dev libsoup-3.0-dev libudisks2-dev libupower-glib-dev libwhoopsie-preferences-dev libxml2-utils python3-dbusmock`.
+  Then run `gnome-settings/build.sh`, try the page in the throwaway shell,
+  and hand over the packages.
+- **Install `patrone-gnome-taskbar` 0.3.0 and `patrone-settings` 0.2.0**
+  (sections 7 and 9: layouts, Start icons, Royal and the plainer Classic),
+  then sign out and back in.
 - **Install `patrone-branding` 0.1.5** (section 12), which takes out
   Ubuntu's wallpapers:
   `sudo apt install ~/src/patrone-linux/out/patrone-branding_0.1.5_all.deb`.
@@ -772,6 +784,21 @@ Findings:
 - `pkill -f NAME` matched the SSH command that ran it, and could have hit
   the same app on the real desktop: `headless.sh close-apps` ends only the
   apps it started.
+- **0.3.0** (the user, 2026-10-26: Classic "shouldn't look like windows 10
+  royal, it should just look a bit more basic", then "create one that is
+  just like the royal theme but not 'start'"; "allow the P to be replaced
+  with a series of other icons"; "the taskbar should have its own set of
+  possible layouts"): Royal is the old Classic without the "start" label,
+  Classic is plain and square, and Modern got a look of its own (rounder
+  buttons, no line, blue indicators) once it no longer centered the
+  buttons. Layouts are their own setting: Left, Centered, Split and Top.
+  At the top, menus open downward (`updateArrowSide`, the tray menus too),
+  tooltips go below, and the indicators run along the screen's edge. Eight
+  Start icons; the `-symbolic` ones, loaded as file icons, take the bar's
+  text color. Checked in the throwaway shell: each theme in light and dark,
+  each layout, Start opening downward from the top, every icon (white on
+  Royal). A highlight on the tray at the top was the test's own pointer,
+  left where the tray landed.
 
 ## 8. Patrone File Manager (patrone-file-manager)
 
@@ -949,6 +976,25 @@ pages from other programs.
 Checked in the throwaway shell: see the README. Not checked: on the real
 desktop, the theme in apps that aren't GTK (Chromium's own title bar), and
 Studio's and Classic's look in GTK 3 apps.
+
+**0.2.0** adds the taskbar's layout and Start icon to the Taskbar page, and
+Royal (section 7), and two options for GNOME Settings' Patrone page:
+`--set-theme` and `--export-previews` (the pictures, drawn at build time
+without a display and saved through a GDK texture, since this cairo has no
+PNG writer). The title bar buttons' picture lost its title word, which ran
+into the buttons.
+
+**The Patrone page in GNOME Settings** (the user, 2026-10-26: "I am not
+seeing the Patrone settings in the settings menu"; they chose a Patrone
+build of GNOME Settings over shortcuts or making Patrone Settings the main
+Settings). `gnome-settings/` has the page (C, libadwaita, GPL-2.0-or-later
+like GNOME Settings), the patches that register it and hide the Telemetry
+page, and `build.sh`, which builds Ubuntu's source with them as
+`gnome-control-center` `...patrone1`. Written against Ubuntu's 50.3 source
+(the patches were made from it), but not built yet: it waits on the build
+dependencies above. Then: build, run the built Settings in the throwaway
+shell, check every choice writes its setting and follows changes made
+elsewhere, and that Privacy & Security has no Telemetry row.
 
 ## 10. Typeface and Settings' Ubuntu wording (patrone-branding 0.1.3, 0.1.4)
 

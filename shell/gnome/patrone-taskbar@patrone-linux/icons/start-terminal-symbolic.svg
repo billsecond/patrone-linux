@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- A command prompt: a chevron and a cursor -->
+  <g fill="#2e3436">
+    <path d="M1.5 3.6 3.1 2 9.1 8 3.1 14 1.5 12.4 5.9 8z"/>
+    <rect x="9" y="11.75" width="6" height="2.25" rx="0.5"/>
+  </g>
+</svg>

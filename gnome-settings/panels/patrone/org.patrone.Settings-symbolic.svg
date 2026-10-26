@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 16 388 388" width="16" height="16">
+  <!-- The Patrone P in one color, for GNOME Settings' sidebar (the same
+       paths as the taskbar's icons/patrone-start.svg) -->
+  <path fill="#2e3436" d="M86 68 H306 C356 68 393 106 393 150 C393 156 392 162 391 167 H140 Z"/>
+  <path fill="#2e3436" d="M262 180 H379 C368 228 330 262 288 262 H213 Z"/>
+  <path fill="#2e3436" d="M133 180 H237 L131 352 H28 Z"/>
+</svg>

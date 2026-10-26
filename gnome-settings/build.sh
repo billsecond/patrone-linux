@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Builds Patrone's GNOME Settings on the dev VM: Ubuntu's gnome-control-center
+# with Patrone's page and patches, as packages whose version is Ubuntu's
+# plus "patrone1" (so apt prefers them to the same Ubuntu version, and an
+# Ubuntu update of Settings replaces them until this is run again).
+#
+#   gnome-settings/build.sh [UBUNTU_VERSION] [dpkg-buildpackage options]
+#
+# UBUNTU_VERSION is the Ubuntu version to build from (1:50.3-0ubuntu0.2);
+# by default the newest for resolute. Fetching Ubuntu's source is the one
+# step that needs the network. The packages land in out/: install
+# gnome-control-center and gnome-control-center-data, which go together.
+# Build-Depends: Ubuntu's, which `dpkg-checkbuilddeps` in the unpacked
+# source lists. Tests are skipped unless DEB_BUILD_OPTIONS says otherwise.
+set -euo pipefail
+
+here=$(cd "$(dirname "$0")" && pwd)
+root=$(cd "$here/.." && pwd)
+version=${1:-resolute}
+[[ $# -gt 0 ]] && shift
+
+work="$root/out/build/gnome-settings"
+rm -rf "$work"
+mkdir -p "$work"
+cd "$work"
+pull-lp-source gnome-control-center "$version"
+cd gnome-control-center-*/
+
+# Patrone's page, as a patch that adds its files, then the patches to
+# Ubuntu's own files
+added=patrone-add-patrone-panel.patch
+{
+    printf 'Description: Add Patrone'\''s page: the taskbar, title bar buttons and theme\n'
+    printf ' From gnome-settings/panels/patrone in Patrone'\''s repository.\n'
+    printf 'Author: William Daugherty <31995458+billsecond@users.noreply.github.com>\n'
+    printf 'Forwarded: not-needed\n---\n'
+    for file in "$here"/panels/patrone/*; do
+        name=panels/patrone/$(basename "$file")
+        diff -u --label /dev/null --label "b/$name" /dev/null "$file" || true
+    done
+} > "debian/patches/$added"
+cp "$here"/patches/*.patch debian/patches/
+printf '%s\n' "$added" patrone-register-patrone-panel.patch patrone-hide-telemetry.patch \
+    >> debian/patches/series
+QUILT_PATCHES=debian/patches quilt push -a
+
+DEBFULLNAME="William Daugherty" \
+DEBEMAIL="31995458+billsecond@users.noreply.github.com" \
+    dch --local patrone --distribution resolute \
+    "Patrone's build: a Patrone page (taskbar size, layout and Start button, title bar buttons, theme), and no Telemetry page."
+
+export DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:-nocheck parallel=$(nproc)}"
+dpkg-buildpackage -us -uc -b "$@"
+
+mkdir -p "$root/out"
+mv ../gnome-control-center*_*.deb "$root/out/"
+ls -l "$root"/out/gnome-control-center*patrone*.deb

@@ -25,10 +25,12 @@ override_dh_auto_install:
 	install -Dm644 data/org.patrone.desktop.gschema.xml \
 	    $(pkg)/usr/share/glib-2.0/schemas/org.patrone.desktop.gschema.xml
 	# The themes' styles for GTK 3 and GTK 4 apps
-	for theme in modern classic studio; do \
+	for theme in modern classic royal studio; do \
 	    install -Dm644 -t $(pkg)/usr/share/patrone/themes/$$theme \
 	        data/themes/$$theme/gtk-4.0.css data/themes/$$theme/gtk-3.0.css; \
 	done
+	# The choices' pictures, for GNOME Settings' Patrone page
+	target/release/patrone-settings --export-previews $(pkg)/usr/share/patrone/settings/previews
 
 override_dh_auto_clean:
 	rm -rf target debian/cargo-home

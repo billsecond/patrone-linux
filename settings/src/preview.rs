@@ -1,6 +1,7 @@
 //! The little pictures on Patrone Settings' choices: the taskbar at each
-//! size, where each arrangement puts the title bar buttons, and each theme's
-//! taskbar and title bar. Drawn with cairo, at whatever size they're given.
+//! size and in each layout, where each arrangement puts the title bar
+//! buttons, and each theme's taskbar and title bar. Drawn with cairo, at
+//! whatever size they're given.
 
 use std::f64::consts::PI;
 
@@ -76,12 +77,6 @@ fn text(cr: &Context, x: f64, y: f64, size: f64, rgb: u32, weight: FontWeight, s
     let _ = cr.show_text(label);
 }
 
-fn text_width(cr: &Context, size: f64, weight: FontWeight, label: &str) -> f64 {
-    cr.select_font_face("Sans", FontSlant::Normal, weight);
-    cr.set_font_size(size);
-    cr.text_extents(label).map(|e| e.x_advance()).unwrap_or(0.0)
-}
-
 /// A minimize, maximize or close symbol, centered on (cx, cy).
 fn symbol(cr: &Context, button: Button, cx: f64, cy: f64, size: f64, rgb: u32) {
     color(cr, rgb, 1.0);
@@ -121,14 +116,13 @@ pub fn buttons(cr: &Context, w: f64, h: f64, layout: Layout) {
     color(cr, 0xeceef2, 1.0);
     cr.rectangle(x, y + bar / 2.0, ww, bar / 2.0);
     let _ = cr.fill();
-    let title = "Window";
-    let size = bar * 0.42;
-    let width = text_width(cr, size, FontWeight::Bold, title);
-    text(cr, x + (ww - width) / 2.0, y + bar * 0.66, size, 0x1b1d22, FontWeight::Bold, FontSlant::Normal, title);
+    // The title, as a short bar in the middle: a word ran into the buttons
+    let title = ww * 0.16;
+    fill_rounded(cr, x + (ww - title) / 2.0, y + bar / 2.0 - 2.0, title, 4.0, 2.0, 0x9aa0aa, 1.0);
 
     let (order, left) = buttons_for(layout);
-    let cell = bar * 0.95;
-    let glyph = bar * 0.34;
+    let cell = bar * 0.75;
+    let glyph = bar * 0.3;
     for (i, button) in order.iter().enumerate() {
         let cx = if left {
             x + 6.0 + cell * (i as f64 + 0.5)
@@ -198,9 +192,50 @@ pub fn taskbar_size(cr: &Context, w: f64, h: f64, bar: f64, icon: f64) {
     let y = h - bar + (bar - icon) / 2.0;
     start_mark(cr, 6.0, y, icon);
     app_icons(cr, 8.0 + icon * 1.6, y, icon, 4, None);
-    // The clock
-    fill_rounded(cr, w - icon * 2.2 - 6.0, y + icon * 0.1, icon * 2.2, icon * 0.32, 1.5, 0x5a5f6b, 1.0);
-    fill_rounded(cr, w - icon * 2.2 - 6.0, y + icon * 0.58, icon * 2.2, icon * 0.32, 1.5, 0x8a8f99, 1.0);
+    clock(cr, w, y, icon);
+}
+
+/// The clock at the right of a taskbar: the time over the date.
+fn clock(cr: &Context, w: f64, iy: f64, icon: f64) {
+    let width = icon * 2.2;
+    fill_rounded(cr, w - width - 6.0, iy + icon * 0.1, width, icon * 0.32, 1.5, 0x5a5f6b, 1.0);
+    fill_rounded(cr, w - width - 6.0, iy + icon * 0.58, width, icon * 0.32, 1.5, 0x8a8f99, 1.0);
+}
+
+/// A taskbar layout: the bar along the bottom or the top, and where Start
+/// and the apps go on it.
+pub fn taskbar_layout(cr: &Context, w: f64, h: f64, layout: &str) {
+    desktop(cr, w, h);
+    let bar = (h * 0.17).max(14.0);
+    let top = layout == "top";
+    let ty = if top { 0.0 } else { h - bar };
+    let window_y = if top { bar + h * 0.1 } else { h * 0.1 };
+    fill_rounded(cr, w * 0.16, window_y, w * 0.6, h * 0.5, 4.0, 0xffffff, 0.92);
+    color(cr, 0xf3f4f7, 0.96);
+    cr.rectangle(0.0, ty, w, bar);
+    let _ = cr.fill();
+
+    let icon = bar * 0.56;
+    let iy = ty + (bar - icon) / 2.0;
+    let gap = icon * 0.55;
+    let apps = 4;
+    let apps_width = icon * apps as f64 + gap * (apps - 1) as f64;
+    match layout {
+        "center" => {
+            let x = (w - icon - gap - apps_width) / 2.0;
+            start_mark(cr, x, iy, icon);
+            app_icons(cr, x + icon + gap, iy, icon, apps, None);
+        }
+        "split" => {
+            start_mark(cr, 5.0, iy, icon);
+            app_icons(cr, (w - apps_width) / 2.0, iy, icon, apps, None);
+        }
+        _ => {
+            start_mark(cr, 5.0, iy, icon);
+            app_icons(cr, 5.0 + icon + gap, iy, icon, apps, None);
+        }
+    }
+    clock(cr, w, iy, icon);
 }
 
 /// A theme: a window's title bar and the taskbar, as the theme draws them.
@@ -210,12 +245,22 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
     // The window
     let (x, y, ww, wh) = (w * 0.10, h * 0.09, w * 0.66, h * 0.56);
     let bar = (wh * 0.24).max(14.0);
-    let radius = if theme == "classic" { 3.0 } else { 6.0 };
+    let radius = match theme {
+        "classic" => 0.0,
+        "royal" => 3.0,
+        _ => 6.0,
+    };
     fill_rounded(cr, x, y, ww, wh, radius, 0xffffff, 1.0);
     match theme {
-        "classic" => {
+        "royal" => {
             rounded(cr, x, y, ww, bar, radius);
             vertical_gradient(cr, y, bar, 0x3a8cff, 0x0846b8);
+            let _ = cr.fill();
+            text(cr, x + 6.0, y + bar * 0.68, bar * 0.5, 0xffffff, FontWeight::Bold, FontSlant::Normal, "Window");
+        }
+        "classic" => {
+            color(cr, 0x3d4b63, 1.0);
+            cr.rectangle(x, y, ww, bar);
             let _ = cr.fill();
             text(cr, x + 6.0, y + bar * 0.68, bar * 0.5, 0xffffff, FontWeight::Bold, FontSlant::Normal, "Window");
         }
@@ -235,6 +280,12 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
             }
         }
         "classic" => {
+            for (i, button) in [Button::Minimize, Button::Maximize, Button::Close].iter().enumerate() {
+                let cx = x + ww - (3 - i) as f64 * unit * 1.5 + unit * 0.5;
+                symbol(cr, *button, cx, cy, unit * 0.5, 0xffffff);
+            }
+        }
+        "royal" => {
             for i in 0..3 {
                 let bx = x + ww - 4.0 - (3 - i) as f64 * (unit + 2.0);
                 rounded(cr, bx, cy - unit / 2.0, unit, unit, 2.0);
@@ -276,50 +327,72 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
     let icon = tb * 0.56;
     let iy = ty + (tb - icon) / 2.0;
     match theme {
-        "classic" => {
+        "royal" => {
             vertical_gradient(cr, ty, tb, 0x3b7ff0, 0x1d4fc4);
             cr.rectangle(0.0, ty, w, tb);
             let _ = cr.fill();
             // The green Start button
-            let start = w * 0.24;
+            let start = icon * 2.0;
             rounded(cr, -6.0, ty, start + 6.0, tb, tb / 2.0);
             vertical_gradient(cr, ty, tb, 0x45a845, 0x2c7f2c);
             let _ = cr.fill();
-            start_mark(cr, 4.0, iy, icon);
-            text(cr, 6.0 + icon * 1.2, ty + tb * 0.68, tb * 0.5, 0xffffff, FontWeight::Bold, FontSlant::Italic, "start");
-            app_icons(cr, start + 6.0, iy, icon, 3, None);
+            start_mark(cr, icon * 0.45, iy, icon);
+            app_icons(cr, start + 6.0, iy, icon, 4, None);
             // The tray
             vertical_gradient(cr, ty, tb, 0x1594f0, 0x0d6fd6);
             cr.rectangle(w * 0.78, ty, w * 0.22, tb);
             let _ = cr.fill();
         }
+        "classic" => {
+            color(cr, 0xe1e4e9, 1.0);
+            cr.rectangle(0.0, ty, w, tb);
+            let _ = cr.fill();
+            color(cr, 0xc2c7cf, 1.0);
+            cr.rectangle(0.0, ty, w, 1.0);
+            let _ = cr.fill();
+            start_mark(cr, 5.0, iy, icon);
+            // The app in front: a square highlight with a line under it
+            let ax = 5.0 + icon * 1.55;
+            fill_rounded(cr, ax - icon * 0.2, ty + 1.0, icon * 1.4, tb - 1.0, 0.0, 0xccd2da, 1.0);
+            fill_rounded(cr, ax - icon * 0.2, ty + tb - 2.0, icon * 1.4, 2.0, 0.0, 0x2f62b1, 1.0);
+            app_icons(cr, ax, iy, icon, 4, None);
+            clock(cr, w, iy, icon);
+        }
         "studio" => {
             color(cr, 0xf6f6f8, 0.7);
             cr.rectangle(0.0, ty, w, tb);
             let _ = cr.fill();
+            start_mark(cr, 5.0, iy, icon);
             let count = 4;
-            let shelf = icon * count as f64 + icon * 0.55 * (count - 1) as f64 + icon * 1.4;
-            let sx = (w - shelf) / 2.0;
+            let shelf = icon * count as f64 + icon * 0.55 * (count - 1) as f64 + icon * 0.8;
+            let sx = 5.0 + icon * 1.45;
             fill_rounded(cr, sx, ty + 2.0, shelf, tb - 4.0, (tb - 4.0) * 0.3, 0xffffff, 0.75);
-            start_mark(cr, sx + icon * 0.35, iy - 1.0, icon);
-            app_icons(cr, sx + icon * 1.65, iy - 1.0, icon, count - 1, Some(0x3a3a3c));
+            app_icons(cr, sx + icon * 0.4, iy - 1.0, icon, count, Some(0x3a3a3c));
         }
         "modern" => {
+            // No line along the bar, and a blue line under each running app
             color(cr, 0xf3f4f7, 0.96);
             cr.rectangle(0.0, ty, w, tb);
             let _ = cr.fill();
-            let count = 5;
-            let width = icon * count as f64 + icon * 0.55 * (count - 1) as f64;
-            let sx = (w - width) / 2.0;
-            start_mark(cr, sx, iy, icon);
-            app_icons(cr, sx + icon * 1.55, iy, icon, count - 1, None);
+            start_mark(cr, 5.0, iy, icon);
+            let ax = 7.0 + icon * 1.55;
+            app_icons(cr, ax, iy, icon, 4, None);
+            for i in 0..2 {
+                let lx = ax + f64::from(i) * icon * 1.55 + icon * 0.3;
+                fill_rounded(cr, lx, ty + tb - 2.5, icon * 0.4, 2.0, 1.0, 0x288bfa, 1.0);
+            }
+            clock(cr, w, iy, icon);
         }
         _ => {
             color(cr, 0xf3f4f7, 0.96);
             cr.rectangle(0.0, ty, w, tb);
             let _ = cr.fill();
+            color(cr, 0xdfe1e6, 1.0);
+            cr.rectangle(0.0, ty, w, 1.0);
+            let _ = cr.fill();
             start_mark(cr, 5.0, iy, icon);
             app_icons(cr, 7.0 + icon * 1.55, iy, icon, 4, None);
+            clock(cr, w, iy, icon);
         }
     }
 }

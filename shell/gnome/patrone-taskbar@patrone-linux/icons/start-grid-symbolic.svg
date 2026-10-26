@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- A grid of nine dots -->
+  <g fill="#2e3436">
+    <rect x="1" y="1" width="3.5" height="3.5" rx="1"/>
+    <rect x="6.25" y="1" width="3.5" height="3.5" rx="1"/>
+    <rect x="11.5" y="1" width="3.5" height="3.5" rx="1"/>
+    <rect x="1" y="6.25" width="3.5" height="3.5" rx="1"/>
+    <rect x="6.25" y="6.25" width="3.5" height="3.5" rx="1"/>
+    <rect x="11.5" y="6.25" width="3.5" height="3.5" rx="1"/>
+    <rect x="1" y="11.5" width="3.5" height="3.5" rx="1"/>
+    <rect x="6.25" y="11.5" width="3.5" height="3.5" rx="1"/>
+    <rect x="11.5" y="11.5" width="3.5" height="3.5" rx="1"/>
+  </g>
+</svg>

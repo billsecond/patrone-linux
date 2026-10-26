@@ -13,6 +13,7 @@ source. `build.sh` puts the two together and builds the `.deb` on the dev VM:
 ./packaging/build.sh patrone-file-manager -d
 ./packaging/build.sh patrone-settings -d
 ./packaging/build.sh patrone-desktop
+./gnome-settings/build.sh
 ```
 
 The packages land in `out/`. Install them with
@@ -28,7 +29,8 @@ dependencies).
 | `patrone-remote-desktop` | `remote-desktop/` | Remote Desktop where each account in the `remote-desktop` group signs in with its own Linux password, checked by PAM: FreeRDP's proxy with Patrone's sign-in plugin, a root sign-in helper, and the `patrone-remote-desktop` command. Off until `patrone-remote-desktop enable`. Also a polkit rule that gives these seatless desktops what a desktop at the screen gets without a password (network control, power, drives). Builds with `freerdp3-dev` and `libpam0g-dev`. See `remote-desktop/README.md`. |
 | `patrone-file-manager` | `file-manager/` | Patrone File Manager, its launcher entry, icon and settings schema (`org.patrone.FileManager`), and an autostart entry that reopens folders at sign-in only when Folder Options says to. Builds with `libgtk-4-dev` and GLib's resource and schema compilers. See `file-manager/README.md`. |
 | `patrone-gnome-taskbar` | `shell/gnome/` | Patrone's taskbar and Start menu in place of GNOME's top bar: a GNOME Shell extension in `/usr/share/gnome-shell/extensions/`, its settings schema, and an override that turns it on for everyone. Loads when the desktop next starts: log out from inside it (disconnecting leaves it running). See `shell/gnome/README.md`. |
-| `patrone-settings` | `settings/` | Patrone Settings: the taskbar's size, which corner the title bar buttons go in, and four themes, with their styles for GTK apps in `/usr/share/patrone/themes` and the `org.patrone.desktop` schema. Builds with `libgtk-4-dev`. See `settings/README.md`. |
+| `patrone-settings` | `settings/` | Patrone Settings: the taskbar's size, layout and Start button icon, which corner the title bar buttons go in, and five themes, with their styles for GTK apps in `/usr/share/patrone/themes`, the `org.patrone.desktop` schema, and the choices' pictures in `/usr/share/patrone/settings/previews` (drawn at build time) for GNOME Settings' Patrone page. Builds with `libgtk-4-dev`. See `settings/README.md`. |
+| `gnome-control-center`, `gnome-control-center-data` (Patrone's build) | `gnome-settings/` | Ubuntu's GNOME Settings with a Patrone page (the same choices as Patrone Settings) and no Telemetry page, versioned Ubuntu's plus `patrone1`. Built by `gnome-settings/build.sh`, not `build.sh`: it fetches Ubuntu's source first. Builds with Ubuntu's build dependencies for `gnome-control-center`. See `gnome-settings/README.md`. |
 | `patrone-desktop` | `desktop/` | Patrone's desktop metapackage: depends on Ubuntu's desktop (`ubuntu-desktop-minimal`) and `patrone-branding`, recommends Patrone's apps, and removes what reports to Canonical (whoopsie, ubuntu-insights, ubuntu-report, and apport-gtk's crash dialog) through `Conflicts`. First-login setup skips Ubuntu's reporting and Ubuntu Pro pages, and Ubuntu Pro's apt news and ESM check run only on a machine attached to Ubuntu Pro. The clock comes from NTS servers run by Cloudflare, Netnod, PTB and SIDN Labs instead of `ntp.ubuntu.com`, NetworkManager checks for Wi-Fi sign-in pages with GNOME's server, and nothing offers to upgrade to Ubuntu's next release. See `desktop/README.md`. |
 
 Notes:

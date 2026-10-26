@@ -1,0 +1,52 @@
+Description: Register Patrone's page (panels/patrone), after Appearance and Ubuntu's
+ Desktop page in the sidebar. The page's own files come from Patrone's
+ repository (gnome-settings/panels/patrone).
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: not-needed
+---
+--- a/panels/meson.build
++++ b/panels/meson.build
+@@ -13,6 +13,7 @@
+   'multitasking',
+   'notifications',
+   'online-accounts',
++  'patrone',
+   'power',
+   'printers',
+   'privacy',
+--- a/shell/cc-panel-list.c
++++ b/shell/cc-panel-list.c
+@@ -384,6 +384,7 @@
+   "multitasking",
+   "background",
+   "ubuntu",
++  "patrone",
+ 
+   "separator",
+ 
+--- a/shell/cc-panel-loader.c
++++ b/shell/cc-panel-loader.c
+@@ -48,6 +48,7 @@
+ #endif /* BUILD_NETWORK */
+ extern GType cc_notifications_panel_get_type (void);
+ extern GType cc_online_accounts_panel_get_type (void);
++extern GType cc_patrone_panel_get_type (void);
+ extern GType cc_power_panel_get_type (void);
+ extern GType cc_printers_panel_get_type (void);
+ extern GType cc_privacy_panel_get_type (void);
+@@ -65,6 +66,7 @@
+ extern GType cc_wwan_panel_get_type (void);
+ #endif /* BUILD_WWAN */
+ extern void cc_ubuntu_panel_static_init_func (void);
++extern void cc_patrone_panel_static_init_func (void);
+ 
+ /* Static init functions */
+ #ifdef BUILD_NETWORK
+@@ -104,6 +106,7 @@
+ #endif
+   PANEL_TYPE("notifications",    cc_notifications_panel_get_type,        NULL),
+   PANEL_TYPE("online-accounts",  cc_online_accounts_panel_get_type,      NULL),
++  PANEL_TYPE("patrone",          cc_patrone_panel_get_type,              cc_patrone_panel_static_init_func),
+   PANEL_TYPE("power",            cc_power_panel_get_type,                NULL),
+   PANEL_TYPE("printers",         cc_printers_panel_get_type,             NULL),
+   PANEL_TYPE("privacy",          cc_privacy_panel_get_type,              NULL),

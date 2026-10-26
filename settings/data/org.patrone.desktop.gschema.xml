@@ -6,17 +6,20 @@
         <choice value="patrone"/>
         <choice value="modern"/>
         <choice value="classic"/>
+        <choice value="royal"/>
         <choice value="studio"/>
       </choices>
       <default>'patrone'</default>
       <summary>Patrone's theme</summary>
       <description>
         The look of the taskbar, title bars and window buttons, chosen in
-        Patrone Settings: "patrone" (Patrone's own), "modern" (flat, the
-        taskbar's buttons centered), "classic" (a blue taskbar and title
-        bars, a green Start button) or "studio" (translucent, round colored
-        window buttons). The taskbar follows it; Patrone Settings also puts
-        the theme's style for apps in the account's GTK settings.
+        Patrone Settings: "patrone" (Patrone's own), "modern" (flat and
+        round), "classic" (plain and square, solid title bars), "royal"
+        (glossy royal blue, a green Start button) or "studio" (translucent,
+        round colored window buttons). The taskbar follows it; Patrone
+        Settings also puts the theme's style for apps in the account's GTK
+        settings. Where the taskbar's buttons go is the taskbar's own
+        layout setting, which no theme changes.
       </description>
     </key>
   </schema>

@@ -107,8 +107,10 @@ shell/                 panel, launcher, dock, notifications
   gnome/               the taskbar and Start menu for today's GNOME-based
                        desktop, as a GNOME Shell extension
                        (patrone-gnome-taskbar)
-settings/              Patrone Settings: taskbar size, title bar buttons,
-                       themes (patrone-settings)
+settings/              Patrone Settings: taskbar size, layout and Start
+                       icon, title bar buttons, themes (patrone-settings)
+gnome-settings/        Patrone's build of GNOME Settings: a Patrone page,
+                       no Telemetry page (gnome-control-center)
 terminal/              Patrone Terminal
 file-manager/          Patrone File Manager (patrone-file-manager)
 shell-config/          bash prompt and zsh setup (patrone-shell-config)

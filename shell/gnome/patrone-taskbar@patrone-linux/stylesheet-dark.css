@@ -66,6 +66,32 @@
   background-color: transparent;
 }
 
+/* The modern theme: no line along the bar, and every running app's
+ * indicator in Patrone Blue */
+.patrone-taskbar.theme-modern {
+  border-top-width: 0;
+}
+
+.patrone-taskbar.theme-modern .patrone-taskbar-indicator {
+  background-color: #4ca0ff;
+}
+
+/* The classic theme: plain and square, a solid dark grey bar */
+.patrone-taskbar.theme-classic {
+  background-color: #2b2e34;
+  border-top: 1px solid #40444c;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-item.focused,
+.patrone-taskbar.theme-classic .patrone-taskbar-item.focused:hover {
+  background-color: #3b3f47;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-indicator,
+.patrone-taskbar.theme-classic .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  background-color: #74a5ef;
+}
+
 .patrone-taskbar-tooltip {
   background-color: #2b2f37;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -183,8 +209,8 @@
   background-color: #a83b00;
 }
 
-/* The classic theme: a deep blue bar with white symbols */
-.patrone-taskbar.theme-classic {
+/* The royal theme: a glossy royal blue bar with white symbols */
+.patrone-taskbar.theme-royal {
   background-color: #3b7ff0;
   background-gradient-direction: vertical;
   background-gradient-end: #1d4fc4;
@@ -192,38 +218,44 @@
   color: #ffffff;
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-button,
-.patrone-taskbar.theme-classic .patrone-taskbar-tray .panel-button {
+.patrone-taskbar.theme-royal .patrone-taskbar-button,
+.patrone-taskbar.theme-royal .patrone-taskbar-tray .panel-button {
   color: #ffffff;
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-button:hover,
-.patrone-taskbar.theme-classic .patrone-taskbar-button:focus,
-.patrone-taskbar.theme-classic .patrone-taskbar-tray .panel-button:hover,
-.patrone-taskbar.theme-classic .patrone-taskbar-tray .panel-button:focus {
+.patrone-taskbar.theme-royal .patrone-taskbar-button:hover,
+.patrone-taskbar.theme-royal .patrone-taskbar-button:focus,
+.patrone-taskbar.theme-royal .patrone-taskbar-tray .panel-button:hover,
+.patrone-taskbar.theme-royal .patrone-taskbar-tray .panel-button:focus {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-item.focused,
-.patrone-taskbar.theme-classic .patrone-taskbar-item.focused:hover {
+.patrone-taskbar.theme-royal .patrone-taskbar-item.focused,
+.patrone-taskbar.theme-royal .patrone-taskbar-item.focused:hover {
   background-color: rgba(0, 20, 90, 0.35);
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-indicator,
-.patrone-taskbar.theme-classic .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+.patrone-taskbar.theme-royal .patrone-taskbar-indicator,
+.patrone-taskbar.theme-royal .patrone-taskbar-item.focused .patrone-taskbar-indicator {
   background-color: rgba(255, 255, 255, 0.85);
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-show-desktop {
+.patrone-taskbar.theme-royal .patrone-taskbar-show-desktop {
   border-left: 1px solid #0a3f9e;
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-start,
-.patrone-taskbar.theme-classic .patrone-taskbar-start:focus {
+.patrone-taskbar.theme-royal .patrone-taskbar-start,
+.patrone-taskbar.theme-royal .patrone-taskbar-start:focus {
   background-color: #45a845;
   color: #ffffff;
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-start:hover {
+.patrone-taskbar.theme-royal .patrone-taskbar-start:hover {
   background-color: #52bb52;
+}
+
+/* At the top of the screen, the bar's line runs along its bottom edge */
+.patrone-taskbar.layout-top {
+  border-top-width: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }

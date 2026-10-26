@@ -64,7 +64,7 @@
 
 /* Screen recording and sharing (outside GNOME's top bar, the theme's style
  * for them doesn't apply): a small red or orange pill, as in the top bar.
- * Their colors are in the light and dark sheets (see the classic theme
+ * Their colors are in the light and dark sheets (see the royal theme
  * below for why). */
 .patrone-taskbar-tray .panel-button.screen-recording-indicator,
 .patrone-taskbar-tray .panel-button.screen-sharing-indicator {
@@ -212,51 +212,54 @@
   box-shadow: inset -3px 0 0 0 #288bfa;
 }
 
-/* Themes, from Patrone Settings. "patrone" is the look above; "modern" is
- * it with the buttons centered (taskbar.js). "classic" is the same in
- * light and dark: a deep blue bar, a green Start button that says "start",
- * and a lighter blue tray. "studio" (colors in stylesheet-light/-dark.css)
- * is a translucent bar with the buttons centered on a rounded shelf. */
-.patrone-taskbar-start-box {
-  spacing: 6px;
+/* Themes, from Patrone Settings; they change only the look (where the
+ * buttons go is the layout, below). "patrone" is the look above. "modern"
+ * is flat, with rounder buttons. "classic" is plain and square, a solid bar
+ * in the light or dark style. "royal" is the same in light and dark: a
+ * glossy royal blue bar, a green Start button and a lighter blue tray.
+ * "studio" is a translucent bar with the buttons on a rounded shelf.
+ * Colors are in stylesheet-light/-dark.css. */
+.patrone-taskbar.theme-modern .patrone-taskbar-button,
+.patrone-taskbar.theme-modern .patrone-taskbar-tray .panel-button {
+  border-radius: 9px;
 }
 
-.patrone-taskbar-start-label {
-  font-weight: bold;
-  font-style: italic;
-  font-size: 1.15em;
-  padding-right: 6px;
+.patrone-taskbar.theme-classic .patrone-taskbar-button,
+.patrone-taskbar.theme-classic .patrone-taskbar-tray .panel-button {
+  border-radius: 2px;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-indicator,
+.patrone-taskbar.theme-classic .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  height: 3px;
+  border-radius: 0;
 }
 
 /* The green Start button touches the screen's edge. (Not with a negative
  * margin: St doesn't take those, and the whole bar's layout broke.) The
- * classic bar's own colors are in stylesheet-light.css and -dark.css: St
+ * royal bar's own colors are in stylesheet-light.css and -dark.css: St
  * lets a style sheet's rules beat those of the sheets it imports, however
  * specific, so they have to be there, after the rules they replace. */
-.patrone-taskbar.theme-classic {
+.patrone-taskbar.theme-royal {
   padding-left: 0;
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-start {
+.patrone-taskbar.theme-royal .patrone-taskbar-start {
   margin: 0 8px 0 0;
-  padding: 0 4px 0 10px;
-  border-radius: 0 12px 12px 0;
+  padding: 0 10px 0 8px;
+  border-radius: 0 14px 14px 0;
   background-color: #45a845;
   background-gradient-direction: vertical;
   background-gradient-end: #2c7f2c;
   color: #ffffff;
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-start:hover {
+.patrone-taskbar.theme-royal .patrone-taskbar-start:hover {
   background-color: #52bb52;
   background-gradient-end: #34903a;
 }
 
-.patrone-taskbar.theme-classic .patrone-taskbar-start-label {
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.45);
-}
-
-.patrone-taskbar.theme-classic .patrone-taskbar-tray {
+.patrone-taskbar.theme-royal .patrone-taskbar-tray {
   padding: 0 4px;
   background-color: #1594f0;
   background-gradient-direction: vertical;
@@ -275,6 +278,14 @@
   width: 4px;
   height: 4px;
   border-radius: 2px;
+}
+
+/* Layouts, from Patrone Settings: "left", "center" and "split" differ only in
+ * where taskbar.js puts the buttons; at the top, the running indicators run
+ * along the screen's edge */
+.patrone-taskbar.layout-top .patrone-taskbar-indicator {
+  margin-bottom: 0;
+  margin-top: 1px;
 }
 
 /* The tray's menus open upward, so their gap goes at the top */

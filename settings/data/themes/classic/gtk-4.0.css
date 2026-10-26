@@ -1,17 +1,18 @@
 /* Patrone's Classic theme for GTK 4 apps (Patrone Settings imports it into
- * the account's ~/.config/gtk-4.0/gtk.css): deep blue title bars with
- * white titles, blue square title-bar buttons and a red one to close. */
+ * the account's ~/.config/gtk-4.0/gtk.css): plain and square. Solid slate
+ * title bars with white titles, flat square title-bar buttons, and close
+ * turning red under the pointer. */
 
 headerbar {
-  background-color: #0b5ce6;
-  background-image: linear-gradient(to bottom, #4a95ff 0%, #0b5ce6 14%, #0a52d0 82%, #0846b8 100%);
+  background-color: #3d4b63;
+  background-image: none;
   color: #ffffff;
   box-shadow: none;
 }
 
 headerbar:backdrop {
-  background-image: linear-gradient(to bottom, #a9c3f0, #7d9ee0);
-  color: #eef2fc;
+  background-color: #6d778a;
+  color: #e9ecf1;
 }
 
 headerbar .title,
@@ -22,34 +23,41 @@ headerbar label {
 
 headerbar button:not(.suggested-action):not(.destructive-action) {
   color: #ffffff;
+  border-radius: 2px;
 }
 
 headerbar button:not(.suggested-action):not(.destructive-action):hover {
-  background-color: rgba(255, 255, 255, 0.16);
+  background-color: rgba(255, 255, 255, 0.14);
 }
 
 windowcontrols > button {
-  min-width: 24px;
+  min-width: 30px;
   min-height: 24px;
-  margin: 0 1px;
+  margin: 0;
   padding: 0;
+  border-radius: 0;
   background: none;
+  box-shadow: none;
 }
 
 windowcontrols > button > image {
-  padding: 3px;
-  border: 1px solid #ffffff;
-  border-radius: 3px;
-  background-color: #2a73e8;
-  background-image: linear-gradient(to bottom, #5b9dff, #1f63d8);
+  padding: 4px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
   color: #ffffff;
 }
 
-windowcontrols > button.close > image {
-  background-color: #d4492b;
-  background-image: linear-gradient(to bottom, #f2967a, #c8381b);
+windowcontrols > button:hover {
+  background-color: rgba(255, 255, 255, 0.16);
 }
 
-windowcontrols > button:hover > image {
-  filter: brightness(1.15);
+windowcontrols > button.close:hover {
+  background-color: #c42b1c;
+}
+
+/* Square windows */
+window.csd,
+window.csd > .titlebar {
+  border-radius: 0;
 }

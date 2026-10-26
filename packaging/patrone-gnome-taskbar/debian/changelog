@@ -1,3 +1,20 @@
+patrone-gnome-taskbar (0.3.0) resolute; urgency=medium
+
+  * Layouts, apart from themes (the new "layout" setting): Left, Centered,
+    Split (Start on the left, the apps in the middle) and Top, along the
+    top of the screen, with its menus and tooltips opening downward and the
+    running indicators along the screen's edge.
+  * The Start button's icon (the new "start-icon" setting): the Patrone P,
+    a one-color P, an orb, a grid, three lines, a circle, a spark or a
+    prompt. The one-color ones take the bar's text color.
+  * Themes: Royal is the old Classic, its green Start button without the
+    word "start"; Classic is plain and square, a solid light or dark bar;
+    Modern has rounder buttons and no line along the bar.
+  * "Taskbar settings" opens GNOME Settings' Patrone page, in Patrone's
+    build of GNOME Settings, or else Patrone Settings.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 23:00:00 -0500
+
 patrone-gnome-taskbar (0.2.0) resolute; urgency=medium
 
   * Drag to reorder the taskbar's buttons and Start's pinned apps. An app

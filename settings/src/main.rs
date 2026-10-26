@@ -1,14 +1,18 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
-//! window of their own, since GNOME Settings takes no pages from other
-//! programs. Pages: Taskbar (its size), Title bar buttons (where minimize,
-//! maximize and close go) and Theme.
+//! window of their own. Pages: Taskbar (its size, layout and Start icon),
+//! Title bar buttons (where minimize, maximize and close go) and Theme.
+//! Patrone's build of GNOME Settings has the same settings on its Patrone
+//! page, and uses this program to apply a theme and for its pictures.
 //!
 //!   patrone-settings [--page taskbar|buttons|theme]
+//!   patrone-settings --set-theme THEME      apply a theme, and quit
+//!   patrone-settings --export-previews DIR  save the choices' pictures as PNGs
 
 mod preview;
 mod theme;
 
 use std::cell::RefCell;
+use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -26,6 +30,44 @@ const PAGES: [(&str, &str, &str); 3] = [
     ("theme", "Theme", "applications-graphics-symbolic"),
 ];
 
+/// The taskbar's sizes: setting value, name, description, and the bar's
+/// and icons' heights in the picture.
+const SIZES: [(&str, &str, &str, f64, f64); 3] = [
+    ("small", "Small", "More room for windows", 12.0, 8.0),
+    ("medium", "Medium", "The standard size", 16.0, 11.0),
+    ("large", "Large", "Bigger buttons, easier to hit", 21.0, 14.0),
+];
+
+/// The taskbar's layouts (its layout setting).
+const LAYOUTS: [(&str, &str, &str); 4] = [
+    ("left", "Left", "Start and your apps on the left"),
+    ("center", "Centered", "Start and your apps in the middle"),
+    ("split", "Split", "Start on the left, your apps in the middle"),
+    ("top", "Top", "Along the top of the screen, menus opening downward"),
+];
+
+/// The Start button's icons (its start-icon setting) and their files in the
+/// taskbar's icons folder; the -symbolic ones take the text color.
+const START_ICONS: [(&str, &str, &str); 8] = [
+    ("patrone", "Patrone", "patrone-start.svg"),
+    ("mono", "One color", "start-mono-symbolic.svg"),
+    ("orb", "Orb", "start-orb.svg"),
+    ("grid", "Grid", "start-grid-symbolic.svg"),
+    ("menu", "Menu", "start-menu-symbolic.svg"),
+    ("circle", "Circle", "start-circle-symbolic.svg"),
+    ("spark", "Spark", "start-spark-symbolic.svg"),
+    ("terminal", "Prompt", "start-terminal-symbolic.svg"),
+];
+
+/// The taskbar's icons folder: in the account's extensions, or the system's.
+fn taskbar_icons() -> Option<PathBuf> {
+    let relative = Path::new("gnome-shell/extensions/patrone-taskbar@patrone-linux/icons");
+    std::iter::once(glib::user_data_dir())
+        .chain(glib::system_data_dirs())
+        .map(|dir| dir.join(relative))
+        .find(|dir| dir.is_dir())
+}
+
 thread_local! {
     static SIDEBAR: RefCell<Option<gtk::ListBox>> = const { RefCell::new(None) };
 }
@@ -38,6 +80,14 @@ fn settings(id: &str) -> Option<gio::Settings> {
 }
 
 fn main() -> glib::ExitCode {
+    let arguments: Vec<String> = std::env::args().collect();
+    if let Some(name) = option_value(&arguments, "--set-theme") {
+        return set_theme(&name);
+    }
+    if let Some(dir) = option_value(&arguments, "--export-previews") {
+        return export_previews(Path::new(&dir));
+    }
+
     let app = gtk::Application::builder()
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::HANDLES_COMMAND_LINE)
@@ -55,18 +105,96 @@ fn main() -> glib::ExitCode {
     app.run()
 }
 
-/// The page asked for with --page NAME or --page=NAME.
-fn requested_page(arguments: &[String]) -> Option<String> {
+/// The value of an option given as `NAME VALUE` or `NAME=VALUE`.
+fn option_value(arguments: &[String], name: &str) -> Option<String> {
     let mut iter = arguments.iter().skip(1);
     while let Some(argument) = iter.next() {
-        if let Some(page) = argument.strip_prefix("--page=") {
-            return Some(page.to_string());
+        if let Some(value) = argument.strip_prefix(name).and_then(|rest| rest.strip_prefix('=')) {
+            return Some(value.to_string());
         }
-        if argument == "--page" {
+        if argument == name {
             return iter.next().cloned();
         }
     }
     None
+}
+
+/// The page asked for with --page NAME or --page=NAME.
+fn requested_page(arguments: &[String]) -> Option<String> {
+    option_value(arguments, "--page")
+}
+
+/// --set-theme: applies a theme without a window (GNOME Settings' Patrone
+/// page runs this), and waits for the setting to be written.
+fn set_theme(name: &str) -> glib::ExitCode {
+    if !theme::THEMES.iter().any(|&(value, _, _)| value == name) {
+        eprintln!("patrone-settings: no theme called {name}");
+        return glib::ExitCode::FAILURE;
+    }
+    let Some(desktop) = settings(DESKTOP_SCHEMA) else {
+        eprintln!("patrone-settings: the {DESKTOP_SCHEMA} settings schema is missing");
+        return glib::ExitCode::FAILURE;
+    };
+    theme::apply(name, &desktop);
+    gio::Settings::sync();
+    glib::ExitCode::SUCCESS
+}
+
+/// --export-previews: every choice's picture as a PNG in `dir`, at twice
+/// the size the cards draw them (GNOME Settings' Patrone page shows these).
+fn export_previews(dir: &Path) -> glib::ExitCode {
+    let mut pictures: Vec<(String, Draw)> = Vec::new();
+    for &(value, _, _, bar, icon) in &SIZES {
+        pictures.push((format!("size-{value}"), drawing(move |cr, w, h| preview::taskbar_size(cr, w, h, bar, icon))));
+    }
+    for &(value, _, _) in &LAYOUTS {
+        pictures.push((format!("layout-{value}"), drawing(move |cr, w, h| preview::taskbar_layout(cr, w, h, value))));
+    }
+    for (value, layout) in [("right", Layout::Right), ("left", Layout::Left)] {
+        pictures.push((format!("buttons-{value}"), drawing(move |cr, w, h| preview::buttons(cr, w, h, layout))));
+    }
+    for &(value, _, _) in &theme::THEMES {
+        pictures.push((format!("theme-{value}"), drawing(move |cr, w, h| preview::theme(cr, w, h, value))));
+    }
+
+    if let Err(error) = std::fs::create_dir_all(dir) {
+        eprintln!("patrone-settings: can't make {}: {error}", dir.display());
+        return glib::ExitCode::FAILURE;
+    }
+    for (name, draw) in pictures {
+        let path = dir.join(format!("{name}.png"));
+        if let Err(error) = save_picture(&draw, &path) {
+            eprintln!("patrone-settings: can't save {}: {error}", path.display());
+            return glib::ExitCode::FAILURE;
+        }
+    }
+    glib::ExitCode::SUCCESS
+}
+
+/// Draws a picture at twice the cards' size (188 by 118) and saves it as a
+/// PNG, through a GDK texture (cairo's own PNG writer isn't built in here).
+fn save_picture(draw: &Draw, path: &Path) -> Result<(), String> {
+    const SCALE: i32 = 2;
+    let (width, height) = (188 * SCALE, 118 * SCALE);
+    let mut surface = gtk::cairo::ImageSurface::create(gtk::cairo::Format::ARgb32, width, height)
+        .map_err(|error| error.to_string())?;
+    {
+        let cr = gtk::cairo::Context::new(&surface).map_err(|error| error.to_string())?;
+        cr.scale(f64::from(SCALE), f64::from(SCALE));
+        draw(&cr, 188.0, 118.0);
+    }
+    surface.flush();
+    let stride = surface.stride() as usize;
+    let data = surface.data().map_err(|error| error.to_string())?.to_vec();
+    // Cairo's ARGB32 is premultiplied BGRA in memory on little-endian machines
+    let texture = gdk::MemoryTexture::new(
+        width,
+        height,
+        gdk::MemoryFormat::B8g8r8a8Premultiplied,
+        &glib::Bytes::from_owned(data),
+        stride,
+    );
+    texture.save_to_png(path).map_err(|error| error.to_string())
 }
 
 fn load_style() {
@@ -216,8 +344,9 @@ fn drawing(draw: impl Fn(&gtk::cairo::Context, f64, f64) + 'static) -> Draw {
 /// A row of choices, one of them picked. `pick` runs when one is picked;
 /// `refresh`, given the setting's value, shows it picked.
 fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(&str) + 'static) -> Box<dyn Fn(&str)> {
-    // Three choices in a row; four in two rows of two
-    let per_line = if items.len() == 3 { 3 } else { 2 };
+    // Three choices in a row, and five in rows of three; four in two rows
+    // of two
+    let per_line = if items.len() == 3 || items.len() == 5 { 3 } else { 2 };
     let flow = gtk::FlowBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .column_spacing(12)
@@ -274,10 +403,76 @@ fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(
     })
 }
 
+/// Keeps the choices that `refresh` updates showing `key`'s value whenever
+/// it changes, from here or elsewhere.
+fn bind(settings: &gio::Settings, key: &'static str, refresh: Box<dyn Fn(&str)>) {
+    // (The handler holds the settings, so they last as long as the page)
+    settings.connect_changed(Some(key), move |settings, key| refresh(&settings.string(key)));
+}
+
+fn setter(settings: &gio::Settings, key: &'static str) -> impl Fn(&str) + 'static {
+    let target = settings.clone();
+    move |value| {
+        if target.string(key) != value {
+            let _ = target.set_string(key, value);
+        }
+    }
+}
+
+/// A row of icons to pick from, one of them picked.
+fn icon_choices(content: &gtk::Box, current: &str, pick: impl Fn(&str) + 'static) -> Box<dyn Fn(&str)> {
+    let flow = gtk::FlowBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .column_spacing(12)
+        .row_spacing(12)
+        .max_children_per_line(4)
+        .min_children_per_line(4)
+        .homogeneous(true)
+        .build();
+    let icons = taskbar_icons();
+    let pick = Rc::new(pick);
+    let mut buttons: Vec<(gtk::ToggleButton, &'static str)> = Vec::new();
+    for &(value, title, file) in &START_ICONS {
+        let card = gtk::Box::new(gtk::Orientation::Vertical, 8);
+        if let Some(dir) = &icons {
+            // Through a GIcon, so GTK draws the -symbolic ones in the text color
+            let icon = gio::FileIcon::new(&gio::File::for_path(dir.join(file)));
+            card.append(&gtk::Image::builder().gicon(&icon).pixel_size(40).build());
+        }
+        card.append(&gtk::Label::builder().label(title).css_classes(["patrone-choice-title"]).build());
+        let button = gtk::ToggleButton::builder()
+            .child(&card)
+            .css_classes(["patrone-choice", "patrone-icon-choice"])
+            .active(value == current)
+            .build();
+        if let Some((first, _)) = buttons.first() {
+            button.set_group(Some(first));
+        }
+        let pick = pick.clone();
+        button.connect_toggled(move |button| {
+            if button.is_active() {
+                pick(value);
+            }
+        });
+        flow.append(&button);
+        buttons.push((button, value));
+    }
+    content.append(&flow);
+
+    Box::new(move |value: &str| {
+        for (button, choice) in &buttons {
+            if *choice == value && !button.is_active() {
+                button.set_active(true);
+            }
+        }
+    })
+}
+
 fn taskbar_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Taskbar",
-        "The bar along the bottom of the screen, with Start, your apps and the clock.",
+        "The bar with Start, your apps and the clock: its size, where it and its \
+         buttons go, and the Start button's icon. Themes don't change these.",
     );
     let Some(taskbar) = settings(TASKBAR_SCHEMA) else {
         note(&content, "Patrone's taskbar isn't installed (the patrone-gnome-taskbar package).");
@@ -285,30 +480,34 @@ fn taskbar_page() -> gtk::ScrolledWindow {
     };
 
     section_title(&content, "Size");
-    let size = |value: &'static str, title: &'static str, detail: &'static str, bar: f64, icon: f64| Choice {
-        value,
-        title,
-        detail,
-        draw: drawing(move |cr, w, h| preview::taskbar_size(cr, w, h, bar, icon)),
-    };
-    let current = taskbar.string("size");
-    let target = taskbar.clone();
-    let refresh = choices(
-        &content,
-        vec![
-            size("small", "Small", "More room for windows", 12.0, 8.0),
-            size("medium", "Medium", "The standard size", 16.0, 11.0),
-            size("large", "Large", "Bigger buttons, easier to hit", 21.0, 14.0),
-        ],
-        &current,
-        move |value| {
-            if target.string("size") != value {
-                let _ = target.set_string("size", value);
-            }
-        },
-    );
-    // (The choices hold the settings, so they last as long as the page)
-    taskbar.connect_changed(Some("size"), move |settings, key| refresh(&settings.string(key)));
+    let items = SIZES
+        .iter()
+        .map(|&(value, title, detail, bar, icon)| Choice {
+            value,
+            title,
+            detail,
+            draw: drawing(move |cr, w, h| preview::taskbar_size(cr, w, h, bar, icon)),
+        })
+        .collect();
+    let refresh = choices(&content, items, &taskbar.string("size"), setter(&taskbar, "size"));
+    bind(&taskbar, "size", refresh);
+
+    section_title(&content, "Layout");
+    let items = LAYOUTS
+        .iter()
+        .map(|&(value, title, detail)| Choice {
+            value,
+            title,
+            detail,
+            draw: drawing(move |cr, w, h| preview::taskbar_layout(cr, w, h, value)),
+        })
+        .collect();
+    let refresh = choices(&content, items, &taskbar.string("layout"), setter(&taskbar, "layout"));
+    bind(&taskbar, "layout", refresh);
+
+    section_title(&content, "Start button");
+    let refresh = icon_choices(&content, &taskbar.string("start-icon"), setter(&taskbar, "start-icon"));
+    bind(&taskbar, "start-icon", refresh);
     scrolled
 }
 
@@ -362,9 +561,10 @@ fn buttons_page() -> gtk::ScrolledWindow {
 fn theme_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Theme",
-        "The look of the taskbar, title bars and window buttons. Which corner the \
-         window buttons go in is up to you, on the Title bar buttons page. Apps \
-         that are open pick up the change when they're next opened.",
+        "The look of the taskbar, title bars and window buttons. Where the \
+         taskbar's buttons go (the Taskbar page) and which corner the window \
+         buttons go in (Title bar buttons) are up to you: themes don't change \
+         them. Apps that are open pick up the change when they're next opened.",
     );
     let Some(desktop) = settings(DESKTOP_SCHEMA) else {
         note(&content, "Patrone Settings isn't installed properly: its settings schema is missing.");
@@ -411,5 +611,25 @@ mod tests {
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page", "theme"])).as_deref(), Some("theme"));
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page=buttons"])).as_deref(), Some("buttons"));
         assert_eq!(super::requested_page(&args(&["patrone-settings"])), None);
+    }
+
+    #[test]
+    fn reads_options_with_or_without_an_equals_sign() {
+        let args = |list: &[&str]| list.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        let set = args(&["patrone-settings", "--set-theme", "royal"]);
+        assert_eq!(super::option_value(&set, "--set-theme").as_deref(), Some("royal"));
+        let export = args(&["patrone-settings", "--export-previews=/tmp/p"]);
+        assert_eq!(super::option_value(&export, "--export-previews").as_deref(), Some("/tmp/p"));
+        // A longer option that starts the same way isn't it
+        let other = args(&["patrone-settings", "--set-themes=x"]);
+        assert_eq!(super::option_value(&other, "--set-theme"), None);
+    }
+
+    #[test]
+    fn every_theme_is_one_the_setting_takes() {
+        let desktop = include_str!("../data/org.patrone.desktop.gschema.xml");
+        for (value, _, _) in crate::theme::THEMES {
+            assert!(desktop.contains(&format!("<choice value=\"{value}\"/>")), "{value}");
+        }
     }
 }

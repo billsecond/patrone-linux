@@ -1,7 +1,8 @@
 //! Patrone's themes, and what choosing one changes: the theme setting the
 //! taskbar follows, and the theme's style for apps, imported into the
 //! account's GTK 3 and GTK 4 style sheets. Which side the title bar buttons
-//! go on is the account's own choice, which no theme changes.
+//! go on, and the taskbar's layout, are the account's own choices, which no
+//! theme changes.
 
 use std::fs;
 use std::io;
@@ -12,10 +13,11 @@ use gtk::glib;
 use gtk::prelude::*;
 
 /// Each theme: its setting value, name and description.
-pub const THEMES: [(&str, &str, &str); 4] = [
-    ("patrone", "Patrone", "Patrone's own look: a light or dark taskbar, its buttons on the left"),
-    ("modern", "Modern", "Clean and flat, with the taskbar's buttons centered"),
-    ("classic", "Classic", "A blue taskbar and title bars, with a green Start button"),
+pub const THEMES: [(&str, &str, &str); 5] = [
+    ("patrone", "Patrone", "Patrone's own look, light or dark"),
+    ("modern", "Modern", "Clean and flat, with rounder buttons and no lines"),
+    ("classic", "Classic", "Plain and square, with solid title bars"),
+    ("royal", "Royal", "Glossy royal blue, with a green Start button"),
     ("studio", "Studio", "Soft and translucent, with round colored window buttons"),
 ];
 

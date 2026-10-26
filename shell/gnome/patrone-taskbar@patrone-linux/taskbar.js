@@ -33,10 +33,26 @@ const SIZES = {
     large: {icon: 32, search: 26},
 };
 
-// Patrone Settings' themes (org.patrone.desktop theme); these center the
-// taskbar's buttons, the others keep them on the left
-const CENTERED_THEMES = ['modern', 'studio'];
+// Patrone Settings' themes (org.patrone.desktop theme), which only change
+// the look; where the buttons go is the taskbar's own layout setting
+const THEMES = ['patrone', 'modern', 'classic', 'royal', 'studio'];
+const LAYOUTS = ['left', 'center', 'split', 'top'];
+// The Start button's icons, in icons/. The -symbolic ones are drawn in the
+// taskbar's text color.
+const START_ICONS = {
+    patrone: 'patrone-start.svg',
+    mono: 'start-mono-symbolic.svg',
+    orb: 'start-orb.svg',
+    grid: 'start-grid-symbolic.svg',
+    menu: 'start-menu-symbolic.svg',
+    circle: 'start-circle-symbolic.svg',
+    spark: 'start-spark-symbolic.svg',
+    terminal: 'start-terminal-symbolic.svg',
+};
 const DESKTOP_SCHEMA = 'org.patrone.desktop';
+// The taskbar's settings: GNOME Settings' Patrone page, in Patrone's build
+// of GNOME Settings, or else Patrone Settings' own window
+const SETTINGS_PAGE = 'gnome-patrone-panel.desktop';
 const SETTINGS_APP = 'org.patrone.Settings.desktop';
 const TOOLTIP_DELAY = 500; // ms
 
@@ -82,11 +98,14 @@ class Tooltip {
         const [width] = actor.get_transformed_size();
         const [, labelWidth] = this.actor.get_preferred_width(-1);
         const [, labelHeight] = this.actor.get_preferred_height(-1);
+        const [, height] = actor.get_transformed_size();
         const monitor = Main.layoutManager.findMonitorForActor(actor);
         let labelX = Math.round(x + (width - labelWidth) / 2);
         if (monitor)
             labelX = Math.max(monitor.x + 4, Math.min(labelX, monitor.x + monitor.width - labelWidth - 4));
-        this.actor.set_position(labelX, Math.round(y - labelHeight - 6));
+        // Above the button, or below it when the taskbar is at the top
+        const below = monitor && y < monitor.y + monitor.height / 2;
+        this.actor.set_position(labelX, Math.round(below ? y + height + 6 : y - labelHeight - 6));
         this.actor.opacity = 0;
         this.actor.ease({opacity: 255, duration: 100, mode: Clutter.AnimationMode.EASE_OUT_QUAD});
     }
@@ -154,6 +173,7 @@ class TaskbarItem extends St.Button {
         layout.add_child(this._iconBin);
         layout.add_child(this._indicator);
         this.set_child(layout);
+        this.setIndicatorEdge(taskbar.atTop);
 
         const rightClick = new Clutter.ClickGesture({
             required_button: Clutter.BUTTON_SECONDARY,
@@ -220,6 +240,11 @@ class TaskbarItem extends St.Button {
 
     getDragActorSource() {
         return this._iconBin;
+    }
+
+    /** The running indicator runs along the bar's edge nearest the screen's. */
+    setIndicatorEdge(top) {
+        this._indicator.y_align = top ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
     }
 
     /** Shows whether the app is running, and whether it has the focus. */
@@ -364,25 +389,15 @@ export class Taskbar {
             reactive: true,
         });
 
-        // Themes that center the buttons show this, as wide as the space
-        // on the right
+        // The centered and split layouts show this, as wide as the space on
+        // the right: before Start to center everything, before the apps to
+        // center only them
         this._leftSpacer = new St.Widget({x_expand: true, reactive: true, visible: false});
         this.actor.add_child(this._leftSpacer);
 
-        this._startIcon = new St.Icon({
-            gicon: Gio.FileIcon.new(extension.dir.resolve_relative_path('icons/patrone-start.svg')),
-        });
-        // The classic theme's Start button also says "start"
-        this._startLabel = new St.Label({
-            text: 'start',
-            style_class: 'patrone-taskbar-start-label',
-            y_align: Clutter.ActorAlign.CENTER,
-            visible: false,
-        });
-        const startBox = new St.BoxLayout({style_class: 'patrone-taskbar-start-box'});
-        startBox.add_child(this._startIcon);
-        startBox.add_child(this._startLabel);
-        this._startButton = makeButton(this, 'patrone-taskbar-start', startBox, 'Start');
+        this._iconsDir = extension.dir.get_child('icons');
+        this._startIcon = new St.Icon();
+        this._startButton = makeButton(this, 'patrone-taskbar-start', this._startIcon, 'Start');
         this.actor.add_child(this._startButton);
 
         this._searchIcon = new St.Icon({icon_name: 'system-search-symbolic'});
@@ -423,7 +438,9 @@ export class Taskbar {
         this.settings.connectObject(
             'changed::pinned', () => this.queueRebuild(),
             'changed::terminal-app', () => this.queueRebuild(),
-            'changed::size', () => this._applySize(), this);
+            'changed::size', () => this._applySize(),
+            'changed::layout', () => this._applyLayout(),
+            'changed::start-icon', () => this._applyStartIcon(), this);
         // Patrone Settings' theme, when Patrone Settings is installed
         const desktopSchema = Gio.SettingsSchemaSource.get_default()?.lookup(DESKTOP_SCHEMA, true);
         this._desktopSettings = desktopSchema
@@ -444,7 +461,8 @@ export class Taskbar {
 
         this._applySize();
         this._applyTheme();
-        this._relayout();
+        this._applyStartIcon();
+        this._applyLayout();
         this._rebuild();
     }
 
@@ -482,10 +500,11 @@ export class Taskbar {
         this.actor.set_height(-1);
         const [, height] = this.actor.get_preferred_height(monitor.width);
         this.actor.set_size(monitor.width, height);
-        this.actor.set_position(monitor.x, monitor.y + monitor.height - height);
+        this.actor.set_position(monitor.x, this.atTop ? monitor.y : monitor.y + monitor.height - height);
     }
 
-    // Size (small, medium, large) and theme, from Patrone Settings
+    // Size (small, medium, large), layout, Start icon and theme, from
+    // Patrone Settings
 
     get iconSize() {
         return this._size.icon;
@@ -507,11 +526,43 @@ export class Taskbar {
 
     _applyTheme() {
         const theme = this._desktopSettings?.get_string('theme') ?? 'patrone';
-        for (const name of ['patrone', 'modern', 'classic', 'studio'])
+        for (const name of THEMES)
             this.actor.remove_style_class_name(`theme-${name}`);
-        this.actor.add_style_class_name(`theme-${theme}`);
-        this._leftSpacer.visible = CENTERED_THEMES.includes(theme);
-        this._startLabel.visible = theme === 'classic';
+        this.actor.add_style_class_name(`theme-${THEMES.includes(theme) ? theme : 'patrone'}`);
+    }
+
+    /** Whether the taskbar runs along the top of the screen. */
+    get atTop() {
+        return this._layout === 'top';
+    }
+
+    /** The side menus open from: above the taskbar, or below it at the top. */
+    get menuSide() {
+        return this.atTop ? St.Side.TOP : St.Side.BOTTOM;
+    }
+
+    _applyLayout() {
+        const name = this.settings.get_string('layout');
+        this._layout = LAYOUTS.includes(name) ? name : 'left';
+        for (const layout of LAYOUTS)
+            this.actor.remove_style_class_name(`layout-${layout}`);
+        this.actor.add_style_class_name(`layout-${this._layout}`);
+
+        const split = this._layout === 'split';
+        this._leftSpacer.visible = split || this._layout === 'center';
+        this.actor.set_child_below_sibling(this._leftSpacer, split ? this._appsBox : this._startButton);
+
+        for (const item of this._items.values())
+            item.setIndicatorEdge(this.atTop);
+        for (const menu of [this.startMenu.menu, this._backgroundMenu])
+            menu._boxPointer.updateArrowSide(this.menuSide);
+        this._updateTrayMenus();
+        this._relayout();
+    }
+
+    _applyStartIcon() {
+        const file = START_ICONS[this.settings.get_string('start-icon')] ?? START_ICONS.patrone;
+        this._startIcon.gicon = new Gio.FileIcon({file: this._iconsDir.get_child(file)});
     }
 
     // Drag and drop: taskbar buttons are dragged to reorder them; an app
@@ -728,12 +779,16 @@ export class Taskbar {
         }, 'utilities-system-monitor-symbolic');
         this._backgroundMenu.addAction('Show desktop', () => this.toggleDesktop(),
             'user-desktop-symbolic');
-        // Patrone Settings at its Taskbar page, when it's installed
+        // Settings' Patrone page, or Patrone Settings at its Taskbar page,
+        // when either is installed
         this._settingsSeparator = new PopupMenu.PopupSeparatorMenuItem();
         this._backgroundMenu.addMenuItem(this._settingsSeparator);
         this._settingsItem = this._backgroundMenu.addAction('Taskbar settings', () => {
-            this._appSystem.lookup_app(SETTINGS_APP)
-                ?.launch_action('taskbar', global.get_current_time(), -1);
+            const page = this._appSystem.lookup_app(SETTINGS_PAGE);
+            if (page)
+                page.activate();
+            else
+                this._appSystem.lookup_app(SETTINGS_APP)?.launch_action('taskbar', global.get_current_time(), -1);
         }, 'emblem-system-symbolic');
 
         const gesture = new Clutter.ClickGesture({
@@ -741,7 +796,8 @@ export class Taskbar {
             recognize_on_press: true,
         });
         gesture.connect('recognize', () => {
-            const installed = !!this._appSystem.lookup_app(SETTINGS_APP);
+            const installed = !!(this._appSystem.lookup_app(SETTINGS_PAGE) ||
+                this._appSystem.lookup_app(SETTINGS_APP));
             this._settingsItem.visible = installed;
             this._settingsSeparator.visible = installed;
             const coords = gesture.get_coords_abs();
@@ -837,15 +893,22 @@ export class Taskbar {
         this._movedBoxes = [];
     }
 
-    /** Menus of the tray's icons open upward, from the bottom of the screen. */
+    /**
+     * Menus of the tray's icons open upward from the bottom of the screen,
+     * or downward from the top, as in GNOME's top bar.
+     */
     _updateTrayMenus() {
         for (const indicator of Object.values(Main.panel.statusArea)) {
             const menu = indicator?.menu;
             const container = indicator?.container ?? indicator;
-            if (!menu?._boxPointer || menu._patroneTray || !this._tray.contains(container))
+            if (!menu?._boxPointer || !this._tray.contains(container))
                 continue;
-            menu._boxPointer.updateArrowSide(St.Side.BOTTOM);
-            menu.actor.add_style_class_name('patrone-tray-menu');
+            menu._boxPointer.updateArrowSide(this.menuSide);
+            // (The class moves the menus' gap to the side away from the bar)
+            if (this.atTop)
+                menu.actor.remove_style_class_name('patrone-tray-menu');
+            else
+                menu.actor.add_style_class_name('patrone-tray-menu');
             menu._patroneTray = true;
         }
     }
