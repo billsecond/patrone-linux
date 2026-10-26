@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The mail pin: a Patrone-blue envelope with a white flap. Bold shapes
+       only, so it stays clear at 16 pixels. -->
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4da0fc"/>
+      <stop offset="1" stop-color="#1d5cc4"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="24" width="108" height="80" rx="14" fill="url(#paper)"/>
+  <rect x="10.5" y="24.5" width="107" height="79" rx="13.5" fill="none" stroke="#ffffff" stroke-opacity="0.3"/>
+  <path d="M24 92 L52 66 M104 92 L76 66" fill="none" stroke="#ffffff" stroke-opacity="0.45"
+        stroke-width="6" stroke-linecap="round"/>
+  <path d="M22 38 L64 70 L106 38" fill="none" stroke="#ffffff" stroke-width="9"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

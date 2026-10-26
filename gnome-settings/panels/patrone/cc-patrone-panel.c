@@ -75,6 +75,16 @@ static const Choice start_icons[] = {
   { "terminal", N_("Prompt"), "start-terminal-symbolic.svg" },
 };
 
+static const Choice colors[] = {
+  { "wallpaper", N_("From the Wallpaper"), N_("The wallpaper's own color, dark or light with the style") },
+  { "theme", N_("Theme's Own"), N_("The theme's grey, whatever the wallpaper") },
+};
+
+static const Choice pin_icons[] = {
+  { "patrone", N_("Patrone's"), N_("A globe, a prompt, a folder and an envelope, whichever app does each job") },
+  { "app", N_("Each App's Own"), N_("The icon of the app each one opens") },
+};
+
 static const Choice sides[] = {
   { "right", N_("Top Right"), N_("Minimize, maximize, then close in the corner") },
   { "left", N_("Top Left"), N_("Close in the corner, then minimize, maximize") },
@@ -484,6 +494,23 @@ cc_patrone_panel_init (CcPatronePanel *self)
       group = add_group (page, _("Start Button"), NULL);
       add_choices (self, group, self->taskbar, "start-icon", read_string, write_string,
                    start_icons, G_N_ELEMENTS (start_icons), NULL, 4);
+
+      if (has_key (self->taskbar, "color"))
+        {
+          group = add_group (page, _("Taskbar Color"),
+                             _("In the Patrone, Modern and Studio themes. Classic and Royal "
+                               "keep their own colors."));
+          add_choices (self, group, self->taskbar, "color", read_string, write_string,
+                       colors, G_N_ELEMENTS (colors), "color", 2);
+        }
+
+      if (has_key (self->taskbar, "pin-icons"))
+        {
+          group = add_group (page, _("Pin Icons"),
+                             _("What the taskbar's web, terminal, files and mail pins show."));
+          add_choices (self, group, self->taskbar, "pin-icons", read_string, write_string,
+                       pin_icons, G_N_ELEMENTS (pin_icons), "pins", 2);
+        }
     }
   else
     {

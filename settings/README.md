@@ -22,7 +22,7 @@ of GNOME Settings isn't installed; the launcher's actions open each page.
 
 | Page | Choices | Setting |
 | --- | --- | --- |
-| Taskbar | Size: Small (32 pixels), Medium (42, the default), Large (52). Layout: Left (the default), Centered, Split (Start on the left, the apps in the middle), Top (along the top of the screen). Start button: the Patrone P, one color, orb, grid, menu, circle, spark, prompt | `org.gnome.shell.extensions.patrone-taskbar` `size`, `layout` and `start-icon` (the taskbar's own schema; the page says so if the taskbar isn't installed). The Start button's icons are the taskbar's, from its `icons` folder |
+| Taskbar | Size: Small (32 pixels), Medium (42, the default), Large (52). Layout: Left (the default), Centered, Split (Start on the left, the apps in the middle), Top (along the top of the screen). Start button: the Patrone P, one color, orb, grid, menu, circle, spark, prompt. Color: from the wallpaper (the default), or the theme's own. Pin icons: Patrone's (the default), or each app's own | `org.gnome.shell.extensions.patrone-taskbar` `size`, `layout`, `start-icon`, `color` and `pin-icons` (the taskbar's own schema; the page says so if the taskbar isn't installed, and leaves out Color and Pin icons for a taskbar older than 0.3.2). The Start button's icons are the taskbar's, from its `icons` folder |
 | Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps |
 | Theme | Patrone, Modern, Classic, Royal, Studio | `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps |
 
@@ -100,8 +100,8 @@ setting, and came back in 0.3.1 with title bars only).
 
 `--export-previews` draws every choice's picture at twice the cards' size
 (376 by 236) and saves it as a PNG (through a GDK texture: this build of
-cairo has no PNG writer): `size-*`, `layout-*`, `buttons-*`,
-`titlebuttons-*` and `theme-*`.
+cairo has no PNG writer): `size-*`, `layout-*`, `color-*`, `pins-*`,
+`buttons-*`, `titlebuttons-*` and `theme-*`.
 It needs no display. The package runs it at build time and installs them in
 `/usr/share/patrone/settings/previews`, where GNOME Settings' Patrone page
 finds them.

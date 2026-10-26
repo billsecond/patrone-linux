@@ -111,6 +111,32 @@ Waiting on the user:
   and GNOME Settings `...patrone2` (the style choice, and pictures that
   were nearly invisible in a window of ordinary height), **then sign out
   from inside the desktop and back in**.
+- **The user's next report (2026-10-26)**: the theme didn't change window
+  title bars (only Classic and Royal had any), the Dots buttons touched
+  File Manager's window edge, and the Start menu's default icons "look like
+  shit, make clear ones". Then: the taskbar's grey should match the
+  wallpaper; "the taskbar took about 30 seconds to update that I was
+  running a new app"; and "make our overridden icons look better, and allow
+  an option to use the default app icons". Fixed in this round: install
+  `patrone-settings` 0.3.1 (title bars for every theme, a gap at the
+  window's edge, the sign-in entry that writes the style sheets runs
+  again, a new icon, the Color and Pin icons choices),
+  `patrone-gnome-taskbar` 0.3.2 (its color from the wallpaper, Patrone's
+  own pin icons or the apps', apps showing the moment they're opened),
+  `patrone-terminal` 0.1.2 and `patrone-file-manager` 0.2.5 (new icons) and
+  GNOME Settings `...patrone3` (the two new choices), then sign out and back
+  in. Open apps keep their title bars until they're reopened: GTK reads
+  `gtk.css` once. File Manager's tab bar doesn't follow the theme's title
+  bar colors yet.
+- **The 30 seconds were the whole desktop stalling, not the taskbar**: the
+  user journal at that time has at-spi "Disabling unresponsive app" for
+  GNOME Shell's own process, then `JS ERROR: Gio.IOErrorEnum: Timeout was
+  reached` 25 seconds later (D-Bus's timeout) with no stack, then the RDP
+  connection dropping. The taskbar makes no blocking calls, and in the
+  throwaway shell apps reached it 20 ms after their windows. Which call
+  stalled the shell isn't known; the session runs Ubuntu's ding,
+  tiling-assistant, snapd-search-provider and web-search-provider
+  extensions. If it happens again, note the time and what was clicked.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.

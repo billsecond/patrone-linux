@@ -25,6 +25,7 @@ import {JumpList} from './jumpList.js';
 import {RecentFiles} from './recent.js';
 import {ROLES, appForRole, roleOf} from './roles.js';
 import {StartMenu} from './startMenu.js';
+import {WallpaperColor} from './tint.js';
 import {taskbarWindows} from './util.js';
 
 // Icon sizes for each taskbar size (the bar's own sizes are in common.css).
@@ -214,11 +215,12 @@ class TaskbarItem extends St.Button {
         return this.entry ?? this.app?.get_id() ?? null;
     }
 
-    // A role slot shows the app it opens, like any pin, and the role's own
-    // icon only while no app does its job.
+    // A role slot shows Patrone's icon for its job, or with the pin-icons
+    // setting at "app", the icon of the app it opens (Patrone's still while
+    // no app does the job)
     _makeIcon(size) {
-        if (!this.app)
-            return new St.Icon({icon_name: ROLES[this.role].icon, icon_size: size});
+        if (this.role && (!this.app || this.taskbar.pinIcons === 'patrone'))
+            return new St.Icon({gicon: this.taskbar.roleIcon(this.role), icon_size: size});
         return this.app.create_icon_texture(size);
     }
 
@@ -260,6 +262,27 @@ class TaskbarItem extends St.Button {
             this.add_style_class_name('focused');
         else
             this.remove_style_class_name('focused');
+        this._setStarting(this.app?.state === Shell.AppState.STARTING && windows.length === 0);
+    }
+
+    // Opened but showing no window yet: the icon pulses, as on Windows, so a
+    // slow app (a snap or a Flatpak starting for the first time) shows at
+    // once that it was clicked
+    _setStarting(starting) {
+        if (starting === !!this._starting)
+            return;
+        this._starting = starting;
+        this._iconBin.remove_all_transitions();
+        this._iconBin.opacity = 255;
+        if (starting) {
+            this._iconBin.ease({
+                opacity: 110,
+                duration: 700,
+                mode: Clutter.AnimationMode.EASE_IN_OUT_QUAD,
+                repeatCount: -1,
+                autoReverse: true,
+            });
+        }
     }
 
     vfunc_clicked(button) {
@@ -380,6 +403,8 @@ export class Taskbar {
         this._tracker = Shell.WindowTracker.get_default();
         this._items = new Map();
         this._runningOrder = [];
+        // GNOME's running apps leave out those still starting
+        this._startingApps = new Set();
         this._rebuildLater = 0;
 
         this.actor = new St.BoxLayout({
@@ -439,19 +464,25 @@ export class Taskbar {
             'changed::terminal-app', () => this.queueRebuild(),
             'changed::size', () => this._applySize(),
             'changed::layout', () => this._applyLayout(),
-            'changed::start-icon', () => this._applyStartIcon(), this);
+            'changed::start-icon', () => this._applyStartIcon(),
+            'changed::color', () => this._applyColor(),
+            'changed::pin-icons', () => this._refreshIcons(), this);
         // Patrone Settings' theme, when Patrone Settings is installed
         const desktopSchema = Gio.SettingsSchemaSource.get_default()?.lookup(DESKTOP_SCHEMA, true);
         this._desktopSettings = desktopSchema
             ? new Gio.Settings({settings_schema: desktopSchema})
             : null;
         this._desktopSettings?.connectObject('changed::theme', () => this._applyTheme(), this);
+        this._wallpaperColor = new WallpaperColor(() => this._applyColor());
+        // The light or dark style, which GNOME Shell also picks the style
+        // sheet by
+        St.Settings.get().connectObject('notify::color-scheme', () => this._applyColor(), this);
         this._dragMonitor = {dragMotion: event => this._onDragMotion(event)};
         DND.addDragMonitor(this._dragMonitor);
         this._watchForUpdates(extension);
         this._appSystem.connectObject(
             'installed-changed', () => this.queueRebuild(),
-            'app-state-changed', () => this.queueRebuild(), this);
+            'app-state-changed', (_, app) => this._onAppStateChanged(app), this);
         this._tracker.connectObject(
             'tracked-windows-changed', () => this.queueRebuild(),
             'notify::focus-app', () => this._syncItems(), this);
@@ -485,6 +516,8 @@ export class Taskbar {
         }
         this.settings.disconnectObject(this);
         this._desktopSettings?.disconnectObject(this);
+        this._wallpaperColor.destroy();
+        St.Settings.get().disconnectObject(this);
         this._appSystem.disconnectObject(this);
         this._tracker.disconnectObject(this);
         global.display.disconnectObject(this);
@@ -526,16 +559,42 @@ export class Taskbar {
 
         this._startIcon.icon_size = this._size.icon;
         this._searchIcon.icon_size = this._size.search;
+        this._refreshIcons();
+        this._relayout();
+    }
+
+    _refreshIcons() {
         for (const item of this._items.values())
             item.setApp(item.app, true);
-        this._relayout();
+    }
+
+    /** "patrone" or "app": what the web, terminal, files and mail pins show. */
+    get pinIcons() {
+        return this.settings.get_string('pin-icons');
+    }
+
+    /** Patrone's icon for a role slot's job, in icons/. */
+    roleIcon(role) {
+        return new Gio.FileIcon({file: this._iconsDir.get_child(`pin-${role}.svg`)});
     }
 
     _applyTheme() {
         const theme = this._desktopSettings?.get_string('theme') ?? 'patrone';
+        this._theme = THEMES.includes(theme) ? theme : 'patrone';
         for (const name of THEMES)
             this.actor.remove_style_class_name(`theme-${name}`);
-        this.actor.add_style_class_name(`theme-${THEMES.includes(theme) ? theme : 'patrone'}`);
+        this.actor.add_style_class_name(`theme-${this._theme}`);
+        this._applyColor();
+    }
+
+    // The bar's color: the wallpaper's, in the themes that take it, over
+    // the style sheet's grey
+    _applyColor() {
+        if (!this._theme)
+            return; // the theme isn't applied yet
+        this.actor.style = this.settings.get_string('color') === 'wallpaper'
+            ? this._wallpaperColor.styleFor(this._theme, Main.getStyleVariant())
+            : null;
     }
 
     /** Whether the taskbar runs along the top of the screen. */
@@ -709,9 +768,11 @@ export class Taskbar {
             wanted.push({key: entry, entry, app});
         }
 
-        // Apps that are only running, in the order they started
-        const running = this._appSystem.get_running()
-            .filter(app => !shown.has(app) && taskbarWindows(app).length > 0);
+        // Apps that are only running, in the order they started, and apps
+        // still starting, which show before their windows do
+        const running = [...new Set([...this._appSystem.get_running(), ...this._startingApps])]
+            .filter(app => !shown.has(app) &&
+                (taskbarWindows(app).length > 0 || app.state === Shell.AppState.STARTING));
         const runningIds = running.map(app => app.get_id());
         this._runningOrder = this._runningOrder.filter(id => runningIds.includes(id));
         for (const id of runningIds) {
@@ -745,6 +806,14 @@ export class Taskbar {
     _syncItems() {
         for (const item of this._items.values())
             item.sync();
+    }
+
+    _onAppStateChanged(app) {
+        if (app.state === Shell.AppState.STARTING)
+            this._startingApps.add(app);
+        else
+            this._startingApps.delete(app);
+        this.queueRebuild();
     }
 
     // Show desktop: minimizes every window on the workspace, and a second

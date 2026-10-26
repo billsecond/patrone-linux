@@ -2,9 +2,17 @@ patrone-gnome-taskbar (0.3.2) resolute; urgency=medium
 
   * No more "already disposed" warnings when signing out: a rebuild queued
     as GNOME Shell exited touched the bar's destroyed buttons.
-  * The browser, terminal, files and mail pins show the icon of the app
-    they open, as the Start menu does, instead of the icon theme's
-    generic one; the generic icon is only for a job no app does.
+  * The bar takes its color from the wallpaper in the Patrone, Modern and
+    Studio themes: navy with Patrone's wallpaper, pale blue with the light
+    one, graphite with Graphite. The new "color" setting at "theme" keeps
+    the theme's grey; Classic and Royal keep their own colors.
+  * The browser, terminal, files and mail pins have Patrone's own icons
+    (a globe, a prompt, a folder, an envelope) in place of the icon
+    theme's generic ones, and the new "pin-icons" setting shows the icon
+    of the app each one opens instead.
+  * An app shows on the taskbar the moment it's opened, its icon pulsing
+    until its first window appears, so a slow one still shows it was
+    clicked; before, it showed only once it had a window.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:20:00 -0500
 

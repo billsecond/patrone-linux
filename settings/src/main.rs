@@ -63,6 +63,19 @@ const START_ICONS: [(&str, &str, &str); 8] = [
     ("terminal", "Prompt", "start-terminal-symbolic.svg"),
 ];
 
+/// Where the taskbar's color comes from (its color setting).
+const COLORS: [(&str, &str, &str); 2] = [
+    ("wallpaper", "From the wallpaper", "The wallpaper's own color, dark or light with the style"),
+    ("theme", "Theme's own", "The theme's grey, whatever the wallpaper"),
+];
+
+/// What the taskbar's web, terminal, files and mail pins show (its
+/// pin-icons setting).
+const PIN_ICONS: [(&str, &str, &str); 2] = [
+    ("patrone", "Patrone's", "A globe, a prompt, a folder and an envelope, whichever app does each job"),
+    ("app", "Each app's own", "The icon of the app each one opens"),
+];
+
 /// The taskbar's icons folder: in the account's extensions, or the system's.
 fn taskbar_icons() -> Option<PathBuf> {
     let relative = Path::new("gnome-shell/extensions/patrone-taskbar@patrone-linux/icons");
@@ -187,6 +200,12 @@ fn export_previews(dir: &Path) -> glib::ExitCode {
     }
     for &(value, _, _) in &LAYOUTS {
         pictures.push((format!("layout-{value}"), drawing(move |cr, w, h| preview::taskbar_layout(cr, w, h, value))));
+    }
+    for &(value, _, _) in &COLORS {
+        pictures.push((format!("color-{value}"), drawing(move |cr, w, h| preview::taskbar_color(cr, w, h, value))));
+    }
+    for &(value, _, _) in &PIN_ICONS {
+        pictures.push((format!("pins-{value}"), drawing(move |cr, w, h| preview::pin_icons(cr, w, h, value))));
     }
     for (value, layout) in [("right", Layout::Right), ("left", Layout::Left)] {
         pictures.push((format!("buttons-{value}"), drawing(move |cr, w, h| preview::buttons(cr, w, h, layout))));
@@ -513,7 +532,8 @@ fn taskbar_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Taskbar",
         "The bar with Start, your apps and the clock: its size, where it and its \
-         buttons go, and the Start button's icon. Themes don't change these.",
+         buttons go, the Start button's icon, its color and its pins' icons. \
+         Themes don't change these.",
     );
     let Some(taskbar) = settings(TASKBAR_SCHEMA) else {
         note(&content, "Patrone's taskbar isn't installed (the patrone-gnome-taskbar package).");
@@ -549,6 +569,38 @@ fn taskbar_page() -> gtk::ScrolledWindow {
     section_title(&content, "Start button");
     let refresh = icon_choices(&content, &taskbar.string("start-icon"), setter(&taskbar, "start-icon"));
     bind(&taskbar, "start-icon", refresh);
+
+    // An older taskbar's settings have neither (reading a missing key would
+    // end the app)
+    let has_key = |key: &str| taskbar.settings_schema().is_some_and(|schema| schema.has_key(key));
+    if has_key("color") {
+        section_title(&content, "Color");
+        let items = COLORS
+            .iter()
+            .map(|&(value, title, detail)| Choice {
+                value,
+                title,
+                detail,
+                draw: drawing(move |cr, w, h| preview::taskbar_color(cr, w, h, value)),
+            })
+            .collect();
+        let refresh = choices(&content, items, &taskbar.string("color"), setter(&taskbar, "color"));
+        bind(&taskbar, "color", refresh);
+    }
+    if has_key("pin-icons") {
+        section_title(&content, "Pin icons");
+        let items = PIN_ICONS
+            .iter()
+            .map(|&(value, title, detail)| Choice {
+                value,
+                title,
+                detail,
+                draw: drawing(move |cr, w, h| preview::pin_icons(cr, w, h, value)),
+            })
+            .collect();
+        let refresh = choices(&content, items, &taskbar.string("pin-icons"), setter(&taskbar, "pin-icons"));
+        bind(&taskbar, "pin-icons", refresh);
+    }
     scrolled
 }
 

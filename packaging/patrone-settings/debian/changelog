@@ -13,6 +13,9 @@ patrone-settings (0.3.1) resolute; urgency=medium
     X-GNOME-Autostart-Phase, which it had.
   * A clearer icon: a white gear on a Patrone Blue tile, bold enough to
     read at 16 pixels in the Start menu and on the taskbar.
+  * The Taskbar page has the taskbar's two new choices, Color (from the
+    wallpaper, or the theme's own) and Pin icons (Patrone's, or each
+    app's own), where the installed taskbar has them.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:20:00 -0500
 

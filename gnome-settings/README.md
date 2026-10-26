@@ -6,8 +6,8 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 (2026-10-26):
 
 - **A Patrone page** in the sidebar, after Appearance and Ubuntu's Desktop
-  page: the taskbar's size, layout and Start button icon, the title bar
-  buttons' corner and style, and the theme. The same choices as Patrone
+  page: the taskbar's size, layout, Start button icon, color and pin
+  icons, the title bar buttons' corner and style, and the theme. The same choices as Patrone
   Settings' window (`settings/`), with its pictures.
 - **No Telemetry page** under Privacy & Security. Its switches send error
   reports and system information to Canonical, which Patrone doesn't do
@@ -19,7 +19,7 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 | `panels/patrone/meson.build`, `gnome-patrone-panel.desktop.in`, `org.patrone.Settings-symbolic.svg` | Its build, its sidebar entry (and search keywords), and its icon, the one-color P |
 | `patches/patrone-register-patrone-panel.patch` | Adds the page to the panel list, the loader and the sidebar order |
 | `patches/patrone-hide-telemetry.patch` | Hides the Telemetry row |
-| `build.sh` | Fetches Ubuntu's source, adds the page (as a patch of its own) and the patches, versions it Ubuntu's version plus `patrone1`, and builds |
+| `build.sh` | Fetches Ubuntu's source, adds the page (as a patch of its own) and the patches, versions it Ubuntu's version plus `patrone` and the revision, and builds |
 
 The page hides itself where neither Patrone's taskbar nor Patrone Settings
 is installed, and each part says so if its settings are missing.
@@ -43,7 +43,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone2_amd64.deb ./out/gnome-control-center-data_*patrone2_all.deb
+sudo apt install ./out/gnome-control-center_*patrone3_amd64.deb ./out/gnome-control-center-data_*patrone3_all.deb
 ```
 
 ## How it was checked
@@ -61,7 +61,7 @@ elsewhere moved the page's pick. Privacy & Security had no Telemetry row.
 ## Keeping up with Ubuntu
 
 The version is Ubuntu's with `patrone` and a revision added
-(`1:50.3-0ubuntu0.2patrone2`), which apt prefers to the same Ubuntu
+(`1:50.3-0ubuntu0.2patrone3`), which apt prefers to the same Ubuntu
 version. The revision is at the top of `build.sh`: one more with each
 change to the page or the patches, so a new build installs as an upgrade. When Ubuntu updates Settings
 (a newer `0ubuntuN`), apt installs Ubuntu's in its place and the Patrone

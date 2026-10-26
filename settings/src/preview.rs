@@ -1,11 +1,11 @@
 //! The little pictures on Patrone Settings' choices: the taskbar at each
-//! size and in each layout, where each arrangement puts the title bar
-//! buttons, and each theme's taskbar and title bar. Drawn with cairo, at
-//! whatever size they're given.
+//! size, in each layout, in each color and with each kind of pin icon,
+//! where each arrangement puts the title bar buttons, and each theme's
+//! taskbar and title bar. Drawn with cairo, at whatever size they're given.
 
 use std::f64::consts::PI;
 
-use gtk::cairo::{Context, FontSlant, FontWeight, LinearGradient};
+use gtk::cairo::{Context, FontSlant, FontWeight, LineCap, LineJoin, LinearGradient};
 
 /// Which corner the title bar buttons go in.
 #[derive(Clone, Copy)]
@@ -322,6 +322,156 @@ pub fn taskbar_layout(cr: &Context, w: f64, h: f64, layout: &str) {
         }
     }
     clock(cr, w, iy, icon);
+}
+
+/// Where the taskbar's color comes from: the navy of Patrone's wallpaper,
+/// or the theme's grey, which matches nothing in it.
+pub fn taskbar_color(cr: &Context, w: f64, h: f64, source: &str) {
+    desktop(cr, w, h);
+    fill_rounded(cr, w * 0.16, h * 0.1, w * 0.6, h * 0.5, 4.0, 0xffffff, 0.92);
+    let bar = (h * 0.2).max(16.0);
+    let ty = h - bar;
+    let (rgb, line, line_alpha) = if source == "wallpaper" { (0x0f1c2e, 0x618fd1, 0.6) } else { (0x26262b, 0xffffff, 0.1) };
+    color(cr, rgb, 0.97);
+    cr.rectangle(0.0, ty, w, bar);
+    let _ = cr.fill();
+    color(cr, line, line_alpha);
+    cr.rectangle(0.0, ty, w, 1.0);
+    let _ = cr.fill();
+
+    let icon = bar * 0.56;
+    let iy = ty + (bar - icon) / 2.0;
+    start_mark(cr, 5.0, iy, icon);
+    app_icons(cr, 5.0 + icon * 1.55, iy, icon, 4, None);
+    clock(cr, w, iy, icon);
+}
+
+/// The taskbar's web, terminal, files and mail pins, close up: Patrone's
+/// icons, or (for "app") the apps' own, each in its own style.
+pub fn pin_icons(cr: &Context, w: f64, h: f64, icons: &str) {
+    desktop(cr, w, h);
+    let bar = h * 0.42;
+    let ty = h - bar;
+    color(cr, 0xf3f4f7, 0.96);
+    cr.rectangle(0.0, ty, w, bar);
+    let _ = cr.fill();
+
+    let size = bar * 0.58;
+    let gap = size * 0.5;
+    let mut x = (w - size * 4.0 - gap * 3.0) / 2.0;
+    let y = ty + (bar - size) / 2.0;
+    cr.set_line_cap(LineCap::Round);
+    cr.set_line_join(LineJoin::Round);
+    for job in ["web", "terminal", "files", "mail"] {
+        if icons == "app" {
+            app_pin(cr, job, x, y, size);
+        } else {
+            patrone_pin(cr, job, x, y, size);
+        }
+        x += size + gap;
+    }
+}
+
+/// Patrone's icon for a pin's job, as the taskbar's icons folder draws it.
+fn patrone_pin(cr: &Context, job: &str, x: f64, y: f64, s: f64) {
+    let (cx, cy) = (x + s / 2.0, y + s / 2.0);
+    match job {
+        "web" => {
+            cr.arc(cx, cy, s * 0.46, 0.0, 2.0 * PI);
+            color(cr, 0x3d8eff, 1.0);
+            let _ = cr.fill();
+            color(cr, 0xffffff, 1.0);
+            cr.set_line_width(s * 0.07);
+            let _ = cr.save();
+            cr.translate(cx, cy);
+            cr.scale(0.45, 1.0);
+            cr.arc(0.0, 0.0, s * 0.42, 0.0, 2.0 * PI);
+            let _ = cr.restore();
+            cr.move_to(cx, cy - s * 0.42);
+            cr.line_to(cx, cy + s * 0.42);
+            cr.move_to(cx - s * 0.42, cy);
+            cr.line_to(cx + s * 0.42, cy);
+            let _ = cr.stroke();
+        }
+        "terminal" => {
+            fill_rounded(cr, x, y + s * 0.06, s, s * 0.88, s * 0.16, 0x56647e, 1.0);
+            fill_rounded(cr, x + s * 0.08, y + s * 0.2, s * 0.84, s * 0.66, s * 0.08, 0x141b27, 1.0);
+            color(cr, 0xffffff, 1.0);
+            cr.set_line_width(s * 0.08);
+            cr.move_to(x + s * 0.22, y + s * 0.36);
+            cr.line_to(x + s * 0.38, y + s * 0.5);
+            cr.line_to(x + s * 0.22, y + s * 0.64);
+            let _ = cr.stroke();
+            fill_rounded(cr, x + s * 0.46, y + s * 0.6, s * 0.28, s * 0.08, s * 0.04, 0x4da0fc, 1.0);
+        }
+        "files" => {
+            fill_rounded(cr, x, y + s * 0.12, s * 0.45, s * 0.3, s * 0.06, 0xdd961a, 1.0);
+            fill_rounded(cr, x, y + s * 0.2, s, s * 0.7, s * 0.07, 0xdd961a, 1.0);
+            fill_rounded(cr, x + s * 0.08, y + s * 0.26, s * 0.84, s * 0.2, s * 0.02, 0xffffff, 0.95);
+            let _ = cr.save();
+            rounded(cr, x, y + s * 0.34, s, s * 0.56, s * 0.07);
+            cr.clip();
+            color(cr, 0xfec94a, 1.0);
+            let _ = cr.paint();
+            color(cr, 0x2a74e0, 1.0);
+            cr.rectangle(x, y + s * 0.72, s, s * 0.2);
+            let _ = cr.fill();
+            let _ = cr.restore();
+        }
+        _ => {
+            fill_rounded(cr, x, y + s * 0.16, s, s * 0.68, s * 0.12, 0x3d8eff, 1.0);
+            color(cr, 0xffffff, 1.0);
+            cr.set_line_width(s * 0.08);
+            cr.move_to(x + s * 0.16, y + s * 0.3);
+            cr.line_to(cx, y + s * 0.54);
+            cr.line_to(x + s * 0.84, y + s * 0.3);
+            let _ = cr.stroke();
+        }
+    }
+}
+
+/// Stand-ins for other apps' icons, each in a style of its own.
+fn app_pin(cr: &Context, job: &str, x: f64, y: f64, s: f64) {
+    let (cx, cy) = (x + s / 2.0, y + s / 2.0);
+    match job {
+        "web" => {
+            cr.arc(cx, cy, s * 0.46, 0.0, 2.0 * PI);
+            color(cr, 0xff7139, 1.0);
+            let _ = cr.fill();
+            cr.arc(cx + s * 0.06, cy - s * 0.04, s * 0.26, 0.0, 2.0 * PI);
+            color(cr, 0x8f4cf0, 1.0);
+            let _ = cr.fill();
+        }
+        "terminal" => {
+            fill_rounded(cr, x + s * 0.04, y + s * 0.04, s * 0.92, s * 0.92, s * 0.2, 0x1e1e1e, 1.0);
+            color(cr, 0xd0d0d0, 1.0);
+            cr.set_line_width(s * 0.07);
+            cr.move_to(x + s * 0.24, y + s * 0.34);
+            cr.line_to(x + s * 0.4, y + s * 0.48);
+            cr.line_to(x + s * 0.24, y + s * 0.62);
+            cr.move_to(x + s * 0.48, y + s * 0.66);
+            cr.line_to(x + s * 0.72, y + s * 0.66);
+            let _ = cr.stroke();
+        }
+        "files" => {
+            fill_rounded(cr, x, y + s * 0.14, s * 0.42, s * 0.26, s * 0.06, 0x3f6fb5, 1.0);
+            fill_rounded(cr, x, y + s * 0.22, s, s * 0.66, s * 0.08, 0x3f6fb5, 1.0);
+            fill_rounded(cr, x, y + s * 0.34, s, s * 0.54, s * 0.08, 0x6d9be0, 1.0);
+        }
+        _ => {
+            fill_rounded(cr, x, y + s * 0.18, s, s * 0.64, s * 0.06, 0xffffff, 1.0);
+            rounded(cr, x + 0.5, y + s * 0.18 + 0.5, s - 1.0, s * 0.64 - 1.0, s * 0.06);
+            color(cr, 0xa9afba, 1.0);
+            cr.set_line_width(1.0);
+            let _ = cr.stroke();
+            color(cr, 0xd9443a, 1.0);
+            cr.set_line_width(s * 0.07);
+            cr.move_to(x + s * 0.12, y + s * 0.28);
+            cr.line_to(cx, y + s * 0.52);
+            cr.line_to(x + s * 0.88, y + s * 0.28);
+            let _ = cr.stroke();
+        }
+    }
 }
 
 /// A theme: a window's title bar and the taskbar, as the theme draws them.

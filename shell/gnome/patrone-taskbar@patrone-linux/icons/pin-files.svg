@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The files pin, Patrone File Manager's own icon: a yellow folder with a
+       sheet of paper in it and a band of Patrone Blue along its front. -->
+  <defs>
+    <linearGradient id="back" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eda524"/>
+      <stop offset="1" stop-color="#cf870a"/>
+    </linearGradient>
+    <linearGradient id="front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffdb6e"/>
+      <stop offset="1" stop-color="#fdbb2d"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4da0fc"/>
+      <stop offset="1" stop-color="#1d5cc4"/>
+    </linearGradient>
+  </defs>
+  <path d="M8 30a8 8 0 0 1 8-8h30a8 8 0 0 1 6 2.7l6 6.3h54a8 8 0 0 1 8 8v66a8 8 0 0 1-8 8H16a8 8 0 0 1-8-8z" fill="url(#back)"/>
+  <rect x="18" y="36" width="92" height="22" rx="3" fill="#ffffff" opacity="0.95"/>
+  <path d="M8 52a8 8 0 0 1 8-8h96a8 8 0 0 1 8 8v53a8 8 0 0 1-8 8H16a8 8 0 0 1-8-8z" fill="url(#front)"/>
+  <path d="M8 52a8 8 0 0 1 8-8h96a8 8 0 0 1 8 8" fill="none" stroke="#fff1c2" stroke-width="2"/>
+  <path d="M8 92h112v13a8 8 0 0 1-8 8H16a8 8 0 0 1-8-8z" fill="url(#band)"/>
+</svg>

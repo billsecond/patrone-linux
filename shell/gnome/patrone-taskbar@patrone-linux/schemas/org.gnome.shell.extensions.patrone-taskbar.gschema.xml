@@ -63,6 +63,33 @@
         it.
       </description>
     </key>
+    <key name="color" type="s">
+      <choices>
+        <choice value="wallpaper"/>
+        <choice value="theme"/>
+      </choices>
+      <default>'wallpaper'</default>
+      <summary>Where the taskbar's color comes from</summary>
+      <description>
+        "wallpaper": the wallpaper's own hue, dark or light with the style,
+        in the Patrone, Modern and Studio themes. "theme": the theme's own
+        grey. Classic and Royal always keep their own colors. Patrone
+        Settings sets it.
+      </description>
+    </key>
+    <key name="pin-icons" type="s">
+      <choices>
+        <choice value="patrone"/>
+        <choice value="app"/>
+      </choices>
+      <default>'patrone'</default>
+      <summary>The icons of the web, terminal, files and mail pins</summary>
+      <description>
+        "patrone": Patrone's own icons for each job (a globe, a prompt, a
+        folder, an envelope), whichever app does it. "app": the icon of the
+        app each one opens. Patrone Settings sets it.
+      </description>
+    </key>
     <key name="terminal-app" type="s">
       <default>''</default>
       <summary>The app the terminal slot opens</summary>

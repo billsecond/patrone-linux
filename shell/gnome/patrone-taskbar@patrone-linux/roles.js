@@ -8,13 +8,11 @@ import Shell from 'gi://Shell';
 export const ROLES = {
     web: {
         name: 'Web browser',
-        icon: 'web-browser',
         category: 'WebBrowser',
         types: ['x-scheme-handler/https', 'x-scheme-handler/http', 'text/html'],
     },
     terminal: {
         name: 'Terminal',
-        icon: 'utilities-terminal',
         category: 'TerminalEmulator',
         preferred: [
             'org.patrone.Terminal.desktop',
@@ -24,13 +22,11 @@ export const ROLES = {
     },
     files: {
         name: 'File manager',
-        icon: 'system-file-manager',
         category: 'FileManager',
         types: ['inode/directory'],
     },
     mail: {
         name: 'Mail',
-        icon: 'internet-mail',
         category: 'Email',
         types: ['x-scheme-handler/mailto'],
     },

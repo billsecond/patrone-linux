@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The web pin: a Patrone-blue globe with white lines of latitude and
+       longitude. Bold shapes only, so it stays clear at 16 pixels. -->
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4da0fc"/>
+      <stop offset="1" stop-color="#1d5cc4"/>
+    </linearGradient>
+    <clipPath id="globe">
+      <circle cx="64" cy="64" r="52"/>
+    </clipPath>
+  </defs>
+  <circle cx="64" cy="64" r="52" fill="url(#sea)"/>
+  <g clip-path="url(#globe)" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round">
+    <ellipse cx="64" cy="64" rx="22" ry="50"/>
+    <path d="M64 10v108M10 64h108"/>
+    <path d="M18 36q46 14 92 0M18 92q46 -14 92 0"/>
+  </g>
+  <circle cx="64" cy="64" r="51.5" fill="none" stroke="#ffffff" stroke-opacity="0.3"/>
+</svg>

@@ -24,24 +24,41 @@ didn't show.)
 One compact bar along the bottom of the primary monitor, in place of GNOME's
 top bar, which it hides: medium (42 pixels) unless Patrone Settings makes it
 small (32) or large (52), its icons to match. Its look follows Patrone
-Settings' theme (see `settings/README.md`): Patrone's own, Modern (the
-buttons centered), Classic (a deep blue bar with a green Start button that
-says "start") or Studio (translucent, the buttons on a rounded shelf). From
-the left:
+Settings' theme (see `settings/README.md`): Patrone's own, Modern (flat),
+Classic (plain and square), Royal (glossy royal blue, a green Start button)
+or Studio (translucent, the buttons on a rounded shelf).
+
+In Patrone, Modern and Studio the bar takes its **color from the
+wallpaper** (`tint.js`): the picture's average hue, at the theme's own
+lightness and see-through, with its saturation capped so a vivid picture
+still gives a calm bar. Patrone's navy wallpaper gives a navy bar, Graphite
+a graphite one, the light wallpaper a pale blue one. The picture is the one
+the desktop shows in the current style (`picture-uri-dark` in the dark
+style), decoded at 64 by 36 in a thread when it changes; a plain color
+background gives its color, and a slideshow the theme's grey. The `color`
+setting at `theme` keeps the theme's grey. Classic and Royal keep their own
+colors. (The user, 2026-10-26: the grey bar didn't match the wallpaper.)
+
+From the left:
 
 - **Start** (the Patrone "P", or the Super key) opens the Start menu with
   the search box focused, so typing searches right away (below).
 - **Search** opens the same menu in search mode: the most used apps and
   recent files, then results as you type.
 - **Pinned items**: apps, and **slots** for a job: web browser, terminal,
-  file manager, mail (the defaults, in that order). A slot shows a generic
-  icon, opens whichever app is the default for its job, and that app's
-  windows show under it, not as a separate button. For the browser, files
-  and mail that's the system default (Settings → Apps → Default Apps); for
-  the terminal, Patrone Terminal unless changed in the slot's menu.
-- **Running apps** that aren't pinned, in the order they started. A short
-  line under an app means it's running, a longer blue one that it's in
-  front.
+  file manager, mail (the defaults, in that order). A slot shows Patrone's
+  icon for its job (a globe, a prompt, a folder, an envelope, in
+  `icons/pin-*.svg`), or with the `pin-icons` setting at `app`, the icon of
+  the app it opens. It opens whichever app is the default for its job, and
+  that app's windows show under it, not as a separate button. For the
+  browser, files and mail that's the system default (Settings → Apps →
+  Default Apps); for the terminal, Patrone Terminal unless changed in the
+  slot's menu.
+- **Running apps** that aren't pinned, in the order they started. An app
+  shows the moment it's opened, its icon pulsing until its first window
+  appears, as on Windows, so a slow one (a snap or a Flatpak starting for
+  the first time) still shows it was clicked. A short line under an app
+  means it's running, a longer blue one that it's in front.
 - On the right, the **tray**: the top bar's own status icons and menus
   (network, sound, power, input sources, other apps' indicators), then the
   clock, Windows-style (time over date), with the calendar and notifications
@@ -106,6 +123,10 @@ the taskbar follows when it's installed):
 | --- | --- | --- |
 | `pinned` | `['role:web', 'role:terminal', 'role:files', 'role:mail']` | Pinned items in order: desktop file IDs, or `role:` slots |
 | `size` | `'medium'` | `small`, `medium` or `large` |
+| `layout` | `'left'` | `left`, `center`, `split` or `top` |
+| `start-icon` | `'patrone'` | The Start button's icon, from `icons/` |
+| `color` | `'wallpaper'` | `wallpaper` (the wallpaper's hue, in Patrone, Modern and Studio) or `theme` (the theme's grey) |
+| `pin-icons` | `'patrone'` | `patrone` (Patrone's icons for the web, terminal, files and mail slots) or `app` (the icons of the apps they open) |
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
 | `web-search-url` | `'https://www.google.com/search?q=%s'` | Where web searches go |
 
@@ -134,7 +155,11 @@ the taskbar follows when it's installed):
   providers.
 - Pinned slots open the default app for their job, which then shows under the
   slot instead of with its own icon; slots can be unpinned, and running apps
-  pinned.
+  pinned. The slots' icons are Patrone's own, with a setting for the apps'
+  own instead (the user: "make our overridden icons look better, and allow
+  an option to use the default app icons").
+- The bar's color comes from the wallpaper, with a setting for the theme's
+  own.
 - Right-click gives Windows 11-style jump lists (recent files, tasks) along
   with the configuration (change the app, unpin).
 - Enter with no match searches the web.
@@ -152,9 +177,10 @@ the taskbar follows when it's installed):
 | `startMenu.js` | The Start menu and its search |
 | `jumpList.js` | The buttons' right-click menus |
 | `roles.js` | The slots, and which app each one opens |
+| `tint.js` | The bar's color from the wallpaper |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
 | `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
-| `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, the `-symbolic` ones drawn in the bar's text color |
+| `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, the `-symbolic` ones drawn in the bar's text color. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
 | `tests/headless.sh` | The throwaway GNOME Shell (below) |
 
 - **Dragging** uses GNOME Shell's own drag and drop (`ui/dnd.js`): the
