@@ -327,6 +327,30 @@ Findings:
     /delete:TERMSRV/DevDistro-PatroneLinux.local`) and connect. Logs:
     `journalctl -u patrone-remote-desktop` and `journalctl -t
     patrone-remote-desktop-auth` (the user is in `adm`, so readable over SSH).
+- **First real try (2026-10-26):** the proxy never started. FreeRDP's INI
+  parser rejects a file whose comments start with `#` ("failed to parse ini
+  file"); fixed in 0.1.1 with `;`, and `make check` now runs the real
+  `freerdp-proxy` on the shipped file (it fails on the old one). With 3389
+  free, the user's own Desktop Sharing daemon (set up earlier with
+  `setup-remote-desktop.sh sharing`) took it once they logged in on the
+  console, so their `mstsc` reached Desktop Sharing: the same session,
+  mirrored on both screens.
+- **Session model: the user requires Windows behavior** (2026-10-26): one
+  session per account; an RDP sign-in takes over the account's existing
+  session, and the machine's own screen stops showing it while it's
+  remote; never a second session. GNOME can't: its Remote Login kills the
+  local session, and Desktop Sharing mirrors it (GNOME's own issue
+  gnome-remote-desktop#92 asks for takeover). Proposed: sessions always run
+  on the machine's seat (never headless). `gdm-new-session USER` without
+  `--headless` asks GDM (`LocalDisplayFactory.CreateUserDisplay`) for a
+  normal session; the proxy joins it through the account's own GNOME Remote
+  Desktop in Desktop Sharing's `extend` mode (a virtual monitor the client's
+  size); the machine's screen switches to the login screen; signing in
+  there switches back to the same session (GDM's usual behavior) and ends
+  the RDP connection; disconnecting locks the session. **The deciding
+  unknown:** whether a GNOME session keeps drawing to its virtual monitor
+  and taking input over RDP while another VT (the login screen) is on the
+  machine's screen. Test that first, with the user.
 - The earlier per-user attempt (a `headless` mode in
   `setup-remote-desktop.sh` with the Linux password as GNOME's credentials,
   and `rdp-no-lock.sh`) was removed: it stored the password, which the user
