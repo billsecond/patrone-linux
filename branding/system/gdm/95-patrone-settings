@@ -1,7 +1,8 @@
 # The login screen's settings, from patrone-branding. GDM merges this folder
 # into its settings each time it starts, after Ubuntu's 90-debian-settings.
 [org/gnome/login-screen]
-logo='/usr/share/pixmaps/patrone-logo-text-dark.png'
+# Shown at the file's own size, so it has its own small file
+logo='/usr/share/pixmaps/patrone-logo-login.png'
 
 # Blue focus rings and buttons in place of Ubuntu's orange, and a neutral
 # typeface in place of Ubuntu Sans

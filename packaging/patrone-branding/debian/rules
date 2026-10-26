@@ -39,7 +39,8 @@ override_dh_auto_install:
 	install -Dm644 system/schemas/90_patrone.gschema.override \
 	    $(pkg)/usr/share/glib-2.0/schemas/90_patrone.gschema.override
 	install -Dm644 -t $(pkg)/usr/share/pixmaps \
-	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png
+	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png \
+	    logos/patrone-logo-login.png
 	install -Dm644 wallpapers/patrone-back-01-8k.png \
 	    $(pkg)/usr/share/backgrounds/patrone/patrone-back-01-8k.png
 	install -Dm644 fastfetch/config.jsonc $(pkg)/etc/xdg/fastfetch/config.jsonc

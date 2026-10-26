@@ -10,6 +10,8 @@ Writes:
   patrone-logo-stacked.png    the whole primary logo as in the concept (mark,
                               wordmark, ruled LINUX), light text
   patrone-splash.png          the stacked logo at boot-splash size
+  patrone-logo-login.png      the light-text lockup at login-screen size; GNOME
+                              shows the login logo at the file's own size
 
 The concept is drawn on near-black, so a pixel's brightest channel tells how
 much of it is logo: that becomes its opacity, and the color is recovered by
@@ -34,6 +36,8 @@ LOW, HIGH = 12, 72
 DARK_TEXT = (0x1A, 0x1A, 0x1A)
 PADDING = 24
 SPLASH_WIDTH = 380
+# About the size of Ubuntu's login logo (187×72)
+LOGIN_WIDTH = 240
 
 
 def cut_out(image: np.ndarray, box: tuple[int, int, int, int]) -> Image.Image:
@@ -90,12 +94,14 @@ def main() -> None:
     lockup = side_by_side(mark, text)
     stacked = cut_out(image, WHOLE_LOGO)
     splash_height = round(stacked.height * SPLASH_WIDTH / stacked.width)
+    login_height = round(lockup.height * LOGIN_WIDTH / lockup.width)
     outputs = {
         "patrone-logo.png": padded(mark, square=True),
         "patrone-logo-text-dark.png": padded(lockup),
         "patrone-logo-text.png": padded(with_dark_text(lockup)),
         "patrone-logo-stacked.png": padded(stacked),
         "patrone-splash.png": stacked.resize((SPLASH_WIDTH, splash_height), Image.LANCZOS),
+        "patrone-logo-login.png": lockup.resize((LOGIN_WIDTH, login_height), Image.LANCZOS),
     }
     for name, logo in outputs.items():
         logo.save(out / name, optimize=True)
