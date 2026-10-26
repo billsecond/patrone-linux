@@ -43,6 +43,24 @@ helper_refuses "unusual account name" '../etc\0secret\0192.0.2.7\0'
 helper_refuses "account name too long" "$(printf 'a%.0s' $(seq 40))\\0secret\\0192.0.2.7\\0"
 helper_refuses "unknown account" 'nosuch-patrone-user\0secret\0192.0.2.7\0'
 
+# The proxy must be able to read the shipped config (it once wasn't: FreeRDP
+# rejects "#" comments). It stops at the certificates, which don't exist here.
+config_parses() {
+    local log
+    log=$(timeout 5 freerdp-proxy "$here/../data/proxy.ini" 2>&1 || true)
+    if [[ $log == *"failed to parse"* ]]; then
+        echo "FAIL proxy: reads data/proxy.ini"
+        failures=$((failures + 1))
+    else
+        echo "ok   proxy: reads data/proxy.ini"
+    fi
+}
+if command -v freerdp-proxy > /dev/null; then
+    config_parses
+else
+    echo "skip proxy: freerdp-proxy isn't installed"
+fi
+
 if ((failures)); then
     echo "$failures test run(s) failed"
     exit 1
