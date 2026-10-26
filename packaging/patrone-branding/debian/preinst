@@ -1,8 +1,8 @@
 #!/bin/sh
 # Patrone's versions of these files replace Ubuntu's, which are kept beside
-# them as *.ubuntu and come back when this package is removed (postrm). The
-# last three get no replacement: Ubuntu's help links, news and Ubuntu Pro
-# advertising in the login message.
+# them as *.ubuntu and come back when this package is removed (postrm). Three
+# get no replacement: Ubuntu's help links, news and Ubuntu Pro advertising in
+# the login message. Settings' "Ubuntu Desktop" page is named "Desktop".
 set -e
 
 diverted="
@@ -13,6 +13,7 @@ diverted="
 /etc/update-motd.d/10-help-text
 /etc/update-motd.d/50-motd-news
 /etc/update-motd.d/91-contract-ua-esm-status
+/usr/share/applications/gnome-ubuntu-panel.desktop
 "
 
 if [ "$1" = install ] || [ "$1" = upgrade ]; then

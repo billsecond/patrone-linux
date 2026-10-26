@@ -14,10 +14,24 @@ disabled-extensions=['ubuntu-dock@ubuntu.com']
 accent-color='blue'
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
+font-name='Inter 11'
+document-font-name='Inter 11'
 
 [org.gnome.desktop.interface:ubuntu]
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
+font-name='Inter 11'
+document-font-name='Inter 11'
+
+# Inter, Patrone's typeface (close to Segoe UI, and the font of Patrone's own
+# apps), for the desktop, apps and window titles. Web pages and apps that ask
+# for sans-serif or Segoe UI get it through 05-patrone-fonts.conf. Monospace
+# stays Ubuntu Sans Mono.
+[org.gnome.desktop.wm.preferences]
+titlebar-font='Inter Semi-Bold 11'
+
+[org.gnome.desktop.wm.preferences:ubuntu]
+titlebar-font='Inter Semi-Bold 11'
 
 [org.gnome.desktop.background]
 picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'

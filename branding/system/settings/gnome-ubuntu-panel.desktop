@@ -1,0 +1,16 @@
+[Desktop Entry]
+# Patrone's name for Ubuntu's page in Settings: GNOME Settings takes each
+# page's name, description, icon and search words from its desktop file.
+# The page itself (desktop icons, the dock, tiling) is Ubuntu's.
+Name=Desktop
+Comment=Desktop icons and window tiling
+Exec=gnome-control-center ubuntu
+Icon=user-desktop
+Terminal=false
+Type=Application
+NoDisplay=true
+StartupNotify=true
+Categories=GNOME;GTK;Settings;DesktopSettings;X-GNOME-Settings-Panel;X-GNOME-PersonalSettings;X-GNOME-PersonalizationSettings;
+OnlyShowIn=ubuntu;
+Keywords=Desktop;Icons;Tiling;Dock;
+X-Ubuntu-Gettext-Domain=gnome-control-center-2.0

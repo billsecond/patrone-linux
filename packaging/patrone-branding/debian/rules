@@ -34,10 +34,21 @@ override_dh_auto_install:
 	install -Dm644 system/plymouth/patrone-text.plymouth \
 	    $(pkg)/usr/share/plymouth/themes/patrone-text/patrone-text.plymouth
 	install -Dm644 system/gdm/95-patrone-settings $(pkg)/usr/share/gdm/dconf/95-patrone-settings
+	install -Dm644 system/settings/gnome-ubuntu-panel.desktop \
+	    $(pkg)/usr/share/applications/gnome-ubuntu-panel.desktop
 	install -Dm644 build/gnome-shell-theme.gresource \
 	    $(pkg)/usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
 	install -Dm644 system/schemas/90_patrone.gschema.override \
 	    $(pkg)/usr/share/glib-2.0/schemas/90_patrone.gschema.override
+	# Inter for sans-serif and Segoe UI: for the system (conf.d) and for
+	# snaps such as Chromium, which read /etc/fonts/snap-override instead
+	install -Dm644 system/fontconfig/05-patrone-fonts.conf \
+	    $(pkg)/usr/share/fontconfig/conf.avail/05-patrone-fonts.conf
+	install -d $(pkg)/etc/fonts/conf.d
+	ln -s ../../../usr/share/fontconfig/conf.avail/05-patrone-fonts.conf \
+	    $(pkg)/etc/fonts/conf.d/05-patrone-fonts.conf
+	install -Dm644 system/fontconfig/05-patrone-fonts.conf \
+	    $(pkg)/etc/fonts/snap-override/05-patrone-fonts.conf
 	install -Dm644 -t $(pkg)/usr/share/pixmaps \
 	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png \
 	    logos/patrone-logo-login.png

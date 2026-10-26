@@ -1,3 +1,15 @@
+patrone-branding (0.1.3) resolute; urgency=medium
+
+  * Inter as the typeface everywhere, in place of Ubuntu Sans: the
+    desktop, apps, window titles and the login screen (GNOME's font
+    settings), and through fontconfig (05-patrone-fonts.conf) for
+    sans-serif and for web pages and documents that ask for Segoe UI, in
+    Chromium and other snaps too. Inter is close to Segoe UI, and is the
+    font Patrone's own apps use. Depends on fonts-inter.
+  * Name Settings' "Ubuntu Desktop" page "Desktop".
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:00:00 -0500
+
 patrone-branding (0.1.2) resolute; urgency=medium
 
   * Give the login screen a logo at its own size (240×44): GNOME shows the
