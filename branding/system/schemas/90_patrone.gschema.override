@@ -7,9 +7,17 @@
 [org.gnome.shell]
 disabled-extensions=['ubuntu-dock@ubuntu.com']
 
-# Patrone blue in place of Ubuntu's orange accent
+# Patrone blue in place of Ubuntu's orange: the accent for GNOME Shell and
+# GTK 4 apps, and Yaru's blue theme and icons for GTK 3 apps (Chromium's
+# dialogs among them), which don't follow the accent
 [org.gnome.desktop.interface]
 accent-color='blue'
+gtk-theme='Yaru-blue'
+icon-theme='Yaru-blue'
+
+[org.gnome.desktop.interface:ubuntu]
+gtk-theme='Yaru-blue'
+icon-theme='Yaru-blue'
 
 [org.gnome.desktop.background]
 picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'

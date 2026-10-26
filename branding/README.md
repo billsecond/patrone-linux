@@ -62,7 +62,7 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | Login screen | Patrone logo; a navy-to-black background; blue accents; Noto Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
 | Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
 | Welcome message at login (SSH, console) | `system/motd/00-header`: "Welcome to Patrone Linux 0.1 (...)" | Replaces Ubuntu's header; Ubuntu's help links, news and Ubuntu Pro ads are moved aside |
-| Desktop | The Patrone wallpaper, blue accent color, Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
+| Desktop | The Patrone wallpaper, blue accent color, Yaru's blue GTK theme and icons (GTK 3 apps don't follow the accent color), Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
 
 The login-screen theme is built from the Yaru that's installed when the
 package is built, so rebuild the package when Yaru's GNOME Shell theme

@@ -6,7 +6,7 @@ Which apps Patrone uses by default, packaged as `patrone-default-apps`
 | File | Installed as | What it does |
 | --- | --- | --- |
 | `mimeapps.list` | `/etc/xdg/mimeapps.list` | Chromium opens web pages and links |
-| `91_patrone-default-apps.gschema.override` | `/usr/share/glib-2.0/schemas/` | Chromium in place of Firefox in the favorites, plus Patrone Terminal |
+| `91_patrone-default-apps.gschema.override` | `/usr/share/glib-2.0/schemas/` | The favorites: Chromium first, in place of Firefox, then Patrone Terminal |
 
 The package depends on Ubuntu's `chromium-browser`, a small package that
 installs Canonical's Chromium snap, which snapd keeps up to date (see
