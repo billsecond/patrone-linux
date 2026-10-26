@@ -46,6 +46,26 @@
   border-left: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+/* The studio theme: frosted, with the buttons on a lighter shelf */
+.patrone-taskbar.theme-studio {
+  background-color: rgba(246, 246, 248, 0.72);
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.patrone-taskbar.theme-studio .patrone-taskbar-apps {
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.patrone-taskbar.theme-studio .patrone-taskbar-indicator,
+.patrone-taskbar.theme-studio .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  background-color: #3a3a3c;
+}
+
+.patrone-taskbar.theme-studio .patrone-taskbar-item.focused {
+  background-color: transparent;
+}
+
 .patrone-taskbar-tooltip {
   background-color: #fbfbfc;
   border: 1px solid rgba(0, 0, 0, 0.12);
@@ -133,4 +153,77 @@
 .patrone-account-avatar {
   background-color: #288bfa;
   color: #ffffff;
+}
+
+/* The same in light and dark. Here, not in common.css, because St lets
+ * these sheets' own rules beat those of common.css, which they import,
+ * however specific: these have to come after the rules they replace. */
+
+/* Screen recording and sharing: a red or orange pill with white icons */
+.patrone-taskbar-tray .panel-button.screen-recording-indicator,
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator {
+  color: #ffffff;
+}
+
+.patrone-taskbar-tray .panel-button.screen-recording-indicator {
+  background-color: #c01c28;
+}
+
+.patrone-taskbar-tray .panel-button.screen-recording-indicator:hover,
+.patrone-taskbar-tray .panel-button.screen-recording-indicator:focus {
+  background-color: #a51822;
+}
+
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator {
+  background-color: #c64600;
+}
+
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator:hover,
+.patrone-taskbar-tray .panel-button.screen-sharing-indicator:focus {
+  background-color: #a83b00;
+}
+
+/* The classic theme: a deep blue bar with white symbols */
+.patrone-taskbar.theme-classic {
+  background-color: #3b7ff0;
+  background-gradient-direction: vertical;
+  background-gradient-end: #1d4fc4;
+  border-top: 1px solid #6aa4ff;
+  color: #ffffff;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-button,
+.patrone-taskbar.theme-classic .patrone-taskbar-tray .panel-button {
+  color: #ffffff;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-button:hover,
+.patrone-taskbar.theme-classic .patrone-taskbar-button:focus,
+.patrone-taskbar.theme-classic .patrone-taskbar-tray .panel-button:hover,
+.patrone-taskbar.theme-classic .patrone-taskbar-tray .panel-button:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-item.focused,
+.patrone-taskbar.theme-classic .patrone-taskbar-item.focused:hover {
+  background-color: rgba(0, 20, 90, 0.35);
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-indicator,
+.patrone-taskbar.theme-classic .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-show-desktop {
+  border-left: 1px solid #0a3f9e;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-start,
+.patrone-taskbar.theme-classic .patrone-taskbar-start:focus {
+  background-color: #45a845;
+  color: #ffffff;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-start:hover {
+  background-color: #52bb52;
 }

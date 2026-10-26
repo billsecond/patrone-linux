@@ -8,6 +8,7 @@
 #   ./packaging/build.sh patrone-remote-desktop
 #   ./packaging/build.sh patrone-file-manager -d
 #   ./packaging/build.sh patrone-gnome-taskbar
+#   ./packaging/build.sh patrone-settings -d
 #
 # The packages land in out/. For a Rust package the crates are vendored into
 # the source tree first, so the build itself runs offline, as it will in a
@@ -27,6 +28,7 @@ case $package in
     patrone-remote-desktop) source_dir=remote-desktop ;;
     patrone-file-manager) source_dir=file-manager ;;
     patrone-gnome-taskbar) source_dir=shell/gnome ;;
+    patrone-settings) source_dir=settings ;;
     *)
         echo "Unknown package: $package" >&2
         exit 1

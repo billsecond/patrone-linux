@@ -15,6 +15,7 @@ import St from 'gi://St';
 
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as CtrlAltTab from 'resource:///org/gnome/shell/ui/ctrlAltTab.js';
+import * as DND from 'resource:///org/gnome/shell/ui/dnd.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
@@ -24,9 +25,19 @@ import {ROLES, appForRole, roleOf} from './roles.js';
 import {StartMenu} from './startMenu.js';
 import {taskbarWindows} from './util.js';
 
-// A third larger than the first 20 and 16 pixels, with the bar (common.css)
-const ICON_SIZE = 26;
-const SEARCH_ICON_SIZE = 21;
+// Icon sizes for each taskbar size (the bar's own sizes are in common.css).
+// Medium is a third larger than the taskbar first was, which is small.
+const SIZES = {
+    small: {icon: 20, search: 16},
+    medium: {icon: 26, search: 21},
+    large: {icon: 32, search: 26},
+};
+
+// Patrone Settings' themes (org.patrone.desktop theme); these center the
+// taskbar's buttons, the others keep them on the left
+const CENTERED_THEMES = ['modern', 'studio'];
+const DESKTOP_SCHEMA = 'org.patrone.desktop';
+const SETTINGS_APP = 'org.patrone.Settings.desktop';
 const TOOLTIP_DELAY = 500; // ms
 
 const TASK_MANAGERS = [
@@ -120,6 +131,8 @@ class TaskbarItem extends St.Button {
         this.entry = entry;
         this.role = roleOf(entry);
         this.app = undefined;
+        // GNOME's drag and drop finds a dragged actor's delegate here
+        this._delegate = this;
 
         // A bin layout only follows a child's alignment where the child
         // expands. Expanding sideways would stretch the button along the
@@ -152,6 +165,14 @@ class TaskbarItem extends St.Button {
         this.connect('notify::hover', () => taskbar.tooltip.update(this));
         this.connect('destroy', () => this._menu?.destroy());
 
+        // Drag to reorder (or, for an app that's only running, to pin it
+        // where it's dropped)
+        this._draggable = DND.makeDraggable(this, {timeoutThreshold: 200});
+        this._draggable.connect('drag-begin', () => taskbar.dragBegin(this));
+        // Back in its place before the dragged icon flies back to it
+        this._draggable.connect('drag-cancelled', () => taskbar.dragEnd(this));
+        this._draggable.connect('drag-end', () => taskbar.dragEnd(this));
+
         this.setApp(app);
     }
 
@@ -161,24 +182,44 @@ class TaskbarItem extends St.Button {
         return ROLES[this.role]?.name ?? '';
     }
 
-    setApp(app) {
-        if (this.app === app)
+    /** Whether it can go on the taskbar's pinned list, where it's dropped. */
+    get pinnable() {
+        return !!this.entry || (!!this.app && !this.app.is_window_backed());
+    }
+
+    /** Its pinned entry, or the one it gets if it's pinned. */
+    get pinEntry() {
+        return this.entry ?? this.app?.get_id() ?? null;
+    }
+
+    _makeIcon(size) {
+        if (this.role) {
+            return new St.Icon({
+                icon_name: ROLES[this.role].icon,
+                icon_size: size,
+                fallback_gicon: this.app?.app_info?.get_icon() ?? null,
+            });
+        }
+        return this.app.create_icon_texture(size);
+    }
+
+    setApp(app, force = false) {
+        if (this.app === app && !force)
             return;
         this.app = app;
 
-        let icon;
-        if (this.role) {
-            icon = new St.Icon({
-                icon_name: ROLES[this.role].icon,
-                icon_size: ICON_SIZE,
-                fallback_gicon: app?.app_info?.get_icon() ?? null,
-            });
-        } else {
-            icon = app.create_icon_texture(ICON_SIZE);
-        }
         this._iconBin.child?.destroy();
-        this._iconBin.child = icon;
+        this._iconBin.child = this._makeIcon(this.taskbar.iconSize);
         this.accessible_name = this.tooltipText;
+    }
+
+    // What GNOME's drag and drop shows under the pointer, and where from
+    getDragActor() {
+        return this._makeIcon(this.taskbar.iconSize);
+    }
+
+    getDragActorSource() {
+        return this._iconBin;
     }
 
     /** Shows whether the app is running, and whether it has the focus. */
@@ -323,18 +364,37 @@ export class Taskbar {
             reactive: true,
         });
 
-        const startIcon = new St.Icon({
+        // Themes that center the buttons show this, as wide as the space
+        // on the right
+        this._leftSpacer = new St.Widget({x_expand: true, reactive: true, visible: false});
+        this.actor.add_child(this._leftSpacer);
+
+        this._startIcon = new St.Icon({
             gicon: Gio.FileIcon.new(extension.dir.resolve_relative_path('icons/patrone-start.svg')),
-            icon_size: ICON_SIZE,
         });
-        this._startButton = makeButton(this, 'patrone-taskbar-start', startIcon, 'Start');
+        // The classic theme's Start button also says "start"
+        this._startLabel = new St.Label({
+            text: 'start',
+            style_class: 'patrone-taskbar-start-label',
+            y_align: Clutter.ActorAlign.CENTER,
+            visible: false,
+        });
+        const startBox = new St.BoxLayout({style_class: 'patrone-taskbar-start-box'});
+        startBox.add_child(this._startIcon);
+        startBox.add_child(this._startLabel);
+        this._startButton = makeButton(this, 'patrone-taskbar-start', startBox, 'Start');
         this.actor.add_child(this._startButton);
 
-        this._searchButton = makeButton(this, 'patrone-taskbar-search',
-            new St.Icon({icon_name: 'system-search-symbolic', icon_size: SEARCH_ICON_SIZE}), 'Search');
+        this._searchIcon = new St.Icon({icon_name: 'system-search-symbolic'});
+        this._searchButton = makeButton(this, 'patrone-taskbar-search', this._searchIcon, 'Search');
         this.actor.add_child(this._searchButton);
 
         this._appsBox = new St.BoxLayout({style_class: 'patrone-taskbar-apps'});
+        // Where taskbar buttons, and apps from the Start menu, are dropped
+        this._appsBox._delegate = {
+            handleDragOver: (source, actor, x) => this._handleDragOver(source, x),
+            acceptDrop: source => this._acceptDrop(source),
+        };
         this.actor.add_child(this._appsBox);
 
         this._spacer = new St.Widget({x_expand: true, reactive: true});
@@ -362,7 +422,16 @@ export class Taskbar {
 
         this.settings.connectObject(
             'changed::pinned', () => this.queueRebuild(),
-            'changed::terminal-app', () => this.queueRebuild(), this);
+            'changed::terminal-app', () => this.queueRebuild(),
+            'changed::size', () => this._applySize(), this);
+        // Patrone Settings' theme, when Patrone Settings is installed
+        const desktopSchema = Gio.SettingsSchemaSource.get_default()?.lookup(DESKTOP_SCHEMA, true);
+        this._desktopSettings = desktopSchema
+            ? new Gio.Settings({settings_schema: desktopSchema})
+            : null;
+        this._desktopSettings?.connectObject('changed::theme', () => this._applyTheme(), this);
+        this._dragMonitor = {dragMotion: event => this._onDragMotion(event)};
+        DND.addDragMonitor(this._dragMonitor);
         this._appSystem.connectObject(
             'installed-changed', () => this.queueRebuild(),
             'app-state-changed', () => this.queueRebuild(), this);
@@ -373,11 +442,14 @@ export class Taskbar {
         Main.layoutManager.connectObject('monitors-changed', () => this._relayout(), this);
         this.actor.connect('style-changed', () => this._relayout());
 
+        this._applySize();
+        this._applyTheme();
         this._relayout();
         this._rebuild();
     }
 
     destroy() {
+        DND.removeDragMonitor(this._dragMonitor);
         this._returnOverlayKey();
         this._returnTray();
         this._showTopBar();
@@ -387,6 +459,7 @@ export class Taskbar {
             this._rebuildLater = 0;
         }
         this.settings.disconnectObject(this);
+        this._desktopSettings?.disconnectObject(this);
         this._appSystem.disconnectObject(this);
         this._tracker.disconnectObject(this);
         global.display.disconnectObject(this);
@@ -404,9 +477,131 @@ export class Taskbar {
         const monitor = Main.layoutManager.primaryMonitor;
         if (!monitor)
             return;
+        // A height set before is what Clutter would report: drop it, so the
+        // style sheet's (which the size and theme change) counts
+        this.actor.set_height(-1);
         const [, height] = this.actor.get_preferred_height(monitor.width);
         this.actor.set_size(monitor.width, height);
         this.actor.set_position(monitor.x, monitor.y + monitor.height - height);
+    }
+
+    // Size (small, medium, large) and theme, from Patrone Settings
+
+    get iconSize() {
+        return this._size.icon;
+    }
+
+    _applySize() {
+        const name = this.settings.get_string('size');
+        this._size = SIZES[name] ?? SIZES.medium;
+        for (const size of Object.keys(SIZES))
+            this.actor.remove_style_class_name(`size-${size}`);
+        this.actor.add_style_class_name(`size-${SIZES[name] ? name : 'medium'}`);
+
+        this._startIcon.icon_size = this._size.icon;
+        this._searchIcon.icon_size = this._size.search;
+        for (const item of this._items.values())
+            item.setApp(item.app, true);
+        this._relayout();
+    }
+
+    _applyTheme() {
+        const theme = this._desktopSettings?.get_string('theme') ?? 'patrone';
+        for (const name of ['patrone', 'modern', 'classic', 'studio'])
+            this.actor.remove_style_class_name(`theme-${name}`);
+        this.actor.add_style_class_name(`theme-${theme}`);
+        this._leftSpacer.visible = CENTERED_THEMES.includes(theme);
+        this._startLabel.visible = theme === 'classic';
+    }
+
+    // Drag and drop: taskbar buttons are dragged to reorder them; an app
+    // that's only running, or one from the Start menu, is pinned where it's
+    // dropped
+
+    /** The entry a drag source would have in the pinned list, if any. */
+    _dragEntry(source) {
+        if (source instanceof TaskbarItem)
+            return source.pinnable ? source.pinEntry : null;
+        const app = source?.app;
+        return app && !app.is_window_backed() ? app.get_id() : null;
+    }
+
+    dragBegin(item) {
+        this.tooltip.hide();
+        this._dragSource = item;
+        // The button makes way: a gap shows where it will go
+        this._placeholderWidth = item.width;
+        item.hide();
+    }
+
+    dragEnd(item) {
+        this._removePlaceholder();
+        this._dragSource = null;
+        this._placeholderWidth = null;
+        item.show();
+    }
+
+    /** The pinned buttons that stay where they are during this drag. */
+    _staticPinnedItems() {
+        return this._appsBox.get_children().filter(child =>
+            child instanceof TaskbarItem && child.entry &&
+            child !== this._dragSource && child.visible);
+    }
+
+    _handleDragOver(source, x) {
+        if (!this._dragEntry(source))
+            return DND.DragMotionResult.NO_DROP;
+
+        // Among the pinned buttons: before the first one whose middle is
+        // right of the pointer
+        const pinned = this._staticPinnedItems();
+        let index = pinned.findIndex(item => {
+            const box = item.get_allocation_box();
+            return x < (box.x1 + box.x2) / 2;
+        });
+        if (index < 0)
+            index = pinned.length;
+
+        if (!this._placeholder) {
+            this._placeholder = new St.Widget({
+                style_class: 'patrone-taskbar-placeholder',
+                width: this._placeholderWidth ?? this._startButton.width,
+            });
+            this._appsBox.add_child(this._placeholder);
+        }
+        // The gap goes before that button, or after the last pinned one
+        // (set_child_at_index counts the other children only)
+        const before = pinned[index];
+        const others = this._appsBox.get_children().filter(child => child !== this._placeholder);
+        const position = before ? others.indexOf(before) : others.indexOf(pinned.at(-1)) + 1;
+        this._appsBox.set_child_at_index(this._placeholder, position);
+        this._dropBefore = before?.entry ?? null;
+        return DND.DragMotionResult.MOVE_DROP;
+    }
+
+    _acceptDrop(source) {
+        const entry = this._dragEntry(source);
+        if (!entry)
+            return false;
+        const pinned = this.settings.get_strv('pinned').filter(e => e !== entry);
+        const index = this._dropBefore ? pinned.indexOf(this._dropBefore) : -1;
+        pinned.splice(index < 0 ? pinned.length : index, 0, entry);
+        this._removePlaceholder();
+        this.settings.set_strv('pinned', pinned);
+        return true;
+    }
+
+    _onDragMotion(event) {
+        // Off the taskbar's buttons: no gap
+        if (this._placeholder && !this._appsBox.contains(event.targetActor))
+            this._removePlaceholder();
+        return DND.DragMotionResult.CONTINUE;
+    }
+
+    _removePlaceholder() {
+        this._placeholder?.destroy();
+        this._placeholder = null;
+        this._dropBefore = null;
     }
 
     // Pinned and running apps
@@ -533,12 +728,22 @@ export class Taskbar {
         }, 'utilities-system-monitor-symbolic');
         this._backgroundMenu.addAction('Show desktop', () => this.toggleDesktop(),
             'user-desktop-symbolic');
+        // Patrone Settings at its Taskbar page, when it's installed
+        this._settingsSeparator = new PopupMenu.PopupSeparatorMenuItem();
+        this._backgroundMenu.addMenuItem(this._settingsSeparator);
+        this._settingsItem = this._backgroundMenu.addAction('Taskbar settings', () => {
+            this._appSystem.lookup_app(SETTINGS_APP)
+                ?.launch_action('taskbar', global.get_current_time(), -1);
+        }, 'emblem-system-symbolic');
 
         const gesture = new Clutter.ClickGesture({
             required_button: Clutter.BUTTON_SECONDARY,
             recognize_on_press: true,
         });
         gesture.connect('recognize', () => {
+            const installed = !!this._appSystem.lookup_app(SETTINGS_APP);
+            this._settingsItem.visible = installed;
+            this._settingsSeparator.visible = installed;
             const coords = gesture.get_coords_abs();
             Main.layoutManager.setDummyCursorGeometry(coords.x, coords.y, 0, 0);
             this._backgroundMenu.open(BoxPointer.PopupAnimation.FULL);

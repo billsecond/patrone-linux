@@ -1,0 +1,87 @@
+/* Patrone Settings: a side list of pages and cards to pick from, in the
+ * system's light or dark colors with Patrone blue for the picked card. */
+
+.patrone-side {
+  padding: 18px 10px;
+  background-color: alpha(currentColor, 0.035);
+  border-right: 1px solid alpha(currentColor, 0.1);
+}
+
+.patrone-side-title {
+  font-size: 1.15em;
+  font-weight: bold;
+  margin: 0 8px 14px 8px;
+}
+
+.patrone-nav,
+.patrone-nav row {
+  background: none;
+}
+
+.patrone-nav row {
+  padding: 9px 12px;
+  margin: 1px 0;
+  border-radius: 6px;
+}
+
+.patrone-nav row:hover {
+  background-color: alpha(currentColor, 0.06);
+}
+
+.patrone-nav row:selected {
+  background-color: alpha(#288bfa, 0.16);
+  box-shadow: inset 3px 0 0 0 #288bfa;
+  color: inherit;
+}
+
+.patrone-page {
+  padding: 26px 36px;
+}
+
+.patrone-page-title {
+  font-size: 1.9em;
+  font-weight: 600;
+}
+
+.patrone-page-subtitle {
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.patrone-section-title {
+  font-weight: bold;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.patrone-note {
+  opacity: 0.7;
+  margin-top: 12px;
+}
+
+.patrone-choice {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid alpha(currentColor, 0.12);
+  background: alpha(currentColor, 0.03);
+}
+
+.patrone-choice:hover {
+  background: alpha(currentColor, 0.07);
+}
+
+.patrone-choice:checked {
+  border: 2px solid #288bfa;
+  background: alpha(#288bfa, 0.08);
+  color: inherit;
+}
+
+.patrone-choice-title {
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.patrone-choice-detail {
+  font-size: 0.9em;
+  opacity: 0.7;
+}

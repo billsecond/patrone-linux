@@ -14,8 +14,13 @@ out of the screen's session leaves the desktop, and its old shell, running.
 
 ## What it does
 
-One compact bar (42 pixels) along the bottom of the primary monitor, in place
-of GNOME's top bar, which it hides. From the left:
+One compact bar along the bottom of the primary monitor, in place of GNOME's
+top bar, which it hides: medium (42 pixels) unless Patrone Settings makes it
+small (32) or large (52), its icons to match. Its look follows Patrone
+Settings' theme (see `settings/README.md`): Patrone's own, Modern (the
+buttons centered), Classic (a deep blue bar with a green Start button that
+says "start") or Studio (translucent, the buttons on a rounded shelf). From
+the left:
 
 - **Start** (the Patrone "P", or the Super key) opens the Start menu with
   the search box focused, so typing searches right away (below).
@@ -40,6 +45,11 @@ or minimizes it when it's already in front; with several windows each click
 brings the next. A middle click, or Shift/Ctrl with a click, opens a new
 window. Hovering shows the app's name.
 
+**Dragging**: a button dragged along the bar moves there (a gap shows
+where); an app that's only running is pinned where it's dropped, and so is
+an app dragged from the Start menu (Pinned or All apps). In the Start menu,
+pinned apps are dragged to reorder them, a blue line marking where.
+
 ### Right-click: jump lists
 
 As on Windows 11: the app's **Recent** files (those GTK recorded for it, then
@@ -50,7 +60,8 @@ Incognito Window...); its **Open windows** when it has several; then the app
 itself (a new window), **Pin to taskbar** / **Unpin from taskbar**, for a slot
 **Default web browser** (and so on) to change which app the job uses, and
 **Close window** / **Close all windows**. Right-click on the empty bar:
-Task Manager and Show desktop.
+Task Manager, Show desktop, and Taskbar settings (Patrone Settings, when
+it's installed).
 
 ### The Start menu
 
@@ -80,11 +91,14 @@ Right-click an app in the menu to pin it to Start or the taskbar.
 
 ### Settings
 
-`org.gnome.shell.extensions.patrone-taskbar`, no settings window yet:
+`org.gnome.shell.extensions.patrone-taskbar` (Patrone Settings sets the
+size; the theme is Patrone Settings' own `org.patrone.desktop theme`, which
+the taskbar follows when it's installed):
 
 | Key | Default | |
 | --- | --- | --- |
 | `pinned` | `['role:web', 'role:terminal', 'role:files', 'role:mail']` | Pinned items in order: desktop file IDs, or `role:` slots |
+| `size` | `'medium'` | `small`, `medium` or `large` |
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
 | `web-search-url` | `'https://www.google.com/search?q=%s'` | Where web searches go |
 
@@ -97,6 +111,13 @@ Right-click an app in the menu to pin it to Start or the taskbar.
 - The account picture opens Lock and Sign out, and the power button Sleep,
   Shut down and Restart, as on Windows 11, with Disconnect for Remote
   Desktop.
+- Icons are dragged to reorder them, on the taskbar and in Start.
+- Patrone Settings sets the size (small, medium, large) and a theme: a
+  handful of looks with plain names, one like Patrone's own, one modern
+  and flat, one classic with a blue bar and green Start button, one soft
+  and translucent with round colored window buttons. Which corner the
+  window buttons go in is a separate choice of the user's, which themes
+  don't change.
 - The Start button is the logo's "P", and clicking it lets you type to search
   at once. The search button stays, hooked to GNOME's search providers.
 - Pinned slots open the default app for their job, which then shows under the
@@ -120,7 +141,13 @@ Right-click an app in the menu to pin it to Start or the taskbar.
 | `jumpList.js` | The buttons' right-click menus |
 | `roles.js` | The slots, and which app each one opens |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
-| `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes in the first, colors for each style in the others (GNOME Shell loads one of the two, which imports the first) |
+| `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the classic theme's) goes in both of them, after it |
+| `tests/headless.sh` | The throwaway GNOME Shell (below) |
+
+- **Dragging** uses GNOME Shell's own drag and drop (`ui/dnd.js`): the
+  buttons and Start's tiles and rows are draggable; the taskbar's buttons
+  box and Start's Pinned grid take drops. A drop on the taskbar rewrites
+  `pinned`; one in Pinned moves the favorite.
 
 - **The top bar** stays alive but hidden, and stops reserving space. Its
   status area (`Main.panel._rightBox`, `_centerBox`) moves into the tray
@@ -155,7 +182,9 @@ tests/headless.sh start 1600x900 light   # or dark
 tests/headless.sh run gnome-text-editor  # an app, for running buttons
 tests/headless.sh click 23 883           # the Start button
 tests/headless.sh type sett
+tests/headless.sh drag 631 879 752 879   # press, hold, move, let go
 tests/headless.sh shot /tmp/shot.png
+tests/headless.sh close-apps             # only the apps it started
 tests/headless.sh stop
 ```
 
@@ -177,12 +206,14 @@ giving Settings as the best match, Settings pages, a Clocks result and the
 web; Pinned, Recommended, All apps and the power options; jump lists for
 the web, files and a running app; the quick settings and calendar menus
 opening upward from the tray; click to minimize and restore; and turning the
-extension off (the top bar comes back) and on again.
+extension off (the top bar comes back) and on again. Later, with
+`tests/headless.sh drag`: reordering the taskbar's buttons, pinning a
+running app by dragging it in, and reordering Start's pinned apps; and,
+with Patrone Settings running in the shell, all three sizes and four
+themes.
 
 ## Not done yet
 
 - Window thumbnails when hovering a running app.
-- Dragging to reorder the taskbar's buttons and the Start menu's pinned apps.
 - A taskbar on other monitors (it's on the primary one only).
 - Notification pop-ups still appear at the top right, not above the clock.
-- A settings window (Taskbar settings on the bar's right-click menu).

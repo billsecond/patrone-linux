@@ -1,0 +1,23 @@
+[Desktop Entry]
+Name=Patrone Settings
+Comment=Taskbar size, title bar buttons and theme
+Exec=patrone-settings
+Icon=org.patrone.Settings
+Terminal=false
+Type=Application
+Categories=GTK;Settings;DesktopSettings;
+Keywords=Taskbar;Theme;Title;Buttons;Minimize;Maximize;Close;Appearance;Patrone;
+StartupNotify=true
+Actions=taskbar;buttons;theme;
+
+[Desktop Action taskbar]
+Name=Taskbar settings
+Exec=patrone-settings --page taskbar
+
+[Desktop Action buttons]
+Name=Title bar buttons
+Exec=patrone-settings --page buttons
+
+[Desktop Action theme]
+Name=Theme
+Exec=patrone-settings --page theme

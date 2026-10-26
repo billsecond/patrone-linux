@@ -1,0 +1,24 @@
+Source: patrone-settings
+Section: gnome
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               cargo (>= 1.93),
+               rustc (>= 1.93),
+               libgtk-4-dev,
+               libglib2.0-bin,
+               pkgconf
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-settings
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, gsettings-desktop-schemas
+Recommends: patrone-gnome-taskbar
+Description: Patrone's own settings: taskbar, title bar buttons, theme
+ Patrone Settings has the settings Patrone adds to the desktop's own: the
+ taskbar's size (small, medium or large), which corner of windows' title
+ bars minimize, maximize and close go in, and the theme, one of four looks
+ for the taskbar, title bars and window buttons. Each choice shows a
+ picture of what it does.

@@ -63,30 +63,12 @@
 }
 
 /* Screen recording and sharing (outside GNOME's top bar, the theme's style
- * for them doesn't apply): a small red or orange pill, as in the top bar */
+ * for them doesn't apply): a small red or orange pill, as in the top bar.
+ * Their colors are in the light and dark sheets (see the classic theme
+ * below for why). */
 .patrone-taskbar-tray .panel-button.screen-recording-indicator,
 .patrone-taskbar-tray .panel-button.screen-sharing-indicator {
-  color: #ffffff;
   -natural-hpadding: 10px;
-}
-
-/* (.panel-button too, to beat the tray buttons' hover colors) */
-.patrone-taskbar-tray .panel-button.screen-recording-indicator {
-  background-color: #c01c28;
-}
-
-.patrone-taskbar-tray .panel-button.screen-recording-indicator:hover,
-.patrone-taskbar-tray .panel-button.screen-recording-indicator:focus {
-  background-color: #a51822;
-}
-
-.patrone-taskbar-tray .panel-button.screen-sharing-indicator {
-  background-color: #c64600;
-}
-
-.patrone-taskbar-tray .panel-button.screen-sharing-indicator:hover,
-.patrone-taskbar-tray .panel-button.screen-sharing-indicator:focus {
-  background-color: #a83b00;
 }
 
 .patrone-taskbar-tray .screen-recording-indicator StBoxLayout,
@@ -125,6 +107,174 @@
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 10pt;
+}
+
+/* Sizes, from Patrone Settings: medium is the above; small is the 32px the
+ * taskbar started at, large a quarter bigger than medium */
+.patrone-taskbar.size-small {
+  height: 32px;
+  padding-left: 4px;
+  font-size: 9pt;
+}
+
+.patrone-taskbar.size-small .patrone-taskbar-button {
+  min-width: 34px;
+  margin: 2px 1px;
+  border-radius: 4px;
+}
+
+.patrone-taskbar.size-small .patrone-taskbar-start {
+  min-width: 36px;
+}
+
+.patrone-taskbar.size-small .patrone-taskbar-indicator {
+  width: 6px;
+  height: 3px;
+}
+
+.patrone-taskbar.size-small .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  width: 14px;
+}
+
+.patrone-taskbar.size-small .patrone-taskbar-tray .panel-button {
+  -natural-hpadding: 6px;
+  -minimum-hpadding: 4px;
+  margin: 2px 0;
+}
+
+.patrone-taskbar.size-small .patrone-taskbar-tray .system-status-icon {
+  icon-size: 16px;
+  padding: 0 2px;
+}
+
+.patrone-taskbar.size-small .patrone-clock-time,
+.patrone-taskbar.size-small .patrone-clock-date {
+  font-size: 8.5pt;
+}
+
+.patrone-taskbar.size-large {
+  height: 52px;
+  padding-left: 6px;
+  font-size: 12pt;
+}
+
+.patrone-taskbar.size-large .patrone-taskbar-button {
+  min-width: 56px;
+  margin: 4px 2px;
+  border-radius: 6px;
+}
+
+.patrone-taskbar.size-large .patrone-taskbar-start {
+  min-width: 58px;
+}
+
+.patrone-taskbar.size-large .patrone-taskbar-indicator {
+  width: 10px;
+  height: 4px;
+}
+
+.patrone-taskbar.size-large .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  width: 22px;
+}
+
+.patrone-taskbar.size-large .patrone-taskbar-tray .panel-button {
+  -natural-hpadding: 10px;
+  -minimum-hpadding: 6px;
+  margin: 4px 0;
+}
+
+.patrone-taskbar.size-large .patrone-taskbar-tray .system-status-icon {
+  icon-size: 24px;
+  padding: 0 3px;
+}
+
+.patrone-taskbar.size-large .patrone-clock-time,
+.patrone-taskbar.size-large .patrone-clock-date {
+  font-size: 12pt;
+}
+
+/* Dragging: the gap a taskbar button will land in, and in Start's Pinned,
+ * a blue line on the side of the tile it goes before or after */
+.patrone-taskbar-placeholder {
+  margin: 3px 1px;
+  border-radius: 5px;
+  background-color: rgba(40, 139, 250, 0.25);
+}
+
+/* (St draws an inset shadow only over a background, so they get one) */
+.patrone-start-tile:drop-before {
+  background-color: rgba(40, 139, 250, 0.1);
+  box-shadow: inset 3px 0 0 0 #288bfa;
+}
+
+.patrone-start-tile:drop-after {
+  background-color: rgba(40, 139, 250, 0.1);
+  box-shadow: inset -3px 0 0 0 #288bfa;
+}
+
+/* Themes, from Patrone Settings. "patrone" is the look above; "modern" is
+ * it with the buttons centered (taskbar.js). "classic" is the same in
+ * light and dark: a deep blue bar, a green Start button that says "start",
+ * and a lighter blue tray. "studio" (colors in stylesheet-light/-dark.css)
+ * is a translucent bar with the buttons centered on a rounded shelf. */
+.patrone-taskbar-start-box {
+  spacing: 6px;
+}
+
+.patrone-taskbar-start-label {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 1.15em;
+  padding-right: 6px;
+}
+
+/* The green Start button touches the screen's edge. (Not with a negative
+ * margin: St doesn't take those, and the whole bar's layout broke.) The
+ * classic bar's own colors are in stylesheet-light.css and -dark.css: St
+ * lets a style sheet's rules beat those of the sheets it imports, however
+ * specific, so they have to be there, after the rules they replace. */
+.patrone-taskbar.theme-classic {
+  padding-left: 0;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-start {
+  margin: 0 8px 0 0;
+  padding: 0 4px 0 10px;
+  border-radius: 0 12px 12px 0;
+  background-color: #45a845;
+  background-gradient-direction: vertical;
+  background-gradient-end: #2c7f2c;
+  color: #ffffff;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-start:hover {
+  background-color: #52bb52;
+  background-gradient-end: #34903a;
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-start-label {
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.45);
+}
+
+.patrone-taskbar.theme-classic .patrone-taskbar-tray {
+  padding: 0 4px;
+  background-color: #1594f0;
+  background-gradient-direction: vertical;
+  background-gradient-end: #0d6fd6;
+  border-left: 1px solid #0a3f9e;
+}
+
+.patrone-taskbar.theme-studio .patrone-taskbar-apps {
+  margin: 3px 4px;
+  padding: 0 6px;
+  border-radius: 12px;
+}
+
+.patrone-taskbar.theme-studio .patrone-taskbar-indicator,
+.patrone-taskbar.theme-studio .patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
 }
 
 /* The tray's menus open upward, so their gap goes at the top */

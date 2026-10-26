@@ -19,6 +19,7 @@ import St from 'gi://St';
 
 import * as AppFavorites from 'resource:///org/gnome/shell/ui/appFavorites.js';
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
+import * as DND from 'resource:///org/gnome/shell/ui/dnd.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as ShellEntry from 'resource:///org/gnome/shell/ui/shellEntry.js';
@@ -121,6 +122,10 @@ export class StartMenu {
         this._selected = 0;
         this._userMovedSelection = false;
         this._allAppsDirty = true;
+        this._pinnedTiles = [];
+        this._dropAt = null;
+        this._dragMonitor = {dragMotion: event => this._onDragMotion(event)};
+        DND.addDragMonitor(this._dragMonitor);
 
         this.menu = new PopupMenu.PopupMenu(sourceActor, 0, St.Side.BOTTOM);
         this.menu.actor.add_style_class_name('patrone-menu');
@@ -176,6 +181,7 @@ export class StartMenu {
     }
 
     destroy() {
+        DND.removeDragMonitor(this._dragMonitor);
         this._cancelSearch();
         this._subMenu?.destroy();
         this.menu.destroy();
@@ -301,10 +307,19 @@ export class StartMenu {
             orientation: Clutter.Orientation.VERTICAL,
             style_class: 'patrone-start-grid',
         });
+        // Pinned apps are dragged to reorder them
+        this._pinnedTiles = [];
+        grid._delegate = {
+            handleDragOver: (source, actor, x, y) => this._handleDragOver(grid, source, x, y),
+            acceptDrop: source => this._acceptDrop(source),
+        };
         for (let i = 0; i < pinned.length; i += PINNED_COLUMNS) {
             const line = new St.BoxLayout({style_class: 'patrone-start-grid-row'});
-            for (const app of pinned.slice(i, i + PINNED_COLUMNS))
-                line.add_child(this._makeTile(app));
+            for (const app of pinned.slice(i, i + PINNED_COLUMNS)) {
+                const tile = this._makeTile(app);
+                this._pinnedTiles.push(tile);
+                line.add_child(tile);
+            }
             grid.add_child(line);
         }
         if (pinned.length === 0)
@@ -375,7 +390,101 @@ export class StartMenu {
         });
         tile.connect('clicked', () => this.launch(app));
         this._addAppMenu(tile, app);
+        this._makeDraggable(tile, app, 32);
         return tile;
+    }
+
+    /**
+     * Lets an app's tile or row be dragged: within Pinned to reorder it, or
+     * onto the taskbar to pin it there.
+     *
+     * @param {St.Widget} actor
+     * @param {Shell.App} app
+     * @param {number} iconSize - of the icon that follows the pointer
+     */
+    _makeDraggable(actor, app, iconSize) {
+        actor._delegate = {
+            app,
+            getDragActor: () => app.create_icon_texture(iconSize),
+            getDragActorSource: () => actor,
+        };
+        const draggable = DND.makeDraggable(actor, {timeoutThreshold: 200});
+        draggable.connect('drag-begin', () => {
+            actor.opacity = 96;
+        });
+        draggable.connect('drag-end', () => {
+            actor.opacity = 255;
+            this._clearDropMarks();
+        });
+    }
+
+    // Dropping in Pinned: the tile a drop goes before (or after, at the end
+    // of a row) shows a blue line on that side
+
+    _dropIndex(grid, x, y) {
+        const [gridX, gridY] = grid.get_transformed_position();
+        const stageX = gridX + x;
+        const stageY = gridY + y;
+        let index = this._pinnedTiles.length;
+        for (let i = 0; i < this._pinnedTiles.length; i++) {
+            const [tileX, tileY] = this._pinnedTiles[i].get_transformed_position();
+            const [width, height] = this._pinnedTiles[i].get_transformed_size();
+            if (stageY < tileY)
+                return i; // above this row: before its first tile
+            if (stageY <= tileY + height) {
+                if (stageX < tileX + width / 2)
+                    return i;
+                index = i + 1;
+            }
+        }
+        return index;
+    }
+
+    _clearDropMarks() {
+        for (const tile of this._pinnedTiles ?? []) {
+            tile.remove_style_pseudo_class('drop-before');
+            tile.remove_style_pseudo_class('drop-after');
+        }
+        this._dropAt = null;
+    }
+
+    _handleDragOver(grid, source, x, y) {
+        if (!source?.app || source.app.is_window_backed())
+            return DND.DragMotionResult.NO_DROP;
+        const index = this._dropIndex(grid, x, y);
+        if (index !== this._dropAt) {
+            this._clearDropMarks();
+            if (index < this._pinnedTiles.length)
+                this._pinnedTiles[index].add_style_pseudo_class('drop-before');
+            else if (this._pinnedTiles.length)
+                this._pinnedTiles.at(-1).add_style_pseudo_class('drop-after');
+            this._dropAt = index;
+        }
+        return DND.DragMotionResult.MOVE_DROP;
+    }
+
+    _acceptDrop(source) {
+        const id = source?.app?.get_id();
+        if (!id || this._dropAt === null)
+            return false;
+        let position = this._dropAt;
+        const ids = this._favorites.getFavorites().map(app => app.get_id());
+        const from = ids.indexOf(id);
+        // Moving it later in the list: its own place goes first
+        if (from >= 0 && from < position)
+            position--;
+        this._clearDropMarks();
+        if (from >= 0)
+            this._favorites.moveFavoriteToPos(id, position);
+        else
+            this._favorites._addFavorite(id, position);
+        return true;
+    }
+
+    _onDragMotion(event) {
+        if (this._dropAt !== null && !this._homePage.contains(event.targetActor))
+            this._clearDropMarks();
+        return DND.DragMotionResult.CONTINUE;
     }
 
     _makeFileRow(file) {
@@ -447,6 +556,7 @@ export class StartMenu {
                 const row = makeRow(app.create_icon_texture(24), app.get_name(), '');
                 row.connect('clicked', () => this.launch(app));
                 this._addAppMenu(row, app);
+                this._makeDraggable(row, app, 32);
                 this._allAppsList.add_child(row);
             }
             this._allAppsDirty = false;

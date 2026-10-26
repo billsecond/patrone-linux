@@ -12,8 +12,10 @@
 #   tests/headless.sh super                  press and release the Super key
 #   tests/headless.sh type TEXT              type text
 #   tests/headless.sh click X Y [BUTTON]     click (1 left, 2 middle, 3 right)
+#   tests/headless.sh drag X1 Y1 X2 Y2       press, hold, move and let go
 #   tests/headless.sh move X Y               move the pointer
 #   tests/headless.sh run COMMAND...         start an app on its display
+#   tests/headless.sh close-apps             end the apps it started
 #   tests/headless.sh log                    the shell's output
 #   tests/headless.sh stop
 #
@@ -52,6 +54,16 @@ install_extensions() {
     cp -r "$extension" "$extensions/$uuid"
     glib-compile-schemas "$extensions/$uuid/schemas"
     cp -r "$here/unsafe@patrone-linux" "$extensions/"
+
+    # The taskbar's settings and Patrone Settings' theme setting, where
+    # other programs (Patrone Settings) find them too
+    local schemas=$XDG_DATA_HOME/glib-2.0/schemas
+    mkdir -p "$schemas"
+    cp "$extension"/schemas/*.gschema.xml "$schemas/"
+    if [[ -f $here/../../../settings/data/org.patrone.desktop.gschema.xml ]]; then
+        cp "$here/../../../settings/data/org.patrone.desktop.gschema.xml" "$schemas/"
+    fi
+    glib-compile-schemas "$schemas"
 }
 
 # A few files in the recent files list, as if opened in GTK apps, for the
@@ -180,17 +192,55 @@ move)
     shell_eval "$(input_js) testPointer.notify_absolute_motion(now(), $2, $3); 'ok'" > /dev/null
     ;;
 click)
+    # The pointer arrives first, then presses: apps (not the shell) miss a
+    # press that comes with the pointer's arrival
     environment
     shell_eval "$(input_js)
         testPointer.notify_absolute_motion(now(), $2, $3);
-        testPointer.notify_button(now(), ${4:-1}, Clutter.ButtonState.PRESSED);
-        testPointer.notify_button(now(), ${4:-1}, Clutter.ButtonState.RELEASED);
+        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 150, () => {
+            testPointer.notify_button(now(), ${4:-1}, Clutter.ButtonState.PRESSED);
+            testPointer.notify_button(now(), ${4:-1}, Clutter.ButtonState.RELEASED);
+            return GLib.SOURCE_REMOVE;
+        });
+        'ok'" > /dev/null
+    sleep 0.3
+    ;;
+drag)
+    # Press, hold past the drag delay, move there in steps, let go: timed
+    # in the shell, so it returns before the drag is over (about 1.2s)
+    environment
+    shell_eval "$(input_js)
+        testPointer.notify_absolute_motion(now(), $2, $3);
+        testPointer.notify_button(now(), 1, Clutter.ButtonState.PRESSED);
+        let step = 0;
+        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 30, () => {
+            step++;
+            if (step < 10)
+                return GLib.SOURCE_CONTINUE;
+            const t = (step - 10) / 15;
+            testPointer.notify_absolute_motion(now(), $2 + ($4 - $2) * Math.min(t, 1), $3 + ($5 - $3) * Math.min(t, 1));
+            if (step < 32)
+                return GLib.SOURCE_CONTINUE;
+            testPointer.notify_button(now(), 1, Clutter.ButtonState.RELEASED);
+            return GLib.SOURCE_REMOVE;
+        });
         'ok'" > /dev/null
     ;;
 run)
     environment
     shift
     WAYLAND_DISPLAY=$display XDG_RUNTIME_DIR=$base/run nohup "$@" > "$base/app.log" 2>&1 &
+    echo $! >> "$base/apps.pid"
+    ;;
+close-apps)
+    # Only the apps "run" started (never by name: that could hit the same
+    # app on the real desktop)
+    if [[ -f $base/apps.pid ]]; then
+        while read -r pid; do
+            kill "$pid" 2> /dev/null || true
+        done < "$base/apps.pid"
+        rm -f "$base/apps.pid"
+    fi
     ;;
 log)
     cat "$base/shell.log"

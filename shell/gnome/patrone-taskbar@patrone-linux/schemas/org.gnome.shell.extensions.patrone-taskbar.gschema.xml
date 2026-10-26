@@ -12,6 +12,19 @@
         opens that app, and the app's windows show under it.
       </description>
     </key>
+    <key name="size" type="s">
+      <choices>
+        <choice value="small"/>
+        <choice value="medium"/>
+        <choice value="large"/>
+      </choices>
+      <default>'medium'</default>
+      <summary>The taskbar's size</summary>
+      <description>
+        Small (32 pixels), medium (42) or large (52), with its icons to
+        match. Patrone Settings sets it.
+      </description>
+    </key>
     <key name="terminal-app" type="s">
       <default>''</default>
       <summary>The app the terminal slot opens</summary>

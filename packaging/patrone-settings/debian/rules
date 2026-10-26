@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# The source tree arrives with its crates vendored (packaging/build.sh), so
+# cargo never touches the network.
+
+export CARGO_HOME = $(CURDIR)/debian/cargo-home
+pkg = debian/patrone-settings
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	glib-compile-schemas --strict --dry-run data
+	cargo build --release --frozen
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	cargo test --release --frozen
+endif
+
+override_dh_auto_install:
+	install -Dm755 target/release/patrone-settings $(pkg)/usr/bin/patrone-settings
+	install -Dm644 data/org.patrone.Settings.desktop $(pkg)/usr/share/applications/org.patrone.Settings.desktop
+	install -Dm644 data/org.patrone.Settings.svg $(pkg)/usr/share/icons/hicolor/scalable/apps/org.patrone.Settings.svg
+	# The theme setting the taskbar follows; dpkg's trigger compiles the schemas
+	install -Dm644 data/org.patrone.desktop.gschema.xml \
+	    $(pkg)/usr/share/glib-2.0/schemas/org.patrone.desktop.gschema.xml
+	# The themes' styles for GTK 3 and GTK 4 apps
+	for theme in modern classic studio; do \
+	    install -Dm644 -t $(pkg)/usr/share/patrone/themes/$$theme \
+	        data/themes/$$theme/gtk-4.0.css data/themes/$$theme/gtk-3.0.css; \
+	done
+
+override_dh_auto_clean:
+	rm -rf target debian/cargo-home
+
+# dh_clean deletes *.orig files, but every vendored crate has a
+# Cargo.toml.orig that cargo checksums.
+override_dh_clean:
+	dh_clean -XCargo.toml.orig

@@ -89,13 +89,20 @@ Waiting on the user:
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
-- **Install `patrone-gnome-taskbar` 0.1.3, then Start → power → Sign out
-  and sign in again** (section 7): the account and power menus, and the bar
-  a third larger, both asked for after using 0.1.2 (installed, 2026-10-26).
-  0.1.1 had shown GNOME's screen-sharing indicator, which cut their Remote
-  Desktop connection when clicked; 0.1.2 hides it. Then try the Super key,
-  typing in Start, the jump lists, the tray, and the power menu's
-  Disconnect and Shut down in a real session.
+- **Install this round's packages, then sign out and back in**:
+  `patrone-gnome-taskbar` 0.2.0 (dragging, sizes, themes; section 7),
+  `patrone-settings` 0.1.0 (section 9), `patrone-branding` 0.1.3 (Inter,
+  pulls in `fonts-inter`; Settings' "Desktop" page; section 6) and
+  `patrone-remote-desktop` 0.4.3 (the polkit rule that brings back the
+  quick settings' network menu; section 3). The user had 0.1.3 of the
+  taskbar installed (2026-10-26). Then try the Super key, the network
+  menu's chevron, Shut down in a real session, and Chromium's pages in
+  Inter.
+- **Canonical's reporting in Settings → Privacy** ("Send error reports to
+  Canonical", "...when upgrading to a new Ubuntu version"): Ubuntu's
+  `whoopsie` and `ubuntu-insights` are installed, and
+  `ubuntu-desktop-minimal` depends on them. Ask whether Patrone's own
+  desktop metapackage should leave them out (and with them the wording).
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -686,7 +693,7 @@ options a real session allows, and the RDP and console views.
 To install and load it:
 
 ```
-sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.3_all.deb
+sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.2.0_all.deb
 ```
 
 then **log out from inside the desktop** and sign in again: GNOME Shell
@@ -739,6 +746,28 @@ Findings:
 - GNOME's top bar buttons (`PanelMenu.ButtonBox`) set `x_expand`, but
   `St.Bin` containers don't pass it up, so the tray didn't stretch; 0.1.2
   sets `x_expand = false` on the moved boxes anyway.
+- **0.1.3 in the user's desktop**: the quick settings' "Wired" chevron did
+  nothing. Not the taskbar: GNOME binds the network toggles' `reactive` to
+  polkit's `org.freedesktop.NetworkManager.network-control`, which is
+  "yes" only for local sessions, and polkit counts a session as local only
+  when it has a seat. Patrone's desktops have none (logind: Remote=yes, no
+  seat), so polkit treated them like SSH logins. Fixed in
+  `patrone-remote-desktop` 0.4.3 (section 3, `remote-desktop/README.md`
+  step 7).
+- **0.2.0** (the user asked for dragging, a taskbar size setting, and
+  themes): dragging uses GNOME's `ui/dnd.js`. `set_size()` fixes an
+  actor's height, which Clutter then reports as its preferred height, so
+  the bar never took a new size until `_relayout` dropped it first. St
+  can't take negative margins (the classic Start button had one, and the
+  whole bar's layout came out at x = 4294967296), and a style sheet's own
+  rules beat those of a sheet it imports, however specific (the classic
+  bar's colors, and the light style's screen-sharing pill, lost to the
+  light sheet's until moved into it). In the throwaway shell, an app misses
+  a click whose pointer arrives with it; `headless.sh click` now moves
+  first, and the first click into a new window was still lost.
+- `pkill -f NAME` matched the SSH command that ran it, and could have hit
+  the same app on the real desktop: `headless.sh close-apps` ends only the
+  apps it started.
 
 ## 8. Patrone File Manager (patrone-file-manager)
 
@@ -819,6 +848,49 @@ Findings:
 Next: the user's verdict, then the gaps in the README's "Not done yet"
 (group headers in the icon views, the command bar folding into "See more"
 when narrow, Gallery's timeline), and FileManager1.
+
+## 9. Patrone Settings (patrone-settings)
+
+Asked for 2026-10-26: Patrone's own settings, first the taskbar's size
+(small, medium or large; medium was the size then), then where the
+minimize, maximize and close buttons go, shown in pictures (top right or
+top left, "a user option" that themes don't change), and themes: "a
+handful of options" with an Apple-like feel, the current one, an XP-like
+and a Windows 11-like one, not named after either. `settings/README.md`
+has the pages, the four themes (Patrone, Modern, Classic, Studio) and how
+they reach apps. It's a window of its own, GTK 4 in Rust without
+libadwaita (the VM has no libadwaita headers): GNOME Settings takes no
+pages from other programs.
+
+Checked in the throwaway shell: see the README. Not checked: on the real
+desktop, the theme in apps that aren't GTK (Chromium's own title bar), and
+Studio's and Classic's look in GTK 3 apps.
+
+## 10. Typeface and Settings' Ubuntu wording (patrone-branding 0.1.3)
+
+Asked for 2026-10-26: a font "closer to what Microsoft has and closer to
+what we added to MailCraft", everywhere, the browser included. MailCraft
+draws with Windows' Segoe UI on Windows and its bundled Inter elsewhere,
+so Patrone's is Inter (Ubuntu's `fonts-inter`, static OTFs in every
+weight). How it's set everywhere: `branding/README.md`, "Typeface".
+Checked: the GNOME defaults compile with Ubuntu's schemas and give Inter
+under both desktop names; fontconfig with the rule first and Ubuntu's own
+after (as installed) gives Inter for sans-serif, bold, Segoe UI and its
+Semibold, Light and Variable names, while Arial and Times New Roman keep
+their metric-compatible stand-ins. Not checked until installed: Chromium
+itself (its snap reads `/etc/fonts/snap-override`, per the GNOME
+platform snap's `desktop-launch`), and the login screen.
+
+Findings: `fc-match sans-serif` reads the hyphen as the start of a size
+and asks for "sans"; test with `fc-match :family=sans-serif`. Chromium uses
+a font substituted for one asked for by name only through a strong
+(`binding="same"`) alias. Ubuntu's `56-language-selector-prefer.conf` puts
+Noto Sans first for sans-serif, so Patrone's rule is numbered 05.
+
+The user also saw "Ubuntu Desktop" in Settings: GNOME Settings names each
+page from its desktop file, so `patrone-branding` puts its own
+`gnome-ubuntu-panel.desktop` ("Desktop") in place of Ubuntu's. The rest of
+Settings' Ubuntu wording is Canonical's reporting (Waiting on the user).
 
 ## Suggested order
 
