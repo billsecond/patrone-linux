@@ -43,6 +43,16 @@ helper_refuses "unusual account name" '../etc\0secret\0192.0.2.7\0'
 helper_refuses "account name too long" "$(printf 'a%.0s' $(seq 40))\\0secret\\0192.0.2.7\\0"
 helper_refuses "unknown account" 'nosuch-patrone-user\0secret\0192.0.2.7\0'
 
+# --screen-sign-in acts only as root, for the login screen's services: here
+# (not root) it must do nothing, quietly, and never fail the sign-in.
+answer=$(PAM_SERVICE=gdm-password PAM_USER=$(id -un) "$auth" --screen-sign-in 2>&1)
+if [[ $? == 0 && -z $answer ]]; then
+    echo "ok   helper: screen sign-in does nothing without root"
+else
+    echo "FAIL helper: screen sign-in without root (answered \"$answer\")"
+    failures=$((failures + 1))
+fi
+
 # --console takes the account from the socket, so without one it must refuse.
 answer=$("$auth" --console < /dev/null 2> /dev/null || true)
 if [[ $answer == denied ]]; then

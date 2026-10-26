@@ -110,7 +110,12 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    `remote-desktop` group (and drops it if not). That happens at every
    password sign-in (login screen, `sudo`, SSH, Remote Desktop) and every
    password change, so the hash always matches the current password. Screen
-   unlocks run as the account itself, not root, and are skipped.
+   unlocks run as the account itself, not root, and are skipped. The same
+   profile runs `auth --screen-sign-in` after a sign-in on the login screen
+   (`gdm-password`, `-fingerprint`, `-smartcard`), which gets the account's
+   desktop ready before GDM opens the screen's session: GDM refuses to start
+   a background desktop for an account that has a graphical session open,
+   and the screen's own session would be one.
 
 6. **The login screen**: GNOME's login screen treats any other running
    desktop of the account as a conflict, and offers to end it. Here that

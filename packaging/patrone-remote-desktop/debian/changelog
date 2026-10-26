@@ -1,3 +1,15 @@
+patrone-remote-desktop (0.4.2) resolute; urgency=medium
+
+  * Get the account's desktop ready while the login screen checks the
+    password (auth --screen-sign-in, from the PAM profile): GDM refuses to
+    start a background desktop for an account with a graphical session open,
+    and the screen's own session was one by the time its viewer asked, so
+    signing in on the screen first always failed.
+  * Run the screen's Remote Desktop client on Wayland, without X11: through
+    cage's Xwayland, cage failed an assertion and crashed.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 14:00:00 -0500
+
 patrone-remote-desktop (0.4.1) resolute; urgency=medium
 
   * Patrone Desktop is gnome.desktop, the session GDM falls back to, with a

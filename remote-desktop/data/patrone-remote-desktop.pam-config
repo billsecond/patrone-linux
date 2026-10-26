@@ -1,9 +1,10 @@
-Name: Patrone Remote Desktop - keep the password hash NLA checks current
+Name: Patrone Remote Desktop - the NLA password hash, and the desktop at screen sign-in
 Default: yes
 Priority: 0
 Auth-Type: Additional
 Auth:
 	optional	pam_exec.so quiet seteuid expose_authtok /usr/libexec/patrone-remote-desktop/auth --remember
+	optional	pam_exec.so quiet seteuid /usr/libexec/patrone-remote-desktop/auth --screen-sign-in
 Password-Type: Additional
 Password:
 	optional	pam_exec.so quiet seteuid expose_authtok /usr/libexec/patrone-remote-desktop/auth --remember

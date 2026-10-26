@@ -22,6 +22,12 @@
  * against, as Windows keeps one for its local accounts; it drops the entry of
  * anyone else. So the hash always matches the account's current password.
  *
+ * With --screen-sign-in, pam_exec runs it after a successful sign-in on the
+ * login screen, before GDM opens the screen's session, and it gets the
+ * account's desktop ready then: GDM won't start a background desktop for an
+ * account that already has a graphical session open, and the screen's
+ * session would be one by the time its viewer asks.
+ *
  * Copyright 2026 William Daugherty
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -38,6 +44,7 @@
 #include <sys/file.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <winpr/ntlm.h>
@@ -366,6 +373,43 @@ static int remember(void)
 	return 0;
 }
 
+/* pam_exec's call after a successful sign-in, from any PAM service: acts only
+ * for the login screen's own (not gdm-autologin, which is how GDM starts the
+ * background desktop itself). It never fails the sign-in. */
+static int screen_sign_in(void)
+{
+	const char* service = getenv("PAM_SERVICE");
+	const char* user = getenv("PAM_USER");
+
+	if (geteuid() != 0 || !service || !user)
+		return 0;
+	if (strcmp(service, "gdm-password") != 0 && strcmp(service, "gdm-fingerprint") != 0 &&
+	    strcmp(service, "gdm-smartcard") != 0)
+		return 0;
+	if (!valid_user(user))
+		return 0;
+	struct passwd* account = getpwnam(user);
+	if (!account || account->pw_uid < 1000)
+		return 0;
+
+	/* prepare-session's answer holds the secret: keep it off any output. */
+	pid_t child = fork();
+	if (child == 0)
+	{
+		int null = open("/dev/null", O_RDWR | O_CLOEXEC);
+		if (null >= 0)
+		{
+			dup2(null, STDIN_FILENO);
+			dup2(null, STDOUT_FILENO);
+		}
+		execl(PREPARE_SESSION, PREPARE_SESSION, user, (char*)NULL);
+		_exit(127);
+	}
+	if (child > 0)
+		waitpid(child, NULL, 0);
+	return 0;
+}
+
 int main(int argc, char** argv)
 {
 	static Request request;
@@ -374,6 +418,8 @@ int main(int argc, char** argv)
 		return console();
 	if (argc > 1 && strcmp(argv[1], "--remember") == 0)
 		return remember();
+	if (argc > 1 && strcmp(argv[1], "--screen-sign-in") == 0)
+		return screen_sign_in();
 
 	alarm(READ_TIMEOUT_SECONDS);
 	if (read_request(&request) != 0)

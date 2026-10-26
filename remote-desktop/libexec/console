@@ -54,6 +54,9 @@ def main():
         "/log-level:WARN",
     ]
     environment = dict(os.environ, WLR_NO_HARDWARE_CURSORS="1")
+    # The client draws through Wayland. Through X11 (cage's Xwayland, which
+    # SDL picked) cage failed an assertion in its X11 code and crashed.
+    client = ["env", "-u", "DISPLAY", "SDL_VIDEO_DRIVER=wayland", "SDL_VIDEODRIVER=wayland", *client]
     # -s lets Ctrl+Alt+F1-F12 switch virtual terminals.
     viewer = subprocess.Popen(
         ["cage", "-s", "--", *client], stdin=subprocess.PIPE, text=True, env=environment

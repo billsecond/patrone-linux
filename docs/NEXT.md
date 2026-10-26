@@ -470,6 +470,21 @@ Findings:
   `gnome-session --session=ubuntu` without one (tested against the live
   seat0 session and a seatless one). Other packages' `gnome.desktop` is
   diverted too.
+- **0.4.1 on the VM:** RDP works, and signing in on the screen no longer
+  ends the desktop (the login-screen extension works). The screen's viewer
+  failed two ways. (1) Screen first: GDM refused the background desktop,
+  "There's already an opened session for user": `CreateUserDisplay` calls
+  `gdm_find_graphical_sessions_for_username`, which counts any logind
+  session of type wayland/x11/mir that's active or online, and the screen's
+  own session is one. 0.4.2 starts the desktop from the PAM profile during
+  the login screen's password check (`auth --screen-sign-in`, only for
+  `gdm-password`/`-fingerprint`/`-smartcard`, not `gdm-autologin`, which GDM
+  uses for the background desktop itself), before GDM opens the screen's
+  session. (2) With the desktop already running (RDP first): `cage` failed
+  `xwayland/xwm.c:592` (SDL had picked X11 through cage's Xwayland), and the
+  client crashed with it. 0.4.2 runs the client with `DISPLAY` unset and
+  `SDL_VIDEO_DRIVER=wayland`; checked that SDL starts on Wayland that way
+  (on the background desktop's display, against a closed port).
 - Packaging lessons: debhelper replaces `#DEBHELPER#` even inside comments
   (0.2.1's install failed; `build.sh` now refuses it), and for units
   installed with `--no-start` its generated `preinst` stops them on every
