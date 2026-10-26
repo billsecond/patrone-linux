@@ -13,3 +13,11 @@ override_dh_auto_install:
 	    $(dropins)/apt-news.service.d/patrone-ubuntu-pro-only.conf
 	install -Dm644 systemd/ubuntu-pro-only.conf \
 	    $(dropins)/esm-cache.service.d/patrone-ubuntu-pro-only.conf
+	install -Dm644 networkmanager/30-patrone-connectivity.conf \
+	    $(pkg)/usr/lib/NetworkManager/conf.d/30-patrone-connectivity.conf
+	install -Dm644 chrony/patrone-nts.sources \
+	    $(pkg)/etc/chrony/sources.d/patrone-nts.sources
+	install -Dm644 chrony/patrone-nts.conf \
+	    $(pkg)/etc/chrony/conf.d/patrone-nts.conf
+	install -Dm644 update-manager/patrone.cfg \
+	    $(pkg)/etc/update-manager/release-upgrades.d/patrone.cfg

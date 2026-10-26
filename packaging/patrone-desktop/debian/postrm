@@ -1,11 +1,30 @@
 #!/bin/sh
 set -e
 
-# systemd forgets the drop-ins for Ubuntu Pro's apt news and ESM check.
+pools=/etc/chrony/sources.d/ubuntu-ntp-pools.sources
+packaged_pools=/usr/share/chrony/ubuntu-ntp-pools.sources
+
 case "$1" in
     remove | purge)
+        # Ubuntu's time servers come back, the way chrony's postinst puts
+        # them in place when its question is answered yes.
+        if [ "$1" = remove ] && [ -e "$packaged_pools" ] && [ ! -e "$pools" ]; then
+            . /usr/share/debconf/confmodule
+            db_set chrony/configure_ubuntu_pools_in_sourcesd true || true
+            if command -v ucf > /dev/null; then
+                ucf --debconf-ok --three-way "$packaged_pools" "$pools"
+            else
+                cp "$packaged_pools" "$pools"
+            fi
+            if command -v ucfr > /dev/null; then
+                ucfr chrony "$pools"
+            fi
+        fi
+
         if [ -d /run/systemd/system ]; then
             systemctl daemon-reload || true
+            systemctl try-restart chrony.service || true
+            systemctl try-reload-or-restart NetworkManager.service || true
         fi
         ;;
 esac

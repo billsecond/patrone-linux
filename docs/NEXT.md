@@ -100,9 +100,12 @@ Waiting on the user:
 - **Install `patrone-branding` 0.1.5** (section 12), which takes out
   Ubuntu's wallpapers:
   `sudo apt install ~/src/patrone-linux/out/patrone-branding_0.1.5_all.deb`.
-- **Decide on what still reaches Canonical's servers** (section 11): the
-  network check, the clock, release-upgrade offers, and first-login setup's
-  Ubuntu Pro page.
+- **Install `patrone-desktop` 0.1.1** (section 11), which moves the clock and
+  the network check off Canonical's servers and turns off Ubuntu's upgrade
+  offers:
+  `sudo apt install ~/src/patrone-linux/out/patrone-desktop_0.1.1_all.deb`.
+  Then `chronyc sources` should list the four NTS servers and no
+  `ntp.ubuntu.com`.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -992,7 +995,44 @@ programs that report to Canonical removed. `desktop/README.md` lists what
 reports to Canonical, what happens to each, and what else still reaches
 Canonical's servers.
 
-Checked on the VM:
+Then the user chose to move the rest off Canonical too: "point the network
+check and the clock at non-Canonical servers, turn off Ubuntu release-upgrade
+offers, and skip the Ubuntu Pro page in first-login setup". That's 0.1.1:
+NTS servers from Cloudflare, Netnod, PTB and SIDN Labs; GNOME's
+`nmcheck.gnome.org`; `Prompt=never` in a `release-upgrades.d` drop-in; and
+`ubuntu_pro` in setup's skip list (`desktop/README.md` has how each works).
+
+Checked for 0.1.1 on the VM, without installing it:
+
+- `NetworkManager --print-config` with Ubuntu's `conf.d` and Patrone's file
+  gives GNOME's URI, which answers with NetworkManager's default
+  "NetworkManager is online".
+- A copy of chronyd run with `-Q` (it measures and doesn't set the clock; a
+  copy, because AppArmor keeps the real one to its own folders) read
+  Patrone's sources and `nocerttimecheck 1`, and all four servers answered
+  over NTS, the clock 0.1 ms off. `openssl s_client` completed each
+  server's NTS key exchange with a valid certificate.
+- Ubuntu's `check-new-release`, with Patrone's drop-in bound into
+  `release-upgrades.d` by bwrap and no network: "Prompt is set to never so
+  upgrading is not possible", before any download. Without it, it went
+  looking.
+- First-login setup with 0.1.1's `vendor.conf` bound over
+  `/etc/gnome-initial-setup/vendor.conf`: Welcome, Location Services,
+  Appearance, Ready to go. No Ubuntu Pro or "Help Improve Ubuntu" page, and
+  no password prompt.
+- `apt-get -s install` of 0.1.1 over the installed 0.1.0 upgrades it and
+  removes nothing.
+
+Not checked until installed: the postinst's chrony steps (debconf, ucf,
+removing Ubuntu's pools file) and the restarts, which need root.
+
+Checked after the user installed 0.1.0: whoopsie, ubuntu-insights,
+ubuntu-report and apport-gtk are gone (their settings files kept, as
+`apt remove` does), apport stays, and systemd loads both Ubuntu Pro
+drop-ins. The user's session still lists ubuntu-insights' two timers, whose
+units are gone, until the next sign-in.
+
+Checked on the VM for 0.1.0, before it was installed:
 
 - `apt-get -s install` (a simulation) removes exactly apport-gtk,
   ubuntu-insights, ubuntu-report and whoopsie. `ubuntu-desktop-minimal`,
@@ -1030,8 +1070,19 @@ Findings:
   `motd-news.service` will fail twice a day. Fix in `patrone-branding`: a
   drop-in with `ConditionPathExists=/etc/update-motd.d/50-motd-news`.
 - First-login setup still says Ubuntu: the Welcome page shows 26.04's
-  raccoon, then the Ubuntu Pro page, then "Choose how Ubuntu looks". A job
-  for `patrone-branding`.
+  raccoon, the Appearance page says "Choose how Ubuntu looks", and the last
+  page offers "Ubuntu's App Center". A job for `patrone-branding`.
+- Setup reads `/etc/gnome-initial-setup/vendor.conf` and ignores
+  `/usr/share`'s when it's there, so once `patrone-desktop` is installed,
+  test a new skip list by binding it over the `/etc` file.
+- `shell/gnome/tests/headless.sh` uses one fixed folder
+  (`/tmp/patrone-taskbar-test`) and display, so two sessions running it at
+  once replace each other's test shell (it happened on 2026-10-26). Run a
+  copy with its own `base` and `display` meanwhile; the script could take
+  them from the environment.
+- A process started through `bwrap` survives `headless.sh close-apps`,
+  which kills only bwrap. Later launches of the same app then just raise
+  the old window.
 - `firefox` is only recommended by `ubuntu-desktop-minimal` 1.570.4
   (section 4 says it depends on it), so a Patrone package could remove it
   the same way.
@@ -1039,11 +1090,8 @@ Findings:
   that day: apport's name for a package that failed to install or
   configure. Read it with sudo.
 
-Still to decide (the user): whether the network check
-(`connectivity-check.ubuntu.com`), the clock (`ntp.ubuntu.com`, with NTS),
-release-upgrade offers (`changelogs.ubuntu.com`) and the Ubuntu Pro page in
-first-login setup should move off Canonical or go. The update archive and
-the Snap Store stay.
+Still reaching Canonical, by choice: the update archive and the Snap Store
+(Chromium).
 
 ## 12. Wallpaper family (patrone-branding 0.1.4)
 

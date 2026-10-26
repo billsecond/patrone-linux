@@ -7,8 +7,28 @@ and leaves out everything that reports to Canonical.
 
 | File | Installed as | What it does |
 | --- | --- | --- |
-| `gnome-initial-setup/vendor.conf` | `/etc/gnome-initial-setup/vendor.conf` | First-login setup skips Ubuntu's "Help improve Ubuntu" page (`ubuntu_insights`), which asks to send system and error reports to Canonical |
+| `gnome-initial-setup/vendor.conf` | `/etc/gnome-initial-setup/vendor.conf` | First-login setup skips Ubuntu's "Help improve Ubuntu" page (`ubuntu_insights`), which asks to send system and error reports to Canonical, and its Ubuntu Pro page (`ubuntu_pro`) |
 | `systemd/ubuntu-pro-only.conf` | `/usr/lib/systemd/system/{apt-news,esm-cache}.service.d/` | Ubuntu Pro's apt news and ESM check, which fetch Canonical's news and offers at every `apt update`, run only on a machine attached to Ubuntu Pro |
+| `chrony/patrone-nts.sources` | `/etc/chrony/sources.d/` | The clock's servers: Cloudflare (`time.cloudflare.com`), Netnod (`nts.netnod.se`), PTB (`ptbtime1.ptb.de`) and SIDN Labs (`ntppool1.time.nl`), each authenticated with NTS, in place of Ubuntu's `ntp.ubuntu.com` pools |
+| `chrony/patrone-nts.conf` | `/etc/chrony/conf.d/` | `nocerttimecheck 1`: a computer whose clock starts far off can still use NTS (below) |
+| `networkmanager/30-patrone-connectivity.conf` | `/usr/lib/NetworkManager/conf.d/` | NetworkManager's check for Wi-Fi sign-in pages asks GNOME's server (`nmcheck.gnome.org`) in place of `connectivity-check.ubuntu.com`. It comes after Ubuntu's `20-connectivity-ubuntu.conf`, so it wins |
+| `update-manager/patrone.cfg` | `/etc/update-manager/release-upgrades.d/` | `Prompt=never`: nothing offers to upgrade to Ubuntu's next release, or asks `changelogs.ubuntu.com` whether there is one. Patrone moves to a new Ubuntu base itself |
+
+### The clock
+
+Ubuntu's chrony keeps its pools in `ubuntu-ntp-pools.sources`, which no
+package owns: chrony's postinst writes it with ucf when its debconf question
+`chrony/configure_ubuntu_pools_in_sourcesd` is yes (the default), and removes
+it when the answer is no. `patrone-desktop`'s postinst answers no and removes
+the file the same way; its postrm answers yes and puts the file back.
+
+NTS checks each server's certificate against the clock, so a computer whose
+clock starts far off (a dead clock battery) can't set it. Ubuntu gets around
+that with `ntp-bootstrap.ubuntu.com`, whose certificate is valid for decades.
+Patrone has no such server, so `nocerttimecheck 1` skips the certificates'
+dates until the clock is first set. chrony's manual calls that a last resort:
+for that first update, an attacker holding an expired certificate's key for
+one of these servers could feed it a wrong time.
 
 ## What reports to Canonical, and what happens to it
 
@@ -37,17 +57,8 @@ needs:
 
 - **Updates:** Ubuntu's archive (`archive.ubuntu.com`, `security.ubuntu.com`).
 - **Snaps:** the Snap Store, which keeps Chromium up to date.
-- **The network check:** NetworkManager loads `connectivity-check.ubuntu.com`
-  every few minutes to spot hotel and airport Wi-Fi sign-in pages
-  (`network-manager-config-connectivity-ubuntu`). Settings → Privacy &
-  Security → Connectivity turns it off.
-- **The clock:** chrony sets the time from `ntp.ubuntu.com`, authenticated with
-  NTS (`/etc/chrony/sources.d/ubuntu-ntp-pools.sources`).
-- **Release upgrades:** update-notifier checks `changelogs.ubuntu.com` for the
-  next Ubuntu LTS and offers to upgrade to it (`Prompt=lts` in
-  `/etc/update-manager/release-upgrades`).
-- **Ubuntu Pro:** first-login setup's Ubuntu Pro page, and Settings, contact
-  Canonical only when someone attaches the machine to Ubuntu Pro.
+- **Ubuntu Pro:** Settings and `pro attach` contact Canonical only when
+  someone attaches the machine to Ubuntu Pro.
 
 Ubuntu's daily news for the login message (`motd-news`) is already off:
 its script runs only when `/etc/default/motd-news` sets `ENABLED=1`, and that

@@ -1,3 +1,14 @@
+patrone-desktop (0.1.1) resolute; urgency=medium
+
+  * Set the time from NTS servers run by Cloudflare, Netnod, PTB and SIDN
+    Labs in place of ntp.ubuntu.com.
+  * Check for Wi-Fi sign-in pages with GNOME's server in place of
+    connectivity-check.ubuntu.com.
+  * Don't offer upgrades to Ubuntu's next release.
+  * Skip the Ubuntu Pro page in first-login setup.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 15:15:00 -0500
+
 patrone-desktop (0.1.0) resolute; urgency=medium
 
   * First package: Ubuntu's desktop with Patrone's branding and apps, without
