@@ -1,7 +1,7 @@
 # Next steps
 
-Last updated 2026-10-26, after the branding, one-sign-in RDP and terminal
-autostart work.
+Last updated 2026-10-26, after the branding, Chromium, terminal autostart and
+Patrone Remote Desktop work.
 
 ## Where things stand
 
@@ -28,22 +28,29 @@ Done:
   prompt, loaded from `~/.bash_aliases`; installed for the user
   (`install-dev.sh --bashrc`) and checked in an interactive bash in a pty.
   `shell-config/zshrc` and `zprofile` remain for anyone who picks zsh.
-- **Packages** (`packaging/`): `patrone-terminal` (0.1.1, now with a login
-  autostart entry), `patrone-shell-config`, `patrone-branding` and
-  `patrone-default-apps` (Chromium in place of Firefox) build on the VM. Not
-  installed anywhere yet.
+- **Packages** (`packaging/`): `patrone-terminal` (0.1.1, with a login
+  autostart entry), `patrone-shell-config`, `patrone-branding`,
+  `patrone-default-apps` (Chromium in place of Firefox) and
+  `patrone-remote-desktop` build on the VM. Everything the user asks for goes
+  into these as Patrone's system-wide defaults (they said so, 2026-10-26);
+  `scripts/hyperv/` is only dev-VM tooling.
+- **Installed on the VM** (2026-10-26, by the user): `patrone-branding`
+  0.1.0, `patrone-terminal` 0.1.1, `patrone-default-apps` 0.1.0 with the
+  Chromium 156 snap; Firefox's snap removed and its stub held. Checked:
+  `default.plymouth` and `gdm-theme.gresource` point at Patrone's,
+  `/etc/os-release` says Patrone Linux. Not rebooted since, so the login
+  screen and the user's session still showed Ubuntu's look.
 - **Branding** (section 6): `patrone-branding` replaces Ubuntu's name and
   logos (boot splash, boot menu, login screen, About, console banner, login
-  message), restyles the login screen, makes blue the accent color and turns
-  Ubuntu's dock off. Built and inspected; not installed yet.
-- **Terminal at login:** GNOME opens Patrone Terminal at every login, for the
-  user now (`install-dev.sh --autostart`) and for everyone once
-  `patrone-terminal` is installed. The Patrone Desktop session's compositor
-  already opens one.
-- **No screen lock over RDP:** done for the user, and applied live to their
-  Remote Login session (section 3).
-- **Remote Desktop:** Remote Desktop Connection works, at full 4K with Remote
-  Login. The Hyper-V daemons are running.
+  message), restyles the login screen, makes blue the accent color (and, in
+  0.1.1, Yaru's blue GTK theme and icons) and turns Ubuntu's dock off.
+- **Terminal at login:** GNOME opens Patrone Terminal at every login, for
+  everyone (`patrone-terminal`'s `/etc/xdg/autostart` entry). The Patrone
+  Desktop session's compositor already opens one.
+- **Patrone Remote Desktop** (section 3, `remote-desktop/README.md`): each
+  account in the `remote-desktop` group signs in once, with its own Linux
+  password checked by PAM; nothing stores the password. Built, unit-tested,
+  not installed or tried with a real client yet.
 - **fastfetch** shows the Patrone logo for the user (`branding/fastfetch/`,
   installed with `branding/fastfetch/install-dev.sh`): the mark traced from
   the concept by `branding/tools/make_terminal_logo.py`, with a gradient in
@@ -54,18 +61,16 @@ Done:
 
 Waiting on the user:
 
-- **Install the packages, remove Firefox and reboot** (needs their sudo
-  password), in `~/src/patrone-linux`:
-  `sudo apt install ./out/patrone-branding_0.1.0_all.deb ./out/patrone-terminal_0.1.1_amd64.deb ./out/patrone-default-apps_0.1.0_all.deb`,
-  `sudo snap remove firefox`, `sudo apt-mark hold firefox`, `sudo reboot`.
-  Then reset their own favorites, which still name Firefox, to Patrone's
-  (`gsettings reset org.gnome.shell favorite-apps`, no sudo), and check
-  (sections 4 and 6).
-- **One-sign-in RDP:** from SSH or the VM's console, not from inside RDP,
-  log out of the Remote Login desktop and run
-  `./scripts/hyperv/guest/setup-remote-desktop.sh headless`, entering their
-  Linux username and password when asked. Then connect with `mstsc` (More
-  choices → Use a different account if it offers old credentials).
+- **Install the new packages, turn on Patrone Remote Desktop, reboot, then
+  connect** (needs their sudo password; section 3 has the steps). Their
+  favorites and icon theme were already reset to Patrone's defaults
+  (2026-10-26, over SSH).
+- **Chromium's first run** shows a "Chromium Additional Terms of Service"
+  dialog that says "This Space Intentionally Blank": Chromium's placeholder
+  where Google Chrome shows Google's terms (the strings sit with "Welcome to
+  Chromium" in Chromium 156's resources). Accepting it is harmless. Find what
+  triggers it and whether a policy or flag skips it, then add that to
+  `patrone-default-apps`, since every new Patrone user would see it.
 - **Login screen style:** the user asked for an "enterprise and/or school"
   look. It now keeps the list of users, restyled. Ask whether they'd rather
   have the username-and-password form schools and companies use
@@ -257,27 +262,75 @@ Findings:
   `VMBus` transport. Linux guests need `HvSocket`.
 - `freerdp-proxy` (FreeRDP 3.32) runs headless and could sit between VMConnect
   and GNOME Remote Desktop (TLS in, NLA out).
-- **One sign-in** (the user's request, 2026-10-26: `mstsc` asks for the
-  credentials and they open the desktop). Remote Login can't do it: its NLA
-  credentials are GNOME Remote Desktop's own, then GDM asks again. The
-  `headless` mode of `setup-remote-desktop.sh` does: GDM 50's
-  `gnome-headless-session@USER.service` runs the user's desktop from boot
-  with no monitor, and `gnome-remote-desktop-headless.service` (a user unit,
-  `WantedBy=gnome-session.target`, conflicts with Desktop Sharing's) serves
-  it with `grdctl --headless` settings. The RDP credentials are a separate
-  copy the user sets equal to their Linux account's; GNOME Remote Desktop 50
-  can only check its own copy or Kerberos (`set-auth-methods`), not PAM. With
-  no TPM in the VM (`/dev/tpm*` absent) it keeps them in
-  `credentials.ini`. Written and syntax-checked, and its "other desktop
-  sessions" check finds the user's Remote Login session (425) and ignores
-  the tty3 text session. Not run yet: it needs the user's sudo password and
-  their credentials, and it ends the RDP connection they're using.
-- **Screen lock over RDP:** the user doesn't expect an RDP session to lock.
-  `scripts/hyperv/guest/rdp-no-lock.sh` runs at login and, in a session with
-  no seat (Remote Login and headless sessions have none; `Remote=yes` for
-  Remote Login), sets `lock-enabled=false` and `idle-delay=0`; on the console
-  it resets them. Installed for the user and run once against their Remote
-  Login session: both settings read back as `false` and `0`.
+- **Patrone Remote Desktop** (`remote-desktop/`, package
+  `patrone-remote-desktop`; its README has the design). The user's
+  requirements (2026-10-26): `mstsc` asks for the credentials, those are the
+  Linux account's, they open the desktop with no second sign-in, the
+  password is checked against the account each time and **never stored**
+  (they rejected GNOME keeping its own copy), any account in a
+  `remote-desktop` group may use it, off by default, and RDP sessions never
+  lock. How:
+  - GNOME Remote Desktop 50 can only check its own stored credentials or
+    Kerberos (`grdctl rdp set-auth-methods`), never PAM. RDP's NLA can't
+    check against PAM either: its NTLM step needs the server to hold the
+    password's NT hash already, and `/etc/shadow`'s hashes can't produce it.
+    So clients get TLS without NLA, and the password is checked when it
+    arrives in the client info.
+  - FreeRDP 3.32's proxy (Ubuntu's `freerdp-proxy`) on 3389 as user
+    `patrone-rdp`, with Patrone's `patrone-login` plugin (C). Read in
+    FreeRDP's source: in TLS mode its `ServerPeerLogon` filter runs before
+    the client info arrives, so it can't see the password; the
+    `ServerFetchTargetAddr` filter runs after, before the proxy connects on,
+    and can pick a custom target (the proxy frees `target_address`). The
+    client's settings (`peer->context->settings`) hold the plain password;
+    the target connection's settings (`pdata->pc`) are separate.
+  - A root helper per request (`patrone-remote-desktop-auth.socket`,
+    `Accept=yes`) does PAM (`/etc/pam.d/patrone-remote-desktop`: group,
+    UID ≥ 1000, `common-auth`, `common-account`), then `prepare-session`
+    sets up the account's GNOME Remote Desktop with `grdctl --headless` (port
+    20000 + UID, credentials a random secret in
+    `/var/lib/patrone-remote-desktop/secrets`) and starts
+    `gnome-headless-session@USER.service`.
+  - `grdctl ... set-credentials USER` reads the password from stdin when it
+    isn't a terminal, so the secret never appears on a command line. With no
+    TPM it stores it in plain text in `credentials.ini` (mode 600): fine for
+    a random secret, which is why it must never be a real password.
+  - `no-lock` (from `/etc/xdg/autostart`) turns the lock and blanking off in
+    seatless sessions, saving the account's own settings, and restores them
+    on the console. The user's saved settings were set to GNOME's defaults,
+    since an earlier per-user script had already forced them off.
+  - Checked: `make check` (also run by the package build), 38 checks: the
+    plugin refuses no credentials, a wrong password, "busy", a garbled
+    answer and an unreachable helper, always clearing the password; on
+    success it targets `127.0.0.1:21000` as the account with the secret,
+    re-applies it before connecting and forgets it at session end; the real
+    helper refuses malformed requests, odd names and unknown accounts.
+    Scripts pass `bash -n`/`sh -n`, the units `systemd-analyze verify`, the
+    autostart entry `desktop-file-validate`. The package's contents,
+    dependencies, conffiles and not-enabled-by-default install were
+    inspected. Built against headers extracted from `freerdp3-dev`,
+    `libwinpr3-dev` and `libpam0g-dev` (same versions as the installed
+    libraries) because the dev packages weren't installed;
+    `bootstrap-dev-vm.sh` now installs them.
+  - **Not checked yet:** a real sign-in. Whether `mstsc` prompts for and
+    sends the password to a server without NLA, the proxy and plugin running
+    under systemd's sandboxing, `prepare-session` as root (`runuser`,
+    `systemctl --user` in the account's manager, the headless session
+    starting), and display, clipboard and resizing through the proxy.
+  - Steps for the user, from SSH (`ssh patronedev`) after logging out of the
+    Remote Login desktop (one desktop per account, and turning it on stops
+    Remote Login): `sudo apt install` the three new debs in `out/`
+    (`patrone-branding_0.1.1`, `patrone-default-apps_0.1.1`,
+    `patrone-remote-desktop_0.1.0`), `sudo patrone-remote-desktop enable`,
+    `sudo adduser wdaugherty remote-desktop`, `sudo reboot`. Then delete the
+    old saved RDP credentials on Windows (`cmdkey
+    /delete:TERMSRV/DevDistro-PatroneLinux.local`) and connect. Logs:
+    `journalctl -u patrone-remote-desktop` and `journalctl -t
+    patrone-remote-desktop-auth` (the user is in `adm`, so readable over SSH).
+- The earlier per-user attempt (a `headless` mode in
+  `setup-remote-desktop.sh` with the Linux password as GNOME's credentials,
+  and `rdp-no-lock.sh`) was removed: it stored the password, which the user
+  rejected.
 
 Plan:
 
