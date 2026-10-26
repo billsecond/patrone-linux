@@ -1,0 +1,62 @@
+// Patrone's desktops run with no seat: the machine's own screen and Remote
+// Desktop clients all show them through GNOME Remote Desktop (see
+// /usr/share/doc/patrone-remote-desktop/README.md). polkit counts a session
+// as local only when it has a seat, so it treated these desktops like SSH
+// logins: the quick settings' network menu wouldn't open (its permission,
+// network-control, is "yes" only for local sessions) and shutting down
+// asked for an administrator's password.
+//
+// This gives a graphical session with no seat what a desktop at the
+// machine's own screen gets without a password (allow_active "yes" in each
+// action's defaults), for the actions below only. SSH logins and other text
+// sessions, and every other action, are left to the defaults.
+
+var patroneDesktopActions = [
+    "org.freedesktop.NetworkManager.enable-disable-network",
+    "org.freedesktop.NetworkManager.enable-disable-wifi",
+    "org.freedesktop.NetworkManager.enable-disable-wwan",
+    "org.freedesktop.NetworkManager.enable-disable-wimax",
+    "org.freedesktop.NetworkManager.network-control",
+    "org.freedesktop.NetworkManager.wifi.scan",
+    "org.freedesktop.NetworkManager.wifi.share.protected",
+    "org.freedesktop.NetworkManager.wifi.share.open",
+    "org.freedesktop.NetworkManager.settings.modify.own",
+    "org.freedesktop.NetworkManager.enable-disable-statistics",
+    "org.freedesktop.NetworkManager.enable-disable-connectivity-check",
+    "org.freedesktop.login1.power-off",
+    "org.freedesktop.login1.reboot",
+    "org.freedesktop.login1.suspend",
+    "org.freedesktop.udisks2.filesystem-mount",
+    "org.freedesktop.udisks2.encrypted-unlock",
+    "org.freedesktop.udisks2.eject-media",
+    "org.freedesktop.udisks2.power-off-drive"
+];
+
+// Ubuntu also lets administrators at the screen change system-wide
+// connections (org.freedesktop.NetworkManager.rules)
+var patroneDesktopAdminActions = [
+    "org.freedesktop.NetworkManager.settings.modify.system"
+];
+
+// A graphical session (Wayland or X11) with no seat, active: one of
+// Patrone's desktops
+function patroneIsDesktop(subject) {
+    if (subject.local || !subject.active || !subject.session || subject.seat)
+        return false;
+    try {
+        var type = polkit.spawn(["/usr/bin/loginctl", "show-session",
+            subject.session, "--property=Type", "--value"]).trim();
+        return type === "wayland" || type === "x11";
+    } catch (e) {
+        return false;
+    }
+}
+
+polkit.addRule(function (action, subject) {
+    var wanted = patroneDesktopActions.indexOf(action.id) >= 0 ||
+        (patroneDesktopAdminActions.indexOf(action.id) >= 0 &&
+         (subject.isInGroup("sudo") || subject.isInGroup("netdev")));
+    if (wanted && patroneIsDesktop(subject))
+        return polkit.Result.YES;
+    return polkit.Result.NOT_HANDLED;
+});

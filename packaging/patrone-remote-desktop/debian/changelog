@@ -1,3 +1,15 @@
+patrone-remote-desktop (0.4.3) resolute; urgency=medium
+
+  * A polkit rule (45-patrone-desktops.rules) that gives Patrone's desktops,
+    graphical sessions with no seat, what a desktop at the machine's own
+    screen gets without a password: network control (the quick settings'
+    network menu was dead), shutting down, restarting and sleeping, and
+    mounting drives. polkit counts only sessions with a seat as local, so
+    it had treated these desktops like SSH logins. SSH logins and every
+    other action keep the defaults.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:00:00 -0500
+
 patrone-remote-desktop (0.4.2) resolute; urgency=medium
 
   * Get the account's desktop ready while the login screen checks the

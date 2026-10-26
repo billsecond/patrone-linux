@@ -111,8 +111,12 @@ if command -v gjs > /dev/null; then
     } > "$extension_test"
     gjs -m "$extension_test" 2>&1 | grep -v "^Gjs-Message" || failures=$((failures + 1))
     rm -f "$extension_test"
+
+    # The polkit rule for Patrone's desktops, with polkit stood in for
+    gjs -m "$here/polkit-rule-test.js" "$here/../data/patrone-desktops.rules" ||
+        failures=$((failures + 1))
 else
-    echo "skip login screen: gjs isn't installed"
+    echo "skip login screen and polkit rule: gjs isn't installed"
 fi
 
 # The proxy must be able to read the shipped config (it once wasn't: FreeRDP

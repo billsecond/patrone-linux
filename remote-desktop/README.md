@@ -134,6 +134,19 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    (`gnome-session --session=ubuntu`) when it has none. A `gnome.desktop`
    from any other package is moved aside too.
 
+7. **Permissions**: polkit, which decides what a session may do without an
+   administrator's password, counts a session as local only when it has a
+   seat. These desktops have none, so polkit treated them like SSH logins:
+   the quick settings' network menu wouldn't open, and shutting down asked
+   for a password. `data/patrone-desktops.rules`
+   (`/usr/share/polkit-1/rules.d/45-patrone-desktops.rules`) gives a
+   graphical session with no seat what a desktop at the machine's own screen
+   gets without a password: network control (and, for administrators,
+   system-wide connections, as Ubuntu allows), shutting down, restarting
+   and sleeping, and mounting drives. It asks logind for the session's type,
+   so SSH logins and other text sessions keep the defaults, as does every
+   other action.
+
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's
 screen lock and blanking, after saving the account's own settings, and puts
@@ -188,8 +201,9 @@ They need `freerdp3-dev`, `libpam0g-dev`, `pkgconf` and `python3`, and
 plays the proxy's part against a stand-in helper (`tests/fake-auth.py`): no
 credentials, a wrong password, a correct one, an account signed in
 elsewhere, a garbled answer, and no helper at all. It also gives the real
-helper requests it must refuse, and runs the real proxy on the shipped
-config. Signing in for real, on the screen or through a client, needs the
+helper requests it must refuse, runs the real proxy on the shipped config,
+and runs the polkit rule under gjs with polkit stood in for
+(`tests/polkit-rule-test.js`). Signing in for real, on the screen or through a client, needs the
 package installed.
 
 The plugin and helper are C because FreeRDP's plugin interface is a C struct
