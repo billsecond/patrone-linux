@@ -149,8 +149,8 @@ pub fn buttons(cr: &Context, w: f64, h: f64, layout: Layout) {
 }
 
 /// One close button (or minimize, maximize) in a title bar button style,
-/// centered on (cx, cy) in a title bar `bar` tall.
-fn styled_button(cr: &Context, style: &str, button: Button, cx: f64, cy: f64, bar: f64) {
+/// centered on (cx, cy) in a title bar `bar` tall whose text is `ink`.
+fn styled_button(cr: &Context, style: &str, button: Button, cx: f64, cy: f64, bar: f64, ink: u32) {
     match style {
         "wide" => {
             if button == Button::Close {
@@ -161,13 +161,13 @@ fn styled_button(cr: &Context, style: &str, button: Button, cx: f64, cy: f64, ba
                 let _ = cr.fill();
                 symbol(cr, button, cx, cy, bar * 0.3, 0xffffff);
             } else {
-                symbol(cr, button, cx, cy, bar * 0.3, 0x3a3d45);
+                symbol(cr, button, cx, cy, bar * 0.3, ink);
             }
         }
         "round" => {
             let unit = bar * 0.62;
-            fill_rounded(cr, cx - unit / 2.0, cy - unit / 2.0, unit, unit, unit / 2.0, 0xdfe1e6, 1.0);
-            symbol(cr, button, cx, cy, unit * 0.42, 0x3a3d45);
+            fill_rounded(cr, cx - unit / 2.0, cy - unit / 2.0, unit, unit, unit / 2.0, ink, 0.14);
+            symbol(cr, button, cx, cy, unit * 0.42, ink);
         }
         "dots" => {
             let unit = bar * 0.42;
@@ -213,13 +213,13 @@ pub fn button_style(cr: &Context, w: f64, h: f64, style: &str) {
     if style == "theme" {
         for (i, each) in ["wide", "round", "dots", "glossy"].iter().enumerate() {
             let cx = right - bar * 0.75 - (3 - i) as f64 * bar * 1.15;
-            styled_button(cr, each, Button::Close, cx, cy, bar);
+            styled_button(cr, each, Button::Close, cx, cy, bar, 0x3a3d45);
         }
     } else {
         let cell = if style == "wide" { bar * 1.3 } else { bar * 0.8 };
         for (i, button) in [Button::Minimize, Button::Maximize, Button::Close].iter().enumerate() {
             let cx = right - cell * (3 - i) as f64 + cell / 2.0 - if style == "wide" { 0.0 } else { 4.0 };
-            styled_button(cr, style, *button, cx, cy, bar);
+            styled_button(cr, style, *button, cx, cy, bar, 0x3a3d45);
         }
     }
     let _ = cr.restore();
@@ -328,7 +328,8 @@ pub fn taskbar_layout(cr: &Context, w: f64, h: f64, layout: &str) {
 pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
     desktop(cr, w, h);
 
-    // The window
+    // The window, its title bar as the theme draws it (Patrone's in the
+    // dark style, where it differs most), and the theme's own buttons
     let (x, y, ww, wh) = (w * 0.10, h * 0.09, w * 0.66, h * 0.56);
     let bar = (wh * 0.24).max(14.0);
     let radius = match theme {
@@ -337,75 +338,60 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
         _ => 6.0,
     };
     fill_rounded(cr, x, y, ww, wh, radius, 0xffffff, 1.0);
-    match theme {
+    let _ = cr.save();
+    rounded(cr, x, y, ww, wh, radius);
+    cr.clip();
+    let ink = match theme {
         "royal" => {
-            rounded(cr, x, y, ww, bar, radius);
             vertical_gradient(cr, y, bar, 0x3a8cff, 0x0846b8);
+            cr.rectangle(x, y, ww, bar);
             let _ = cr.fill();
-            text(cr, x + 6.0, y + bar * 0.68, bar * 0.5, 0xffffff, FontWeight::Bold, FontSlant::Normal, "Window");
+            0xffffff
         }
         "classic" => {
             color(cr, 0x3d4b63, 1.0);
             cr.rectangle(x, y, ww, bar);
             let _ = cr.fill();
-            text(cr, x + 6.0, y + bar * 0.68, bar * 0.5, 0xffffff, FontWeight::Bold, FontSlant::Normal, "Window");
+            0xffffff
         }
-        _ => {
-            fill_rounded(cr, x, y, ww, bar, radius, if theme == "studio" { 0xe9e9ec } else { 0xf0f1f4 }, 1.0);
-            color(cr, 0xd9dce2, 1.0);
+        "patrone" => {
+            color(cr, 0x16213a, 1.0);
+            cr.rectangle(x, y, ww, bar);
+            let _ = cr.fill();
+            color(cr, 0x288bfa, 1.0);
+            cr.rectangle(x, y + bar - 1.5, ww, 1.5);
+            let _ = cr.fill();
+            0xe8eef7
+        }
+        "studio" => {
+            vertical_gradient(cr, y, bar, 0xf7f7f9, 0xdcdce2);
+            cr.rectangle(x, y, ww, bar);
+            let _ = cr.fill();
+            color(cr, 0x000000, 0.12);
             cr.rectangle(x, y + bar - 1.0, ww, 1.0);
             let _ = cr.fill();
+            0x2a2a2e
         }
+        // Modern: the window's own color, with no line
+        _ => 0x1b1b1b,
+    };
+    let title_size = bar * 0.5;
+    if theme == "studio" {
+        let width = title_size * 3.2;
+        text(cr, x + (ww - width) / 2.0, y + bar * 0.68, title_size, ink, FontWeight::Bold, FontSlant::Normal, "Window");
+    } else {
+        let weight = if theme == "modern" { FontWeight::Normal } else { FontWeight::Bold };
+        text(cr, x + 6.0, y + bar * 0.68, title_size, ink, weight, FontSlant::Normal, "Window");
     }
+
+    let style = crate::theme::theme_buttons(theme);
     let cy = y + bar / 2.0;
-    let unit = bar * 0.62;
-    match theme {
-        "studio" => {
-            for (i, rgb) in [0xff5f57, 0xfebc2e, 0x28c840].iter().enumerate() {
-                fill_rounded(cr, x + 6.0 + i as f64 * unit * 1.25, cy - unit / 2.0, unit, unit, unit / 2.0, *rgb, 1.0);
-            }
-        }
-        "classic" => {
-            for (i, button) in [Button::Minimize, Button::Maximize, Button::Close].iter().enumerate() {
-                let cx = x + ww - (3 - i) as f64 * unit * 1.5 + unit * 0.5;
-                symbol(cr, *button, cx, cy, unit * 0.5, 0xffffff);
-            }
-        }
-        "royal" => {
-            for i in 0..3 {
-                let bx = x + ww - 4.0 - (3 - i) as f64 * (unit + 2.0);
-                rounded(cr, bx, cy - unit / 2.0, unit, unit, 2.0);
-                vertical_gradient(cr, cy - unit / 2.0, unit, if i == 2 { 0xf2967a } else { 0x5b9dff },
-                    if i == 2 { 0xc8381b } else { 0x1f63d8 });
-                let _ = cr.fill_preserve();
-                color(cr, 0xffffff, 1.0);
-                cr.set_line_width(1.0);
-                let _ = cr.stroke();
-                let button = [Button::Minimize, Button::Maximize, Button::Close][i];
-                symbol(cr, button, bx + unit / 2.0, cy, unit * 0.45, 0xffffff);
-            }
-        }
-        "modern" => {
-            for (i, button) in [Button::Minimize, Button::Maximize, Button::Close].iter().enumerate() {
-                let cx = x + ww - (3 - i) as f64 * unit * 1.6 + unit * 0.5;
-                if *button == Button::Close {
-                    color(cr, 0xc42b1c, 1.0);
-                    cr.rectangle(cx - unit * 0.8, y, unit * 1.6, bar - 1.0);
-                    let _ = cr.fill();
-                    symbol(cr, *button, cx, cy, unit * 0.5, 0xffffff);
-                } else {
-                    symbol(cr, *button, cx, cy, unit * 0.5, 0x3a3d45);
-                }
-            }
-        }
-        _ => {
-            for (i, button) in [Button::Minimize, Button::Maximize, Button::Close].iter().enumerate() {
-                let cx = x + ww - 6.0 - (3 - i) as f64 * unit * 1.3 + unit * 0.65;
-                fill_rounded(cr, cx - unit / 2.0, cy - unit / 2.0, unit, unit, unit / 2.0, 0xdfe1e6, 1.0);
-                symbol(cr, *button, cx, cy, unit * 0.42, 0x3a3d45);
-            }
-        }
+    let cell = if style == "wide" { bar * 1.3 } else { bar * 0.8 };
+    for (i, button) in [Button::Minimize, Button::Maximize, Button::Close].iter().enumerate() {
+        let cx = x + ww - cell * (3 - i) as f64 + cell / 2.0 - if style == "wide" { 0.0 } else { 4.0 };
+        styled_button(cr, style, *button, cx, cy, bar, ink);
     }
+    let _ = cr.restore();
 
     // The taskbar
     let tb = (h * 0.17).max(14.0);

@@ -4,5 +4,4 @@ Name=Patrone styles
 Comment=Puts Patrone's theme and title bar button style in the account's GTK settings, at sign-in
 Exec=patrone-settings --apply
 NoDisplay=true
-X-GNOME-Autostart-Phase=Initialization
 X-GNOME-AutoRestart=false

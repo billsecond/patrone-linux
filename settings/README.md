@@ -36,11 +36,21 @@ Five looks, named for what they are, not after other systems:
 
 | Theme | Taskbar | Title bars | Its own button style |
 | --- | --- | --- | --- |
-| Patrone | Patrone's own, light or dark | GNOME's own | Wide |
-| Modern | Flat: rounder buttons, no line along the bar, a blue line under each running app | GNOME's own | Round |
+| Patrone | Patrone's own, light or dark | Pale blue-grey; in the dark style deep navy with a line of Patrone Blue | Wide |
+| Modern | Flat: rounder buttons, no line along the bar, a blue line under each running app | Flat, the window's own color, no line; normal-weight titles | Round |
 | Classic | Plain and square: a solid light or dark grey bar | Solid slate, white titles, square windows | Wide |
 | Royal | Glossy royal blue, a green Start button (just its icon), a lighter blue tray | Deep blue, white titles | Glossy |
-| Studio | Translucent, the apps on a rounded shelf, dots under running apps | GNOME's own | Dots |
+| Studio | Translucent, the apps on a rounded shelf, dots under running apps | Soft brushed grey, bold titles | Dots |
+
+Patrone's, Modern's and Studio's title bars are for GTK 4 apps, light and
+dark (`@media (prefers-color-scheme: dark)`, which GTK 4 sets from the
+style); GTK 3 has no such rule, so GTK 3 apps keep their own title bars
+in those themes. Until 2026-10-26 only Classic and Royal had title bars of
+their own, so choosing among the others seemed to do nothing to windows.
+
+GTK reads the account's `gtk.css` once, when an app starts (`gtksettings.c`
+loads it and never again), so open apps can't follow a change: they show
+it when they're next opened.
 
 Royal was Classic until 2026-10-26, when the user asked for Classic to be
 plainer and for the old look to stay as a theme of its own, without the word
@@ -71,7 +81,7 @@ GTK's own window controls for the same reason.
 
 The taskbar follows `org.patrone.desktop theme` itself. For apps, Patrone
 Settings puts the style sheets (the theme's title bars from
-`data/themes/THEME/`, for Classic and Royal, then the button style from
+`data/themes/THEME/`, then the button style from
 `data/titlebuttons/STYLE/`, installed in `/usr/share/patrone`) into the
 account's `~/.config/gtk-4.0/gtk.css` and `~/.config/gtk-3.0/gtk.css`, as
 `@import`s between two marked lines at the top. Anything else in those
@@ -84,7 +94,7 @@ they are: an autostart entry (`/etc/xdg/autostart/org.patrone.Settings-apply.des
 runs it at every sign-in, so every account has the same buttons from the
 start, and an account's lines move to new versions of the style sheets
 (Modern's and Studio's sheets went away when the buttons became their own
-setting).
+setting, and came back in 0.3.1 with title bars only).
 
 ## Pictures
 

@@ -1,3 +1,19 @@
+patrone-settings (0.3.1) resolute; urgency=medium
+
+  * Every theme has title bars of its own in GTK 4 apps: Patrone's pale
+    blue-grey, or deep navy with a line of Patrone Blue in the dark style;
+    Modern's flat, the window's own color; Studio's soft brushed grey with
+    bold titles; Classic's slate and Royal's blue as before. Before, only
+    Classic and Royal changed title bars, so picking among the others
+    seemed to do nothing to windows.
+  * Round, Dots and Glossy title bar buttons keep a gap from the window's
+    edge, where File Manager's title bar has no padding of its own.
+  * The sign-in entry that writes the account's style sheets runs again:
+    GNOME 50's session skips autostart entries with
+    X-GNOME-Autostart-Phase, which it had.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:20:00 -0500
+
 patrone-settings (0.3.0) resolute; urgency=medium
 
   * The title bar buttons' style is a setting of its own (title-buttons):

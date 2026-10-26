@@ -9,11 +9,13 @@ windowcontrols {
 }
 
 windowcontrols.start {
+  margin-left: 6px;
   margin-right: 6px;
 }
 
 windowcontrols.end {
   margin-left: 6px;
+  margin-right: 6px;
 }
 
 windowcontrols > button,

@@ -193,7 +193,7 @@ mod tests {
         let royal = names(sheets(&data(), "gtk-4.0", "royal", "theme"));
         assert_eq!(royal.last().unwrap(), "titlebuttons/glossy/gtk-4.0.css");
         let patrone = names(sheets(&data(), "gtk-3.0", "patrone", "theme"));
-        assert_eq!(patrone, ["titlebuttons/wide/gtk-3.0.css"]);
+        assert_eq!(patrone.last().unwrap(), "titlebuttons/wide/gtk-3.0.css");
         let chosen = names(sheets(&data(), "gtk-4.0", "studio", "round"));
         assert_eq!(chosen.last().unwrap(), "titlebuttons/round/gtk-4.0.css");
         for (theme, _, _) in THEMES {
