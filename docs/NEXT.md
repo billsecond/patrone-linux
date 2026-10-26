@@ -56,6 +56,11 @@ Done:
   in place of GNOME's top bar, with the Start menu (type to search), role
   slots, jump lists and the tray. Built, and tried in a headless GNOME Shell
   on the VM; not installed yet.
+- **Patrone File Manager** (`file-manager/`, package `patrone-file-manager`,
+  section 8): Windows 11's File Explorer rebuilt in Rust and GTK4, with
+  Patrone-drawn icons. `patrone-default-apps` 0.1.2 makes it the app for
+  folders and puts it in Files' place in the favorites. Built, tested
+  through Broadway and in a headless GNOME Shell; not installed yet.
 - **fastfetch** shows the Patrone logo for the user (`branding/fastfetch/`,
   installed with `branding/fastfetch/install-dev.sh`): the mark traced from
   the concept by `branding/tools/make_terminal_logo.py`, with a gradient in
@@ -102,6 +107,12 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
+- **Install Patrone File Manager** (section 8), from SSH or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.1.0_amd64.deb
+  ~/src/patrone-linux/out/patrone-default-apps_0.1.2_all.deb`, then sign out
+  and in (the favorites change at the next sign-in). Then try it for real:
+  dragging, Ctrl+C/V, network places, a USB drive, and say what doesn't feel
+  like Windows.
 
 ## 1. Patrone Terminal
 
@@ -728,6 +739,86 @@ Findings:
 - GNOME's top bar buttons (`PanelMenu.ButtonBox`) set `x_expand`, but
   `St.Bin` containers don't pass it up, so the tray didn't stretch; 0.1.2
   sets `x_expand = false` on the moved boxes anyway.
+
+## 8. Patrone File Manager (patrone-file-manager)
+
+Built 2026-10-26 at the user's request: an exact replica of Windows 11's
+File Explorer, configurable the same way, with its right-click menus, "All
+RUST if it makes sense". The user named it **File Manager** ("Patrone File
+Manager"): app ID `org.patrone.FileManager`, command
+`patrone-file-manager`. Rust and gtk4-rs without libadwaita; GTK's Default
+theme restyled by `data/style.css`, light and dark. For icons the user chose
+Fluent-style chrome with Windows-style file icons, then asked for "nice
+versions of what Microsoft uses ... professional, but not exact copies", so
+every icon is drawn for Patrone (`tools/make_icons.py` for the color icons,
+`src/glyph.rs` for the line glyphs) and none of Microsoft's files are used.
+`file-manager/README.md` lists what it does.
+
+Verified on the dev VM:
+
+- It builds; 12 unit tests pass (sizes, natural sort, sorting and grouping,
+  search matching, ZIP and TAR round trips, every glyph path); Clippy and
+  rustfmt are clean. The packages build (`patrone-file-manager` 0.1.0, whose
+  build runs the tests; `patrone-default-apps` 0.1.2); their contents and
+  dependencies were inspected; the desktop files validate. In a scratch XDG
+  setup with a stand-in binary on `PATH`, `gio mime inode/directory` picks
+  File Manager from the new `/etc/xdg/mimeapps.list`, and the favorites
+  override compiles against Ubuntu's schemas and puts File Manager in Files'
+  place under both `GNOME` and `ubuntu:GNOME`.
+- By hand through GTK's Broadway backend (mouse clicks and single key
+  presses): Details and Large icons, switching views keeping the selection,
+  each folder's view remembered across restarts, Home, This PC with drive
+  usage, Gallery, the Recycle Bin page, the item and background right-click
+  menus, Open with (opening on hover), Show more options, the View and See
+  more dropdowns, the Details pane, Properties (General, Permissions),
+  Folder Options (Show hidden files applied and kept), copy and paste
+  ("notes - Copy"), a paste conflict through "Compare info" to "keep both"
+  (`budget (2).csv`), the progress window, Delete to the Recycle Bin and Undo
+  Delete restoring the file, New → Folder renaming in place, F2 and Ctrl+Z,
+  search as you type and Escape, Ctrl+T and closing a tab, Compress to ZIP
+  and Extract All, and dark mode.
+- A screenshot under Wayland, from the app itself
+  (`PATRONE_FM_SCREENSHOT`) in a throwaway headless GNOME Shell: the
+  client-side title bar with tabs and window buttons, following the session's
+  dark preference.
+
+Not verified yet: drag and drop, Ctrl+C, Ctrl+V and Ctrl+W from the keyboard
+(the browser keeps them in Broadway), network places and mounting, removable
+drives and Eject, Share, the Open with dialog, Properties' Apply (rename,
+Read-only, Hidden, permissions), restoring windows at sign-in,
+`org.freedesktop.FileManager1`, and daily use in the user's own desktop.
+
+Findings:
+
+- A GTK 4.20+ app style sheet sees `@media (prefers-color-scheme: dark)`
+  only when the provider's `prefers-color-scheme` is bound to
+  `GtkSettings:gtk-interface-color-scheme`; without it the app's palette
+  stayed light while GTK's own theme went dark.
+- `GtkStack` sizes to its largest page unless `hhomogeneous` is off; a
+  hidden page's minimum width pushed the visible one off screen inside a
+  `GtkPaned`.
+- `GtkGridView` items take right-clicks before a bubble-phase gesture on the
+  grid sees them: catch them in the capture phase. List cells keep the
+  position they were bound at when items are added above them; read
+  `GtkListItem:position` instead. GIO reports a new file twice (created,
+  then changed), and `GtkDirectoryList` replaces the item, dropping its
+  selection; a directory monitor also reported the folder itself once, so
+  the view filters out anything not inside the folder it shows.
+- Test runs in a private `dbus-run-session` start their own dconf service,
+  which the desktop's own one overwrites in `~/.config/dconf/user`: give
+  tests their own database with `DCONF_PROFILE` (a file with
+  `user-db:pfm-test`).
+- Papers 50's `papers-thumbnailer` exits 1 for every PDF on the VM, even run
+  by hand, so PDFs show their icon instead of a thumbnail.
+- Nautilus owns `org.freedesktop.FileManager1` through D-Bus activation
+  (`/usr/share/dbus-1/services/org.freedesktop.FileManager1.service`), and
+  Ubuntu's desktop-icons extension starts it at sign-in, so a browser's "Show
+  in folder" will keep opening Nautilus until Patrone's ISO leaves Nautilus
+  out (or the package diverts that service file).
+
+Next: the user's verdict, then the gaps in the README's "Not done yet"
+(group headers in the icon views, the command bar folding into "See more"
+when narrow, Gallery's timeline), and FileManager1.
 
 ## Suggested order
 

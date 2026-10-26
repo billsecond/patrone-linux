@@ -25,6 +25,7 @@ run on it unchanged, and X11 apps run through Xwayland.
 | Session | Starts everything at login | A session entry the login screen can pick, plus systemd user units |
 | Portals | Screenshots, screen sharing, file pickers for sandboxed apps | Start from the existing GTK portal; add our own backend where needed |
 | Terminal | Patrone Terminal, the default terminal | GTK4 + VTE; Kali-style look, copy on select, paste on right-click, zsh with a two-line prompt (see `docs/NEXT.md`) |
+| File manager | Patrone File Manager ("File Manager"), the default file manager | GTK4 in Rust, in the image of Windows 11's File Explorer: tabs, command bar, right-click menus, Folder Options (see `file-manager/README.md`) |
 | Remote desktop | RDP access, including Hyper-V enhanced sessions | Clipboard sharing and desktop resizing when Patrone runs as a Hyper-V guest (see `docs/NEXT.md`) |
 
 At first the login screen is GDM, Ubuntu's own, which can start any Wayland
@@ -35,6 +36,7 @@ session. A Patrone login screen can come later.
 | Job | App | Notes |
 | --- | --- | --- |
 | Terminal | Patrone Terminal | Ours (`terminal/`) |
+| File manager | Patrone File Manager, replacing Ubuntu's Files (decided 2026-10-26) | Ours (`file-manager/`); `patrone-default-apps` makes it the app for folders (`inode/directory`) |
 | Shell | bash with Patrone's two-line prompt (decided 2026-10-26); zsh set up the same way for those who choose it | `patrone-shell-config` |
 | Web browser | Chromium, replacing Firefox (decided 2026-10-25) | Canonical's Chromium snap, kept current automatically by snapd. Not forked or rebranded: Chromium ships security fixes about weekly and a major release every four weeks, and a fork would make us responsible for every one of them. Patrone's look and defaults come from Chromium's enterprise policies instead, in `/etc/chromium-browser/policies/managed/` (the snap's `etc-chromium-browser-policies` plug reads that folder). |
 
@@ -103,6 +105,7 @@ shell/                 panel, launcher, dock, notifications
                        (patrone-gnome-taskbar)
 settings/              the settings app
 terminal/              Patrone Terminal
+file-manager/          Patrone File Manager (patrone-file-manager)
 shell-config/          bash prompt and zsh setup (patrone-shell-config)
 session/               session entry, systemd user units, defaults
 packaging/             Debian packaging for each component

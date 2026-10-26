@@ -6,6 +6,7 @@
 #   ./packaging/build.sh patrone-branding
 #   ./packaging/build.sh patrone-default-apps
 #   ./packaging/build.sh patrone-remote-desktop
+#   ./packaging/build.sh patrone-file-manager -d
 #   ./packaging/build.sh patrone-gnome-taskbar
 #
 # The packages land in out/. For a Rust package the crates are vendored into
@@ -24,6 +25,7 @@ case $package in
     patrone-branding) source_dir=branding ;;
     patrone-default-apps) source_dir=default-apps ;;
     patrone-remote-desktop) source_dir=remote-desktop ;;
+    patrone-file-manager) source_dir=file-manager ;;
     patrone-gnome-taskbar) source_dir=shell/gnome ;;
     *)
         echo "Unknown package: $package" >&2

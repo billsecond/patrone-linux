@@ -1,8 +1,11 @@
-# Patrone's default apps, installed as /etc/xdg/mimeapps.list. It's read
-# before Ubuntu's lists in /usr/share/applications, and a user's own choices
-# (~/.config/mimeapps.list) still win.
+# Patrone's default apps, installed as /etc/xdg/mimeapps.list: Chromium for
+# the web, Patrone File Manager for folders (Nautilus only as a fallback, when
+# File Manager isn't installed). It's read before Ubuntu's lists in
+# /usr/share/applications, and a user's own choices (~/.config/mimeapps.list)
+# still win.
 [Default Applications]
 application/xhtml+xml=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
 text/html=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
+inode/directory=org.patrone.FileManager.desktop;org.gnome.Nautilus.desktop;
 x-scheme-handler/http=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
 x-scheme-handler/https=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
