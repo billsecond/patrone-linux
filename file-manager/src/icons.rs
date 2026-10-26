@@ -4,7 +4,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use gtk::{gio, prelude::*};
+use gtk::{gio, glib, prelude::*};
 
 use crate::places::{self, Special};
 use crate::util;
@@ -199,13 +199,83 @@ pub fn folder_icon(file: &gio::File) -> &'static str {
         Some(Special::Trash) => trash_icon(),
         Some(Special::Network) => "pfm-network",
         None => {
-            if places::mount_root_of(file).is_some() {
+            if let Some(icon) = system_folder_icon(file) {
+                icon
+            } else if places::mount_root_of(file).is_some() {
                 "pfm-drive"
             } else {
                 "pfm-folder"
             }
         }
     }
+}
+
+/// Linux's well-known folders, by what they hold, as Windows marks its own
+/// folders (Windows, Program Files, Users).
+const SYSTEM_FOLDERS: &[(&str, &[&str])] = &[
+    ("pfm-folder-settings", &["/etc", "~/.config"]),
+    (
+        "pfm-folder-programs",
+        &[
+            "/bin",
+            "/sbin",
+            "/usr/bin",
+            "/usr/sbin",
+            "/usr/local/bin",
+            "/usr/local/sbin",
+            "~/.local/bin",
+        ],
+    ),
+    ("pfm-folder-boot", &["/boot", "/boot/efi"]),
+    ("pfm-folder-devices", &["/dev", "/sys"]),
+    (
+        "pfm-folder-libraries",
+        &[
+            "/lib",
+            "/lib32",
+            "/lib64",
+            "/libx32",
+            "/usr/lib",
+            "/usr/lib32",
+            "/usr/lib64",
+            "/usr/libx32",
+            "/usr/local/lib",
+        ],
+    ),
+    ("pfm-folder-users", &["/home"]),
+    ("pfm-folder-admin", &["/root"]),
+    ("pfm-folder-removable", &["/media"]),
+    ("pfm-folder-drive", &["/mnt"]),
+    (
+        "pfm-folder-package",
+        &["/opt", "/usr", "/usr/local", "/snap", "~/snap"],
+    ),
+    ("pfm-folder-live", &["/proc", "/run"]),
+    ("pfm-folder-server", &["/srv", "/var/www"]),
+    ("pfm-folder-temp", &["/tmp", "/var/tmp"]),
+    (
+        "pfm-folder-data",
+        &["/var", "/var/lib", "/usr/share", "~/.local/share"],
+    ),
+    ("pfm-folder-logs", &["/var/log"]),
+    ("pfm-folder-cache", &["/var/cache", "~/.cache"]),
+    ("pfm-folder-recovered", &["/lost+found"]),
+    ("pfm-folder-keys", &["~/.ssh"]),
+    ("pfm-folder-disc", &["/cdrom"]),
+];
+
+fn system_folder_icon(file: &gio::File) -> Option<&'static str> {
+    let path = file.path()?;
+    let home = glib::home_dir();
+    SYSTEM_FOLDERS.iter().find_map(|(icon, paths)| {
+        paths
+            .iter()
+            .any(|known| match known.strip_prefix("~/") {
+                Some(rest) => path == home.join(rest),
+                None => path.as_os_str() == *known,
+            })
+            .then_some(*icon)
+    })
 }
 
 /// The 16-pixel icon for a folder in the navigation pane, tabs and menus.

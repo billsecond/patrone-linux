@@ -699,6 +699,13 @@ fn show_items(window: &Window, menu: &Rc<Menu>) {
         state_bool(window, "show-hidden"),
         act(window, "show-hidden"),
     );
+    menu.check(
+        Icon::Glyph("info"),
+        "System folder hints",
+        None,
+        state_bool(window, "system-hints"),
+        act(window, "system-hints"),
+    );
 }
 
 /// The columns a place can be sorted or grouped by.
@@ -1204,14 +1211,29 @@ pub fn tab_menu(window: &Window, index: usize, widget: &gtk::Widget, x: f64, y: 
             "Move to new window",
             None,
             count > 1,
-            move || {
-                let location = w.tabs()[index].location();
-                if let Some(app) = w.window.application() {
-                    Window::new(&app, location).present();
-                }
-                w.close_tab(index);
-            },
+            move || w.move_tab_to(index, None),
         );
+    }
+    let others: Vec<Window> = crate::window::all()
+        .into_iter()
+        .filter(|other| !Rc::ptr_eq(&other.0, &window.0))
+        .collect();
+    if !others.is_empty() {
+        let w = window.clone();
+        menu.submenu(Icon::None, "Move to window", true, move |sub| {
+            for other in &others {
+                let title = other
+                    .window
+                    .title()
+                    .map(|title| title.to_string())
+                    .unwrap_or_default();
+                let title = title.trim_end_matches(" - File Manager").to_owned();
+                let (w, other) = (w.clone(), other.clone());
+                sub.item(Icon::Glyph("window-new"), &title, None, true, move || {
+                    w.move_tab_to(index, Some(&other))
+                });
+            }
+        });
     }
     menu.separator();
     {

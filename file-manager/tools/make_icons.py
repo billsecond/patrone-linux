@@ -10,6 +10,7 @@ navigation pane gets its own simpler drawings on a 16-unit grid, which stay
 readable at 16 pixels. Nothing here is copied from Microsoft's icons.
 """
 
+import math
 import os
 import sys
 
@@ -147,6 +148,204 @@ def emblem_user():
     return (
         f'<circle cx="32" cy="33" r="4" fill="{BLUE_MID}"/>'
         f'<path d="M24 46.5A8 8 0 0 1 40 46.5Z" fill="{BLUE_MID}"/>'
+    )
+
+
+def big(emblem, scale=1.4):
+    """Windows 11's special folders carry a large emblem across the front."""
+    return (
+        f'<g transform="translate(32 37.5) scale({scale}) translate(-32 -37.5)">'
+        + emblem
+        + "</g>"
+    )
+
+
+# --- System folders' emblems (64 grid, drawn full size on the front) ------------
+
+
+def gear_path(cx, cy, outer, inner, teeth, hole):
+    points = []
+    steps = teeth * 4
+    for step in range(steps):
+        angle = 2 * math.pi * (step + 0.5) / steps - math.pi / 2
+        radius = outer if step % 4 in (0, 1) else inner
+        points.append((cx + radius * math.cos(angle), cy + radius * math.sin(angle)))
+    path = "M" + "L".join(f"{x:.2f} {y:.2f}" for x, y in points) + "Z"
+    return (
+        path
+        + f"M{cx + hole} {cy}A{hole} {hole} 0 1 0 {cx - hole} {cy}"
+        f"A{hole} {hole} 0 1 0 {cx + hole} {cy}Z"
+    )
+
+
+def emblem_settings():
+    return (
+        f'<path d="{gear_path(32, 38, 12.5, 9.6, 8, 4.2)}" fill="#5F6E82" fill-rule="evenodd"/>'
+    )
+
+
+def emblem_programs():
+    return (
+        '<rect x="18.5" y="27" width="27" height="22" rx="2.5" fill="#2E3640"/>'
+        '<path d="M18.5 29.5A2.5 2.5 0 0 1 21 27H43A2.5 2.5 0 0 1 45.5 29.5V31H18.5Z" fill="#4A5563"/>'
+        '<path d="M23 35.5L27.5 39.5L23 43.5" stroke="#43D17E" stroke-width="2.4" fill="none" '
+        'stroke-linecap="round" stroke-linejoin="round"/>'
+        '<path d="M30 44H37.5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>'
+    )
+
+
+def emblem_boot():
+    return (
+        f'<path d="M38.4 31.4A9.8 9.8 0 1 1 25.6 31.4" stroke="{BLUE_MID}" stroke-width="3.2" '
+        'fill="none" stroke-linecap="round"/>'
+        f'<path d="M32 26.5V38" stroke="{BLUE_MID}" stroke-width="3.2" stroke-linecap="round"/>'
+    )
+
+
+def emblem_devices():
+    pins = "".join(
+        f"M{x} 25V28.5M{x} 47.5V51" for x in (25.5, 29.8, 34.2, 38.5)
+    ) + "".join(f"M18.5 {y}H22M42 {y}H45.5" for y in (31.5, 35.8, 40.2, 44.5))
+    return (
+        f'<path d="{pins}" stroke="#7D8896" stroke-width="1.8" stroke-linecap="round"/>'
+        '<rect x="22" y="28" width="20" height="20" rx="2.5" fill="#3C4A5C"/>'
+        '<rect x="27" y="33" width="10" height="10" rx="1.3" fill="#8DA2BA"/>'
+    )
+
+
+def emblem_libraries():
+    layer = (
+        '<path d="M32 {top}L45.5 {mid}L32 {low}L18.5 {mid}Z" fill="{color}" stroke="#FFFFFF" '
+        'stroke-width="1.1" stroke-linejoin="round"/>'
+    )
+    return "".join(
+        layer.format(top=top, mid=top + 5.5, low=top + 11, color=color)
+        for top, color in ((38.5, BLUE_DEEP), (33, BLUE_MID), (27.5, BLUE_HI))
+    )
+
+
+def emblem_users():
+    return (
+        '<circle cx="38" cy="33.2" r="3.8" fill="#4DA0FC"/>'
+        '<path d="M31 49A7.5 7.5 0 0 1 46 49Z" fill="#4DA0FC"/>'
+        f'<circle cx="27" cy="32" r="4.6" fill="{BLUE_MID}" stroke="#FFD96B" stroke-width="1.2"/>'
+        f'<path d="M17.5 49A9.5 9.5 0 0 1 36.5 49Z" fill="{BLUE_MID}" stroke="#FFD96B" '
+        'stroke-width="1.2"/>'
+    )
+
+
+def emblem_admin():
+    return (
+        f'<circle cx="27.5" cy="32" r="4.8" fill="{SLATE}"/>'
+        f'<path d="M17.5 49.5A10 10 0 0 1 37.5 49.5Z" fill="{SLATE}"/>'
+        f'<path d="M39.5 33.5L47 36.2V41.5C47 45.7 43.8 48.6 39.5 50.5C35.2 48.6 32 45.7 32 41.5'
+        f'V36.2Z" fill="{BLUE}" stroke="#FFD96B" stroke-width="1.3" stroke-linejoin="round"/>'
+        '<path d="M36 41.8L38.6 44.3L43 39.3" stroke="#FFFFFF" stroke-width="1.8" fill="none" '
+        'stroke-linecap="round" stroke-linejoin="round"/>'
+    )
+
+
+def emblem_drive():
+    return (
+        '<rect x="18" y="30.5" width="28" height="15" rx="3" fill="#DDE2E8" stroke="#8F9AA6"/>'
+        '<path d="M18 40H46V42.5A3 3 0 0 1 43 45.5H21A3 3 0 0 1 18 42.5Z" fill="#56616D"/>'
+        '<circle cx="42.3" cy="42.8" r="1.2" fill="#43D17E"/>'
+    )
+
+
+def emblem_removable():
+    return (
+        '<rect x="38" y="34" width="9" height="9" rx="1" fill="#DDE2E8" stroke="#8F9AA6"/>'
+        '<rect x="41" y="36.3" width="3" height="1.6" fill="#6A7683"/>'
+        '<rect x="41" y="39.1" width="3" height="1.6" fill="#6A7683"/>'
+        '<rect x="16.5" y="31" width="23" height="15" rx="3" fill="#46505C"/>'
+        f'<rect x="20" y="31" width="3.5" height="15" fill="{BLUE}"/>'
+    )
+
+
+def emblem_package():
+    return (
+        '<path d="M32 26.5L45 32.2L32 37.9L19 32.2Z" fill="#EDC27D"/>'
+        '<path d="M19 32.2L32 37.9V51L19 45.3Z" fill="#C98B3A"/>'
+        '<path d="M32 37.9L45 32.2V45.3L32 51Z" fill="#AD742A"/>'
+        '<path d="M25.5 29.35L38.5 35.05V39.5" stroke="#FFF1D2" stroke-width="2.2" fill="none" '
+        'stroke-linejoin="round"/>'
+    )
+
+
+def emblem_live():
+    return (
+        f'<path d="M17.5 39.5H24L27.3 30.5L32.5 47L36.4 34.5L39 39.5H46.5" stroke="{GREEN}" '
+        'stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+    )
+
+
+def emblem_server():
+    unit = (
+        '<rect x="20" y="{y}" width="24" height="10" rx="2" fill="#3C4A5C"/>'
+        '<circle cx="24.5" cy="{cy}" r="1.4" fill="#43D17E"/>'
+        '<path d="M29 {cy}H39.5" stroke="#8F9AA6" stroke-width="1.6" stroke-linecap="round"/>'
+    )
+    return unit.format(y=27.5, cy=32.5) + unit.format(y=39.5, cy=44.5)
+
+
+def emblem_temp():
+    return (
+        f'<circle cx="32" cy="38.5" r="11" fill="#FFFFFF" stroke="{TEAL}" stroke-width="2.4"/>'
+        f'<path d="M32 31.5V38.5L37 41.5" stroke="{SLATE}" stroke-width="2.3" fill="none" '
+        'stroke-linecap="round" stroke-linejoin="round"/>'
+    )
+
+
+def emblem_data():
+    return (
+        f'<path d="M22 30V46.5A10 3.6 0 0 0 42 46.5V30Z" fill="{INDIGO}"/>'
+        '<path d="M22 35.8A10 3.6 0 0 0 42 35.8M22 41.3A10 3.6 0 0 0 42 41.3" stroke="#B4B6F2" '
+        'stroke-width="1.3" fill="none"/>'
+        '<ellipse cx="32" cy="30" rx="10" ry="3.6" fill="#9497EC"/>'
+    )
+
+
+def emblem_logs():
+    rows = "".join(
+        f'<circle cx="26.6" cy="{y}" r="1.4" fill="{color}"/>'
+        f'<path d="M29.8 {y}H38" stroke="#9AA7B8" stroke-width="1.7" stroke-linecap="round"/>'
+        for y, color in ((32.5, RED), (37.5, ORANGE), (42.5, GREEN))
+    )
+    return (
+        f'<rect x="22.5" y="26.5" width="19" height="22.5" rx="1.8" fill="#FFFFFF" '
+        f'stroke="{SLATE}" stroke-width="1.4"/>' + rows
+    )
+
+
+def emblem_cache():
+    return (
+        f'<path d="M35.5 25.5L23.5 40.5H31L28.5 51L41 35.5H33.4Z" fill="{BLUE}" '
+        f'stroke="{BLUE_DEEP}" stroke-width="1" stroke-linejoin="round"/>'
+    )
+
+
+def emblem_recovered():
+    return (
+        f'<circle cx="29.5" cy="35.5" r="7.5" fill="#DCEBFF" stroke="{SLATE}" stroke-width="3"/>'
+        f'<path d="M35 41L42.5 48.5" stroke="{SLATE}" stroke-width="4" stroke-linecap="round"/>'
+    )
+
+
+def emblem_keys():
+    return (
+        f'<circle cx="26.5" cy="33" r="5.6" fill="none" stroke="{SLATE}" stroke-width="3.2"/>'
+        f'<path d="M30.8 37.3L43 49.5M38.6 45.1L41.4 42.3M41 47.5L43.8 44.7" stroke="{SLATE}" '
+        'stroke-width="3.2" stroke-linecap="round"/>'
+    )
+
+
+def emblem_disc():
+    return (
+        '<circle cx="32" cy="38.5" r="11.5" fill="#E3E9F1" stroke="#8F9AA6"/>'
+        '<path d="M24.5 33A9 9 0 0 1 31 28.2" stroke="#FFFFFF" stroke-width="2" fill="none" '
+        'stroke-linecap="round"/>'
+        '<circle cx="32" cy="38.5" r="3.6" fill="#FFFFFF" stroke="#8F9AA6"/>'
     )
 
 
@@ -345,14 +544,29 @@ def file_disc():
 DRIVE_DEFS = gradient("body", "#E3E7EC", "#B3BCC6") + gradient("strip", "#6A7683", "#4D5763")
 
 
-def drive_body(extra=""):
+def drive_body(extra="", top=15, height=34):
+    """A drive seen from the front: a deep body over a darker strip."""
+    bottom = top + height
+    strip = bottom - 11
     return (
-        '<rect x="7" y="22" width="50" height="24" rx="5" fill="url(#body)" '
+        f'<rect x="4" y="{top}" width="56" height="{height}" rx="6" fill="url(#body)" '
         'stroke="#8F9AA6" stroke-width="1"/>'
-        '<path d="M7 37H57V41A5 5 0 0 1 52 46H12A5 5 0 0 1 7 41Z" fill="url(#strip)"/>'
-        '<path d="M12 23H52" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" opacity=".8"/>'
-        '<circle cx="50.5" cy="41.5" r="1.8" fill="#43D17E"/>'
+        f'<path d="M4 {strip}H60V{bottom - 6}A6 6 0 0 1 54 {bottom}H10A6 6 0 0 1 4 {bottom - 6}Z" '
+        'fill="url(#strip)"/>'
+        f'<path d="M10 {top + 1.2}H54" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" '
+        'opacity=".8"/>'
+        f'<circle cx="53" cy="{bottom - 5.5}" r="2.2" fill="#43D17E"/>'
         + extra
+    )
+
+
+def patrone_mark(transform):
+    """The slanted bars of the Patrone "P", as on the app icon."""
+    return (
+        f'<g transform="{transform}">'
+        '<path d="M27.5 25.5H39L31.5 50.5H20Z" fill="url(#pmark)"/>'
+        f'<path d="M38.5 25.5H47.5L44.4 36H35.4Z" fill="{BLUE_HI}"/>'
+        "</g>"
     )
 
 
@@ -361,11 +575,13 @@ def drive():
 
 
 def drive_system():
-    mark = (
-        '<path d="M14.5 26.5H20.5L18 34H12Z" fill="url(#pmark)"/>'
-        '<path d="M19.5 26.5H23.5L22.2 30.5H18.2Z" fill="' + BLUE_HI + '"/>'
+    # The mark fills the face above the strip, as Windows' logo does on C:.
+    mark = patrone_mark("translate(-2.8 2.6) scale(.7)")
+    return svg(
+        64,
+        drive_body(mark),
+        DRIVE_DEFS + gradient("pmark", BLUE_HI, BLUE_DEEP, x2=0.35, y2=1),
     )
-    return svg(64, drive_body(mark), DRIVE_DEFS + gradient("pmark", BLUE_HI, BLUE_DEEP))
 
 
 def drive_usb():
@@ -401,8 +617,8 @@ def drive_optical():
 def drive_network():
     return svg(
         64,
-        drive_body().replace('y="22"', 'y="14"').replace("M7 37H57V41A5 5 0 0 1 52 46H12A5 5 0 0 1 7 41Z", "M7 29H57V33A5 5 0 0 1 52 38H12A5 5 0 0 1 7 33Z").replace('cy="41.5"', 'cy="33.5"').replace("M12 23H52", "M12 15H52")
-        + f'<path d="M32 38V50M14 52H50" stroke="{SLATE}" stroke-width="2.4" stroke-linecap="round"/>'
+        drive_body(top=7, height=30)
+        + f'<path d="M32 37V50M14 52H50" stroke="{SLATE}" stroke-width="2.4" stroke-linecap="round"/>'
         f'<rect x="27" y="47" width="10" height="9" rx="2" fill="{BLUE}"/>',
         DRIVE_DEFS,
     )
@@ -624,21 +840,21 @@ def nav_computer():
 NAV_DRIVE_DEFS = gradient("db", "#E3E7EC", "#B3BCC6")
 
 
-def nav_drive(extra=""):
+def nav_drive(extra="", defs=""):
     return nav(
-        '<rect x="1" y="4.5" width="14" height="7.5" rx="1.6" fill="url(#db)" stroke="#8F9AA6" '
+        '<rect x=".8" y="2.8" width="14.4" height="10.4" rx="1.8" fill="url(#db)" stroke="#8F9AA6" '
         'stroke-width=".7"/>'
-        '<path d="M1 9H15V10.4A1.6 1.6 0 0 1 13.4 12H2.6A1.6 1.6 0 0 1 1 10.4Z" fill="#56616D"/>'
-        '<circle cx="12.8" cy="10.5" r=".7" fill="#43D17E"/>'
+        '<path d="M.8 9.6H15.2V11.4A1.8 1.8 0 0 1 13.4 13.2H2.6A1.8 1.8 0 0 1 .8 11.4Z" fill="#56616D"/>'
+        '<circle cx="12.9" cy="11.4" r=".75" fill="#43D17E"/>'
         + extra,
-        NAV_DRIVE_DEFS,
+        NAV_DRIVE_DEFS + defs,
     )
 
 
 def nav_drive_system():
     return nav_drive(
-        f'<path d="M3.2 5.6H5.4L4.6 8.2H2.4Z" fill="{BLUE}"/>'
-        f'<path d="M5 5.6H6.6L6.2 7H4.6Z" fill="{BLUE_HI}"/>'
+        patrone_mark("translate(-1.35 -1.45) scale(.21)"),
+        gradient("pmark", BLUE_HI, BLUE_DEEP, x2=0.35, y2=1),
     )
 
 
@@ -698,16 +914,35 @@ def nav_trash(full=False):
 
 ICONS = {
     "pfm-folder": lambda: folder(),
-    "pfm-folder-documents": lambda: folder(emblem_documents()),
-    "pfm-folder-downloads": lambda: folder(emblem_downloads()),
-    "pfm-folder-pictures": lambda: folder(emblem_pictures()),
-    "pfm-folder-music": lambda: folder(emblem_music()),
-    "pfm-folder-videos": lambda: folder(emblem_videos()),
-    "pfm-folder-desktop": lambda: folder(emblem_desktop()),
-    "pfm-folder-templates": lambda: folder(emblem_templates()),
-    "pfm-folder-public": lambda: folder(emblem_public()),
-    "pfm-folder-user": lambda: folder(emblem_user()),
+    "pfm-folder-documents": lambda: folder(big(emblem_documents())),
+    "pfm-folder-downloads": lambda: folder(big(emblem_downloads())),
+    "pfm-folder-pictures": lambda: folder(big(emblem_pictures())),
+    "pfm-folder-music": lambda: folder(big(emblem_music())),
+    "pfm-folder-videos": lambda: folder(big(emblem_videos())),
+    "pfm-folder-desktop": lambda: folder(big(emblem_desktop())),
+    "pfm-folder-templates": lambda: folder(big(emblem_templates())),
+    "pfm-folder-public": lambda: folder(big(emblem_public())),
+    "pfm-folder-user": lambda: folder(big(emblem_user())),
     "pfm-folder-zip": folder_zip,
+    "pfm-folder-settings": lambda: folder(emblem_settings()),
+    "pfm-folder-programs": lambda: folder(emblem_programs()),
+    "pfm-folder-boot": lambda: folder(emblem_boot()),
+    "pfm-folder-devices": lambda: folder(emblem_devices()),
+    "pfm-folder-libraries": lambda: folder(emblem_libraries()),
+    "pfm-folder-users": lambda: folder(emblem_users()),
+    "pfm-folder-admin": lambda: folder(emblem_admin()),
+    "pfm-folder-drive": lambda: folder(emblem_drive()),
+    "pfm-folder-removable": lambda: folder(emblem_removable()),
+    "pfm-folder-package": lambda: folder(emblem_package()),
+    "pfm-folder-live": lambda: folder(emblem_live()),
+    "pfm-folder-server": lambda: folder(emblem_server()),
+    "pfm-folder-temp": lambda: folder(emblem_temp()),
+    "pfm-folder-data": lambda: folder(emblem_data()),
+    "pfm-folder-logs": lambda: folder(emblem_logs()),
+    "pfm-folder-cache": lambda: folder(emblem_cache()),
+    "pfm-folder-recovered": lambda: folder(emblem_recovered()),
+    "pfm-folder-keys": lambda: folder(emblem_keys()),
+    "pfm-folder-disc": lambda: folder(emblem_disc()),
     "pfm-file": lambda: page(),
     "pfm-file-text": file_text,
     "pfm-file-document": file_document,

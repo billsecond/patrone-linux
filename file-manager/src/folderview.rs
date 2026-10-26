@@ -76,6 +76,7 @@ pub struct FolderView {
     pub widget: gtk::Overlay,
     scrolled: gtk::ScrolledWindow,
     empty: gtk::Label,
+    banner: crate::hints::Banner,
     dir: gtk::DirectoryList,
     results: gio::ListStore,
     filter_state: Rc<FilterState>,
@@ -182,22 +183,28 @@ impl FolderView {
             .vexpand(true)
             .build();
         scrolled.add_css_class("file-list");
+        // In the middle of the list, a little above center.
         let empty = gtk::Label::builder()
             .label("This folder is empty.")
             .halign(gtk::Align::Center)
-            .valign(gtk::Align::Start)
-            .margin_top(24)
+            .valign(gtk::Align::Center)
+            .margin_bottom(64)
             .visible(false)
             .can_target(false)
             .build();
         empty.add_css_class("empty-folder");
-        let widget = gtk::Overlay::builder().child(&scrolled).build();
+        let banner = crate::hints::Banner::new();
+        let body = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        body.append(&banner.widget);
+        body.append(&scrolled);
+        let widget = gtk::Overlay::builder().child(&body).build();
         widget.add_overlay(&empty);
 
         let view = Rc::new(FolderView {
             widget,
             scrolled,
             empty,
+            banner,
             dir,
             results,
             filter_state,
@@ -300,6 +307,7 @@ impl FolderView {
         }
         self.filter_state.folder.replace(Some(file.clone()));
         self.dir.set_file(Some(file));
+        self.banner.show(Some(file));
         self.empty.set_label("This folder is empty.");
         self.set_state(state, false);
         self.update_empty();
@@ -317,6 +325,7 @@ impl FolderView {
         self.context.in_trash.set(false);
         self.location.replace(Some(location.clone()));
         self.results.remove_all();
+        self.banner.show(None);
         self.filter_state.folder.replace(None);
         self.filter_model.set_model(Some(&self.results));
         self.dir.set_file(None::<&gio::File>);
@@ -421,6 +430,12 @@ impl FolderView {
             .set(config::flag("hide-extensions"));
         self.context.tooltips.set(config::flag("show-tooltips"));
         self.context.checkboxes.set(config::flag("item-checkboxes"));
+        self.context.hints.set(crate::hints::enabled());
+        let folder = match self.location.borrow().as_ref() {
+            Some(Location::Folder(file)) => Some(file.clone()),
+            _ => None,
+        };
+        self.banner.show(folder.as_ref());
         crate::thumbs::set_enabled(config::flag("show-thumbnails"));
         if let Some(view) = self.view.borrow().as_ref() {
             set_single_click(view, config::flag("single-click"));
@@ -1518,7 +1533,7 @@ mod tests {
 
     #[test]
     fn folders_come_first_and_names_sort_naturally() {
-        let mut items = vec![
+        let mut items = [
             info("b10.txt", false, 1),
             info("Zoo", true, 0),
             info("b2.txt", false, 5),
@@ -1531,7 +1546,7 @@ mod tests {
 
     #[test]
     fn descending_reverses_everything() {
-        let mut items = vec![
+        let mut items = [
             info("a.txt", false, 1),
             info("Folder", true, 0),
             info("b.txt", false, 5),

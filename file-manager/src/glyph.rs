@@ -418,6 +418,17 @@ fn definition(name: &str) -> Option<&'static [(Paint, &'static str)]> {
                 "M8.7 11.6A.7.7 0 1 1 7.3 11.6A.7.7 0 1 1 8.7 11.6Z",
             ),
         ],
+        "info" => &[
+            (
+                AccentFill,
+                "M14.5 8A6.5 6.5 0 1 1 1.5 8A6.5 6.5 0 1 1 14.5 8Z",
+            ),
+            (ColorStroke(0xFFFFFF), "M8 7.2V11.4"),
+            (
+                ColorFill(0xFFFFFF),
+                "M8.7 4.9A.7.7 0 1 1 7.3 4.9A.7.7 0 1 1 8.7 4.9Z",
+            ),
+        ],
         "link-overlay" => &[
             (ColorFill(0xFFFFFF), "M1 1H15V15H1Z"),
             (
@@ -678,6 +689,7 @@ mod tests {
         "warning",
         "error",
         "question",
+        "info",
         "link-overlay",
     ];
 

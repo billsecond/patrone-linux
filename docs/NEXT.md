@@ -59,8 +59,10 @@ Done:
 - **Patrone File Manager** (`file-manager/`, package `patrone-file-manager`,
   section 8): Windows 11's File Explorer rebuilt in Rust and GTK4, with
   Patrone-drawn icons. `patrone-default-apps` 0.1.2 makes it the app for
-  folders and puts it in Files' place in the favorites. Built, tested
-  through Broadway and in a headless GNOME Shell; not installed yet.
+  folders and puts it in Files' place in the favorites. The user installed
+  0.1.0 and asked for changes; 0.2.0 (tab dragging between windows, typed
+  commands, system folder hints, a new Permissions tab) is built and tried
+  with real input in a headless GNOME Shell, not installed yet.
 - **fastfetch** shows the Patrone logo for the user (`branding/fastfetch/`,
   installed with `branding/fastfetch/install-dev.sh`): the mark traced from
   the concept by `branding/tools/make_terminal_logo.py`, with a gradient in
@@ -116,12 +118,13 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager** (section 8), from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.1.0_amd64.deb
-  ~/src/patrone-linux/out/patrone-default-apps_0.1.2_all.deb`, then sign out
-  and in (the favorites change at the next sign-in). Then try it for real:
-  dragging, Ctrl+C/V, network places, a USB drive, and say what doesn't feel
-  like Windows.
+- **Install Patrone File Manager 0.2.0** (section 8), from SSH or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.0_amd64.deb`
+  (and `patrone-default-apps_0.1.2_all.deb` beside it if it isn't installed
+  yet), then close every File Manager window so the new version starts. Try
+  tab dragging between windows, a command in the address bar, View → Show →
+  System folder hints, and Properties → Permissions on a script (Apply asks
+  for your password when it needs administrator rights).
 
 ## 1. Patrone Terminal
 
@@ -847,9 +850,89 @@ Findings:
   in folder" will keep opening Nautilus until Patrone's ISO leaves Nautilus
   out (or the package diverts that service file).
 
-Next: the user's verdict, then the gaps in the README's "Not done yet"
-(group headers in the icon views, the command bar folding into "See more"
-when narrow, Gallery's timeline), and FileManager1.
+### 0.2.0 (2026-10-26, after the user tried 0.1.0)
+
+The user's notes on 0.1.0, and what changed:
+
+- "The tab is too large on the initial one, and it must be draggable to
+  change the location of the window, just like the header bar ... figure
+  out what happens if I want to attach that tab to another file explorer":
+  tabs have a fixed width; a window's only tab moves the window; with
+  several, dragging along the strip reorders and pulling a tab out (or Ctrl)
+  carries it: dropped on another window's title bar it joins that window,
+  anywhere else it opens in its own window, and an emptied window closes.
+  The tab menu's "Move to new window" now moves the tab, and "Move to
+  window" lists the others.
+- "I can't seem to close multiple tabs": the tab's press handler claimed
+  every left click, which cancelled its own close button's click. Fixed.
+- A "hint" option showing what system folders are for, with a banner naming
+  the Windows equivalent; the user then asked for it as a View option ("there
+  is no help menu"): View → Show → System folder hints, and Folder Options →
+  View. Tags beside system folders and well-known files, a banner inside
+  them, the table in `file-manager/src/hints.rs`.
+- "The permissions window is a bit strange ... it should allow us to mark
+  something as executable. If the help/hint area is on ... show what the
+  command would be": a new Permissions tab (owner and group, Read/Write/Run
+  for owner, group and everyone else, "Allow running this file as a
+  program", special permissions, apply inside a folder, the mode as `0755`
+  and `-rwxr-xr-x`), changes as administrator through pkexec when needed,
+  and with hints on the `chmod`/`chown` commands, with `sudo` when needed.
+- Text looked too large and icons too small, and the special folders'
+  emblems too small: the text is 9 pt (Windows' size) in Patrone's Inter
+  (Noto Sans until `fonts-inter` is installed), list icons are drawn at 20
+  px (the artwork's margins make the item about 16), the emblems are 1.4
+  times larger, and the system drive and its "P" are larger.
+- At `/`, known folders get their own icons (a gear for `/etc`, a terminal
+  for the program folders, and so on).
+- The empty-folder message sits in the middle of the view.
+- A command typed in the address bar runs in that folder, as in Windows:
+  apps with windows directly, anything else in a terminal that stays open;
+  `cmd`, `notepad`, `explorer` and the like work; `cd PLACE` navigates.
+
+Verified on the dev VM, in a throwaway headless GNOME Shell driven with real
+pointer and keyboard input through Mutter's RemoteDesktop API and watched
+through its ScreenCast stream (see the README's testing notes):
+
+- Dragging a window's only tab moved the window by exactly the drag.
+  Dragging the second of two tabs to the left reordered them. Pulling a tab
+  down and dropping it on the desktop opened it in a new window (a floating
+  copy of the tab follows the pointer, the original fades). Ctrl-dragging
+  that window's only tab onto the first window's title bar added it there
+  (with the blue insertion line), and the emptied window closed. Clicking ×
+  on an inactive tab closed it. "+" opens a tab.
+- `touch made-by-command.txt` typed in the address bar ran in a terminal in
+  that folder and created the file; `notepad notes.txt` opened Text Editor
+  on the folder's `notes.txt` with no terminal.
+- Screenshots: `/` in Details with hints on (tags, banner, the new icons),
+  the Permissions tab of a script and of `/etc` (with the "root owns this"
+  notice and `sudo chown`/`chmod` commands), the empty-folder message, the
+  sample folder at the new sizes, and an icon sheet of every folder and
+  drive icon.
+- 14 unit tests pass (new: hint lookup, symbolic and recursive modes);
+  Clippy and rustfmt are clean; the 0.2.0 package builds.
+
+Not verified yet: applying permission changes (directly or through pkexec's
+password prompt, which needs the user), dropping files on a tab, the tab
+menu's "Move to window", and how Inter looks once installed.
+
+Findings:
+
+- GNOME's Wayland ends a drag dropped where nothing accepts it with
+  `GDK_DRAG_CANCEL_ERROR`, not `NO_TARGET`, so tab tear-off checks both.
+- GTK 4.22 can't use `xdg_toplevel_drag_v1` (Mutter has it, GTK doesn't use
+  it), so a carried tab is a floating copy and the new window opens where
+  GNOME places new windows, not under the pointer.
+- Mutter's `NotifyPointerMotionAbsolute` takes the stream path as a string
+  (`(sdd)`), not an object path.
+- `gsettings set` hung in a private `dbus-run-session`; GLib's keyfile
+  backend (`GSETTINGS_BACKEND=keyfile`, `XDG_CONFIG_HOME` pointing at a
+  scratch folder) avoids dconf for tests altogether.
+- Pango adds a hyphen where it breaks a word, which reads as part of a path;
+  path and command labels turn hyphens off.
+
+Next: the user's verdict on 0.2.0, then the gaps in the README's "Not done
+yet" (group headers in the icon views, the command bar folding into "See
+more" when narrow, Gallery's timeline), and FileManager1.
 
 ## 9. Patrone Settings (patrone-settings)
 

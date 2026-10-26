@@ -1,3 +1,29 @@
+patrone-file-manager (0.2.0) resolute; urgency=medium
+
+  * Tabs keep a fixed width. Dragging a window's only tab moves the window;
+    a tab pulled out of the strip (or dragged with Ctrl) joins another
+    window's tabs when dropped on its title bar, or opens in a window of its
+    own. "Move to new window" moves the tab itself; "Move to window" lists
+    the other windows. Files dropped on a tab go into its folder.
+  * A tab's close button works again: the tab no longer takes the click.
+  * Commands typed in the address bar run in the folder on screen, as in
+    Windows: apps with windows directly, anything else in a terminal that
+    stays open; Windows' names (cmd, notepad, explorer...) work; cd PLACE
+    goes there.
+  * System folder hints (View > Show, Folder Options > View): tags saying
+    what system folders and well-known files are for, a banner with the
+    Windows equivalent, and the matching commands in Permissions.
+  * Permissions: changeable owner and group, "Allow running this file as a
+    program", the special permissions, applying to everything inside a
+    folder, the mode as numbers and letters, and changes as administrator
+    through pkexec when they need it.
+  * System folders have their own icons; the special folders' emblems and
+    the system drive's mark are larger.
+  * Text in Patrone's typeface (Inter) at Windows' 9 points, with larger
+    icons in the lists; the empty-folder message sits in the middle.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 14:40:00 -0500
+
 patrone-file-manager (0.1.0) resolute; urgency=medium
 
   * First package of Patrone File Manager.

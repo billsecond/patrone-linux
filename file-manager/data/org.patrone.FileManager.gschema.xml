@@ -80,6 +80,11 @@
       <default>false</default>
       <summary>Use check boxes to select items</summary>
     </key>
+    <key name="show-system-hints" type="b">
+      <default>false</default>
+      <summary>Show what system folders and files are for</summary>
+      <description>Tags system folders and well-known files with what they're for, explains the system folder on screen with its Windows equivalent, and shows the commands behind the Permissions tab.</description>
+    </key>
     <key name="typing-in-view" type="s">
       <choices>
         <choice value="select"/>

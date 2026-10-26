@@ -41,6 +41,8 @@ pub struct CellContext {
     pub hide_extensions: Cell<bool>,
     pub tooltips: Cell<bool>,
     pub checkboxes: Cell<bool>,
+    /// "System folder hints": tag system folders with what they're for.
+    pub hints: Cell<bool>,
     pub in_trash: Cell<bool>,
     pub cells: RefCell<Vec<glib::WeakRef<FileCell>>>,
     /// Files dropped on a folder: the files, the folder, and copy or move.
@@ -54,6 +56,7 @@ impl CellContext {
             hide_extensions: Cell::new(true),
             tooltips: Cell::new(true),
             checkboxes: Cell::new(false),
+            hints: Cell::new(false),
             in_trash: Cell::new(false),
             cells: RefCell::default(),
             on_drop: RefCell::default(),
@@ -236,6 +239,8 @@ mod imp {
         pub icon: RefCell<Option<gtk::Image>>,
         pub link: RefCell<Option<Glyph>>,
         pub name: RefCell<Option<gtk::Label>>,
+        /// The system folder hint's tag.
+        pub tag: RefCell<Option<gtk::Label>>,
         pub lines: RefCell<Vec<gtk::Label>>,
         pub check: RefCell<Option<gtk::CheckButton>>,
         pub editor: RefCell<Option<gtk::Entry>>,
@@ -301,6 +306,12 @@ impl FileCell {
 
         let name = gtk::Label::builder().xalign(0.0).build();
         name.add_css_class("item-name");
+        let tag = gtk::Label::builder()
+            .valign(gtk::Align::Center)
+            .halign(gtk::Align::Start)
+            .visible(false)
+            .build();
+        tag.add_css_class("folder-hint");
 
         match kind {
             CellKind::Grid(size) => {
@@ -339,6 +350,9 @@ impl FileCell {
                 name.set_max_width_chars(1);
                 name.set_width_request(width - 8);
                 cell.append(&name);
+                tag.set_halign(gtk::Align::Center);
+                cell.append(&tag);
+                imp.tag.replace(Some(tag));
                 imp.icon.replace(Some(icon));
                 imp.link.replace(Some(link));
             }
@@ -364,11 +378,14 @@ impl FileCell {
                 overlay.add_overlay(&link);
                 cell.append(&overlay);
                 name.set_ellipsize(pango::EllipsizeMode::End);
-                name.set_hexpand(true);
                 if kind == CellKind::Row {
                     name.set_max_width_chars(28);
                 }
                 cell.append(&name);
+                // The tag sits just after the name and takes the spare room.
+                tag.set_hexpand(true);
+                cell.append(&tag);
+                imp.tag.replace(Some(tag));
                 imp.icon.replace(Some(icon));
                 imp.link.replace(Some(link));
             }
@@ -397,6 +414,8 @@ impl FileCell {
                     name.set_max_width_chars(24);
                 }
                 text.append(&name);
+                text.append(&tag);
+                imp.tag.replace(Some(tag));
                 let mut lines = Vec::new();
                 let count = if kind == CellKind::Tile { 2 } else { 1 };
                 for _ in 0..count {
@@ -515,6 +534,24 @@ impl FileCell {
             link.set_visible(info.is_symlink());
         }
 
+        if let Some(tag) = imp.tag.borrow().as_ref() {
+            let hint = context
+                .hints
+                .get()
+                .then(|| util::file_of(info))
+                .flatten()
+                .and_then(|file| crate::hints::for_file(&file));
+            tag.set_visible(hint.is_some());
+            if let Some(hint) = hint {
+                tag.set_label(hint.tag);
+                let mut tip = hint.about.to_owned();
+                if let Some(windows) = hint.windows {
+                    tip.push_str(&format!("\n\nOn Windows: {windows}"));
+                }
+                tag.set_tooltip_text(Some(&tip));
+            }
+        }
+
         if let Some(check) = imp.check.borrow().as_ref() {
             check.set_visible(context.checkboxes.get());
             check.set_active(selected);
@@ -573,7 +610,8 @@ impl FileCell {
             CellKind::Grid(size) => size,
             CellKind::Tile => 48,
             CellKind::Content => 32,
-            _ => 16,
+            // The artwork has margins: at 20 the item itself is about 16.
+            _ => 20,
         };
         icons::set_image(&icon, icons::for_info(&info), size);
         icon.remove_css_class("thumbnail");

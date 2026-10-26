@@ -351,7 +351,13 @@ mod tests {
             fs::write(source.join("a.txt"), "alpha").unwrap();
             fs::write(source.join("sub").join("b.txt"), "beta").unwrap();
             let archive = dir.join(format!("Project{}", format.extension()));
-            compress(&[source.clone()], &archive, format, &Progress::default()).unwrap();
+            compress(
+                std::slice::from_ref(&source),
+                &archive,
+                format,
+                &Progress::default(),
+            )
+            .unwrap();
             let out = dir.join("out");
             extract(&archive, &out, &Progress::default()).unwrap();
             assert_eq!(

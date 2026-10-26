@@ -27,8 +27,8 @@ window, tooltip, popover, dnd {
   --shadow: rgba(0, 0, 0, 0.16);
   --danger: #c42b1c;
   --progress: #13a10e;
-  font-family: "Noto Sans", sans-serif;
-  font-size: 9.75pt;
+  font-family: "Inter", "Noto Sans", sans-serif;
+  font-size: 9pt;
   color: var(--text);
 }
 
@@ -107,6 +107,28 @@ window.fluent-dialog.csd {
 .tab.active {
   background-color: var(--layer);
   color: var(--text);
+}
+
+/* A tab being carried to another window, where it would land, and the
+   copy of it that follows the pointer. */
+.tab.carried {
+  opacity: 0.45;
+}
+
+.tab.drop-before {
+  box-shadow: inset 2px 0 var(--accent);
+}
+
+.tab.drop-after {
+  box-shadow: inset -2px 0 var(--accent);
+}
+
+.tab.floating {
+  min-width: 180px;
+  padding-right: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--menu-border);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 .tab-close {
@@ -543,6 +565,41 @@ listview.content-view > row:not(:last-child) {
   color: var(--text-secondary);
 }
 
+/* System folder hints: a tag beside the name, and a banner above the list. */
+.folder-hint {
+  margin: 0 4px;
+  padding: 0 7px;
+  border-radius: 9px;
+  background-color: var(--selected);
+  color: var(--accent-text);
+  font-size: 8pt;
+  font-weight: 600;
+}
+
+.grid-cell .folder-hint {
+  margin-top: 2px;
+}
+
+.hint-banner {
+  padding: 10px 12px 10px 16px;
+  background-color: var(--layer);
+  border-bottom: 1px solid var(--divider);
+}
+
+.hint-title {
+  font-weight: 600;
+}
+
+.hint-path {
+  color: var(--text-secondary);
+  font-family: "Ubuntu Sans Mono", "Noto Sans Mono", monospace;
+  font-size: 9pt;
+}
+
+.hint-windows {
+  color: var(--text-secondary);
+}
+
 .group-header {
   padding: 12px 10px 4px 10px;
 }
@@ -974,6 +1031,45 @@ notebook.property-tabs > header tab:checked {
 .property-key {
   color: var(--text-secondary);
   min-width: 96px;
+}
+
+/* Permissions: a bordered table of who may do what, as Windows' Security
+   tab lists users with their Allow boxes. */
+.permission-table {
+  padding: 8px 12px;
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  background-color: var(--surface);
+}
+
+.permission-heading {
+  color: var(--text-secondary);
+  font-size: 9pt;
+  padding-bottom: 2px;
+}
+
+.permission-mode {
+  color: var(--text-secondary);
+  font-family: "Ubuntu Sans Mono", "Noto Sans Mono", monospace;
+  font-size: 9pt;
+}
+
+.permission-notice {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background-color: rgba(242, 169, 0, 0.14);
+}
+
+.permission-commands {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: var(--layer);
+  border: 1px solid var(--divider);
+}
+
+.command-text {
+  font-family: "Ubuntu Sans Mono", "Noto Sans Mono", monospace;
+  font-size: 9pt;
 }
 
 separator.property-rule {

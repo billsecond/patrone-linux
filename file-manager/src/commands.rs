@@ -555,15 +555,7 @@ pub fn open_terminal(window: &Window) {
     let Some(path) = folder.and_then(|folder| folder.path()) else {
         return;
     };
-    let started = std::process::Command::new("xdg-terminal-exec")
-        .current_dir(&path)
-        .spawn()
-        .is_ok()
-        || std::process::Command::new("x-terminal-emulator")
-            .current_dir(&path)
-            .spawn()
-            .is_ok();
-    if !started {
+    if !crate::run::terminal(&path, None) {
         dialogs::error(
             parent(window).as_ref(),
             "Open in Terminal",

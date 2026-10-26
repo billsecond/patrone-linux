@@ -455,6 +455,14 @@ pub fn show(window: &Window) {
     form.check(
         tab,
         &advanced,
+        "Show what system folders and files are for, with Windows equivalents",
+        "show-system-hints",
+        false,
+        12,
+    );
+    form.check(
+        tab,
+        &advanced,
         "Display delete confirmation dialog",
         "confirm-trash",
         false,

@@ -8,11 +8,27 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
 
 ## What it does
 
-- **Window:** tabs in the title bar (new, close, middle-click to close, drag
-  to reorder, a right-click menu with Duplicate, Move to new window, Close
-  other tabs and Close tabs to the right); Back, Forward, Up and Refresh;
-  breadcrumbs whose chevrons list each folder's subfolders, which turn into a
-  path field when clicked; "Previous locations"; the search box.
+- **Window:** tabs in the title bar (new, close, middle-click to close, a
+  right-click menu with Duplicate, Move to new window, Move to window ▸,
+  Close other tabs and Close tabs to the right); Back, Forward, Up and
+  Refresh; breadcrumbs whose chevrons list each folder's subfolders, which
+  turn into a path field when clicked; "Previous locations"; the search box.
+- **Dragging tabs**, as in Windows 11: a window's only tab moves the window,
+  like the title bar. With several tabs, dragging along the strip reorders
+  them; pulling a tab out of the strip (or holding Ctrl) picks it up, and
+  dropping it on another File Manager window's title bar adds it there
+  (a blue line shows where), while dropping it anywhere else opens it in a
+  window of its own. A window whose last tab leaves closes. Files dragged
+  over a tab switch to it; dropped on a tab, they go into its folder.
+  Wayland doesn't let apps place windows, so a torn-off tab's window opens
+  where GNOME puts new windows, not under the pointer.
+- **Commands in the address bar**, as in Windows: what isn't a place runs in
+  the folder on screen. Apps with a window of their own start directly
+  (`gnome-text-editor notes.txt`); anything else runs in a terminal through
+  your shell, so pipes and `sudo` work, and the terminal stays open there.
+  Windows' names work too: `cmd`, `powershell` and `wt` open a terminal
+  there, `notepad`, `calc`, `taskmgr`, `control` and `regedit` open their
+  Patrone counterparts, `explorer` a new window; `cd PLACE` goes there.
 - **Command bar:** New (folder, text document, anything in Templates);
   Cut, Copy, Paste, Rename, Share and Delete; Sort, View and Filter; buttons
   for the selection (Empty Recycle Bin, Restore, Extract all, Set as
@@ -66,9 +82,30 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   as on Windows.
 - **Properties** (Alt+Enter): General (name, type, the app it opens with
   and Change..., location, size and size on disk, what a folder contains,
-  dates, Read-only and Hidden), Permissions (owner, group and the
-  read/write/run grid; Linux's version of Windows' Security tab) and
-  Details. Drives show a chart of used and free space.
+  dates, Read-only and Hidden), Permissions and Details. Drives show a chart
+  of used and free space.
+- **Permissions**, Linux's version of Windows' Security tab: the owner and
+  group (changeable), what the owner, the group and everyone else may do
+  (Read, Write, Run; for folders List contents, Add and delete, Open),
+  "Allow running this file as a program", the special permissions (set user
+  ID, set group ID, sticky), for folders "Apply to everything inside", and
+  the mode in numbers and letters (`0755`, `-rwxr-xr-x`). A change you may
+  not make yourself is made as administrator after the system asks for your
+  password (pkexec).
+- **System folder hints** (View → Show, or Folder Options → View), for
+  people who know Windows: system folders and well-known files get a tag
+  saying what they're for (`/etc` "Settings", `/usr/bin` "Programs",
+  `~/.config` "App settings"), and inside one a banner explains it and names
+  what plays the same part on Windows (`/etc`: the Registry's
+  HKEY_LOCAL_MACHINE and `C:\ProgramData`). Permissions then also shows the
+  `chmod` and `chown` commands for its settings, with `sudo` when they need
+  it. The table is in `src/hints.rs`.
+- **System folders have their own icons** wherever they're shown, as
+  Windows' do: a gear for `/etc` and `~/.config`, a terminal for the
+  program folders, a power button for `/boot`, a chip for `/dev` and `/sys`,
+  layers for the libraries, people for `/home`, a shield for `/root`, a
+  package for `/opt`, `/usr` and snaps, a clock for `/tmp`, a log for
+  `/var/log`, and so on.
 - **Search:** names anywhere, ignoring case, with `*` and `?` wildcards,
   through subfolders; optionally inside text files and ZIP files. Results
   stream in, with a Folder column.
@@ -106,6 +143,7 @@ Properties adds the name to `.hidden`, which every GTK app honors.
 | Ctrl+Shift+E | Expand the navigation pane to the open folder |
 | Shift+F10 or the Menu key | Right-click menu |
 | F11 | Full screen |
+| Ctrl while dragging a tab | Pick the tab up, even a window's only one |
 
 Typing in a file list selects the item that starts with what was typed.
 
@@ -128,7 +166,10 @@ file types, drives, places) are SVGs in `data/icons`, drawn by
 `tools/make_icons.py`; `tools/preview_icons.py` renders them all on light
 and dark backgrounds for checking. The line glyphs of the command bar and
 menus are vector paths in `src/glyph.rs`, drawn in the text color so they
-follow light and dark mode. The text is Noto Sans.
+follow light and dark mode. The text is Patrone's typeface, Inter (Noto Sans
+until `fonts-inter` is installed), at Windows' 9 points; file lists draw
+their icons at 20 pixels, which with the artwork's margins makes the item
+itself about Windows' 16.
 
 ## Build and try it
 
@@ -171,7 +212,22 @@ Every window shares one process.
   run the app with `WAYLAND_DISPLAY=NAME PATRONE_FM_SCREENSHOT=out.png`; it
   draws its first window into `out.png` after
   `PATRONE_FM_SCREENSHOT_DELAY` milliseconds (2000) and quits.
-  `PATRONE_FM_COLOR_SCHEME=dark` or `light` forces a color scheme.
+  `PATRONE_FM_COLOR_SCHEME=dark` or `light` forces a color scheme. With
+  `PATRONE_FM_SCREENSHOT_DIALOG=1` it draws a dialog open by then instead
+  (open Properties with `gdbus call --session --dest org.patrone.FileManager
+  --object-path /org/freedesktop/FileManager1 --method
+  org.freedesktop.FileManager1.ShowItemProperties "['file:///etc']" ""`),
+  and `PATRONE_FM_SCREENSHOT_PAGE=N` shows its Nth tab first.
+- **Real mouse and keyboard input:** in that headless GNOME Shell, Mutter's
+  RemoteDesktop and ScreenCast D-Bus APIs move and click the pointer
+  (`NotifyPointerMotionAbsolute` takes the stream's path as a string),
+  type, and stream the screen to PipeWire, where
+  `gst-launch-1.0 pipewiresrc path=NODE ! videoconvert ! pngenc snapshot=true ! filesink`
+  saves a screenshot. That's how tab dragging was tried: on GNOME's Wayland a
+  drag dropped where nothing accepts it ends as an error, not "no target".
+- **Settings without dconf:** `GSETTINGS_BACKEND=keyfile` with
+  `XDG_CONFIG_HOME` pointing at a scratch folder reads
+  `glib-2.0/settings/keyfile` there.
 - Test runs in a private D-Bus session get their own dconf service, which
   fights the desktop's over `~/.config/dconf/user`. Give them their own
   database: `DCONF_PROFILE=` a file containing `user-db:pfm-test`.

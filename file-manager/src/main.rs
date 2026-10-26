@@ -15,6 +15,7 @@ mod filecell;
 mod folderview;
 mod gallery;
 mod glyph;
+mod hints;
 mod home;
 mod icons;
 mod location;
@@ -24,9 +25,11 @@ mod navpane;
 mod openwith;
 mod ops;
 mod options;
+mod permissions;
 mod places;
 mod progress;
 mod properties;
+mod run;
 mod search;
 mod sidepane;
 mod tab;
@@ -199,22 +202,61 @@ fn take_screenshot_if_asked(window: &Window) {
         .unwrap_or(2000);
     let window = window.gtk_window();
     glib::timeout_add_local_once(std::time::Duration::from_millis(delay), move || {
-        let (width, height) = (window.width(), window.height());
-        let paintable = gtk::WidgetPaintable::new(Some(&window));
-        let snapshot = gtk::Snapshot::new();
-        paintable.snapshot(&snapshot, width as f64, height as f64);
-        let renderer = window.native().and_then(|native| native.renderer());
-        if let (Some(node), Some(renderer)) = (snapshot.to_node(), renderer) {
-            let texture = renderer.render_texture(
-                &node,
-                Some(&graphene::Rect::new(0.0, 0.0, width as f32, height as f32)),
-            );
-            if let Err(error) = texture.save_to_png(&path) {
-                eprintln!("patrone-file-manager: could not save {path}: {error}");
+        // With PATRONE_FM_SCREENSHOT_DIALOG set, a dialog open by then
+        // (Properties, Folder Options) is drawn instead.
+        let dialog = std::env::var_os("PATRONE_FM_SCREENSHOT_DIALOG").and_then(|_| {
+            gtk::Window::list_toplevels()
+                .into_iter()
+                .filter_map(|widget| widget.downcast::<gtk::Window>().ok())
+                .find(|other| other != &window && other.is_visible())
+        });
+        let app = window.application();
+        let window = dialog.unwrap_or(window);
+        // PATRONE_FM_SCREENSHOT_PAGE=N shows a dialog's Nth tab first.
+        let page = std::env::var("PATRONE_FM_SCREENSHOT_PAGE")
+            .ok()
+            .and_then(|page| page.parse::<u32>().ok());
+        let notebook = page.and_then(|_| find_notebook(window.upcast_ref()));
+        if let (Some(page), Some(notebook)) = (page, &notebook) {
+            notebook.set_current_page(Some(page));
+        }
+        let settle = if notebook.is_some() { 500 } else { 0 };
+        glib::timeout_add_local_once(std::time::Duration::from_millis(settle), move || {
+            draw_to_png(&window, &path);
+            if let Some(app) = app {
+                app.quit();
             }
-        }
-        if let Some(app) = window.application() {
-            app.quit();
-        }
+        });
     });
+}
+
+fn find_notebook(widget: &gtk::Widget) -> Option<gtk::Notebook> {
+    if let Some(notebook) = widget.downcast_ref::<gtk::Notebook>() {
+        return Some(notebook.clone());
+    }
+    let mut child = widget.first_child();
+    while let Some(current) = child {
+        if let Some(notebook) = find_notebook(&current) {
+            return Some(notebook);
+        }
+        child = current.next_sibling();
+    }
+    None
+}
+
+fn draw_to_png(window: &gtk::Window, path: &str) {
+    let (width, height) = (window.width(), window.height());
+    let paintable = gtk::WidgetPaintable::new(Some(window));
+    let snapshot = gtk::Snapshot::new();
+    paintable.snapshot(&snapshot, width as f64, height as f64);
+    let renderer = window.native().and_then(|native| native.renderer());
+    if let (Some(node), Some(renderer)) = (snapshot.to_node(), renderer) {
+        let texture = renderer.render_texture(
+            &node,
+            Some(&graphene::Rect::new(0.0, 0.0, width as f32, height as f32)),
+        );
+        if let Err(error) = texture.save_to_png(path) {
+            eprintln!("patrone-file-manager: could not save {path}: {error}");
+        }
+    }
 }

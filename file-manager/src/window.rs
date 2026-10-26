@@ -72,6 +72,17 @@ thread_local! {
     /// Owns each window's state until GTK destroys the window; everything
     /// else refers to it weakly.
     static WINDOWS: RefCell<Vec<Rc<Inner>>> = const { RefCell::new(Vec::new()) };
+    /// The tab being carried between windows, if one is.
+    static TAB_DRAG: RefCell<Option<TabDrag>> = const { RefCell::new(None) };
+}
+
+/// What a carried tab offers. Only File Manager windows accept it, so a tab
+/// dropped anywhere else ends the drag with no target and is torn off.
+const TAB_MIME: &str = "application/x-patrone-file-manager-tab";
+
+struct TabDrag {
+    source: WeakWindow,
+    tab: Rc<Tab>,
 }
 
 /// Every open window.
@@ -106,6 +117,25 @@ fn save_open_windows() {
     }
 }
 
+/// A tab as it looks while it's carried to another window.
+fn floating_tab(location: &Location) -> gtk::Box {
+    let tab = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    for class in ["tab", "active", "floating"] {
+        tab.add_css_class(class);
+    }
+    tab.append(&crate::icons::image(location.small_icon(), 16));
+    tab.append(
+        &gtk::Label::builder()
+            .label(location.title())
+            .xalign(0.0)
+            .ellipsize(gtk::pango::EllipsizeMode::End)
+            .width_chars(20)
+            .max_width_chars(20)
+            .build(),
+    );
+    tab
+}
+
 /// Where a new window opens, from Folder Options.
 pub fn start_location() -> Location {
     if config::string("open-to") == "this-pc" {
@@ -117,6 +147,20 @@ pub fn start_location() -> Location {
 
 impl Window {
     pub fn new(app: &gtk::Application, location: Location) -> Window {
+        let window = Window::build(app);
+        window.new_tab(location, true);
+        window
+    }
+
+    /// A window for a tab taken from another one.
+    pub fn with_tab(app: &gtk::Application, tab: Rc<Tab>) -> Window {
+        let window = Window::build(app);
+        window.attach_tab(tab, 0);
+        window
+    }
+
+    /// A window with no tabs yet: the caller adds one straight away.
+    fn build(app: &gtk::Application) -> Window {
         let settings = config::settings();
         let window = gtk::ApplicationWindow::builder()
             .application(app)
@@ -223,7 +267,6 @@ impl Window {
         window.add_shortcuts();
         window.connect_parts();
         window.apply_layout();
-        window.new_tab(location, true);
         window
     }
 
@@ -257,15 +300,20 @@ impl Window {
 
     // --- Tabs ---------------------------------------------------------------
 
-    /// Opens a tab after the current one.
-    pub fn new_tab(&self, location: Location, activate: bool) -> Rc<Tab> {
-        let tab = Tab::new();
+    /// Sends a tab's events to this window.
+    fn adopt(&self, tab: &Rc<Tab>) {
         let weak = self.downgrade();
         tab.connect_events(move |tab, event| {
             if let Some(window) = weak.upgrade() {
                 window.on_tab_event(tab, event);
             }
         });
+    }
+
+    /// Opens a tab after the current one.
+    pub fn new_tab(&self, location: Location, activate: bool) -> Rc<Tab> {
+        let tab = Tab::new();
+        self.adopt(&tab);
         let index = self
             .current
             .borrow()
@@ -300,8 +348,18 @@ impl Window {
             self.window.close();
             return;
         }
+        if let Some(tab) = self.take_tab(index) {
+            tab.release();
+        }
+    }
+
+    /// Takes a tab out of the window, still working, and shows another.
+    /// Taking the last one leaves the window empty for the caller to close.
+    fn take_tab(&self, index: usize) -> Option<Rc<Tab>> {
+        if index >= self.tabs.borrow().len() {
+            return None;
+        }
         let tab = self.tabs.borrow_mut().remove(index);
-        tab.release();
         self.stack.remove(&tab.content);
         self.tabbar.remove(index);
         let was_current = self
@@ -309,14 +367,208 @@ impl Window {
             .borrow()
             .as_ref()
             .is_some_and(|current| Rc::ptr_eq(current, &tab));
-        if was_current {
-            let next = index.min(self.tabs.borrow().len() - 1);
-            self.select_tab(next);
+        let count = self.tabs.borrow().len();
+        if count == 0 {
+            self.current.replace(None);
+        } else if was_current {
+            self.select_tab(index.min(count - 1));
         } else if let Some(current) = self.current.borrow().clone()
             && let Some(position) = self.tab_index(&current)
         {
             self.tabbar.set_active(position);
         }
+        Some(tab)
+    }
+
+    /// Puts a tab from another window at `index` and shows it.
+    fn attach_tab(&self, tab: Rc<Tab>, index: usize) {
+        self.adopt(&tab);
+        let index = index.min(self.tabs.borrow().len());
+        self.tabs.borrow_mut().insert(index, tab.clone());
+        self.stack.add_child(&tab.content);
+        let location = tab.location();
+        self.tabbar
+            .insert(index, &location.title(), location.small_icon());
+        self.select_tab(index);
+    }
+
+    /// Moves a tab to another window, or to a new one (`None`).
+    pub fn move_tab_to(&self, index: usize, target: Option<&Window>) {
+        let Some(tab) = self.tabs.borrow().get(index).cloned() else {
+            return;
+        };
+        match target {
+            Some(target) if !Rc::ptr_eq(&target.0, &self.0) => {
+                let end = target.tabs.borrow().len();
+                target.receive_tab(self, &tab, end);
+            }
+            Some(_) => {}
+            None => self.tear_off(&tab),
+        }
+    }
+
+    /// A tab dropped on this window's title bar, before the tab at `index`.
+    fn receive_tab(&self, source: &Window, tab: &Rc<Tab>, index: usize) {
+        let Some(from) = source.tab_index(tab) else {
+            return;
+        };
+        if Rc::ptr_eq(&source.0, &self.0) {
+            // Dropped back on its own window: it moves along the strip.
+            let to = if index > from { index - 1 } else { index };
+            self.move_tab(from, to.min(self.tabs.borrow().len() - 1));
+            return;
+        }
+        source.take_tab(from);
+        if source.tabs.borrow().is_empty() {
+            // Not while the drag that brought the tab here is still ending.
+            let source = source.clone();
+            glib::idle_add_local_once(move || source.window.close());
+        }
+        self.attach_tab(tab.clone(), index);
+        self.window.present();
+    }
+
+    /// Opens a tab in a window of its own; a window's only tab stays put.
+    fn tear_off(&self, tab: &Rc<Tab>) {
+        if self.tabs.borrow().len() < 2 {
+            return;
+        }
+        let (Some(index), Some(app)) = (self.tab_index(tab), self.window.application()) else {
+            return;
+        };
+        if let Some(tab) = self.take_tab(index) {
+            Window::with_tab(&app, tab).present();
+        }
+    }
+
+    /// Starts carrying a tab between windows (`TabBarEvent::PickUp`).
+    fn pick_up_tab(&self, index: usize, device: &gdk::Device, x: f64, y: f64) {
+        let (Some(tab), Some(surface), Some(widget)) = (
+            self.tabs.borrow().get(index).cloned(),
+            self.window.surface(),
+            self.tabbar.tab_widget(index),
+        ) else {
+            return;
+        };
+        let content = gdk::ContentProvider::for_bytes(TAB_MIME, &glib::Bytes::from_static(b"tab"));
+        // How far the pointer has moved since the drag started.
+        let (dx, dy) = surface
+            .device_position(device)
+            .map(|(px, py, _)| (px - x, py - y))
+            .unwrap_or_default();
+        let Some(drag) =
+            gdk::Drag::begin(&surface, device, &content, gdk::DragAction::MOVE, dx, dy)
+        else {
+            return;
+        };
+        TAB_DRAG.with(|carried| {
+            carried.replace(Some(TabDrag {
+                source: self.downgrade(),
+                tab: tab.clone(),
+            }))
+        });
+        self.tabbar.set_carried(Some(index));
+
+        // The pointer keeps hold of the tab where it grabbed it.
+        let (tx, ty) = self.window.surface_transform();
+        let grab = self
+            .window
+            .compute_point(
+                &widget,
+                &gtk::graphene::Point::new((x - tx) as f32, (y - ty) as f32),
+            )
+            .map(|point| (point.x() as i32, point.y() as i32))
+            .unwrap_or((24, 16));
+        let location = tab.location();
+        gtk::DragIcon::for_drag(&drag).set_child(Some(&floating_tab(&location)));
+        drag.set_hotspot(grab.0, grab.1);
+
+        let weak = self.downgrade();
+        drag.connect_dnd_finished(move |_| {
+            TAB_DRAG.with(|carried| carried.take());
+            if let Some(window) = weak.upgrade() {
+                window.tabbar.set_carried(None);
+            }
+        });
+        let weak = self.downgrade();
+        drag.connect_cancel(move |_, reason| {
+            let carried = TAB_DRAG.with(|carried| carried.take());
+            let Some(window) = weak.upgrade() else { return };
+            window.tabbar.set_carried(None);
+            // Dropped where no File Manager window took it. GNOME's Wayland
+            // reports that as an error rather than "no target"; Escape is
+            // "user cancelled" and leaves the tab where it was.
+            if matches!(
+                reason,
+                gdk::DragCancelReason::NoTarget | gdk::DragCancelReason::Error
+            ) && let Some(carried) = carried
+            {
+                window.tear_off(&carried.tab);
+            }
+        });
+    }
+
+    /// Lets the title bar take tabs carried from any File Manager window.
+    fn accept_tabs(&self) {
+        let target = gtk::DropTargetAsync::new(
+            Some(gdk::ContentFormats::new(&[TAB_MIME])),
+            gdk::DragAction::MOVE,
+        );
+        target.connect_accept(|_, drop| {
+            drop.formats().contain_mime_type(TAB_MIME)
+                && TAB_DRAG.with(|carried| carried.borrow().is_some())
+        });
+        let bar = Rc::downgrade(&self.tabbar);
+        target.connect_drag_motion(move |_, _, x, _| {
+            if let Some(bar) = bar.upgrade() {
+                bar.show_drop_marker(Some(bar.insertion_index(x)));
+            }
+            gdk::DragAction::MOVE
+        });
+        let bar = Rc::downgrade(&self.tabbar);
+        target.connect_drag_leave(move |_, _| {
+            if let Some(bar) = bar.upgrade() {
+                bar.show_drop_marker(None);
+            }
+        });
+        let weak = self.downgrade();
+        target.connect_drop(move |_, drop, x, _| {
+            let Some(window) = weak.upgrade() else {
+                return false;
+            };
+            window.tabbar.show_drop_marker(None);
+            let carried = TAB_DRAG.with(|carried| carried.take());
+            let Some((source, tab)) =
+                carried.and_then(|carried| Some((carried.source.upgrade()?, carried.tab)))
+            else {
+                drop.finish(gdk::DragAction::empty());
+                return false;
+            };
+            source.tabbar.set_carried(None);
+            let index = window.tabbar.insertion_index(x);
+            window.receive_tab(&source, &tab, index);
+            drop.finish(gdk::DragAction::MOVE);
+            true
+        });
+        self.tabbar.widget.add_controller(target);
+    }
+
+    /// Files dropped on a tab go into its folder, by Windows' drag rules.
+    fn drop_on_tab(&self, index: usize, files: Vec<gio::File>, action: gdk::DragAction) {
+        let Some(tab) = self.tabs.borrow().get(index).cloned() else {
+            return;
+        };
+        let (Some(folder), Some(first)) = (tab.location().folder().cloned(), files.first()) else {
+            return;
+        };
+        let action = if !action.is_empty() {
+            action
+        } else if crate::dnd::same_drive(first, &folder) {
+            gdk::DragAction::MOVE
+        } else {
+            gdk::DragAction::COPY
+        };
+        commands::drop_files(self, files, folder, action);
     }
 
     pub fn close_other_tabs(&self, keep: usize) {
@@ -367,8 +619,17 @@ impl Window {
         self.tab().navigate(location);
     }
 
-    /// Resolves what was typed in the address bar.
+    /// Resolves what was typed in the address bar: a place, a file, or a
+    /// command to run in this folder.
     fn go_to_typed(&self, text: &str) {
+        let text = text.trim();
+        // "cd PLACE" goes there, as it would in a terminal.
+        if text == "cd" {
+            return self.navigate(Location::Folder(places::home()));
+        }
+        if let Some(place) = text.strip_prefix("cd ") {
+            return self.go_to_typed(place);
+        }
         let current = self.tab().location().folder().cloned();
         match crate::location::parse_typed(text, current.as_ref()) {
             Some(crate::location::Typed::Place(location)) => self.navigate(location),
@@ -384,21 +645,36 @@ impl Window {
                             commands::open_infos(&window, vec![info], commands::OpenIn::Default)
                         }
                         None if !file.is_native() => window.navigate(Location::Folder(file)),
-                        None => {
-                            crate::dialogs::error(
-                                Some(&window.gtk_window()),
-                                "File Manager",
-                                &format!(
-                                    "File Manager can't find '{text}'. Check the spelling and try again."
-                                ),
-                                "",
-                            );
-                        }
+                        None => window.run_typed(&text),
                     }
                 });
             }
             None => {}
         }
+    }
+
+    /// Typed text that isn't a place: run it as a command in this folder.
+    fn run_typed(&self, text: &str) {
+        let location = self.tab().location();
+        let lower = text.to_lowercase();
+        if matches!(lower.as_str(), "explorer" | "explorer.exe" | "explorer .") {
+            if let Some(app) = self.window.application() {
+                Window::new(&app, location).present();
+            }
+            return;
+        }
+        let folder = location
+            .folder()
+            .and_then(|folder| folder.path())
+            .unwrap_or_else(glib::home_dir);
+        let problem = match crate::run::run(text, &folder) {
+            Ok(true) => return,
+            Ok(false) => {
+                format!("File Manager can't find '{text}'. Check the spelling and try again.")
+            }
+            Err(problem) => problem,
+        };
+        crate::dialogs::error(Some(&self.gtk_window()), "File Manager", &problem, "");
     }
 
     // --- Events ---------------------------------------------------------------
@@ -489,8 +765,20 @@ impl Window {
                     y,
                 } => menus::tab_menu(&window, index, &widget, x, y),
                 TabBarEvent::Move { from, to } => window.move_tab(from, to),
+                TabBarEvent::PickUp {
+                    index,
+                    device,
+                    x,
+                    y,
+                } => window.pick_up_tab(index, &device, x, y),
+                TabBarEvent::DropFiles {
+                    index,
+                    files,
+                    action,
+                } => window.drop_on_tab(index, files, action),
             }
         });
+        self.accept_tabs();
 
         let weak = self.downgrade();
         self.address.connect_events(move |event| {
@@ -562,6 +850,7 @@ impl Window {
                     | "show-tooltips"
                     | "show-thumbnails"
                     | "typing-in-view"
+                    | "show-system-hints"
             ) {
                 for tab in window.tabs() {
                     tab.folder.apply_settings();
@@ -923,6 +1212,10 @@ impl Window {
             settings.boolean("item-checkboxes").to_variant(),
         );
         set_state("compact", settings.boolean("compact-view").to_variant());
+        set_state(
+            "system-hints",
+            settings.boolean("show-system-hints").to_variant(),
+        );
         if settings.boolean("compact-view") {
             self.window.add_css_class("compact");
         } else {
@@ -1193,6 +1486,9 @@ impl Window {
         });
         stateful_bool("show-extensions", |_, on| {
             let _ = config::settings().set_boolean("hide-extensions", !on);
+        });
+        stateful_bool("system-hints", |_, on| {
+            let _ = config::settings().set_boolean("show-system-hints", on);
         });
         stateful_bool("item-checkboxes", |_, on| {
             let _ = config::settings().set_boolean("item-checkboxes", on);

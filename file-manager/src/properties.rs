@@ -370,50 +370,22 @@ pub fn show(window: &Window, infos: Vec<gio::FileInfo>) {
     notebook.append_page(&general, Some(&gtk::Label::new(Some("General"))));
 
     // Permissions.
-    let permission_checks: Rc<RefCell<Vec<(u32, gtk::CheckButton)>>> = Rc::default();
-    if single && first.has_attribute("unix::mode") && !in_trash {
-        let (permissions, grid) = page();
-        let mut line = 0;
-        let owner = first
-            .attribute_string("owner::user")
-            .map(String::from)
-            .unwrap_or_default();
-        let group = first
-            .attribute_string("owner::group")
-            .map(String::from)
-            .unwrap_or_default();
-        row(&grid, &mut line, "Owner:", &text(&owner));
-        row(&grid, &mut line, "Group:", &text(&group));
-        rule(&grid, &mut line);
-        let table = gtk::Grid::builder()
-            .row_spacing(6)
-            .column_spacing(18)
-            .build();
-        let is_dir = util::is_dir(&first);
-        let columns = if is_dir {
-            ["List contents", "Add and delete", "Open"]
-        } else {
-            ["Read", "Write", "Run as a program"]
-        };
-        for (column, title) in columns.iter().enumerate() {
-            let label = gtk::Label::builder().label(*title).xalign(0.0).build();
-            label.add_css_class("property-key");
-            table.attach(&label, column as i32 + 1, 0, 1, 1);
-        }
-        let mode = first.attribute_uint32("unix::mode");
-        for (index, who) in ["Owner", "Group", "Others"].iter().enumerate() {
-            let label = gtk::Label::builder().label(*who).xalign(0.0).build();
-            table.attach(&label, 0, index as i32 + 1, 1, 1);
-            for (column, base) in [0o4, 0o2, 0o1].iter().enumerate() {
-                let bit = base << ((2 - index) * 3);
-                let check = gtk::CheckButton::new();
-                check.set_active(mode & bit != 0);
-                table.attach(&check, column as i32 + 1, index as i32 + 1, 1, 1);
-                permission_checks.borrow_mut().push((bit, check));
+    let permissions = (single && first.has_attribute("unix::mode") && !in_trash)
+        .then(|| files.first())
+        .flatten()
+        .map(|file| crate::permissions::Permissions::new(&first, file));
+    if let Some(permissions) = &permissions {
+        notebook.append_page(
+            &permissions.widget,
+            Some(&gtk::Label::new(Some("Permissions"))),
+        );
+        // General's Read-only box and the Write boxes stay in step.
+        let page = Rc::downgrade(permissions);
+        read_only.connect_toggled(move |read_only| {
+            if let Some(page) = page.upgrade() {
+                page.set_read_only(read_only.is_active());
             }
-        }
-        grid.attach(&table, 0, line, 2, 1);
-        notebook.append_page(&permissions, Some(&gtk::Label::new(Some("Permissions"))));
+        });
     }
 
     // Details.
@@ -521,13 +493,27 @@ pub fn show(window: &Window, infos: Vec<gio::FileInfo>) {
         let name_entry = name_entry.clone();
         let read_only = read_only.clone();
         let hidden = hidden.clone();
-        let checks = permission_checks.clone();
+        let permissions = permissions.clone();
         let applied_read_only = Rc::new(Cell::new(initial_read_only));
         let applied_hidden = Rc::new(Cell::new(initial_hidden));
         let applied_name = Rc::new(RefCell::new(initial_name));
         Rc::new(move || {
             let parent = Some(window.gtk_window());
-            if read_only.is_active() != applied_read_only.get() {
+            // With a Permissions tab, Read-only is one of its Write boxes.
+            if let Some(permissions) = permissions.clone() {
+                applied_read_only.set(read_only.is_active());
+                let parent = parent.clone();
+                glib::spawn_future_local(async move {
+                    if let Err(problem) = permissions.apply().await {
+                        crate::dialogs::error(
+                            parent.as_ref(),
+                            "Permissions",
+                            "The permissions couldn't be changed.",
+                            &problem,
+                        );
+                    }
+                });
+            } else if read_only.is_active() != applied_read_only.get() {
                 applied_read_only.set(read_only.is_active());
                 for (info, file) in infos.iter().zip(&files) {
                     let mode = info.attribute_uint32("unix::mode");
@@ -549,27 +535,6 @@ pub fn show(window: &Window, infos: Vec<gio::FileInfo>) {
                 for file in &files {
                     set_hidden(file, hidden.is_active());
                 }
-            }
-            if !checks.borrow().is_empty()
-                && let (Some(info), Some(file)) = (infos.first(), files.first())
-            {
-                let base = info.attribute_uint32("unix::mode") & !0o777;
-                let mode = checks
-                    .borrow()
-                    .iter()
-                    .filter(|(_, check)| check.is_active())
-                    .fold(base, |mode, (bit, _)| mode | bit);
-                let mode = if read_only.is_active() {
-                    mode & !0o222
-                } else {
-                    mode
-                };
-                let _ = file.set_attribute_uint32(
-                    "unix::mode",
-                    mode,
-                    gio::FileQueryInfoFlags::NOFOLLOW_SYMLINKS,
-                    gio::Cancellable::NONE,
-                );
             }
             let name = name_entry.text().to_string();
             if files.len() == 1 && name != *applied_name.borrow() && !name.trim().is_empty() {
