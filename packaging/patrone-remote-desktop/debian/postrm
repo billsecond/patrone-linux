@@ -1,6 +1,15 @@
 #!/bin/sh
 set -e
 
+# Ubuntu's own session comes back to the login screen.
+case "$1" in
+    remove | abort-install | disappear)
+        dpkg-divert --package patrone-remote-desktop --remove --rename \
+            --divert /usr/share/wayland-sessions/ubuntu.desktop.patrone-hidden \
+            /usr/share/wayland-sessions/ubuntu.desktop
+        ;;
+esac
+
 # The proxy's certificate, each account's secret, and the password hashes
 if [ "$1" = purge ]; then
     rm -rf /var/lib/patrone-remote-desktop

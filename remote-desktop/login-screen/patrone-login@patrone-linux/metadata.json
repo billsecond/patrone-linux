@@ -1,0 +1,8 @@
+{
+    "uuid": "patrone-login@patrone-linux",
+    "name": "Patrone login screen",
+    "description": "Signing in on the screen joins the account's desktop instead of ending it",
+    "shell-version": ["50"],
+    "session-modes": ["gdm"],
+    "url": "https://github.com/billsecond/patrone-linux"
+}

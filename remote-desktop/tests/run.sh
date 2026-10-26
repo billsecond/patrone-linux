@@ -89,6 +89,22 @@ else
     echo "skip remember: needs an account with UID 1000 or above"
 fi
 
+# The login-screen extension, under plain gjs with GNOME Shell's modules
+# stood in for
+if command -v gjs > /dev/null; then
+    extension_test=$(mktemp --suffix=.js)
+    {
+        cat "$here/login-screen-stubs.js"
+        sed -e '/^import /d' -e 's/^export default class/class/' \
+            "$here/../login-screen/patrone-login@patrone-linux/extension.js"
+        cat "$here/login-screen-test.js"
+    } > "$extension_test"
+    gjs -m "$extension_test" 2>&1 | grep -v "^Gjs-Message" || failures=$((failures + 1))
+    rm -f "$extension_test"
+else
+    echo "skip login screen: gjs isn't installed"
+fi
+
 # The proxy must be able to read the shipped config (it once wasn't: FreeRDP
 # rejects "#" comments). It stops at the certificates, which don't exist here.
 config_parses() {

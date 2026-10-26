@@ -1,0 +1,5 @@
+# The login screen's extension, from patrone-remote-desktop: signing in on the
+# screen joins the account's desktop instead of ending it. GDM merges this
+# folder into its settings each time it starts.
+[org/gnome/shell]
+enabled-extensions=['patrone-login@patrone-linux']

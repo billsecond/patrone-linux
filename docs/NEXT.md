@@ -438,6 +438,25 @@ Findings:
   `SYSTEMD_NSS_DYNAMIC_BYPASS=1`, so the bus can't resolve it and drops the
   connection. 0.3.1 ships the bug's workaround as a drop-in (run it as
   `gdm`), and `prepare-session` now gives up as soon as the unit fails.
+- **0.3.1 on the VM:** Remote Desktop reached the background desktop. Then
+  the user signed in on the screen, the login screen chose Ubuntu's
+  session (remembered), and GNOME's login screen ended the background
+  desktop: gnome-shell's `gdm/loginDialog.js` `_findConflictingSession`
+  treats any other active or online wayland/x11 session of the account as a
+  conflict, shows `ConflictingSessionDialog`, and "continue" calls GDM's
+  `StopConflictingSession`. It does so whichever session was chosen, so
+  Patrone Desktop would have hit it too. 0.4.0: a login-screen extension
+  (`session-modes: ["gdm"]`, enabled in GDM's dconf; GNOME Shell inits
+  extensions in every mode, and the gdm mode, built on "restrictive", takes
+  them from `enabled-extensions`) overrides `_findConflictingSession` to skip
+  seatless sessions, falling back to GNOME's on an error; tested under gjs
+  with GNOME Shell's modules stubbed (and the test fails if the seat check
+  is removed). Ubuntu's `ubuntu.desktop` is diverted aside; the hidden
+  `patrone-gnome.desktop` runs background desktops (GDM's daemon ignores
+  `NoDisplay`, libgdm's menu honours it; headless needs
+  `X-GDM-CanRunHeadless`). With `ubuntu` gone, GDM's fallback (`gnome`, else
+  the first session file by name) is `patrone-desktop`. Not tried yet:
+  needs a reboot (GDM reads it all at start).
 - Packaging lessons: debhelper replaces `#DEBHELPER#` even inside comments
   (0.2.1's install failed; `build.sh` now refuses it), and for units
   installed with `--no-start` its generated `preinst` stops them on every

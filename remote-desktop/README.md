@@ -112,6 +112,19 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    password change, so the hash always matches the current password. Screen
    unlocks run as the account itself, not root, and are skipped.
 
+6. **The login screen**: GNOME's login screen treats any other running
+   desktop of the account as a conflict, and offers to end it. Here that
+   would end the very desktop the screen is about to join, so the
+   `patrone-login@patrone-linux` extension (`login-screen/`, for the login
+   screen only, switched on by `/usr/share/gdm/dconf/96-patrone-remote-desktop`)
+   leaves desktops without a seat out of that check. Ubuntu's own session
+   (`ubuntu.desktop`) is moved aside, since a plain GNOME session started on
+   the screen would end the account's desktop; the hidden
+   `patrone-gnome.desktop` (`NoDisplay`, which only the login screen's menu
+   reads, and `X-GDM-CanRunHeadless`) is the GNOME session the background
+   desktops run. That leaves Patrone Desktop as the screen's only session,
+   and GDM's choice even for accounts that remembered Ubuntu's.
+
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's
 screen lock and blanking, after saving the account's own settings, and puts
@@ -123,7 +136,8 @@ them back at the next login in a plain GNOME session on the screen.
   machine's own screen means encoding and decoding it locally, so video and
   games are slower than in a plain GNOME session. Patrone's own compositor
   will move a session between the screen and Remote Desktop without that.
-  Ubuntu's plain session stays in the gear menu, but it can't be shared.
+  Removing the package brings Ubuntu's own session back to the login
+  screen.
 - **The SAM file holds password hashes**, as Windows' own account database
   does: NLA's NTLM step can't work without the NT hash. It's root's, readable
   only by the proxy's user, and only for `remote-desktop` members. Like

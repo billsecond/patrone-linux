@@ -17,6 +17,11 @@ override_dh_auto_install:
 	install -Dm755 libexec/no-lock $(libexec)/no-lock
 	install -Dm755 libexec/console $(libexec)/console
 	install -Dm644 data/patrone-desktop.desktop $(pkg)/usr/share/wayland-sessions/patrone-desktop.desktop
+	install -Dm644 data/patrone-gnome.desktop $(pkg)/usr/share/wayland-sessions/patrone-gnome.desktop
+	install -Dm644 -t $(pkg)/usr/share/gnome-shell/extensions/patrone-login@patrone-linux \
+	    login-screen/patrone-login@patrone-linux/extension.js \
+	    login-screen/patrone-login@patrone-linux/metadata.json
+	install -Dm644 data/96-patrone-remote-desktop $(pkg)/usr/share/gdm/dconf/96-patrone-remote-desktop
 	install -Dm755 sbin/patrone-remote-desktop $(pkg)/usr/sbin/patrone-remote-desktop
 	install -Dm644 data/proxy.ini $(pkg)/etc/patrone-remote-desktop/proxy.ini
 	install -Dm644 data/patrone-remote-desktop.pam $(pkg)/etc/pam.d/patrone-remote-desktop

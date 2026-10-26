@@ -5,6 +5,7 @@ Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13),
                freerdp-proxy,
                freerdp3-dev,
+               gjs,
                libpam0g-dev,
                pkgconf,
                python3

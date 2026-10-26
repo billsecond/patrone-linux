@@ -1,3 +1,18 @@
+patrone-remote-desktop (0.4.0) resolute; urgency=medium
+
+  * Signing in on the screen joins the account's desktop instead of ending
+    it: GNOME's login screen called the desktop (which runs with no seat) a
+    conflicting session and ended it. A login-screen extension
+    (patrone-login@patrone-linux, enabled through GDM's settings) leaves
+    seatless sessions out of that check.
+  * Patrone Desktop is the screen's only session: Ubuntu's ubuntu.desktop is
+    moved aside (a plain GNOME session on the screen would end the account's
+    desktop), and a hidden patrone-gnome.desktop is the session background
+    desktops run. Accounts that remembered Ubuntu's session get Patrone
+    Desktop, GDM's first remaining choice.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 13:00:00 -0500
+
 patrone-remote-desktop (0.3.1) resolute; urgency=medium
 
   * Work around Ubuntu bug 2171951, with a drop-in for GDM's headless session
