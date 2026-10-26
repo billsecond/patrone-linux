@@ -6,6 +6,11 @@ packaged as `patrone-gnome-taskbar`. It's a GNOME Shell extension
 shell (`shell/`, GTK4) replaces GNOME Shell. The design carries over to that
 shell.
 
+Installing the package turns it on for every account, but GNOME Shell only
+loads extensions when it starts: log out from inside the desktop (power
+menu → Log Out) and sign in again. Disconnecting Remote Desktop or signing
+out of the screen's session leaves the desktop, and its old shell, running.
+
 ## What it does
 
 One compact bar (32 pixels) along the bottom of the primary monitor, in place

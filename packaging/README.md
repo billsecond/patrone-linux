@@ -23,7 +23,7 @@ dependencies).
 | `patrone-branding` | `branding/` | Patrone's name and logos in place of Ubuntu's: `os-release`, the boot splash (graphical and text), the boot menu name, the login screen logo, Settings → About, `/etc/issue` and the login message. Also the wallpaper, the dock turned off, and fastfetch's config and logo. See `branding/README.md`. |
 | `patrone-default-apps` | `default-apps/` | Chromium as the default browser (`/etc/xdg/mimeapps.list`) and in the favorites in place of Firefox. Depends on `chromium-browser`, which installs the Chromium snap. See `default-apps/README.md` for removing Firefox. |
 | `patrone-remote-desktop` | `remote-desktop/` | Remote Desktop where each account in the `remote-desktop` group signs in with its own Linux password, checked by PAM: FreeRDP's proxy with Patrone's sign-in plugin, a root sign-in helper, and the `patrone-remote-desktop` command. Off until `patrone-remote-desktop enable`. Builds with `freerdp3-dev` and `libpam0g-dev`. See `remote-desktop/README.md`. |
-| `patrone-gnome-taskbar` | `shell/gnome/` | Patrone's taskbar and Start menu in place of GNOME's top bar: a GNOME Shell extension in `/usr/share/gnome-shell/extensions/`, its settings schema, and an override that turns it on for everyone. Loads at the next sign-in. See `shell/gnome/README.md`. |
+| `patrone-gnome-taskbar` | `shell/gnome/` | Patrone's taskbar and Start menu in place of GNOME's top bar: a GNOME Shell extension in `/usr/share/gnome-shell/extensions/`, its settings schema, and an override that turns it on for everyone. Loads when the desktop next starts: log out from inside it (disconnecting leaves it running). See `shell/gnome/README.md`. |
 
 Notes:
 

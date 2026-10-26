@@ -84,8 +84,11 @@ Waiting on the user:
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
-- **Install `patrone-gnome-taskbar`, then sign out and back in** (section
-  7). Then try the Super key, typing in Start, the jump lists and the tray.
+- **Log out of the desktop to load the taskbar** (section 7). The user
+  installed `patrone-gnome-taskbar` 0.1.1 (2026-10-26) and signed back in,
+  but the desktop kept running (its GNOME Shell had started at 11:19), so
+  it still had the top bar: it has to be ended with Log Out from inside it.
+  Then try the Super key, typing in Start, the jump lists and the tray.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
@@ -672,8 +675,13 @@ To install and load it:
 sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.1_all.deb
 ```
 
-then sign out of the desktop and back in (GNOME Shell loads extensions when
-it starts). An account that has its own `enabled-extensions` list keeps it;
+then **log out from inside the desktop** (the power menu, top right, → Log
+Out) and sign in again: GNOME Shell loads extensions only when it starts.
+With Patrone's Windows-style sessions, disconnecting Remote Desktop or
+signing out of the screen's session only disconnects, and the desktop, with
+its old shell, keeps running; until it's restarted, `gnome-extensions info
+patrone-taskbar@patrone-linux` in it says the extension "doesn't exist". An
+account that has its own `enabled-extensions` list keeps it;
 `gnome-extensions enable patrone-taskbar@patrone-linux` adds the taskbar.
 
 Findings:
