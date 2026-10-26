@@ -17,18 +17,25 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          adduser,
+         cage,
          freerdp-proxy,
+         freerdp-sdl,
          gdm3,
          gnome-remote-desktop,
          iproute2,
          libpam-modules,
          openssl,
+         python3,
          util-linux
-Description: Remote Desktop sign-in with each account's own password
- Lets Windows' Remote Desktop Connection and other RDP clients open a Patrone
- desktop. Accounts in the remote-desktop group sign in with their own
- username and password, which PAM checks on every connection; nothing keeps a
- copy of them. Each account gets its own desktop, started when it signs in,
- sized to the client's window, and never locked while connected.
+Description: Windows-style desktops, on the screen and over Remote Desktop
+ Each account has one desktop, which runs whether or not anyone is looking at
+ it, as on Windows. The machine's own screen (the "Patrone Desktop" login
+ session) and Remote Desktop clients are both views of it, and whoever
+ connects last has it: a Remote Desktop sign-in takes the screen back to the
+ login screen, and signing in on the screen disconnects the Remote Desktop
+ client.
  .
- It's off until an administrator runs "patrone-remote-desktop enable".
+ Windows' Remote Desktop Connection and other RDP clients sign in with the
+ account's own username and password, which PAM checks on every connection;
+ nothing keeps a copy of them. Only accounts in the remote-desktop group may,
+ and only after an administrator runs "patrone-remote-desktop enable".

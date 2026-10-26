@@ -9,16 +9,24 @@
  * which gets the account's desktop ready and answers "ok PORT SECRET";
  * otherwise it answers "denied".
  *
+ * With --console it serves /run/patrone-remote-desktop/console.sock instead,
+ * which any account may open: the account that signed in on the machine's own
+ * screen, asking for its own desktop. The account comes from the connection
+ * (SO_PEERCRED), not from anything sent, and needs no password: GDM checked
+ * it.
+ *
  * Copyright 2026 William Daugherty
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 #define _GNU_SOURCE
 #include <errno.h>
+#include <pwd.h>
 #include <security/pam_appl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #ifndef PREPARE_SESSION
@@ -144,9 +152,44 @@ static int check(const Request* request)
 	return status == PAM_SUCCESS;
 }
 
-int main(void)
+static void prepare_session(const char* user)
+{
+	fflush(stdout);
+	execl(PREPARE_SESSION, PREPARE_SESSION, user, (char*)NULL);
+	fprintf(stderr, "can't run %s: %s\n", PREPARE_SESSION, strerror(errno));
+	puts("error");
+}
+
+/* The machine's own screen: the account asking is the connecting process's. */
+static int console(void)
+{
+	struct ucred peer;
+	socklen_t size = sizeof(peer);
+
+	if (getsockopt(STDIN_FILENO, SOL_SOCKET, SO_PEERCRED, &peer, &size) != 0)
+	{
+		fprintf(stderr, "can't tell who's asking: %s\n", strerror(errno));
+		puts("denied");
+		return 1;
+	}
+	struct passwd* account = getpwuid(peer.uid);
+	if (!account || peer.uid < 1000 || !valid_user(account->pw_name))
+	{
+		fprintf(stderr, "refused a desktop for uid %u\n", (unsigned)peer.uid);
+		puts("denied");
+		return 1;
+	}
+	fprintf(stderr, "desktop for %s on this machine's screen\n", account->pw_name);
+	prepare_session(account->pw_name);
+	return 1;
+}
+
+int main(int argc, char** argv)
 {
 	static Request request;
+
+	if (argc > 1 && strcmp(argv[1], "--console") == 0)
+		return console();
 
 	alarm(READ_TIMEOUT_SECONDS);
 	if (read_request(&request) != 0)
@@ -174,9 +217,6 @@ int main(void)
 	}
 
 	fprintf(stderr, "signed in %s from %s\n", request.user, request.client);
-	fflush(stdout);
-	execl(PREPARE_SESSION, PREPARE_SESSION, request.user, (char*)NULL);
-	fprintf(stderr, "can't run %s: %s\n", PREPARE_SESSION, strerror(errno));
-	puts("error");
+	prepare_session(request.user);
 	return 1;
 }

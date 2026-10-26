@@ -1,12 +1,16 @@
 #!/bin/bash
-# Gets an account's desktop ready for a Remote Desktop connection. The sign-in
-# helper runs it as root once the account's password has been checked, with
-# the proxy on the other end of stdout. It answers one line:
+# Gets an account's desktop ready: the one GNOME desktop session the account
+# has, which runs without a monitor and which every screen shows through
+# Remote Desktop, like a Windows session. The sign-in helper runs it as root,
+# for a Remote Desktop client once the password has been checked, or for the
+# machine's own screen (the Patrone Desktop session), with the asker on the
+# other end of stdout. It answers one line:
 #
 #   ok PORT SECRET   the port of the account's own GNOME Remote Desktop, and
-#                    the random secret the proxy signs in to it with
-#   busy             the account has a desktop open on the machine's own
-#                    screen; GNOME runs one desktop session per account
+#                    the random secret to sign in to it with
+#   busy             the account is signed in on the machine's screen with a
+#                    plain GNOME session (the Ubuntu session), which can't be
+#                    shared; GNOME runs one desktop session per account
 #   error            anything else (details in the journal)
 set -euo pipefail
 
@@ -53,6 +57,20 @@ port_open() {
     [[ -n $(ss -Hltn "sport = :$port") ]]
 }
 
+# Whether logind session $1 is a Patrone Desktop session (the screen's viewer,
+# which runs libexec/console) rather than a desktop of its own. logind has no
+# desktop name for GDM's sessions, so look at what runs in it.
+viewer_session() {
+    local pid
+    for pid in $(< "/sys/fs/cgroup/user.slice/user-$uid.slice/session-$1.scope/cgroup.procs"); do
+        if tr '\0' ' ' < "/proc/$pid/cmdline" 2> /dev/null |
+            grep -q /usr/libexec/patrone-remote-desktop/console; then
+            return 0
+        fi
+    done 2> /dev/null
+    return 1
+}
+
 # The secret the proxy signs in with, made once per account and readable by
 # root only. It is never the account's password.
 if [[ ! -s $secrets/$user ]]; then
@@ -82,15 +100,19 @@ grdctl=(as_user grdctl --headless rdp)
 printf '%s\n' "$secret" | "${grdctl[@]}" set-credentials "$user" 2> /dev/null
 "${grdctl[@]}" enable 2> /dev/null
 
-# The desktop session, with no monitor, unless it's running already
+# The desktop session, with no monitor, unless it's running already. A
+# Patrone Desktop session on the screen is only a viewer of it; a plain GNOME
+# one is a second desktop, which GNOME can't run beside this one.
 session=gnome-headless-session@$user.service
 if ! systemctl is-active --quiet "$session"; then
     for id in $(loginctl list-sessions --no-legend | awk -v user="$user" '$3 == user { print $1 }'); do
         case $(loginctl show-session "$id" -p Type --value) in
             wayland | x11)
-                echo "prepare-session: $user is signed in on this machine's screen (session $id)" >&2
-                echo busy
-                exit 0
+                if ! viewer_session "$id"; then
+                    echo "prepare-session: $user is signed in on this machine's screen with a plain GNOME session ($id)" >&2
+                    echo busy
+                    exit 0
+                fi
                 ;;
         esac
     done

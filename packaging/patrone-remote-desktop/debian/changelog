@@ -1,3 +1,14 @@
+patrone-remote-desktop (0.2.0) resolute; urgency=medium
+
+  * Windows-style sessions: each account's one desktop runs without a
+    monitor, and the machine's own screen shows it through a local Remote
+    Desktop client (the new "Patrone Desktop" login session), so a Remote
+    Desktop sign-in takes over the same desktop, and the screen goes back to
+    the login screen. GNOME Remote Desktop stops the earlier client when a
+    new one connects.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 10:30:00 -0500
+
 patrone-remote-desktop (0.1.1) resolute; urgency=medium
 
   * Fix proxy.ini, which FreeRDP couldn't read: its comments started with

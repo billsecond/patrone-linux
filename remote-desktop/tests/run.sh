@@ -43,6 +43,15 @@ helper_refuses "unusual account name" '../etc\0secret\0192.0.2.7\0'
 helper_refuses "account name too long" "$(printf 'a%.0s' $(seq 40))\\0secret\\0192.0.2.7\\0"
 helper_refuses "unknown account" 'nosuch-patrone-user\0secret\0192.0.2.7\0'
 
+# --console takes the account from the socket, so without one it must refuse.
+answer=$("$auth" --console < /dev/null 2> /dev/null || true)
+if [[ $answer == denied ]]; then
+    echo "ok   helper: console request without a socket"
+else
+    echo "FAIL helper: console request without a socket (answered \"$answer\")"
+    failures=$((failures + 1))
+fi
+
 # The proxy must be able to read the shipped config (it once wasn't: FreeRDP
 # rejects "#" comments). It stops at the certificates, which don't exist here.
 config_parses() {
