@@ -15,8 +15,9 @@ fi
 
 #DEBHELPER#
 
-# On an upgrade, a running proxy picks up the new plugin. After #DEBHELPER#,
-# which reloads systemd's view of the changed unit files first.
+# On an upgrade, a running proxy picks up the new plugin, once systemd has
+# reloaded the changed unit files. (Don't name debhelper's placeholder in a
+# comment: debhelper replaces it wherever it appears.)
 if [ "$1" = configure ] && [ -n "$2" ] && [ -d /run/systemd/system ]; then
     systemctl --system daemon-reload > /dev/null || true
     deb-systemd-invoke try-restart patrone-remote-desktop.service || true

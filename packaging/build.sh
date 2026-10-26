@@ -31,6 +31,16 @@ esac
 
 debian="$root/packaging/$package/debian"
 version=$(dpkg-parsechangelog -l "$debian/changelog" -S Version)
+
+# debhelper replaces its placeholder wherever it appears in a maintainer
+# script, comments included, so it must stand on a line of its own.
+for script in "$debian"/{preinst,postinst,prerm,postrm}; do
+    [[ -f $script ]] || continue
+    if grep -n '#DEBHELPER#' "$script" | grep -v '^[0-9]*:#DEBHELPER#$'; then
+        echo "$script: put #DEBHELPER# only on a line of its own (above)" >&2
+        exit 1
+    fi
+done
 build="$root/out/build"
 work="$build/$package-$version"
 
