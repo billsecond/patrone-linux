@@ -51,6 +51,11 @@ Done:
   account in the `remote-desktop` group signs in once, with its own Linux
   password checked by PAM; nothing stores the password. Built, unit-tested,
   not installed or tried with a real client yet.
+- **Patrone taskbar** (section 7, `shell/gnome/README.md`, package
+  `patrone-gnome-taskbar`): a compact Windows 11-style taskbar at the bottom
+  in place of GNOME's top bar, with the Start menu (type to search), role
+  slots, jump lists and the tray. Built, and tried in a headless GNOME Shell
+  on the VM; not installed yet.
 - **fastfetch** shows the Patrone logo for the user (`branding/fastfetch/`,
   installed with `branding/fastfetch/install-dev.sh`): the mark traced from
   the concept by `branding/tools/make_terminal_logo.py`, with a gradient in
@@ -79,9 +84,11 @@ Waiting on the user:
 - **Switch the login shell back to bash:** on 2026-10-26 the user ran
   `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
   `chsh -s /bin/bash` (asks for their password).
-- **Describe the desktop design** (panel, start menu, desktop icons, windows,
-  system area, look and feel, login and lock screens) before milestone 4;
-  then mockups, then `docs/DESIGN.md`.
+- **Install `patrone-gnome-taskbar`, then sign out and back in** (section
+  7). Then try the Super key, typing in Start, the jump lists and the tray.
+- **Describe the rest of the desktop design** (desktop icons, windows, look
+  and feel, login and lock screens; the taskbar and Start menu are decided,
+  section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
 - **Confirm in the RDP session** that resizing the `mstsc` window resizes the
   desktop, and that copy and paste work both ways. Set 200% scale in Settings
   → Displays if text is too small.
@@ -636,6 +643,55 @@ Findings:
 Later: the desktop's own typeface (still Ubuntu Sans; part of the design
 discussion), the lock screen inside a GNOME session (Yaru's, with the new
 blue accent), and a Patrone-made avatar set for Settings → Users.
+
+## 7. Patrone taskbar (patrone-gnome-taskbar)
+
+The user's taskbar decisions (2026-10-26) and how it works are in
+`shell/gnome/README.md`. In short: Windows 11's taskbar, left-aligned and
+compact (32 pixels; "smaller, not taking up so much real estate"), in place
+of GNOME's top bar; the logo's "P" opens Start, where typing searches at
+once (GNOME's search providers, then the web); a search button; pinned slots
+that open the default web browser, terminal, file manager and mail app, with
+that app's windows under the slot; running apps, pinnable; Windows 11-style
+right-click jump lists that also hold the configuration. Built as a GNOME
+Shell extension for now (the user said "Build it out"); the design carries
+over to Patrone's own shell.
+
+Checked in a headless GNOME Shell 50.1 on the VM (`shell/gnome/tests/
+headless.sh`, light and dark): see the README's "Trying it" for the list.
+The package builds and installs its schema with the system's, where a system
+extension finds it; its override compiles with Ubuntu's schemas and turns the
+extension on under both desktop names. Not checked until installed: the real
+Super key (a simulated one doesn't reach GNOME's Super-key detection in a
+headless shell; GNOME's overlay-key signal was tested instead), the power
+options a real session allows, and the RDP and console views.
+
+To install and load it:
+
+```
+sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.1.0_all.deb
+```
+
+then sign out of the desktop and back in (GNOME Shell loads extensions when
+it starts). An account that has its own `enabled-extensions` list keeps it;
+`gnome-extensions enable patrone-taskbar@patrone-linux` adds the taskbar.
+
+Findings:
+
+- GNOME Shell 50 picks `stylesheet-light.css` or `stylesheet-dark.css` from
+  an extension by the system style, and St's CSS supports `@import`, so the
+  sizes live once in `common.css`.
+- A hidden actor tracked as chrome still reserves its space (the top bar's
+  strut stays), so the taskbar untracks `panelBox` while it's hidden.
+- Clutter's `BinLayout` only honors a child's alignment where the child
+  expands, and expanding sideways propagates up and stretches the button
+  along the bar: the taskbar buttons' insides expand vertically only.
+- The overlay-key handler is blocked with
+  `GObject.signal_handlers_block_matched(global.display, {signalId:
+  'overlay-key'})` and unblocked when the extension turns off.
+- A throwaway shell's document portal mounts a FUSE folder in its runtime
+  folder; `headless.sh stop` ends everything on the test's D-Bus session and
+  unmounts it.
 
 ## Suggested order
 

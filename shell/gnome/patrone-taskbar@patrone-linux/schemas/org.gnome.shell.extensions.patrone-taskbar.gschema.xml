@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="patrone-taskbar">
+  <schema id="org.gnome.shell.extensions.patrone-taskbar"
+          path="/org/gnome/shell/extensions/patrone-taskbar/">
+    <key name="pinned" type="as">
+      <default>['role:web', 'role:terminal', 'role:files', 'role:mail']</default>
+      <summary>What's pinned to the taskbar, in order</summary>
+      <description>
+        Each entry is an app's desktop file ID ("org.gnome.TextEditor.desktop")
+        or a role: "role:web", "role:terminal", "role:files" or "role:mail".
+        A role is a slot for whichever app is the default for that job: it
+        opens that app, and the app's windows show under it.
+      </description>
+    </key>
+    <key name="terminal-app" type="s">
+      <default>''</default>
+      <summary>The app the terminal slot opens</summary>
+      <description>
+        A desktop file ID. Empty: Patrone Terminal, or another terminal if
+        it isn't installed. (Web browser, files and mail follow the system's
+        default apps instead.)
+      </description>
+    </key>
+    <key name="web-search-url" type="s">
+      <default>'https://www.google.com/search?q=%s'</default>
+      <summary>Where web searches from the Start menu go</summary>
+      <description>
+        "%s" is replaced with the search terms. Opened with the default web
+        browser.
+      </description>
+    </key>
+  </schema>
+</schemalist>

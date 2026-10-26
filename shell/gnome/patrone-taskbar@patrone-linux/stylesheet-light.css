@@ -1,0 +1,139 @@
+/* Patrone Taskbar, light style. Sizes and shapes are in common.css. */
+@import url("common.css");
+
+.patrone-taskbar {
+  background-color: rgba(243, 244, 247, 0.94);
+  border-top: 1px solid rgba(0, 0, 0, 0.09);
+  color: #1b1d22;
+}
+
+.patrone-taskbar-button,
+.patrone-taskbar-tray .panel-button {
+  color: #1b1d22;
+}
+
+.patrone-taskbar-button:hover,
+.patrone-taskbar-button:focus,
+.patrone-taskbar-tray .panel-button:hover,
+.patrone-taskbar-tray .panel-button:focus {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.patrone-taskbar-button:active,
+.patrone-taskbar-button:checked,
+.patrone-taskbar-tray .panel-button:active,
+.patrone-taskbar-tray .panel-button:checked {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.patrone-taskbar-item.focused {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.patrone-taskbar-item.focused:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.patrone-taskbar-indicator {
+  background-color: #8b8f99;
+}
+
+.patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  background-color: #288bfa;
+}
+
+.patrone-taskbar-show-desktop {
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.patrone-taskbar-tooltip {
+  background-color: #fbfbfc;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #1b1d22;
+}
+
+/* Start menu */
+.patrone-start-menu .popup-menu-content {
+  background-color: #f3f4f7;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #1b1d22;
+}
+
+.patrone-start-search {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  color: #1b1d22;
+  caret-color: #1b1d22;
+  selection-background-color: #288bfa;
+  selected-color: #ffffff;
+}
+
+.patrone-start-search:focus {
+  border-bottom: 2px solid #288bfa;
+}
+
+.patrone-start-search StLabel.hint-text {
+  color: rgba(27, 29, 34, 0.55);
+}
+
+.patrone-start-search-icon {
+  color: rgba(27, 29, 34, 0.7);
+}
+
+.patrone-start-link {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #1b1d22;
+}
+
+.patrone-start-link:hover,
+.patrone-start-link:focus {
+  background-color: #ffffff;
+}
+
+.patrone-start-tile,
+.patrone-start-row,
+.patrone-start-power-button,
+.patrone-start-footer-button {
+  color: #1b1d22;
+}
+
+.patrone-start-tile:hover,
+.patrone-start-tile:focus,
+.patrone-start-row:hover,
+.patrone-start-row:focus,
+.patrone-start-row:selected,
+.patrone-start-power-button:hover,
+.patrone-start-power-button:focus,
+.patrone-start-footer-button:hover,
+.patrone-start-footer-button:focus {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.patrone-start-row:selected {
+  box-shadow: inset 3px 0 0 0 #288bfa;
+}
+
+.patrone-start-row-detail,
+.patrone-start-empty {
+  color: rgba(27, 29, 34, 0.6);
+}
+
+.patrone-start-letter {
+  color: #1f6fd1;
+}
+
+.patrone-start-power-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.patrone-start-footer {
+  background-color: #e9eaee;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.patrone-start-avatar {
+  background-color: #288bfa;
+  color: #ffffff;
+}

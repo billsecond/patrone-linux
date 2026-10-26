@@ -98,6 +98,9 @@ remote-desktop/        RDP sign-in with each account's own password
                        (patrone-remote-desktop)
 compositor/            the Patrone compositor
 shell/                 panel, launcher, dock, notifications
+  gnome/               the taskbar and Start menu for today's GNOME-based
+                       desktop, as a GNOME Shell extension
+                       (patrone-gnome-taskbar)
 settings/              the settings app
 terminal/              Patrone Terminal
 shell-config/          bash prompt and zsh setup (patrone-shell-config)

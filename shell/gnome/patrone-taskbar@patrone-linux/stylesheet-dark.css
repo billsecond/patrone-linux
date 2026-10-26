@@ -1,0 +1,139 @@
+/* Patrone Taskbar, dark style. Sizes and shapes are in common.css. */
+@import url("common.css");
+
+.patrone-taskbar {
+  background-color: rgba(27, 30, 37, 0.94);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  color: #f2f3f5;
+}
+
+.patrone-taskbar-button,
+.patrone-taskbar-tray .panel-button {
+  color: #f2f3f5;
+}
+
+.patrone-taskbar-button:hover,
+.patrone-taskbar-button:focus,
+.patrone-taskbar-tray .panel-button:hover,
+.patrone-taskbar-tray .panel-button:focus {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.patrone-taskbar-button:active,
+.patrone-taskbar-button:checked,
+.patrone-taskbar-tray .panel-button:active,
+.patrone-taskbar-tray .panel-button:checked {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.patrone-taskbar-item.focused {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.patrone-taskbar-item.focused:hover {
+  background-color: rgba(255, 255, 255, 0.11);
+}
+
+.patrone-taskbar-indicator {
+  background-color: #9ba1ad;
+}
+
+.patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  background-color: #4ca0ff;
+}
+
+.patrone-taskbar-show-desktop {
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.patrone-taskbar-tooltip {
+  background-color: #2b2f37;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f2f3f5;
+}
+
+/* Start menu */
+.patrone-start-menu .popup-menu-content {
+  background-color: #22252c;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: #f2f3f5;
+}
+
+.patrone-start-search {
+  background-color: #1b1e24;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+  color: #f2f3f5;
+  caret-color: #f2f3f5;
+  selection-background-color: #288bfa;
+  selected-color: #ffffff;
+}
+
+.patrone-start-search:focus {
+  border-bottom: 2px solid #4ca0ff;
+}
+
+.patrone-start-search StLabel.hint-text {
+  color: rgba(242, 243, 245, 0.55);
+}
+
+.patrone-start-search-icon {
+  color: rgba(242, 243, 245, 0.7);
+}
+
+.patrone-start-link {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #f2f3f5;
+}
+
+.patrone-start-link:hover,
+.patrone-start-link:focus {
+  background-color: rgba(255, 255, 255, 0.11);
+}
+
+.patrone-start-tile,
+.patrone-start-row,
+.patrone-start-power-button,
+.patrone-start-footer-button {
+  color: #f2f3f5;
+}
+
+.patrone-start-tile:hover,
+.patrone-start-tile:focus,
+.patrone-start-row:hover,
+.patrone-start-row:focus,
+.patrone-start-row:selected,
+.patrone-start-power-button:hover,
+.patrone-start-power-button:focus,
+.patrone-start-footer-button:hover,
+.patrone-start-footer-button:focus {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.patrone-start-row:selected {
+  box-shadow: inset 3px 0 0 0 #4ca0ff;
+}
+
+.patrone-start-row-detail,
+.patrone-start-empty {
+  color: rgba(242, 243, 245, 0.6);
+}
+
+.patrone-start-letter {
+  color: #6cb2ff;
+}
+
+.patrone-start-power-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.patrone-start-footer {
+  background-color: #1c1f25;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.patrone-start-avatar {
+  background-color: #288bfa;
+  color: #ffffff;
+}

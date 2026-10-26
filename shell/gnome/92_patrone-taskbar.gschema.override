@@ -1,0 +1,6 @@
+# Patrone's taskbar is on for every account (GNOME Shell loads it at
+# sign-in). An account that has turned extensions on or off itself keeps its
+# own list; "gnome-extensions enable patrone-taskbar@patrone-linux" adds it.
+# Ubuntu doesn't set this key for its own session, so one section is enough.
+[org.gnome.shell]
+enabled-extensions=['patrone-taskbar@patrone-linux']

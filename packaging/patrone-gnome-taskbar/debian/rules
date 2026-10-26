@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+pkg = debian/patrone-gnome-taskbar
+uuid = patrone-taskbar@patrone-linux
+extension = $(pkg)/usr/share/gnome-shell/extensions/$(uuid)
+schemas = $(pkg)/usr/share/glib-2.0/schemas
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# The settings schema must be valid; the system compiles it on install
+	glib-compile-schemas --strict --dry-run $(uuid)/schemas
+
+override_dh_auto_install:
+	install -d $(extension)/icons
+	install -m644 $(uuid)/metadata.json $(uuid)/*.js $(uuid)/*.css $(extension)/
+	install -m644 $(uuid)/icons/*.svg $(extension)/icons/
+	# The schema goes with the system's, where GNOME Shell finds it
+	install -Dm644 $(uuid)/schemas/org.gnome.shell.extensions.patrone-taskbar.gschema.xml \
+	    $(schemas)/org.gnome.shell.extensions.patrone-taskbar.gschema.xml
+	install -Dm644 92_patrone-taskbar.gschema.override \
+	    $(schemas)/92_patrone-taskbar.gschema.override

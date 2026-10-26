@@ -1,0 +1,241 @@
+/* Patrone Taskbar: sizes and shapes. Colors are in stylesheet-light.css and
+ * stylesheet-dark.css, which GNOME Shell picks between by the style
+ * (Settings → Appearance), and which both import this file. */
+
+/* The bar: 32px, a compact Windows 11 taskbar */
+.patrone-taskbar {
+  height: 32px;
+  padding: 0 0 0 4px;
+  font-size: 9pt;
+}
+
+.patrone-taskbar-button {
+  min-width: 34px;
+  margin: 2px 1px;
+  border-radius: 4px;
+  transition-duration: 100ms;
+}
+
+.patrone-taskbar-start {
+  min-width: 36px;
+}
+
+.patrone-taskbar-apps {
+  spacing: 0;
+  margin-left: 2px;
+}
+
+/* Under a running app: a short line, longer for the app in front */
+.patrone-taskbar-indicator {
+  width: 6px;
+  height: 3px;
+  border-radius: 2px;
+  margin-bottom: 1px;
+  transition-duration: 150ms;
+}
+
+.patrone-taskbar-item.focused .patrone-taskbar-indicator {
+  width: 14px;
+}
+
+/* The tray: the top bar's own status icons and menus, and the clock */
+.patrone-taskbar-tray {
+  spacing: 0;
+}
+
+.patrone-taskbar-tray .panel-button {
+  -natural-hpadding: 6px;
+  -minimum-hpadding: 4px;
+  margin: 2px 0;
+  border-radius: 4px;
+  font-weight: normal;
+  transition-duration: 100ms;
+}
+
+.patrone-taskbar-tray .system-status-icon {
+  icon-size: 16px;
+  padding: 0 2px;
+}
+
+.patrone-taskbar-tray .panel-status-indicators-box {
+  spacing: 2px;
+}
+
+.patrone-taskbar-tray .clock-display-box {
+  spacing: 4px;
+}
+
+.patrone-taskbar-tray .messages-indicator {
+  icon-size: 12px;
+}
+
+.patrone-clock-time,
+.patrone-clock-date {
+  font-size: 8.5pt;
+  text-align: right;
+}
+
+/* Show desktop: the sliver at the far right */
+.patrone-taskbar-show-desktop {
+  min-width: 6px;
+  width: 6px;
+  margin: 0 0 0 6px;
+  border-radius: 0;
+}
+
+.patrone-taskbar-tooltip {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 9pt;
+}
+
+/* The tray's menus open upward, so their gap goes at the top */
+.popup-menu.panel-menu.patrone-tray-menu {
+  margin-bottom: 0;
+  margin-top: 1.75em;
+}
+
+/* Patrone's menus: right-click menus and the Start menu */
+.patrone-menu .popup-menu-content {
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.patrone-menu .popup-menu-item {
+  border-radius: 4px;
+}
+
+/* The Start menu */
+.patrone-start-menu .popup-menu-content {
+  padding: 0;
+}
+
+.patrone-start {
+  width: 540px;
+}
+
+.patrone-start-search {
+  margin: 16px 20px 6px 20px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  min-height: 20px;
+  font-size: 10pt;
+}
+
+.patrone-start-search-icon {
+  icon-size: 16px;
+  padding-right: 6px;
+}
+
+.patrone-start-pages {
+  height: 400px;
+  padding: 0 16px;
+}
+
+.patrone-start-header {
+  padding: 12px 8px 6px 8px;
+}
+
+.patrone-start-header-label {
+  font-weight: bold;
+  font-size: 10pt;
+}
+
+.patrone-start-link {
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 9pt;
+}
+
+.patrone-start-grid-row {
+  spacing: 4px;
+}
+
+/* 6 tiles of 80px (72 + padding) and their spacing fit the menu's 508px */
+.patrone-start-tile {
+  width: 72px;
+  padding: 8px 4px 6px 4px;
+  border-radius: 6px;
+}
+
+.patrone-start-tile-label {
+  font-size: 8.5pt;
+  padding-top: 6px;
+  max-width: 72px;
+}
+
+.patrone-start-recommended {
+  spacing: 8px;
+}
+
+.patrone-start-row {
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.patrone-start-row-box {
+  spacing: 10px;
+}
+
+.patrone-start-row-name {
+  font-size: 9.5pt;
+}
+
+.patrone-start-row-detail {
+  font-size: 8pt;
+}
+
+.patrone-start-best .patrone-start-row-name {
+  font-size: 11pt;
+  font-weight: bold;
+}
+
+.patrone-start-letter {
+  padding: 10px 8px 2px 8px;
+  font-weight: bold;
+}
+
+.patrone-start-empty {
+  padding: 8px;
+  font-size: 9pt;
+}
+
+.patrone-start-power-row {
+  padding: 6px 16px;
+  spacing: 4px;
+}
+
+.patrone-start-power-button {
+  padding: 6px 4px;
+  border-radius: 6px;
+}
+
+.patrone-start-power-label {
+  font-size: 8pt;
+  padding-top: 4px;
+}
+
+.patrone-start-footer {
+  padding: 10px 20px;
+  spacing: 4px;
+  border-radius: 0 0 8px 8px;
+}
+
+.patrone-start-user {
+  spacing: 10px;
+}
+
+.patrone-start-avatar {
+  icon-size: 28px;
+  border-radius: 99px;
+}
+
+.patrone-start-user-name {
+  font-size: 9.5pt;
+}
+
+.patrone-start-footer-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+}
