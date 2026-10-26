@@ -91,7 +91,10 @@ fn main() -> ExitCode {
 fn init_logging() {
     let filter = EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| EnvFilter::new("warn,patrone_compositor=info"));
-    tracing_subscriber::fmt().with_env_filter(filter).init();
+    tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .with_writer(std::io::stderr)
+        .init();
 }
 
 fn run(options: cli::Options) -> Result<(), Box<dyn Error>> {
@@ -99,8 +102,10 @@ fn run(options: cli::Options) -> Result<(), Box<dyn Error>> {
     let display = Display::<Patrone>::new()?;
     let mut state = Patrone::new(display, &event_loop, &options)?;
     let backend = if options.backend.nested() {
+        tracing::info!("running as a window inside the desktop (--backend drm takes the screen)");
         Backend::Winit(winit::init(event_loop.handle(), &mut state, &options)?)
     } else {
+        tracing::info!("taking over the screen");
         Backend::Udev(udev::init(event_loop.handle(), &mut state, &options)?)
     };
 
