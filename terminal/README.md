@@ -12,8 +12,14 @@ The default terminal of Patrone Linux: GTK4 and VTE, written in Rust.
   shell is still running, and names the program.
 - **Patrone Dark:** a near-black theme with the Patrone blues, in JetBrains
   Mono.
-- **Preferences** (menu, or Ctrl+Comma): font, lines of scrollback, and
-  switches for copy on select and paste on right-click. They're saved in
+- **See-through background**, as in Kali's terminal: the desktop shows
+  faintly behind the text, 15% by default (the user asked for it,
+  2026-10-26). The title bar and tab bar stay solid. GTK's built-in theme
+  paints the scrolled window and the `vte-terminal` node, so `theme::CSS`
+  clears those along with the window.
+- **Preferences** (menu, or Ctrl+Comma): font, background transparency
+  (0%, solid, to 60%), lines of scrollback, and switches for copy on select
+  and paste on right-click. They're saved in
   `~/.config/patrone-terminal/settings.ini` and apply to open terminals at
   once.
 - Tabs, 100,000 lines of scrollback, and xterm-style `-e` and `-T` options so

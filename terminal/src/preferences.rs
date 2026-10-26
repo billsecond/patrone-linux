@@ -30,6 +30,19 @@ pub fn show(parent: &gtk::ApplicationWindow) {
         .halign(gtk::Align::End)
         .valign(gtk::Align::Center)
         .build();
+    // In steps of 5, from solid to as see-through as still reads well
+    let transparency = gtk::Scale::with_range(
+        gtk::Orientation::Horizontal,
+        0.0,
+        settings::MAX_TRANSPARENCY as f64,
+        5.0,
+    );
+    transparency.set_value(current.transparency as f64);
+    transparency.set_draw_value(true);
+    transparency.set_value_pos(gtk::PositionType::Right);
+    transparency.set_format_value_func(|_, value| format!("{value:.0}%"));
+    transparency.set_width_request(200);
+    transparency.set_valign(gtk::Align::Center);
 
     let grid = gtk::Grid::builder()
         .row_spacing(14)
@@ -39,8 +52,9 @@ pub fn show(parent: &gtk::ApplicationWindow) {
         .margin_start(24)
         .margin_end(24)
         .build();
-    let rows: [(&str, &gtk::Widget); 4] = [
+    let rows: [(&str, &gtk::Widget); 5] = [
         ("Font", font.upcast_ref()),
+        ("Background transparency", transparency.upcast_ref()),
         ("Lines of scrollback", scrollback.upcast_ref()),
         ("Copy selected text", copy_on_select.upcast_ref()),
         ("Paste with right-click", paste_on_right_click.upcast_ref()),
@@ -69,6 +83,16 @@ pub fn show(parent: &gtk::ApplicationWindow) {
         move |spin| {
             settings::update(|s| s.scrollback_lines = spin.value() as i64);
             window::apply_settings_everywhere(&app);
+        }
+    });
+    transparency.connect_value_changed({
+        let app = app.clone();
+        move |scale| {
+            let percent = scale.value().round() as i64;
+            if percent != settings::get().transparency {
+                settings::update(|s| s.transparency = percent);
+                window::apply_settings_everywhere(&app);
+            }
         }
     });
     copy_on_select.connect_active_notify(|switch| {

@@ -26,6 +26,14 @@ fn rgba(hex: &str) -> gdk::RGBA {
     gdk::RGBA::parse(hex).expect("theme colors are valid")
 }
 
+/// The background at a transparency, in percent: the desktop shows through
+/// it, as in Kali's terminal, while the text stays solid.
+pub fn background(transparency: i64) -> gdk::RGBA {
+    let color = rgba(BACKGROUND);
+    let alpha = 1.0 - transparency.clamp(0, 100) as f32 / 100.0;
+    gdk::RGBA::new(color.red(), color.green(), color.blue(), alpha)
+}
+
 pub fn apply(terminal: &vte::Terminal) {
     let palette: Vec<gdk::RGBA> = PALETTE.iter().map(|hex| rgba(hex)).collect();
     let palette: Vec<&gdk::RGBA> = palette.iter().collect();
@@ -37,11 +45,16 @@ pub fn apply(terminal: &vte::Terminal) {
     terminal.set_bold_is_bright(false);
 }
 
-/// Styles the window chrome around the terminals to match.
+/// Styles the window chrome around the terminals to match. The window
+/// itself is clear, so a terminal's see-through background shows the
+/// desktop and not the window behind it.
 pub const CSS: &str = "
 window.patrone-terminal,
-window.patrone-terminal notebook > stack {
-    background-color: #070A10;
+window.patrone-terminal notebook,
+window.patrone-terminal notebook > stack,
+window.patrone-terminal scrolledwindow,
+window.patrone-terminal vte-terminal {
+    background-color: transparent;
 }
 window.patrone-terminal headerbar {
     background-color: #0D121B;

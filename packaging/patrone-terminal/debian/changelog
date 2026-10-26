@@ -1,3 +1,12 @@
+patrone-terminal (0.1.3) resolute; urgency=medium
+
+  * A see-through background, as in Kali's terminal: the desktop shows
+    faintly behind the text, 15% by default, while the title bar and tabs
+    stay solid. Preferences has a Background transparency slider, from 0%
+    (solid) to 60%.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:20:00 -0500
+
 patrone-terminal (0.1.2) resolute; urgency=medium
 
   * A clearer icon: a white prompt and a Patrone Blue cursor on a dark

@@ -226,6 +226,7 @@ fn configure(terminal: &vte::Terminal) {
 fn apply_settings(terminal: &vte::Terminal, settings: &settings::Settings) {
     terminal.set_font(Some(&pango::FontDescription::from_string(&settings.font)));
     terminal.set_scrollback_lines(settings.scrollback_lines);
+    terminal.set_color_background(&theme::background(settings.transparency));
 }
 
 /// Applies changed preferences to the terminals in every window.
