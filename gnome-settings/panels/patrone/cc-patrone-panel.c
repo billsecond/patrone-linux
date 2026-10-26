@@ -81,8 +81,8 @@ static const Choice colors[] = {
 };
 
 static const Choice pin_icons[] = {
-  { "patrone", N_("Patrone's"), N_("A globe, a prompt, a folder and an envelope, whichever app does each job") },
-  { "app", N_("Each App's Own"), N_("The icon of the app each one opens") },
+  { "patrone", N_("Patrone's"), N_("A globe, a prompt, a folder and an envelope") },
+  { "app", N_("Each App's Own"), N_("The icon of the app each one opens, in its own style") },
 };
 
 static const Choice sides[] = {

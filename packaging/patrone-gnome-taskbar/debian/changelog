@@ -13,6 +13,8 @@ patrone-gnome-taskbar (0.3.2) resolute; urgency=medium
   * An app shows on the taskbar the moment it's opened, its icon pulsing
     until its first window appears, so a slow one still shows it was
     clicked; before, it showed only once it had a window.
+  * "Task Manager" in the bar's right-click menu opens Patrone Task
+    Manager when it's installed.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 17:20:00 -0500
 

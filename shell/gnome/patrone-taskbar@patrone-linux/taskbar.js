@@ -60,6 +60,7 @@ const SETTINGS_APP = 'org.patrone.Settings.desktop';
 const TOOLTIP_DELAY = 500; // ms
 
 const TASK_MANAGERS = [
+    'org.patrone.TaskManager.desktop',
     'net.nokyan.Resources.desktop',
     'org.gnome.SystemMonitor.desktop',
     'gnome-system-monitor.desktop',

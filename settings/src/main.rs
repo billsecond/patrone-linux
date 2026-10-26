@@ -72,8 +72,8 @@ const COLORS: [(&str, &str, &str); 2] = [
 /// What the taskbar's web, terminal, files and mail pins show (its
 /// pin-icons setting).
 const PIN_ICONS: [(&str, &str, &str); 2] = [
-    ("patrone", "Patrone's", "A globe, a prompt, a folder and an envelope, whichever app does each job"),
-    ("app", "Each app's own", "The icon of the app each one opens"),
+    ("patrone", "Patrone's", "A globe, a prompt, a folder and an envelope"),
+    ("app", "Each app's own", "The icon of the app each one opens, in its own style"),
 ];
 
 /// The taskbar's icons folder: in the account's extensions, or the system's.
