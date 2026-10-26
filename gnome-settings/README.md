@@ -46,6 +46,18 @@ Install the two packages that go together:
 sudo apt install ./out/gnome-control-center_*patrone1_amd64.deb ./out/gnome-control-center-data_*patrone1_all.deb
 ```
 
+## How it was checked
+
+`1:50.3-0ubuntu0.2patrone1`, built on the dev VM (2026-10-26): the patches
+applied cleanly and the page compiled with no warnings. The built Settings,
+unpacked into a folder and run in `shell/gnome/tests/headless.sh`'s
+throwaway GNOME Shell (with that folder first in `XDG_DATA_DIRS`), showed
+the Patrone row with its icon after Ubuntu's Desktop page, each section's
+pictures, and the current values picked. Clicking a choice in each section
+set its setting, and the theme's `gtk.css` import; a setting changed
+elsewhere moved the page's pick. Privacy & Security had no Telemetry row.
+`apt-get -s install` of the two packages upgrades just them.
+
 ## Keeping up with Ubuntu
 
 The version is Ubuntu's with `patrone1` added (`1:50.3-0ubuntu0.2patrone1`),
