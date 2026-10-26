@@ -93,9 +93,14 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   (Read, Write, Run; for folders List contents, Add and delete, Open),
   "Allow running this file as a program", the special permissions (set user
   ID, set group ID, sticky), for folders "Apply to everything inside", and
-  the mode in numbers and letters (`0755`, `-rwxr-xr-x`). A change you may
-  not make yourself is made as administrator after the system asks for your
-  password (pkexec).
+  the mode in numbers and letters (`0755`, `-rwxr-xr-x`). **Other people and
+  groups** get access by name, as with Windows' Add... button: "Give access
+  to" adds a row with their own Read, Write and Run boxes (starting, as on
+  Windows, with read, and open for a folder or a program) and a button to
+  take it away. These are ACLs (`getfacl` and `setfacl` from the `acl`
+  package); a folder hands them on to new items inside, and the mode shows
+  `+` as `ls` does. A change you may not make yourself is made as
+  administrator after the system asks for your password (pkexec).
 - **System folder hints** (View → Show, or Folder Options → View), for
   people who know Windows: Details gains a Purpose column saying what system
   folders and well-known files are for (`/etc` "Settings", `/usr/bin`

@@ -1,3 +1,15 @@
+patrone-file-manager (0.2.2) resolute; urgency=medium
+
+  * Permissions gives other people and groups access by name, as Windows'
+    Add... button does: each gets a row with Read, Write and Run (List
+    contents, Add and delete, Open for folders) and a button to take it
+    away. Made with ACLs (getfacl, setfacl); a folder hands them on to new
+    items inside; as administrator through pkexec when needed. The Owner
+    and Group rows name who they are, and the mode shows "+" as ls does.
+  * Recommends acl, which has getfacl and setfacl.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 16:05:00 -0500
+
 patrone-file-manager (0.2.1) resolute; urgency=medium
 
   * Folder Options closes again after being reopened: a closed dialog

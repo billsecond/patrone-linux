@@ -1,18 +1,21 @@
 //! Properties' Permissions tab, Linux's take on Windows' Security tab: who
 //! owns an item, what its owner, its group and everyone else may do with
 //! it, whether a file may run as a program, the special bits, and for a
-//! folder, the same for everything inside. A change the user can't make
-//! themselves is made as administrator after the system asks for their
-//! password (pkexec). With "System folder hints" on, the tab also shows the
-//! commands that make the same changes.
+//! folder, the same for everything inside. As Windows adds users and groups
+//! to an item, other people and groups can be given access by name, through
+//! ACLs (`getfacl` and `setfacl`); a folder hands them on to new items
+//! inside. A change the user can't make themselves is made as administrator
+//! after the system asks for their password (pkexec). With "System folder
+//! hints" on, the tab also shows the commands that make the same changes.
 
 use std::cell::{Cell, RefCell};
 use std::os::unix::fs::MetadataExt;
-use std::path::PathBuf;
-use std::rc::Rc;
+use std::path::{Path, PathBuf};
+use std::rc::{Rc, Weak};
 
 use gtk::{gio, glib, prelude::*};
 
+use crate::glyph;
 use crate::hints;
 
 const READ: u32 = 0o444;
@@ -35,6 +38,18 @@ pub struct Permissions {
     group: gtk::DropDown,
     /// The nine Read, Write and Run boxes, with their bits.
     checks: Vec<(u32, gtk::CheckButton)>,
+    table: gtk::Grid,
+    owner_row: gtk::Label,
+    group_row: gtk::Label,
+    /// Whether the item can have people added by name (getfacl read it).
+    acl: bool,
+    /// People and groups given access by name, as shown and as on disk.
+    named: RefCell<Vec<Named>>,
+    applied_named: RefCell<Vec<Named>>,
+    /// Whether the folder hands entries on to new items (a default ACL).
+    had_defaults: Cell<bool>,
+    named_rows: Cell<i32>,
+    this: RefCell<Weak<Permissions>>,
     run: Option<gtk::CheckButton>,
     special: Vec<(u32, gtk::CheckButton)>,
     recursive: Option<gtk::CheckButton>,
@@ -54,6 +69,105 @@ struct Account {
     uid: u32,
     name: String,
     gid: u32,
+}
+
+/// A person or group given access by name: an ACL entry.
+#[derive(Clone, PartialEq, Eq, Debug)]
+struct Named {
+    group: bool,
+    name: String,
+    /// Read, Write and Run as 4, 2 and 1.
+    perms: u32,
+}
+
+impl Named {
+    /// How setfacl names it: `u:NAME` or `g:NAME`.
+    fn tag(&self) -> String {
+        format!("{}:{}", if self.group { "g" } else { "u" }, self.name)
+    }
+
+    fn same(&self, other: &Named) -> bool {
+        self.group == other.group && self.name == other.name
+    }
+}
+
+/// What getfacl says about an item.
+#[derive(Default, Debug, PartialEq)]
+struct Acl {
+    /// The owning group's own rights. Once people are added by name, the
+    /// group bits of the mode are the ACL's mask instead.
+    group: Option<u32>,
+    named: Vec<Named>,
+    defaults: bool,
+}
+
+fn perms_of(text: &str) -> u32 {
+    text.chars().fold(0, |perms, c| {
+        perms
+            | match c {
+                'r' => 4,
+                'w' => 2,
+                'x' | 'X' => 1,
+                _ => 0,
+            }
+    })
+}
+
+/// `rwx`, or with `recursive`, `rwX`: Run only for folders and for files
+/// that can already run.
+fn perms_text(perms: u32, recursive: bool) -> String {
+    let mut text = String::new();
+    text.push(if perms & 4 != 0 { 'r' } else { '-' });
+    text.push(if perms & 2 != 0 { 'w' } else { '-' });
+    text.push(match (perms & 1 != 0, recursive) {
+        (true, true) => 'X',
+        (true, false) => 'x',
+        (false, _) => '-',
+    });
+    text
+}
+
+fn parse_acl(text: &str) -> Acl {
+    let mut acl = Acl::default();
+    for line in text.lines() {
+        let line = line.split('#').next().unwrap_or_default().trim();
+        let (default, entry) = match line.strip_prefix("default:") {
+            Some(entry) => (true, entry),
+            None => (false, line),
+        };
+        let fields: Vec<&str> = entry.split(':').collect();
+        let [kind, name, perms] = fields[..] else {
+            continue;
+        };
+        if default {
+            acl.defaults = true;
+            continue;
+        }
+        match (kind, name) {
+            ("group", "") => acl.group = Some(perms_of(perms)),
+            ("user" | "group", name) if !name.is_empty() => acl.named.push(Named {
+                group: kind == "group",
+                name: name.to_owned(),
+                perms: perms_of(perms),
+            }),
+            _ => {}
+        }
+    }
+    acl
+}
+
+/// The item's ACL, or `None` where there are none to have (getfacl isn't
+/// installed, or the file system can't).
+fn read_acl(path: &Path) -> Option<Acl> {
+    let output = std::process::Command::new("getfacl")
+        .args(["--omit-header", "--absolute-names", "--no-effective", "--"])
+        .arg(path)
+        .output()
+        .ok()?;
+    output
+        .status
+        .success()
+        .then(|| parse_acl(&String::from_utf8_lossy(&output.stdout)))
 }
 
 struct Group {
@@ -208,7 +322,15 @@ fn dropdown(names: &[String], current: &str) -> gtk::DropDown {
 impl Permissions {
     pub fn new(info: &gio::FileInfo, file: &gio::File) -> Rc<Permissions> {
         let is_dir = crate::util::is_dir(info);
-        let mode = info.attribute_uint32("unix::mode") & 0o7777;
+        let mut mode = info.attribute_uint32("unix::mode") & 0o7777;
+        let acl = file.path().as_deref().and_then(read_acl);
+        if let Some(acl) = &acl
+            && !acl.named.is_empty()
+            && let Some(group) = acl.group
+        {
+            // The Group row is the owning group's own rights, not the mask.
+            mode = (mode & !0o070) | (group << 3);
+        }
         let owner_name = info
             .attribute_string("owner::user")
             .map(String::from)
@@ -238,6 +360,9 @@ impl Permissions {
             )
             .xalign(0.0)
             .selectable(true)
+            // Selectable with the mouse, but not where the tab's focus
+            // lands, which would select the whole path.
+            .focusable(false)
             .wrap(true)
             .wrap_mode(gtk::pango::WrapMode::Char)
             .attributes(&no_hyphens())
@@ -285,9 +410,11 @@ impl Permissions {
             table.attach(&label, column as i32 + 1, 0, 1, 1);
         }
         let mut checks = Vec::new();
+        let mut row_labels = Vec::new();
         for (index, title) in ["Owner", "Group", "Everyone else"].iter().enumerate() {
             let label = gtk::Label::builder().label(*title).xalign(0.0).build();
             table.attach(&label, 0, index as i32 + 1, 1, 1);
+            row_labels.push(label);
             for (column, base) in [0o4, 0o2, 0o1].iter().enumerate() {
                 let bit = base << ((2 - index) * 3);
                 let check = check_cell();
@@ -297,6 +424,36 @@ impl Permissions {
             }
         }
         frame.append(&table);
+        // Anyone else, by name, as Windows' Add... button does.
+        let add_row = acl.as_ref().map(|_| {
+            let mut candidates: Vec<(bool, String)> = users
+                .iter()
+                .filter(|user| **user != owner_name)
+                .map(|user| (false, user.clone()))
+                .collect();
+            candidates.extend(groups.iter().map(|group| (true, group.name.clone())));
+            let labels: Vec<String> = candidates
+                .iter()
+                .map(|(group, name)| {
+                    if *group {
+                        format!("{name} (group)")
+                    } else {
+                        name.clone()
+                    }
+                })
+                .collect();
+            let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+            row.add_css_class("permission-add");
+            row.append(&key_label("Give access to:"));
+            let choice = dropdown(&labels, "");
+            choice.set_tooltip_text(Some("A person, or a group of people"));
+            let add = gtk::Button::with_mnemonic("_Add");
+            add.add_css_class("dialog-button");
+            row.append(&choice);
+            row.append(&add);
+            frame.append(&row);
+            (choice, add, candidates)
+        });
         widget.append(&frame);
 
         let run = (!is_dir).then(|| {
@@ -413,6 +570,10 @@ impl Permissions {
         widget.append(&hint_box);
 
         let owner_uid = info.attribute_uint32("unix::uid");
+        let named = acl
+            .as_ref()
+            .map(|acl| acl.named.clone())
+            .unwrap_or_default();
         let permissions = Rc::new(Permissions {
             widget,
             file: file.clone(),
@@ -424,6 +585,15 @@ impl Permissions {
             owner,
             group,
             checks,
+            table,
+            owner_row: row_labels[0].clone(),
+            group_row: row_labels[1].clone(),
+            acl: acl.is_some(),
+            had_defaults: Cell::new(acl.as_ref().is_some_and(|acl| acl.defaults)),
+            applied_named: RefCell::new(named.clone()),
+            named: RefCell::new(named),
+            named_rows: Cell::new(0),
+            this: RefCell::default(),
             run,
             special,
             recursive,
@@ -436,7 +606,20 @@ impl Permissions {
             applied_group: RefCell::new(group_name),
             syncing: Cell::new(false),
         });
+        permissions.this.replace(Rc::downgrade(&permissions));
         permissions.connect();
+        permissions.show_named();
+        if let Some((choice, add, candidates)) = add_row {
+            let weak = Rc::downgrade(&permissions);
+            add.connect_clicked(move |_| {
+                let Some(page) = weak.upgrade() else { return };
+                let Some((group, name)) = candidates.get(choice.selected() as usize).cloned()
+                else {
+                    return;
+                };
+                page.add_named(group, name);
+            });
+        }
         {
             let label = permissions.commands.clone();
             copy.connect_clicked(move |button| {
@@ -487,6 +670,90 @@ impl Permissions {
                 page.set_bits(RUN, wanted);
             });
         }
+    }
+
+    /// Gives someone access by name, with Windows' starting rights: read
+    /// (and open, for a folder or a program).
+    fn add_named(&self, group: bool, name: String) {
+        if self
+            .named
+            .borrow()
+            .iter()
+            .any(|entry| entry.group == group && entry.name == name)
+        {
+            return;
+        }
+        let perms = if self.is_dir || self.mode() & 0o100 != 0 {
+            0o5
+        } else {
+            0o4
+        };
+        self.named.borrow_mut().push(Named { group, name, perms });
+        self.show_named();
+        self.refresh();
+    }
+
+    /// The rows under Owner, Group and Everyone else for the people and
+    /// groups given access by name, each with a button to take it away.
+    fn show_named(&self) {
+        const FIRST_ROW: i32 = 4;
+        for _ in 0..self.named_rows.get() {
+            self.table.remove_row(FIRST_ROW);
+        }
+        let named = self.named.borrow().clone();
+        for (index, entry) in named.iter().enumerate() {
+            let row = FIRST_ROW + index as i32;
+            let who = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            who.append(&gtk::Label::builder().label(&entry.name).xalign(0.0).build());
+            let kind = gtk::Label::new(Some(if entry.group { "group" } else { "person" }));
+            kind.add_css_class("permission-kind");
+            who.append(&kind);
+            self.table.attach(&who, 0, row, 1, 1);
+            for (column, bit) in [0o4, 0o2, 0o1].into_iter().enumerate() {
+                let check = check_cell();
+                check.set_active(entry.perms & bit != 0);
+                let weak = self.this.borrow().clone();
+                let target = entry.clone();
+                check.connect_toggled(move |check| {
+                    let Some(page) = weak.upgrade() else { return };
+                    if let Some(entry) = page
+                        .named
+                        .borrow_mut()
+                        .iter_mut()
+                        .find(|entry| entry.same(&target))
+                    {
+                        if check.is_active() {
+                            entry.perms |= bit;
+                        } else {
+                            entry.perms &= !bit;
+                        }
+                    }
+                    page.refresh();
+                });
+                self.table.attach(&check, column as i32 + 1, row, 1, 1);
+            }
+            let remove = glyph::button("close", &format!("Remove {}", entry.name));
+            remove.add_css_class("flat");
+            remove.add_css_class("permission-remove");
+            let weak = self.this.borrow().clone();
+            let target = entry.clone();
+            remove.connect_clicked(move |_| {
+                let Some(page) = weak.upgrade() else { return };
+                page.named.borrow_mut().retain(|entry| !entry.same(&target));
+                page.show_named();
+                page.refresh();
+            });
+            self.table.attach(&remove, 4, row, 1, 1);
+        }
+        self.named_rows.set(named.len() as i32);
+    }
+
+    fn named_changed(&self) -> bool {
+        let (named, applied) = (self.named.borrow(), self.applied_named.borrow());
+        named.len() != applied.len()
+            || named
+                .iter()
+                .any(|entry| !applied.iter().any(|old| old == entry))
     }
 
     /// Ticks the boxes for the bits in `mask` to match `bits`.
@@ -602,6 +869,38 @@ impl Permissions {
             lines.push(line);
         }
         let mode = self.mode();
+        let named = self.named.borrow().clone();
+        let applied_named = self.applied_named.borrow().clone();
+        let named_changed = self.named_changed();
+        let setfacl = |args: &[String]| {
+            let mut line = vec!["setfacl".to_owned()];
+            if recursive {
+                line.push("-R".into());
+            }
+            line.extend(args.iter().cloned());
+            line.extend(["--".into(), path.clone()]);
+            line
+        };
+        // People taken away go first: with an ACL, chmod's group bits set
+        // the mask, so the entries that stay are set after it.
+        if self.acl && (all || named_changed || recursive) {
+            if named.is_empty() && (!applied_named.is_empty() || self.had_defaults.get()) {
+                lines.push(setfacl(&["-b".into(), "-k".into()]));
+            } else {
+                let gone: Vec<String> = applied_named
+                    .iter()
+                    .filter(|old| !named.iter().any(|entry| entry.same(old)))
+                    .flat_map(|old| {
+                        let tag = old.tag();
+                        let inherited = self.is_dir.then(|| format!("d:{tag}"));
+                        std::iter::once(tag).chain(inherited)
+                    })
+                    .collect();
+                if !gone.is_empty() {
+                    lines.push(setfacl(&["-x".into(), gone.join(",")]));
+                }
+            }
+        }
         if recursive {
             lines.push(vec![
                 "chmod".into(),
@@ -616,8 +915,24 @@ impl Permissions {
                 "chmod".into(),
                 format!("{mode:04o}"),
                 "--".into(),
-                path,
+                path.clone(),
             ]);
+        }
+        if self.acl
+            && !named.is_empty()
+            && (all || named_changed || recursive || mode != self.applied.get())
+        {
+            // The owning group's own rights, then everyone added by name; a
+            // folder hands them on to what's made inside (d:).
+            let mut spec = vec![format!("g::{}", perms_text((mode >> 3) & 0o7, recursive))];
+            for entry in &named {
+                let perms = perms_text(entry.perms, recursive);
+                spec.push(format!("{}:{perms}", entry.tag()));
+                if self.is_dir {
+                    spec.push(format!("d:{}:{perms}", entry.tag()));
+                }
+            }
+            lines.push(setfacl(&["-m".into(), spec.join(",")]));
         }
         lines
     }
@@ -640,10 +955,20 @@ impl Permissions {
 
     fn refresh(&self) {
         let mode = self.mode();
+        // `ls` marks an item with people added by name with a "+".
+        let plus = if self.named.borrow().is_empty() {
+            ""
+        } else {
+            "+"
+        };
         self.mode_label.set_label(&format!(
-            "Numeric: {mode:04o}      Symbolic: {}",
+            "Numeric: {mode:04o}      Symbolic: {}{plus}",
             symbolic(mode, self.is_dir)
         ));
+        self.owner_row
+            .set_label(&format!("Owner ({})", self.owner()));
+        self.group_row
+            .set_label(&format!("Group ({})", self.group()));
         if let Some(run) = &self.run {
             self.syncing.set(true);
             run.set_active(mode & 0o100 != 0);
@@ -688,6 +1013,7 @@ impl Permissions {
         let changed = self.owner_changed()
             || self.group_changed()
             || self.mode() != self.applied.get()
+            || self.named_changed()
             || self.recursive();
         if !changed {
             return Ok(());
@@ -732,6 +1058,10 @@ impl Permissions {
         self.applied.set(self.mode());
         self.applied_owner.replace(self.owner());
         self.applied_group.replace(self.group());
+        self.applied_named.replace(self.named.borrow().clone());
+        if let Some(acl) = self.path.as_deref().and_then(read_acl) {
+            self.had_defaults.set(acl.defaults);
+        }
         if let Some(path) = &self.path
             && let Ok(meta) = std::fs::symlink_metadata(path)
         {
@@ -784,5 +1114,33 @@ mod tests {
         assert_eq!(symbolic(0o2640, false), "-rw-r-S---");
         assert_eq!(recursive_mode(0o755), "u=rwX,g=rX,o=rX");
         assert_eq!(recursive_mode(0o640), "u=rw,g=r,o=");
+    }
+
+    #[test]
+    fn reads_acls() {
+        let acl = parse_acl(
+            "user::rwx\nuser:base:r-x\ngroup::r--\ngroup:shared:rw-\nmask::rwx\nother::r--\n\
+             default:user::rwx\ndefault:user:base:r-x\n",
+        );
+        assert_eq!(acl.group, Some(0o4));
+        assert!(acl.defaults);
+        assert_eq!(
+            acl.named,
+            [
+                Named {
+                    group: false,
+                    name: "base".into(),
+                    perms: 0o5
+                },
+                Named {
+                    group: true,
+                    name: "shared".into(),
+                    perms: 0o6
+                },
+            ]
+        );
+        assert_eq!(parse_acl("user::rw-\ngroup::r--\nother::r--\n").named, []);
+        assert_eq!(perms_text(0o5, false), "r-x");
+        assert_eq!(perms_text(0o7, true), "rwX");
     }
 }

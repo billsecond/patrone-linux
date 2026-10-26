@@ -16,7 +16,7 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 Package: patrone-file-manager
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, gvfs, fonts-inter | fonts-noto-core
-Recommends: gvfs-backends, xdg-user-dirs, xdg-utils, pkexec
+Recommends: gvfs-backends, xdg-user-dirs, xdg-utils, pkexec, acl
 Description: file manager for Patrone Linux
  Patrone File Manager is the file manager of Patrone Linux, in the image of
  Windows 11's File Explorer: tabs, the command bar, breadcrumbs, the

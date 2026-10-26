@@ -117,13 +117,15 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.1** (section 8; the user runs 0.2.0),
+- **Install Patrone File Manager 0.2.2** (section 8; the user runs 0.2.0),
   from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.1_amd64.deb`,
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.2_amd64.deb`,
   then close every File Manager window so the new version starts. Try
   Folder Options twice, the Purpose column with View → Show → System folder
-  hints, the full path in the address bar, and Properties → Permissions on a
-  script (Apply asks for your password when it needs administrator rights).
+  hints, the full path in the address bar, and Properties → Permissions:
+  give a person or group access by name (an account named "base" has to be
+  created first; there isn't one). Apply asks for your password when it
+  needs administrator rights.
 
 ## 1. Patrone Terminal
 
@@ -969,7 +971,32 @@ Findings:
   else; giving one more named person access needs an ACL (`setfacl`, in the
   `acl` package, which is installed), which the tab doesn't offer yet.
 
-Next: the user's verdict on 0.2.1, then the gaps in the README's "Not done
+### 0.2.2 (2026-10-26)
+
+The user asked for Windows-style per-person access in Permissions ("Add...
+a user or group with Read/Write/Run ... using ACLs"). The tab now reads the
+item's ACL (`getfacl`), lists everyone given access by name under Owner,
+Group and Everyone else with their own boxes and a remove button, and adds
+people and groups from "Give access to". Apply removes entries (`setfacl
+-x`, or `-b -k` when none are left) before `chmod`, and sets the rest after
+it (`setfacl -m g::...,u:NAME:...`), because with an ACL chmod's group bits
+are the mask; a folder also gets default entries so new items inherit them.
+The Group row shows the owning group's own rights (getfacl's `group::`), not
+the mask.
+
+Verified with real clicks in the headless GNOME Shell, reading the result
+with `getfacl` each time: adding root to a file (`user:root:r--`, the
+group's `rw-` kept), giving root Write (`rw-`), removing root (back to a
+plain `-rw-rw-r--`); adding root to a folder (access and default entries; a
+file made inside afterwards inherited root's entry) and removing it again
+(defaults gone too). With hints on, an item with an ACL showed its
+`setfacl -m` command. 15 unit tests pass (new: reading getfacl's output).
+
+Not verified yet: the pkexec path for someone else's items, groups added by
+name (only root, the VM's one other account, was tried), and "Apply to
+everything inside" together with named entries.
+
+Next: the user's verdict on 0.2.2, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 
