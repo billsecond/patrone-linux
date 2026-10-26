@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+include /usr/share/dpkg/architecture.mk
+
+pkg = debian/patrone-remote-desktop
+libexec = $(pkg)/usr/libexec/patrone-remote-desktop
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm644 proxy-patrone-login-plugin.so \
+	    $(pkg)/usr/lib/$(DEB_HOST_MULTIARCH)/freerdp3/proxy/proxy-patrone-login-plugin.so
+	install -Dm755 patrone-remote-desktop-auth $(libexec)/auth
+	install -Dm755 libexec/prepare-session $(libexec)/prepare-session
+	install -Dm755 libexec/no-lock $(libexec)/no-lock
+	install -Dm755 sbin/patrone-remote-desktop $(pkg)/usr/sbin/patrone-remote-desktop
+	install -Dm644 data/proxy.ini $(pkg)/etc/patrone-remote-desktop/proxy.ini
+	install -Dm644 data/patrone-remote-desktop.pam $(pkg)/etc/pam.d/patrone-remote-desktop
+	install -Dm644 data/patrone-remote-desktop-no-lock.desktop \
+	    $(pkg)/etc/xdg/autostart/patrone-remote-desktop-no-lock.desktop
+	install -Dm644 -t $(pkg)/usr/lib/systemd/system data/patrone-remote-desktop.service \
+	    data/patrone-remote-desktop-auth.socket data/patrone-remote-desktop-auth@.service
+	install -Dm644 README.md $(pkg)/usr/share/doc/patrone-remote-desktop/README.md
+
+# Off until an administrator runs patrone-remote-desktop enable
+override_dh_installsystemd:
+	dh_installsystemd --no-enable --no-start

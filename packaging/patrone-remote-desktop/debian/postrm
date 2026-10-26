@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+# The proxy's certificate and each account's secret
+if [ "$1" = purge ]; then
+    rm -rf /var/lib/patrone-remote-desktop
+fi
+
+#DEBHELPER#

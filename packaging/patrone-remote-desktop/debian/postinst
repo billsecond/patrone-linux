@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = configure ]; then
+    # Accounts in this group may sign in over Remote Desktop.
+    if ! getent group remote-desktop > /dev/null; then
+        addgroup --system --quiet remote-desktop
+    fi
+    # The proxy's own account; it can ask the sign-in helper, nothing more.
+    if ! getent passwd patrone-rdp > /dev/null; then
+        adduser --system --quiet --group --no-create-home \
+            --home /var/lib/patrone-remote-desktop/proxy patrone-rdp
+    fi
+    # On an upgrade, a running proxy picks up the new plugin.
+    if [ -n "$2" ]; then
+        deb-systemd-invoke try-restart patrone-remote-desktop.service || true
+    fi
+fi
+
+#DEBHELPER#

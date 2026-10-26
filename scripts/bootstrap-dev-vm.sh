@@ -35,6 +35,9 @@ apt-get install -y pkg-config clang meson ninja-build \
 apt-get install -y libvte-2.91-gtk4-dev fonts-jetbrains-mono fonts-firacode \
     zsh zsh-syntax-highlighting zsh-autosuggestions
 
+# Patrone Remote Desktop: FreeRDP's proxy and its plugin headers, and PAM
+apt-get install -y freerdp-proxy freerdp3-dev libpam0g-dev pkgconf python3
+
 # Hyper-V integration: the KVP daemon lets the Windows host see this VM's IP
 # address. socat and the FreeRDP proxy are for enhanced sessions
 # (scripts/hyperv/guest/).

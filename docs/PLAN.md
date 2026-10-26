@@ -94,6 +94,8 @@ docs/                  plan, decisions, how-to notes
 branding/              logo, colors and artwork, and the system files that
                        replace Ubuntu's branding (patrone-branding)
 default-apps/          default browser and favorites (patrone-default-apps)
+remote-desktop/        RDP sign-in with each account's own password
+                       (patrone-remote-desktop)
 compositor/            the Patrone compositor
 shell/                 panel, launcher, dock, notifications
 settings/              the settings app

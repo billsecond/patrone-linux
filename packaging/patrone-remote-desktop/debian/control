@@ -1,0 +1,33 @@
+Source: patrone-remote-desktop
+Section: net
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               freerdp3-dev,
+               libpam0g-dev,
+               pkgconf,
+               python3
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-remote-desktop
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         adduser,
+         freerdp-proxy,
+         gdm3,
+         gnome-remote-desktop,
+         iproute2,
+         libpam-modules,
+         openssl,
+         util-linux
+Description: Remote Desktop sign-in with each account's own password
+ Lets Windows' Remote Desktop Connection and other RDP clients open a Patrone
+ desktop. Accounts in the remote-desktop group sign in with their own
+ username and password, which PAM checks on every connection; nothing keeps a
+ copy of them. Each account gets its own desktop, started when it signs in,
+ sized to the client's window, and never locked while connected.
+ .
+ It's off until an administrator runs "patrone-remote-desktop enable".

@@ -1,0 +1,67 @@
+#!/bin/bash
+# Turns Patrone's Remote Desktop on or off.
+#
+#   patrone-remote-desktop enable    start it, now and at every boot
+#   patrone-remote-desktop disable   stop it
+#   patrone-remote-desktop status    whether it's on, and who may sign in
+#
+# Accounts in the remote-desktop group sign in with their own username and
+# password, checked each time: sudo adduser NAME remote-desktop
+set -euo pipefail
+
+state=/var/lib/patrone-remote-desktop/proxy
+units=(patrone-remote-desktop-auth.socket patrone-remote-desktop.service)
+
+need_root() {
+    if [[ $EUID -ne 0 ]]; then
+        echo "Run this with sudo." >&2
+        exit 1
+    fi
+}
+
+members() {
+    local list
+    list=$(getent group remote-desktop | cut -d: -f4)
+    echo "${list:-nobody yet}"
+}
+
+# The certificate Remote Desktop clients see, made once
+make_certificate() {
+    install -d -o patrone-rdp -g patrone-rdp -m 700 "$state"
+    if [[ ! -f $state/tls.crt ]]; then
+        openssl req -x509 -newkey rsa:3072 -nodes -days 3650 -quiet \
+            -subj "/CN=$(hostname)" -keyout "$state/tls.key" -out "$state/tls.crt"
+        chown patrone-rdp:patrone-rdp "$state/tls.key" "$state/tls.crt"
+        chmod 600 "$state/tls.key"
+    fi
+}
+
+case ${1:-} in
+    enable)
+        need_root
+        make_certificate
+        # GNOME's own Remote Login daemon would hold port 3389.
+        systemctl disable --now gnome-remote-desktop.service 2> /dev/null || true
+        systemctl enable --now "${units[@]}"
+        echo "Remote Desktop is on, on port 3389."
+        echo "Who may sign in (the remote-desktop group): $(members)"
+        echo "To let an account sign in: sudo adduser NAME remote-desktop"
+        ;;
+    disable)
+        need_root
+        systemctl disable --now "${units[@]}"
+        echo "Remote Desktop is off."
+        ;;
+    status)
+        if systemctl is-active --quiet patrone-remote-desktop.service; then
+            echo "Remote Desktop is on, on port 3389."
+        else
+            echo "Remote Desktop is off."
+        fi
+        echo "Who may sign in (the remote-desktop group): $(members)"
+        ;;
+    *)
+        echo "Usage: patrone-remote-desktop enable|disable|status" >&2
+        exit 1
+        ;;
+esac

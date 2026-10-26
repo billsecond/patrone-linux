@@ -1,0 +1,7 @@
+# Remote Desktop sign-in (patrone-remote-desktop): accounts in the
+# remote-desktop group, with their own password.
+auth     requisite  pam_succeed_if.so uid >= 1000 quiet
+auth     requisite  pam_succeed_if.so user ingroup remote-desktop
+auth     optional   pam_faildelay.so delay=2000000
+@include common-auth
+@include common-account
