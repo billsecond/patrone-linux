@@ -1,3 +1,11 @@
+patrone-shell-config (0.2.0) resolute; urgency=medium
+
+  * Give bash the Patrone prompt through /etc/skel/.bash_aliases, and keep
+    bash as the default shell: new users are no longer switched to zsh.
+  * zsh and its plugins become recommendations.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 08:00:00 -0500
+
 patrone-shell-config (0.1.0) resolute; urgency=medium
 
   * First package of Patrone's zsh setup.

@@ -14,7 +14,7 @@ use std::time::Duration;
 use smithay::backend::allocator::format::FormatSet;
 use smithay::backend::allocator::gbm::{GbmAllocator, GbmBufferFlags, GbmDevice};
 use smithay::backend::allocator::{Fourcc, Modifier};
-use smithay::backend::drm::compositor::FrameFlags;
+use smithay::backend::drm::compositor::{FrameFlags, PrimaryPlaneElement};
 use smithay::backend::drm::exporter::gbm::GbmFramebufferExporter;
 use smithay::backend::drm::output::{DrmOutput, DrmOutputManager, DrmOutputRenderElements};
 use smithay::backend::drm::{DrmDevice, DrmDeviceFd, DrmEvent};
@@ -262,10 +262,21 @@ impl Backend {
             wallpaper::BACKGROUND,
             FrameFlags::DEFAULT,
         ) {
-            Ok(frame) if !frame.is_empty => match self.screen.queue_frame(()) {
-                Ok(()) => self.frame_queued(),
-                Err(err) => warn!("couldn't show a frame: {err}"),
-            },
+            Ok(frame) if !frame.is_empty => {
+                // Nothing makes the display wait for Mesa to finish drawing the
+                // frame (dumb buffers have no fences), so wait here. Otherwise
+                // Hyper-V copies half-drawn areas to the screen, leaving old
+                // pointer images behind.
+                if let PrimaryPlaneElement::Swapchain(element) = &frame.primary_element
+                    && let Err(err) = element.sync.wait()
+                {
+                    warn!("couldn't wait for a frame to finish drawing: {err:?}");
+                }
+                match self.screen.queue_frame(()) {
+                    Ok(()) => self.frame_queued(),
+                    Err(err) => warn!("couldn't show a frame: {err}"),
+                }
+            }
             Ok(_) => {}
             Err(err) => error!("couldn't draw a frame: {err}"),
         }

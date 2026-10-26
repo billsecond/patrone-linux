@@ -15,7 +15,7 @@ dependencies).
 | Package | Source | What it installs |
 | --- | --- | --- |
 | `patrone-terminal` | `terminal/` | The terminal, its launcher entry and icon. Registers the `x-terminal-emulator` alternative (priority 60) and is the terminal `xdg-terminal-exec` picks in a Patrone Desktop session. |
-| `patrone-shell-config` | `zsh/` | `/etc/skel/.zshrc` and `.zprofile`, and zsh as the login shell for users created afterwards. |
+| `patrone-shell-config` | `shell-config/` | Patrone's bash prompt (`/usr/share/patrone/bashrc`, loaded from `/etc/skel/.bash_aliases`), and `/etc/skel/.zshrc` and `.zprofile` for users who choose zsh. Bash stays the default shell. |
 
 Notes:
 
@@ -24,10 +24,8 @@ Notes:
   declare `rust-version = "1.93"`. `build.sh` vendors the crates so the build
   needs no network. On the dev VM Rust comes from rustup, so pass `-d` to skip
   the Build-Depends check, or install Ubuntu's `cargo` and `rustc`.
-- `patrone-shell-config` changes defaults in `/etc/adduser.conf` and
-  `/etc/default/useradd`, which belong to other packages. It adds its lines
-  after a marker and removes them again when it's removed. Because those files
-  are then modified, upgrades of `adduser` or `passwd` that change them will
-  ask what to do.
+- `patrone-shell-config` touches no other package's files: Ubuntu's
+  `/etc/skel/.bashrc` already loads `~/.bash_aliases`, which no package owns,
+  so that's where the prompt hooks in.
 - Later these builds move into a clean `sbuild` chroot, and the packages into
   the private `reprepro` repository (see `docs/PLAN.md`).

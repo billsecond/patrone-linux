@@ -31,7 +31,7 @@ The default terminal of Patrone Linux: GTK4 and VTE, written in Rust.
 | Ctrl+Comma | Preferences |
 
 New tabs open in the current tab's directory when the shell reports it with
-the OSC 7 escape sequence. Patrone's `zsh/zshrc` does.
+the OSC 7 escape sequence. Patrone's prompts for bash and zsh do.
 
 All windows normally share one process: running `patrone-terminal` again
 opens a window in the one already running. `--standalone` (`-s`) starts a
@@ -51,6 +51,7 @@ To install it for your user, with a launcher entry and icon in GNOME:
 ```
 ./terminal/install-dev.sh             # the app
 ./terminal/install-dev.sh --default   # and use it instead of Ubuntu's terminal
+./terminal/install-dev.sh --bashrc    # and give bash Patrone's prompt
 ./terminal/install-dev.sh --zshrc     # and use Patrone's zshrc and zprofile
 ```
 
@@ -71,19 +72,23 @@ typed by browser automation don't arrive.
 
 ## The shell
 
-`zsh/zshrc` is Patrone's default zsh setup, shipped in `patrone-shell-config`
-as `/etc/skel/.zshrc`. It draws a two-line prompt, blue for normal users and
-red for root:
+The terminal runs your login shell. In Patrone that's **bash**, with a
+two-line prompt in the Patrone colors, blue for normal users and red for
+root:
 
 ```
 ┌──(user㉿host)-[~/src]
 └─$
 ```
 
-It also turns on completion menus, shared history, `zsh-autosuggestions` and
-`zsh-syntax-highlighting`, shows a failed command's exit status on the right,
-and reports the directory to the terminal. `zsh/zprofile` makes login shells
-read `~/.profile`, where Ubuntu keeps PATH additions such as `~/.local/bin`.
+A failed command's exit status shows at the end of the first line, and the
+prompt reports the directory to the terminal. It's `shell-config/bashrc`,
+loaded from `~/.bash_aliases` (`shell-config/bash_aliases`), which Ubuntu's
+own `~/.bashrc` already reads, so Ubuntu's bash setup stays as it is. Both
+ship in `patrone-shell-config`.
 
-The terminal runs your login shell. To switch yours to zsh:
-`chsh -s /usr/bin/zsh`, then log out and back in.
+zsh is there for those who want it: `shell-config/zshrc` has the same prompt
+plus completion menus, shared history, `zsh-autosuggestions` and
+`zsh-syntax-highlighting`, and `shell-config/zprofile` makes login shells read
+`~/.profile`, where Ubuntu keeps PATH additions such as `~/.local/bin`. To
+switch: `chsh -s /usr/bin/zsh`; to switch back: `chsh -s /bin/bash`.

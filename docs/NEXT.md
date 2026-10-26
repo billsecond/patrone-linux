@@ -21,11 +21,13 @@ Done:
 - **Patrone Terminal** (`terminal/`, see its README): copy on select, paste on
   right-click, Ctrl+click links, tabs, close confirmation, Preferences,
   `--standalone`, placeholder icon. Installed for the user with
-  `install-dev.sh --zshrc --default`, which also made it the terminal of
+  `install-dev.sh --zshrc --bashrc --default`, which also made it the terminal of
   Ctrl+Alt+T, the dock and the app grid in place of Ptyxis.
-- **zsh setup** (`zsh/zshrc`, `zsh/zprofile`): Kali-style prompt, plugins,
-  directory reporting. Installed as the user's `~/.zshrc`, but their login
-  shell is still bash (see below).
+- **Shell setup** (`shell-config/`): the user wants **bash as the default,
+  with the Kali-style prompt** (2026-10-26). `shell-config/bashrc` is that
+  prompt, loaded from `~/.bash_aliases`; installed for the user
+  (`install-dev.sh --bashrc`) and checked in an interactive bash in a pty.
+  `shell-config/zshrc` and `zprofile` remain for anyone who picks zsh.
 - **Packages** (`packaging/`): `patrone-terminal` and `patrone-shell-config`
   build on the VM. Not installed anywhere yet.
 - **Remote Desktop:** Remote Desktop Connection works, at full 4K with Remote
@@ -40,9 +42,12 @@ Done:
 
 Waiting on the user:
 
-- **Switch the login shell to zsh:** `chsh -s /usr/bin/zsh` (asks for their
-  password), then sign out and in. Until then Patrone Terminal shows Ubuntu's
-  bash prompt, which the user took for "the old terminal".
+- **Switch the login shell back to bash:** on 2026-10-26 the user ran
+  `chsh -s /usr/bin/zsh` on my earlier advice, then decided on bash. They run
+  `chsh -s /bin/bash` (asks for their password).
+- **Describe the desktop design** (panel, start menu, desktop icons, windows,
+  system area, look and feel, login and lock screens) before milestone 4;
+  then mockups, then `docs/DESIGN.md`.
 - **Confirm in the RDP session** that resizing the `mstsc` window resizes the
   desktop, and that copy and paste work both ways. Set 200% scale in Settings
   → Displays if text is too small.
@@ -178,6 +183,13 @@ keyboard input; `vmshot.ps1` showed each change. Findings:
   console returns to its text prompt.
 - Started from a terminal inside the RDP desktop, it runs nested instead, as
   designed: the log's first line says which.
+- Moving a window by its title bar works (the user did it). It left old
+  pointer images on screen: Hyper-V's driver copies each frame to its VRAM
+  without waiting for Mesa to finish drawing it (dumb buffers have no
+  fences). The compositor now waits on the frame's sync point before showing
+  it, as anvil does with `renderer_sync`. Not retested on screen yet.
+- Patrone Terminal looked unfocused (no text cursor) until clicked, though
+  new windows are meant to get focus. Check whether that's real.
 
 Not tried yet: dragging and resizing windows, the shortcuts, and switching
 virtual terminals while it runs. Then: the login-screen session
@@ -266,6 +278,6 @@ with the wallpaper). With its own `/etc/os-release` (`ID=patrone`,
 
 ## Suggested order
 
-The user's quick steps first (zsh login shell, RDP checks, trying the
-compositor, the logo file). Then the compositor's next features and
+The user's quick steps first (bash login shell, RDP checks, trying the
+compositor, the desktop design). Then the compositor's next features and
 milestone 3, the Chromium defaults package, then Patrone's own RDP path.

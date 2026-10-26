@@ -16,7 +16,7 @@ shift
 
 case $package in
     patrone-terminal) source_dir=terminal ;;
-    patrone-shell-config) source_dir=zsh ;;
+    patrone-shell-config) source_dir=shell-config ;;
     *)
         echo "Unknown package: $package" >&2
         exit 1

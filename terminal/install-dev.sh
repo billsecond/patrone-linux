@@ -5,15 +5,19 @@
 #   ./terminal/install-dev.sh            install the app and its launcher entry
 #   ./terminal/install-dev.sh --default  also make it GNOME's terminal in place of
 #                                        Ubuntu's (Ptyxis), for this user only
+#   ./terminal/install-dev.sh --bashrc   also give bash Patrone's prompt
 #   ./terminal/install-dev.sh --zshrc    also install Patrone's zshrc as ~/.zshrc
 set -euo pipefail
 
 here=$(cd "$(dirname "$0")" && pwd)
+config="$here/../shell-config"
 make_default=false
+install_bashrc=false
 install_zshrc=false
 for arg in "$@"; do
     case $arg in
         --default) make_default=true ;;
+        --bashrc) install_bashrc=true ;;
         --zshrc) install_zshrc=true ;;
         *) echo "Unknown option: $arg" >&2; exit 1 ;;
     esac
@@ -58,13 +62,28 @@ print(apps)
     echo "Patrone Terminal now replaces Ubuntu's terminal: Ctrl+Alt+T, the dock and the app grid."
 fi
 
+if $install_bashrc; then
+    mkdir -p ~/.local/share/patrone
+    cp "$config/bashrc" ~/.local/share/patrone/bashrc
+    # Ubuntu's ~/.bashrc loads ~/.bash_aliases; add the loader to it once.
+    if ! grep -qs 'patrone-shell-config' ~/.bash_aliases; then
+        if [[ -s ~/.bash_aliases ]]; then
+            echo >> ~/.bash_aliases
+            sed -n '/^# Patrone/,$p' "$config/bash_aliases" >> ~/.bash_aliases
+        else
+            cp "$config/bash_aliases" ~/.bash_aliases
+        fi
+    fi
+    echo "Installed Patrone's bash prompt. New terminals use it."
+fi
+
 if $install_zshrc; then
     for file in zshrc zprofile; do
-        if [[ -e ~/.$file ]] && ! cmp -s ~/.$file "$here/../zsh/$file"; then
+        if [[ -e ~/.$file ]] && ! cmp -s ~/.$file "$config/$file"; then
             cp ~/.$file ~/.$file.before-patrone
             echo "Saved the old ~/.$file as ~/.$file.before-patrone."
         fi
-        cp "$here/../zsh/$file" ~/.$file
+        cp "$config/$file" ~/.$file
     done
     echo "Installed ~/.zshrc and ~/.zprofile. To make zsh your login shell: chsh -s /usr/bin/zsh"
 fi

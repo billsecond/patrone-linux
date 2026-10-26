@@ -35,7 +35,7 @@ session. A Patrone login screen can come later.
 | Job | App | Notes |
 | --- | --- | --- |
 | Terminal | Patrone Terminal | Ours (`terminal/`) |
-| Shell | zsh with Patrone's config | `patrone-shell-config` |
+| Shell | bash with Patrone's two-line prompt (decided 2026-10-26); zsh set up the same way for those who choose it | `patrone-shell-config` |
 | Web browser | Chromium, replacing Firefox (decided 2026-10-25) | Canonical's Chromium snap, kept current automatically by snapd. Not forked or rebranded: Chromium ships security fixes about weekly and a major release every four weeks, and a fork would make us responsible for every one of them. Patrone's look and defaults come from Chromium's enterprise policies instead, in `/etc/chromium-browser/policies/managed/` (the snap's `etc-chromium-browser-policies` plug reads that folder). |
 
 ## Technology (decided 2026-10-25)
@@ -94,7 +94,7 @@ compositor/            the Patrone compositor
 shell/                 panel, launcher, dock, notifications
 settings/              the settings app
 terminal/              Patrone Terminal
-zsh/                   default zsh setup (patrone-shell-config)
+shell-config/          bash prompt and zsh setup (patrone-shell-config)
 session/               session entry, systemd user units, defaults
 packaging/             Debian packaging for each component
 iso/                   ISO remaster scripts

@@ -9,9 +9,11 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 
 Package: patrone-shell-config
 Architecture: all
-Depends: ${misc:Depends}, zsh, zsh-syntax-highlighting, zsh-autosuggestions
-Description: zsh setup for Patrone Linux users
- Installs Patrone's .zshrc and .zprofile in /etc/skel and makes zsh the
- login shell of users created after installation. The prompt takes two
- lines, blue for normal users and red for root, with syntax highlighting and
- suggestions from history.
+Depends: ${misc:Depends}
+Recommends: zsh, zsh-syntax-highlighting, zsh-autosuggestions
+Description: shell setup for Patrone Linux users
+ Gives bash, the default shell, Patrone's two-line prompt (blue for normal
+ users, red for root), through a ~/.bash_aliases that new users get from
+ /etc/skel. For users who choose zsh, it also installs a .zshrc and
+ .zprofile with the same prompt, syntax highlighting and suggestions from
+ history.
