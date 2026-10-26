@@ -137,6 +137,19 @@ Waiting on the user:
   stalled the shell isn't known; the session runs Ubuntu's ding,
   tiling-assistant, snapd-search-provider and web-search-provider
   extensions. If it happens again, note the time and what was clicked.
+- **Installed 2026-10-26 by the user, then signed in again**: the round
+  above (taskbar 0.3.2, Settings 0.3.1, Terminal 0.1.2, File Manager 0.2.5,
+  GNOME Settings `...patrone3`); the taskbar loaded with no errors. Next,
+  install `patrone-gnome-taskbar` 0.3.3 (the Recycle Bin docked to a corner
+  of the desktop, and no Home icon, the user's asks), `patrone-terminal`
+  0.1.3 (the see-through background, "like kali does it"), with
+  `patrone-unpack` 0.1.1 and `patrone-default-apps` 0.1.3 (section 13),
+  then sign out and back in. Checked in the throwaway shell only: each
+  corner, dragging, double-click opening File Manager on Recycle Bin, the
+  menu and the Empty dialog (cancelled; emptying wasn't tried there, since
+  the trash service also empties other drives' trash); the desktop icons
+  extension can't run there, so hiding Home was checked by compiling the
+  override with the system's schemas.
 - **Describe the rest of the desktop design** (desktop icons, windows, look
   and feel, login and lock screens; the taskbar and Start menu are decided,
   section 7) before milestone 4; then mockups, then `docs/DESIGN.md`.
