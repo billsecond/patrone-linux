@@ -109,7 +109,13 @@ A Windows 11 Start menu in a smaller size (540 pixels wide):
   `web-search-url` setting (Google by default) in the default browser.
 - **Pinned**: GNOME's favorites (the same list as the Activities overview's
   dash), up to 18. **All apps** lists every app, A to Z.
-- **Recommended**: recently used files.
+- **Recommended**: recently used files, and the `suggested-apps` among them
+  (Software, Patrone's app store, by default; 0.4.1, the user's ask on
+  2026-10-27: "letting it move over time so people get familiar with
+  it"). Each suggested app counts as opened when it was first suggested
+  (`suggested-apps-since`), so it starts at the top, moves down as files
+  are opened, and drops off after six newer ones, like any recent file.
+  The search button's **Recent** list has them too.
 - At the bottom, as on Windows 11: the **account** (picture and name), whose
   menu shows who's signed in, Change account settings (Settings → Users),
   **Lock** and **Sign out**; Settings; and **power**, whose menu has

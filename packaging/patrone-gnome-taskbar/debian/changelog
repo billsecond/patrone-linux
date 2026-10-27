@@ -1,3 +1,12 @@
+patrone-gnome-taskbar (0.4.1) resolute; urgency=medium
+
+  * The Start menu's Recommended (and the search button's Recent) suggests
+    Software, Patrone's app store: it starts at the top, as if just
+    opened, and moves down as files are opened, then drops off like any
+    recent file. The suggested-apps setting lists the apps suggested.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 09:40:00 -0500
+
 patrone-gnome-taskbar (0.4.0) resolute; urgency=medium
 
   * The desktop and the desktop bubble are Patrone File Manager's (0.3.0):

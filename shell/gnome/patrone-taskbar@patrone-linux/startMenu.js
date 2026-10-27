@@ -5,9 +5,10 @@
 // nothing else matched.
 //
 // Empty, it shows the pinned apps (GNOME's favorites, which the Activities
-// overview shares), recently used files, "All apps", and the account's
-// avatar, Settings and power buttons. Opened from the taskbar's search
-// button, it shows the most used apps and recent files instead.
+// overview shares), recently used files with the suggested apps among them
+// (Software at first), "All apps", and the account's avatar, Settings and
+// power buttons. Opened from the taskbar's search button, it shows the most
+// used apps and recent files instead.
 
 import AccountsService from 'gi://AccountsService';
 import Clutter from 'gi://Clutter';
@@ -327,23 +328,68 @@ export class StartMenu {
         this._homePage.add_child(grid);
 
         this._homePage.add_child(makeHeader('Recommended'));
-        const files = this._taskbar.recent.recent(RECOMMENDED);
-        if (files.length === 0) {
+        const items = this._recommended(RECOMMENDED);
+        if (items.length === 0) {
             this._homePage.add_child(makeLabel('Files you open show up here.', 'patrone-start-empty'));
             return;
         }
         const columns = new St.BoxLayout({style_class: 'patrone-start-recommended', x_expand: true});
-        const half = Math.ceil(files.length / 2);
-        for (const part of [files.slice(0, half), files.slice(half)]) {
+        const half = Math.ceil(items.length / 2);
+        for (const part of [items.slice(0, half), items.slice(half)]) {
             const column = new St.BoxLayout({
                 orientation: Clutter.Orientation.VERTICAL,
                 x_expand: true,
             });
-            for (const file of part)
-                column.add_child(this._makeFileRow(file));
+            for (const item of part)
+                column.add_child(this._makeRecommendedRow(item));
             columns.add_child(column);
         }
         this._homePage.add_child(columns);
+    }
+
+    // Recent files and, among them, the suggested apps (Software at first),
+    // each as if opened when it was first suggested: it starts at the top
+    // and moves down as files are opened, then drops off like any recent
+    // file (the user, 2026-10-27: "letting it move over time so people get
+    // familiar with it")
+    _recommended(limit) {
+        return [...this._suggestedApps(), ...this._taskbar.recent.recent(limit)]
+            .sort((a, b) => b.time - a.time)
+            .slice(0, limit);
+    }
+
+    _suggestedApps() {
+        const settings = this._taskbar.settings;
+        const since = settings.get_value('suggested-apps-since').deep_unpack();
+        const now = Math.floor(Date.now() / 1000);
+        let first = false;
+        const items = [];
+        for (const id of settings.get_strv('suggested-apps')) {
+            const app = this._appSystem.lookup_app(id);
+            if (!app?.app_info?.should_show())
+                continue;
+            if (!(id in since)) {
+                since[id] = now;
+                first = true;
+            }
+            items.push({app, name: app.get_name(), time: Number(since[id])});
+        }
+        if (first)
+            settings.set_value('suggested-apps-since', new GLib.Variant('a{sx}', since));
+        return items;
+    }
+
+    _makeRecommendedRow(item) {
+        if (!item.app)
+            return this._makeFileRow(item);
+        const {app} = item;
+        // A short line, like the files' "Just now": the app's description
+        // made its column twice as wide
+        const row = makeRow(app.create_icon_texture(24), app.get_name(), 'Suggested app');
+        row.connect('clicked', () => this.launch(app));
+        this._addAppMenu(row, app);
+        this._makeDraggable(row, app, 32);
+        return row;
     }
 
     _fillSearchHome() {
@@ -362,11 +408,11 @@ export class StartMenu {
         this._homePage.add_child(line);
 
         this._homePage.add_child(makeHeader('Recent'));
-        const files = this._taskbar.recent.recent(RECOMMENDED);
-        if (files.length === 0)
+        const items = this._recommended(RECOMMENDED);
+        if (items.length === 0)
             this._homePage.add_child(makeLabel('Files you open show up here.', 'patrone-start-empty'));
-        for (const file of files)
-            this._homePage.add_child(this._makeFileRow(file));
+        for (const item of items)
+            this._homePage.add_child(this._makeRecommendedRow(item));
     }
 
     _makeTile(app) {

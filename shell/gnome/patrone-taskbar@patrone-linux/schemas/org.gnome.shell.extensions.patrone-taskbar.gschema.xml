@@ -197,5 +197,24 @@
         Settings sets it, on its Desktop page.
       </description>
     </key>
+    <key name="suggested-apps" type="as">
+      <default>['org.gnome.Software.desktop']</default>
+      <summary>Apps the Start menu suggests among the recent files</summary>
+      <description>
+        Desktop file IDs. Each shows in the Start menu's Recommended (and
+        the search button's Recent) as if it had just been opened when it
+        was first suggested, so it starts at the top and moves down as
+        files are opened, then drops off like any recent file. Software,
+        Patrone's app store, by default, so people come to know it.
+      </description>
+    </key>
+    <key name="suggested-apps-since" type="a{sx}">
+      <default>{}</default>
+      <summary>When each suggested app was first suggested</summary>
+      <description>
+        Desktop file ID to seconds since 1970. The taskbar fills it in;
+        removing an ID suggests that app again, as new.
+      </description>
+    </key>
   </schema>
 </schemalist>
