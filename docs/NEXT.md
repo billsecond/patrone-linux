@@ -73,14 +73,15 @@ Done:
 
 Waiting on the user:
 
-- **Install File Manager 0.3.1 and taskbar 0.4.0: File Manager draws the
+- **Install File Manager 0.3.1 and taskbar 0.4.1: File Manager draws the
   desktop and the bubble** (the user, 2026-10-27: "The desktop and the
   roll out menu must be an extension of the file explorer app, while
   supporting the desktop and all it can do"; after trying 0.3.12's bubble:
   "The icons are all different, and I can't drag and drop them around";
-  sections 7 and 8), from SSH or a terminal:
+  sections 7 and 8; taskbar 0.4.1 is 0.4.0's desktop hosting plus
+  Software in Start's Recommended), from SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.3.1_amd64.deb
-  ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.0_all.deb`,
+  ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.1_all.deb`,
   then sign out from inside the desktop and back in. Ubuntu's desktop
   icons go (the taskbar turns them off); the bubble and, with it off
   (Patrone Settings → Desktop), the desktop itself show File Manager's
@@ -104,8 +105,9 @@ Waiting on the user:
   ~/src/patrone-linux/out/patrone-software_0.1.1_all.deb`.
 
 - **The desktop bubble** (the user's design, 2026-10-26;
-  `shell/gnome/README.md`, "The desktop bubble"): in the step above's
-  packages (taskbar 0.4.0 replaces 0.3.12, never installed). The user
+  `shell/gnome/README.md`, "The desktop bubble"): in the first step's
+  packages (taskbar 0.4.1; the user has 0.3.12, whose bubble the taskbar
+  still drew itself, with its own icons and no dragging). The user
   installed 0.3.10 with Settings 0.3.5 and GNOME Settings patrone7 on
   2026-10-27, but at sign-in the taskbar failed (the desktop has no screen
   for a moment over Remote Desktop; README, "The Recycle Bin on the
