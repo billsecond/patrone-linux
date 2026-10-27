@@ -62,6 +62,45 @@ else
     failures=$((failures + 1))
 fi
 
+# --confirm (Settings' password check) acts only as root: here it must refuse
+# without asking PAM.
+answer=$(printf secret | "$auth" --confirm "$(id -un)" 2> /dev/null || true)
+if [[ $answer == denied ]]; then
+    echo "ok   helper: Settings' password check refuses without root"
+else
+    echo "FAIL helper: Settings' password check without root (answered \"$answer\")"
+    failures=$((failures + 1))
+fi
+
+# Settings' helper runs only through pkexec, and every polkit action for it
+# names it and one of its commands.
+if ! "$here/../libexec/settings" status > /dev/null 2>&1; then
+    echo "ok   settings: refuses without pkexec"
+else
+    echo "FAIL settings: ran without pkexec"
+    failures=$((failures + 1))
+fi
+if python3 - "$here/../data/org.patrone.remote-desktop.policy" << 'EOF'; then
+import sys
+import xml.etree.ElementTree as tree
+
+helper = "/usr/libexec/patrone-remote-desktop/settings"
+commands = set()
+for action in tree.parse(sys.argv[1]).getroot().iter("action"):
+    notes = {a.get("key"): a.text for a in action.iter("annotate")}
+    assert notes["org.freedesktop.policykit.exec.path"] == helper, action.get("id")
+    commands.add(notes["org.freedesktop.policykit.exec.argv1"])
+    defaults = action.find("defaults")
+    # Patrone's desktops have no seat: "any" must allow what "active" does
+    assert len({d.text for d in defaults}) == 1, action.get("id")
+assert commands == {"status", "enable", "disable", "password"}, commands
+EOF
+    echo "ok   settings: polkit actions"
+else
+    echo "FAIL settings: polkit actions"
+    failures=$((failures + 1))
+fi
+
 # --remember keeps an account's NT hash in the SAM file NLA checks, read back
 # here as FreeRDP's NTLM reads it. A test build: it writes a file in /tmp, and
 # needs neither root nor the remote-desktop group.

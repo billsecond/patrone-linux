@@ -1,0 +1,47 @@
+Description: Patrone Remote Desktop in Remote Login's place
+ With patrone-remote-desktop installed, System > Remote Desktop > Remote
+ Login shows Patrone's page (panels/system/remote-desktop/
+ cc-patrone-remote-login.c, from gnome-settings/remote-login in Patrone's
+ repository): an "Enable Remote Desktop" switch and how to connect, in
+ place of GNOME's Remote Login, which drives gnome-remote-desktop's system
+ daemon.
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: not-needed
+---
+--- a/panels/system/meson.build
++++ b/panels/system/meson.build
+@@ -55,6 +55,7 @@
+   'remote-desktop/cc-desktop-sharing-page.c',
+   'remote-desktop/cc-encryption-fingerprint-dialog.c',
+   'remote-desktop/cc-gnome-remote-desktop.c',
++  'remote-desktop/cc-patrone-remote-login.c',
+   'remote-desktop/cc-remote-desktop-page.c',
+   'remote-desktop/cc-remote-login-page.c',
+   'remote-desktop/cc-tls-certificate.c',
+--- a/panels/system/remote-desktop/cc-remote-login-page.c
++++ b/panels/system/remote-desktop/cc-remote-login-page.c
+@@ -33,6 +33,7 @@
+ #include "cc-permission-infobar.h"
+ #include "cc-tls-certificate.h"
+ #include "cc-systemd-service.h"
++#include "cc-patrone-remote-login.h"
+ 
+ #include "org.gnome.RemoteDesktop.h"
+ 
+@@ -692,6 +693,16 @@
+ 
+   self->cancellable = g_cancellable_new ();
+ 
++  /* Patrone: with Patrone Remote Desktop installed, its own page takes the
++   * place of GNOME's Remote Login, whose system daemon it turns off (both
++   * would listen on port 3389) */
++  if (cc_patrone_remote_login_available ())
++    {
++      adw_toast_overlay_set_child (ADW_TOAST_OVERLAY (self->toast_overlay),
++                                   cc_patrone_remote_login_new ());
++      return;
++    }
++
+   hostname = cc_hostname_get_static_hostname (cc_hostname_get_default ());
+   adw_action_row_set_subtitle (self->hostname_row, hostname);
+ 

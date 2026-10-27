@@ -2,8 +2,8 @@
 
 GNOME Settings can't take pages from other programs: its sidebar is fixed
 when it's built. So Patrone builds Ubuntu's GNOME Settings
-(`gnome-control-center`) again with two changes, as the user asked
-(2026-10-26):
+(`gnome-control-center`) again with these changes, as the user asked
+(2026-10-26 and 27):
 
 - **A Patrone page** in the sidebar, after Appearance and Ubuntu's Desktop
   page: the taskbar's size, layout, Start button icon, color and pin
@@ -20,6 +20,18 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
   `-dark` twin), so `os-release`'s `LOGO=` is never read. `build.sh` points
   them at `patrone-logo-text.svg` and `patrone-logo-text-dark.svg` from
   `patrone-branding` (0.1.7), and stops if Ubuntu's lines change.
+- **"Enable Remote Desktop" in System › Remote Desktop › Remote Login**
+  (revision 9; the user asked, 2026-10-27: "Make that part of the system >
+  remote login, and just say Enable Remote Desktop"). With
+  `patrone-remote-desktop` 0.4.5 or later installed, the Remote Login tab
+  is Patrone Remote Desktop's: one switch, which turns it on or off for
+  the account using Settings (an administrator's password), then asks for
+  the account's own password once so it can connect at once, and shows the
+  computer's name and IP addresses, the username and a connection file to
+  save. GNOME's own Remote Login drives gnome-remote-desktop's system
+  daemon, which Patrone Remote Desktop turns off; without the package,
+  GNOME's page stays. `remote-desktop/README.md` has how the switch's
+  helper works.
 
 | File | |
 | --- | --- |
@@ -27,14 +39,17 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 | `panels/patrone/meson.build`, `gnome-patrone-panel.desktop.in`, `org.patrone.Settings-symbolic.svg` | Its build, its sidebar entry (and search keywords), and its icon, the one-color P |
 | `patches/patrone-register-patrone-panel.patch` | Adds the page to the panel list, the loader and the sidebar order |
 | `patches/patrone-hide-telemetry.patch` | Hides the Telemetry row |
-| `build.sh` | Fetches Ubuntu's source, adds the page (as a patch of its own) and the patches, versions it Ubuntu's version plus `patrone` and the revision, and builds |
+| `remote-login/cc-patrone-remote-login.c`, `.h` | Remote Login's Patrone Remote Desktop page, added to `panels/system/remote-desktop/`. It runs `/usr/libexec/patrone-remote-desktop/settings` through `pkexec` for the switch's state (`status`), turning it on or off, and the password; the connection file comes from `patrone-remote-desktop rdp-file` |
+| `patches/patrone-remote-login.patch` | Builds that page, and shows it in Remote Login's place where the helper is installed |
+| `build.sh` | Fetches Ubuntu's source, adds the page and the Remote Login page (each as a patch of its own) and the patches, versions it Ubuntu's version plus `patrone` and the revision, and builds |
 
 The page hides itself where neither Patrone's taskbar nor Patrone Settings
 is installed, and each part says so if its settings are missing.
 
-The page is GPL-2.0-or-later, GNOME Settings' own license, not
-GPL-3.0-or-later like the rest of Patrone: it's built into GNOME Settings,
-and GPL-3 code there could clash with a GPL-2-only library it uses.
+The pages are GPL-2.0-or-later, GNOME Settings' own license, not
+GPL-3.0-or-later like the rest of Patrone: they're built into GNOME
+Settings, and GPL-3 code there could clash with a GPL-2-only library it
+uses.
 
 ## Building
 
@@ -51,7 +66,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone7_amd64.deb ./out/gnome-control-center-data_*patrone7_all.deb
+sudo apt install ./out/gnome-control-center_*patrone9_amd64.deb ./out/gnome-control-center-data_*patrone9_all.deb
 ```
 
 ## How it was checked
@@ -65,6 +80,27 @@ pictures, and the current values picked. Clicking a choice in each section
 set its setting, and the theme's `gtk.css` import; a setting changed
 elsewhere moved the page's pick. Privacy & Security had no Telemetry row.
 `apt-get -s install` of the two packages upgrades just them.
+
+`1:50.3-0ubuntu0.2patrone9` (Remote Login), the same way (2026-10-27), with
+`patrone-remote-desktop` 0.4.5 installed on the dev VM, where Remote
+Desktop was on for the user's account: the patches applied, both files
+compiled with no warnings, and the Remote Login tab showed the switch on,
+the computer's `.local` name, its IP address and the username. A copy
+button copied, with a toast; Save… wrote a connection file with Windows'
+line ends, and Escape in the save dialog did nothing. Turning the switch
+off brought up GNOME Shell's polkit dialog ("Authentication is required to
+turn off Remote Desktop"); cancelling it put the switch back on and left
+Remote Desktop on. The "Confirm Your Password" steps were tried with a
+stand-in helper bind-mounted over the real one in that one Settings
+process's own mount namespace, since nobody may type the user's password:
+the row and the dialog, Confirm greyed out while the box is empty, the
+password reaching the helper as typed, "That password isn't right. Try
+again." for a wrong one, and "Remote Desktop is ready" with the row gone
+for the right one. The same stand-in showed the switch's "on for other
+accounts" and off states, read again each time the tab was shown. Not
+tried: turning it on or off with a real administrator's password, and
+connecting with the hash Settings records (its PAM check and SAM entry
+were tried from the command line; see `remote-desktop/README.md`).
 
 ## Keeping up with Ubuntu
 

@@ -28,6 +28,13 @@
  * account that already has a graphical session open, and the screen's
  * session would be one by the time its viewer asks.
  *
+ * With --confirm USER, root's GNOME Settings helper (libexec/settings, which
+ * pkexec runs for the account using Settings) checks the account's password,
+ * on stdin, as a Remote Desktop sign-in would, and records its NT hash:
+ * Settings' "Enable Remote Desktop" asks for it once, so a new member can
+ * connect without first signing in again with its password. It answers "ok"
+ * or "denied".
+ *
  * Copyright 2026 William Daugherty
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -410,6 +417,55 @@ static int screen_sign_in(void)
 	return 0;
 }
 
+/* Settings' check of the account's own password, from stdin: PAM through
+ * Remote Desktop's own service (the group, the password, the account not
+ * locked), then the hash. The PAM hook records it too; this doesn't rely on
+ * that. */
+static int confirm(const char* user)
+{
+	static Request request;
+	size_t length = 0;
+	char hex[33];
+	int ok = 0;
+
+	if (geteuid() != 0 || !user || !valid_user(user))
+	{
+		puts("denied");
+		return 1;
+	}
+	snprintf(request.user, sizeof(request.user), "%s", user);
+	snprintf(request.client, sizeof(request.client), "localhost");
+
+	alarm(READ_TIMEOUT_SECONDS);
+	while (length + 1 < sizeof(request.password))
+	{
+		ssize_t got = read(STDIN_FILENO, request.password + length,
+		                   sizeof(request.password) - 1 - length);
+		if (got < 0 && errno == EINTR)
+			continue;
+		if (got <= 0)
+			break;
+		length += (size_t)got;
+	}
+	alarm(0);
+	/* As long as the buffer holds: longer than any sign-in takes */
+	if (length + 1 >= sizeof(request.password))
+		length = 0;
+	request.password[length] = '\0';
+
+	if (request.password[0] && check(&request))
+	{
+		ok = 1;
+		if (winpr_InitializeSSL(WINPR_SSL_INIT_DEFAULT) && nt_hash_hex(request.password, hex))
+			update_sam(user, hex);
+		fprintf(stderr, "confirmed the password of %s for Remote Desktop, in Settings\n", user);
+	}
+	explicit_bzero(&request, sizeof(request));
+	explicit_bzero(hex, sizeof(hex));
+	puts(ok ? "ok" : "denied");
+	return ok ? 0 : 1;
+}
+
 int main(int argc, char** argv)
 {
 	static Request request;
@@ -420,6 +476,8 @@ int main(int argc, char** argv)
 		return remember();
 	if (argc > 1 && strcmp(argv[1], "--screen-sign-in") == 0)
 		return screen_sign_in();
+	if (argc > 1 && strcmp(argv[1], "--confirm") == 0)
+		return confirm(argc > 2 ? argv[2] : NULL);
 
 	alarm(READ_TIMEOUT_SECONDS);
 	if (read_request(&request) != 0)

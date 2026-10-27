@@ -17,9 +17,9 @@ set -euo pipefail
 
 # Patrone's revision of the page and patches: one more with each change to
 # them, so a new build of the same Ubuntu version installs as an upgrade
-revision=8
+revision=9
 # What changed in it, for the package's changelog
-changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop files, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), no Telemetry page, and Patrone's logo on the About page."
+changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop files, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop's \"Enable Remote Desktop\" switch in System > Remote Desktop > Remote Login."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -46,9 +46,21 @@ added=patrone-add-patrone-panel.patch
         diff -u --label /dev/null --label "b/$name" /dev/null "$file" || true
     done
 } > "debian/patches/$added"
+# Remote Login's Patrone Remote Desktop page, the same way
+added_remote_login=patrone-add-remote-login.patch
+{
+    printf 'Description: Add Patrone Remote Desktop'\''s part of the Remote Login page\n'
+    printf ' From gnome-settings/remote-login in Patrone'\''s repository.\n'
+    printf 'Author: William Daugherty <31995458+billsecond@users.noreply.github.com>\n'
+    printf 'Forwarded: not-needed\n---\n'
+    for file in "$here"/remote-login/*; do
+        name=panels/system/remote-desktop/$(basename "$file")
+        diff -u --label /dev/null --label "b/$name" /dev/null "$file" || true
+    done
+} > "debian/patches/$added_remote_login"
 cp "$here"/patches/*.patch debian/patches/
 printf '%s\n' "$added" patrone-register-patrone-panel.patch patrone-hide-telemetry.patch \
-    >> debian/patches/series
+    "$added_remote_login" patrone-remote-login.patch >> debian/patches/series
 QUILT_PATCHES=debian/patches quilt push -a
 
 # The About page's logo: Ubuntu's build sets it to Ubuntu's own logo files

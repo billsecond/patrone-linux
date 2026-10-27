@@ -22,16 +22,30 @@ on Windows:
 The screen part works as soon as the package is installed and GDM has
 restarted (a reboot): "Patrone Desktop" is the login screen's only session.
 Remote Desktop is off until an administrator turns it on and adds the
-accounts that may use it:
+accounts that may use it.
+
+**In Settings** (Patrone's build of GNOME Settings, `gnome-settings/`):
+System › Remote Desktop › Remote Login › **Enable Remote Desktop**. Turning
+it on asks for an administrator's password, then turns Remote Desktop on
+and lets the account using Settings sign in. Then it asks for that
+account's own password once, which it checks and records what NLA checks,
+so the account can connect right away. The page then shows what to connect
+to: the computer's name and IP addresses, the username, and a connection
+file to save. Turning it off (an administrator's password again) turns
+Remote Desktop off for every account; the accounts stay in the group, so
+turning it on again needs no new password.
+
+**From a terminal:**
 
 ```
 sudo patrone-remote-desktop enable
 sudo adduser NAME remote-desktop
 ```
 
-An account can connect once it has signed in on the computer with its
-password after joining the group (on the login screen, with `sudo`, over
-SSH), or changed its password: that's when Patrone records what NLA checks.
+An account added this way can connect once it has signed in on the
+computer with its password after joining the group (on the login screen,
+with `sudo`, over SSH), or changed its password, or confirmed it in
+Settings' Remote Login page: that's when Patrone records what NLA checks.
 
 Then connect from Windows with `mstsc /v:HOSTNAME`, and give the Linux
 account's username and password in Remote Desktop Connection's dialog. The
@@ -154,6 +168,27 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    session is a desktop as above. (Another of the account's processes could
    move itself there, but only one the same account already runs.)
 
+8. **Settings' switch**: Patrone's GNOME Settings shows its own Remote Login
+   page (`gnome-settings/remote-login/`) wherever
+   `/usr/libexec/patrone-remote-desktop/settings` is installed, in place of
+   GNOME's, whose system daemon `enable` turns off (both would listen on
+   port 3389). The page runs that helper through `pkexec`; the helper acts
+   only for pkexec's caller (`PKEXEC_UID`), never for an account it's
+   given. `data/org.patrone.remote-desktop.policy` picks polkit's action by
+   the helper's first argument: `status` and `password` ask nothing,
+   `enable` and `disable` need an administrator (`auth_admin_keep`). Each
+   allows the same for `any` as for `active`, because polkit counts
+   Patrone's seatless desktops as `any`. `status`, `enable` and `disable`
+   answer with `on=`, `member=`, `password=` (the SAM file has the
+   account's hash) and `others=` lines. `password` hands the password from
+   Settings to `auth --confirm`, which checks it with PAM through
+   `/etc/pam.d/patrone-remote-desktop`, as a Remote Desktop sign-in does
+   (so only a member's password counts), and writes its hash. That's the
+   same check `su` makes for an account's own password, which is why it
+   needs no administrator. The administrator's password in polkit's own
+   dialog can't do it: polkit checks it before `enable` adds the account to
+   the group, and the PAM hook keeps hashes for members only.
+
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's
 screen lock and blanking, after saving the account's own settings, and puts
@@ -177,8 +212,10 @@ them back at the next login in a plain GNOME session on the screen.
   (it expects a sign-in screen from the server), which is why Patrone uses
   NLA.
 - **A brand-new member can't connect until a password sign-in** records the
-  hash. Changing a password with `usermod -p` or by editing `/etc/shadow`
-  skips PAM, so the next password sign-in brings the hash up to date.
+  hash, or the account confirms its password in Settings (which asks right
+  after turning Remote Desktop on). Changing a password with `usermod -p` or
+  by editing `/etc/shadow` skips PAM, so the next password sign-in brings
+  the hash up to date.
 - **Ubuntu bug 2171951:** GDM's headless session unit runs as a
   DynamicUser that the system bus can't look up, so on Ubuntu 26.04 it never
   starts ("Failed: The connection is closed"). The package's drop-in
@@ -208,10 +245,20 @@ They need `freerdp3-dev`, `libpam0g-dev`, `pkgconf` and `python3`, and
 plays the proxy's part against a stand-in helper (`tests/fake-auth.py`): no
 credentials, a wrong password, a correct one, an account signed in
 elsewhere, a garbled answer, and no helper at all. It also gives the real
-helper requests it must refuse, runs the real proxy on the shipped config,
-and runs the polkit rule under gjs with polkit stood in for
-(`tests/polkit-rule-test.js`). Signing in for real, on the screen or through a client, needs the
-package installed.
+helper requests it must refuse (Settings' password check among them),
+checks that Settings' helper won't run without pkexec and that each polkit
+action names it and one of its commands, runs the real proxy on the
+shipped config, and runs the polkit rule under gjs with polkit stood in
+for (`tests/polkit-rule-test.js`). Signing in for real, on the screen or
+through a client, needs the package installed.
+
+0.4.5's Settings helper was tried on the dev VM (2026-10-27), installed, as
+root the way pkexec runs it, for a throwaway account with a random
+password: `enable` added it to the group, a wrong password was refused
+and left no hash, the right one wrote exactly one SAM line, and `disable`
+then `enable` stopped and started the proxy. Through `pkexec`, `status`
+and `password` ran without a prompt while `enable` asked for
+authentication.
 
 The plugin and helper are C because FreeRDP's plugin interface is a C struct
 of function pointers with fixed slots, which is awkward to match from Rust.

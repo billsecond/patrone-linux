@@ -27,6 +27,7 @@ Depends: ${shlibs:Depends},
          libpam-modules,
          libpam-runtime,
          openssl,
+         pkexec,
          python3,
          util-linux
 Description: Windows-style desktops, on the screen and over Remote Desktop
@@ -40,4 +41,6 @@ Description: Windows-style desktops, on the screen and over Remote Desktop
  Windows' Remote Desktop Connection and other RDP clients sign in with the
  account's own username and password, which PAM checks on every connection;
  nothing keeps a copy of them. Only accounts in the remote-desktop group may,
- and only after an administrator runs "patrone-remote-desktop enable".
+ and only after an administrator turns it on: with "Enable Remote Desktop" in
+ Settings' System > Remote Desktop > Remote Login (Patrone's build of GNOME
+ Settings), or "patrone-remote-desktop enable".

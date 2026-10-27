@@ -1,3 +1,22 @@
+patrone-remote-desktop (0.4.5) resolute; urgency=medium
+
+  * Settings can turn Remote Desktop on: Patrone's build of GNOME Settings
+    has an "Enable Remote Desktop" switch in System > Remote Desktop >
+    Remote Login. It runs a helper (libexec/settings) through pkexec, for
+    the account using Settings: turning it on (an administrator's
+    password) runs "patrone-remote-desktop enable" and adds the account to
+    the remote-desktop group, turning it off runs "disable", and its state
+    comes from the helper's status. A polkit policy
+    (org.patrone.remote-desktop.policy) allows the same in Patrone's
+    desktops, which have no seat, as at a seat.
+  * Settings records what NLA checks right away: it asks for the account's
+    own password once, and "auth --confirm" checks it with Remote
+    Desktop's PAM service and writes its NT hash, so a new member can
+    connect without first signing in again with its password.
+  * Depends on pkexec.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 16:00:00 -0500
+
 patrone-remote-desktop (0.4.4) resolute; urgency=medium
 
   * The quick settings' Wired menu opens, and shutting down asks no
