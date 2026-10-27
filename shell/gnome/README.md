@@ -344,12 +344,12 @@ the taskbar follows when it's installed):
 - Built as a GNOME Shell extension now, while the desktop is GNOME-based.
 - Light or dark follows the system style (Settings → Appearance), with
   Patrone blue (`#288bfa`) for focus and selection.
-
 - The desktop's files go in a bubble out of the left edge, opened from a
   pill there, with the Recycle Bin riding on its edge. Asked: the files show
   only in the bubble; the pill shows while its own spot is clear and the
   bubble opens over windows; on by default, the pill bouncing with a tip
   until it's first opened.
+
 ## How it works
 
 | File | |
@@ -363,10 +363,10 @@ the taskbar follows when it's installed):
 | `recycleBin.js` | The Recycle Bin on the desktop |
 | `startupWindows.js` | The terminal opened at sign-in, put over the wallpaper's logo |
 | `dropTarget.js` | The Recycle Bin's drop target, a small GTK 4 window run with `gjs -m` (never imported by GNOME Shell) |
-| `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
-| `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
 | `desktopBubble.js` | The desktop bubble and its pill, and hiding the desktop icons while it's on |
 | `bubbleShape.js` | The bubble's size and its files' places, with no imports, so it can be tried with Node |
+| `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
+| `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
 | `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, `patrone-start-light.svg` (the P in light tones, for Royal's green button, where the blues washed out), the `-symbolic` ones drawn in the bar's text color. The Recycle Bin's, `recycle-bin.svg` and `recycle-bin-full.svg`. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
 | `tests/headless.sh` | The throwaway GNOME Shell (below) |
 
@@ -442,8 +442,6 @@ running app by dragging it in, and reordering Start's pinned apps; and,
 with Patrone Settings running in the shell, all three sizes and four
 themes.
 
-## Not done yet
-
 The desktop bubble (2026-10-26, 1600×900, light and dark): the pill and
 its first-run tip; the bubble with 1, 7, 20 and 60 files (the last at half
 the screen, with "21 more"); dragging it halfway out (the bubble at 41%,
@@ -460,6 +458,8 @@ other windows, when the setting was turned off. A window moved over the
 pill hid it. Patrone Settings' Desktop page, run in the shell, turned the
 bubble and the Recycle Bin off and on. Not tried: the real desktop icons
 extension (it mustn't run in the test shell), and opening a launcher.
+
+## Not done yet
 
 - Window thumbnails when hovering a running app.
 - A taskbar on other monitors (it's on the primary one only).
