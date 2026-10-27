@@ -46,6 +46,23 @@ marks, as GNOME's `gnome-app-list` documents them:
 | `<categories><category>Featured</category></categories>` | The picks on the app's category page | 3 in a category |
 
 An app that neither Ubuntu's archive nor a Flatpak remote has is skipped.
+
+What the placeholder showed (2026-10-27, GNOME Software 50.0, in the
+throwaway shell):
+
+- **The banners need Flathub.** GNOME Software puts an app in them only
+  with a 128-pixel icon, and Ubuntu's archive has icons up to 64 (64@2 for
+  HiDPI screens). With the user's account's Flathub (which has all seven
+  apps, with large icons) the banners showed GIMP and four more, and
+  Editor's Choice GIMP, Krita, Audacity and the rest. With the archive
+  alone, Explore showed only the categories. Accounts get Flathub from
+  Patrone Unpack when a Flatpak needs it; a system-wide Flathub would give
+  every account the picks.
+- **The archive's IDs aren't always Flathub's**: Blender is
+  `blender.desktop` in Ubuntu's archive and `org.blender.Blender` on
+  Flathub, VLC `org.videolan.vlc` and `org.videolan.VLC`. Listing both
+  covers both.
+- Editor's Choice needs six apps that resolve, and shows six or twelve.
 Patrone's own apps can't be listed yet: they're `.deb` files built on the
 dev VM, and no package repository serves them.
 
