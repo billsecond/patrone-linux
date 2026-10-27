@@ -9,7 +9,7 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 
 Package: patrone-installer
 Architecture: amd64
-Depends: ${misc:Depends}, ${shlibs:Depends}, sudo
+Depends: ${misc:Depends}, ${shlibs:Depends}, sudo, gnome-kiosk, gnome-session-bin
 Description: Patrone Linux's installer, for its live session
  Ubuntu's installer front end (ubuntu-desktop-provision's ubuntu_bootstrap),
  built from the commit the ISO's installer snap was built from, with Patrone

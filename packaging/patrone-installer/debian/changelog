@@ -1,3 +1,12 @@
+patrone-installer (0.1.2) resolute; urgency=medium
+
+  * "Install Patrone Linux" (the ISO's first boot entry) logs in to a
+    session of its own: the installer, full screen, in GNOME Kiosk, with no
+    desktop behind it (the user, 2026-10-27: "installer only"). "Try
+    Patrone Linux" keeps the live desktop.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 19:30:00 -0500
+
 patrone-installer (0.1.1) resolute; urgency=medium
 
   * Nothing in Ubuntu's orange, and no Ubuntu logos (the user, 2026-10-27):

@@ -18,6 +18,15 @@ override_dh_auto_install:
 	    $(pkg)/usr/share/applications/ubuntu-desktop-bootstrap_ubuntu-desktop-bootstrap.desktop
 	install -Dm644 ubuntu-desktop-installer.service.d/patrone.conf \
 	    $(pkg)/usr/lib/systemd/user/ubuntu-desktop-installer.service.d/patrone.conf
+	# "Install Patrone Linux": the installer alone, full screen (kiosk/)
+	install -Dm644 kiosk/patrone-installer.desktop $(pkg)/usr/share/wayland-sessions/patrone-installer.desktop
+	install -Dm644 kiosk/patrone-installer.session $(pkg)/usr/share/gnome-session/sessions/patrone-installer.session
+	install -Dm644 kiosk/session.conf \
+	    $(pkg)/usr/lib/systemd/user/gnome-session@patrone-installer.target.d/session.conf
+	install -Dm644 kiosk/patrone-installer-kiosk.service $(pkg)/usr/lib/systemd/user/patrone-installer-kiosk.service
+	install -Dm644 kiosk/patrone-install-only.service $(pkg)/usr/lib/systemd/system/patrone-install-only.service
+	install -Dm755 kiosk/kiosk $(pkg)/usr/libexec/patrone-installer/kiosk
+	install -Dm755 kiosk/install-only $(pkg)/usr/libexec/patrone-installer/install-only
 
 # Flutter's libraries (libflutter_linux_gtk.so, the app's libapp.so) are the
 # app's own, and libapp.so is Dart's compiled code, which stripping breaks.

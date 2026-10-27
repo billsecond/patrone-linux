@@ -55,8 +55,10 @@ Patrone's boot splash (Plymouth's `patrone` and `patrone-text` themes in
 place of Ubuntu's) and Patrone's live layer as the one to boot
 (`conf/conf.d/default-layer.conf`).
 
-The rest of Ubuntu's layers go. The boot menu says "Try or Install Patrone
-Linux", the disc's name is "Patrone Linux 26.04.1 amd64", `.disk/info` says
+The rest of Ubuntu's layers go. The boot menu starts with "Install Patrone
+Linux", the installer alone, full screen, then "Try Patrone Linux", the live
+desktop (`installer/README.md`, "Installing with nothing else"); the disc's
+name is "Patrone Linux 26.04.1 amd64", `.disk/info` says
 Patrone Linux (the live session's user and computer are named `patrone`
 after it), and `md5sum.txt` (which the live session checks) is brought up to
 date. Booting is Ubuntu's, untouched: shim and GRUB signed for Secure Boot,

@@ -1,0 +1,17 @@
+#!/bin/sh
+# "Install Patrone Linux" (patrone-install-only on the kernel's command line,
+# iso/build-iso.sh's boot menu): the live session's user, whom casper has set
+# GDM to log in by itself, gets the installer's own session in place of the
+# desktop. Runs before GDM (patrone-install-only.service).
+set -e
+user=$(sed -n 's/^AutomaticLogin *= *//p' /etc/gdm3/custom.conf | head -1)
+[ -n "$user" ] || exit 0
+file=/var/lib/AccountsService/users/$user
+mkdir -p /var/lib/AccountsService/users
+if [ -f "$file" ] && grep -q '^Session=' "$file"; then
+    sed -i 's/^Session=.*/Session=patrone-installer/' "$file"
+elif [ -f "$file" ] && grep -q '^\[User\]' "$file"; then
+    sed -i '/^\[User\]/a Session=patrone-installer' "$file"
+else
+    printf '[User]\nSession=patrone-installer\n' >>"$file"
+fi

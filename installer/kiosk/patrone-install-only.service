@@ -1,0 +1,12 @@
+[Unit]
+Description=Log in to Patrone Linux's installer alone ("Install Patrone Linux")
+ConditionKernelCommandLine=patrone-install-only
+Before=display-manager.service
+Before=accounts-daemon.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/patrone-installer/install-only
+
+[Install]
+WantedBy=graphical.target

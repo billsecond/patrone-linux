@@ -56,6 +56,31 @@ In the live session (the ISO's live layer has the package):
 - `patrone-branding` hides the page that offers an update of the snap,
   which would bring back Ubuntu's front end.
 
+## Installing with nothing else
+
+The ISO's boot menu (`iso/build-iso.sh`) starts with **"Install Patrone
+Linux"**: the installer alone, full screen, with no desktop behind it, as a
+computer's own setup shows (the user, 2026-10-27, "installer only"). **"Try
+Patrone Linux"** is the live desktop, with the installer on it. The first
+adds `patrone-install-only` to the kernel's command line, and `kiosk/` does
+the rest:
+
+- `patrone-install-only.service` (enabled; runs only with that word, before
+  AccountsService and GDM) runs `install-only`, which gives the live user,
+  whom casper has GDM log in by itself, the session `patrone-installer` in
+  place of the desktop.
+- That session (`patrone-installer.desktop` in `wayland-sessions`,
+  `patrone-installer.session`, `session.conf` for its systemd target) is
+  GNOME Kiosk (`gnome-kiosk`, Mutter for one app, which it makes full
+  screen) and `patrone-installer-kiosk.service`, which runs `kiosk`: the
+  installer, without its "Try or install" page, started again if it's
+  closed. GNOME's settings daemons for accessibility, the keyboard and media
+  keys run too; desktop autostart doesn't (some of the live session's
+  entries open windows, which Kiosk would make full screen over the
+  installer).
+- The live desktop's own start of the installer
+  (`ubuntu-desktop-installer.service.d/patrone.conf`) stays out of it.
+
 ## Building it
 
 ```sh

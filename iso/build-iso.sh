@@ -259,9 +259,28 @@ sources:
       size: $install_size
 version: 2
 EOF
-sed -i -e 's/"Try or Install Ubuntu"/"Try or Install Patrone Linux"/' \
-    -e 's/"Ubuntu (safe graphics)"/"Patrone Linux (safe graphics)"/' \
-    "$work/iso/grub.cfg" "$work/iso/loopback.cfg"
+# The boot menu (the user, 2026-10-27: "installer only"): first "Install
+# Patrone Linux", the installer alone, full screen (patrone-installer's
+# session for patrone-install-only); then "Try Patrone Linux", the live
+# desktop with the installer on it; then the installer with safe graphics.
+# Ubuntu's entries for the firmware stay, and it counts down 10 seconds, not
+# 30.
+boot_menu() { # MORE-KERNEL-ARGUMENTS
+    local entry
+    for entry in "Install Patrone Linux|patrone-install-only" "Try Patrone Linux|" \
+        "Install Patrone Linux (safe graphics)|nomodeset patrone-install-only"; do
+        printf 'menuentry "%s" {\n    set gfxpayload=keep\n    linux  /casper/vmlinuz %s %s --- quiet splash\n    initrd /casper/initrd\n}\n' \
+            "${entry%%|*}" "${entry#*|}" "$1"
+    done
+}
+grep -q '^set timeout=30$' "$work/iso/grub.cfg" && grep -q '^grub_platform' "$work/iso/grub.cfg"
+{
+    sed -e '/^menuentry /,$d' -e 's/^set timeout=30$/set timeout=10/' "$work/iso/grub.cfg"
+    boot_menu ""
+    sed -n '/^grub_platform/,$p' "$work/iso/grub.cfg"
+} >"$work/iso/grub.cfg.new"
+mv "$work/iso/grub.cfg.new" "$work/iso/grub.cfg"
+boot_menu 'iso-scan/filename=${iso_path}' >"$work/iso/loopback.cfg"
 # Ubuntu's form; the installer shows what comes before the quote as the new
 # system's name.
 echo "Patrone Linux 26.04.1 \"Patrone Linux\" - Release amd64 ($(date -u +%Y%m%d))" >"$work/iso/info"
