@@ -170,9 +170,14 @@ export class RecycleBin {
         for (const window of global.display.list_all_windows())
             this._watchWindow(window);
         Main.layoutManager.connectObject('monitors-changed', () => this._place(), this);
-        // Its size is only known once it's styled, after it's on the stage
-        this.actor.connect('notify::width', () => this._place());
-        this.actor.connect('notify::height', () => this._place());
+        // Its size is only known once it's styled, after it's on the stage.
+        // Placed before the next frame, not right in the size's notify:
+        // placing it can change its size again, and the two went round
+        // forever, freezing the desktop until GNOME Shell crashed (taskbar
+        // 0.4.1, the user's desktop bubble with the bin off the desktop,
+        // 2026-10-27).
+        this.actor.connect('notify::width', () => this._queuePlace());
+        this.actor.connect('notify::height', () => this._queuePlace());
 
         this._place();
         this._restack();
@@ -189,6 +194,8 @@ export class RecycleBin {
     destroy() {
         this._destroyed = true;
         GLib.source_remove(this._stackCheckId);
+        if (this._placeLater)
+            global.compositor.get_laters().remove(this._placeLater);
         this._endGrab();
         this._stopDropTarget();
         this._areaApi()?.setMarginsForExtension(OWN_UUID, null);
@@ -236,8 +243,26 @@ export class RecycleBin {
             this._showDropTarget(false);
         }
         this._held = [x, y];
-        this.actor.visible = true;
-        this.actor.set_position(x, y);
+        this._showAt(x, y);
+    }
+
+    // Shows it at (x, y), touching only what changes: setting even the same
+    // position has Clutter look at its size again
+    _showAt(x, y) {
+        if (!this.actor.visible)
+            this.actor.visible = true;
+        if (this.actor.x !== x || this.actor.y !== y)
+            this.actor.set_position(x, y);
+    }
+
+    _queuePlace() {
+        if (this._placeLater || this._destroyed)
+            return;
+        this._placeLater = global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, () => {
+            this._placeLater = 0;
+            this._place();
+            return GLib.SOURCE_REMOVE;
+        });
     }
 
     /** Back on the desktop, in its own place. */
@@ -301,8 +326,7 @@ export class RecycleBin {
         // Held on the desktop bubble's edge, it shows there even while it's
         // off the desktop (the user, 2026-10-27)
         if (this._held) {
-            this.actor.visible = true;
-            this.actor.set_position(...this._held);
+            this._showAt(...this._held);
             return;
         }
         this.actor.visible = this._settings.get_boolean('show-recycle-bin');
