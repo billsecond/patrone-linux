@@ -71,16 +71,29 @@ Done:
   `fastfetch` still showed Ubuntu's logo and looked like a false claim. Say
   exactly how something was checked.)
 
+In progress:
+
+- **Patrone File Manager draws the desktop and the bubble** (the user,
+  2026-10-27: "The desktop and the roll out menu must be an extension of
+  the file explorer app, while supporting the desktop and all it can
+  do"), in place of Ubuntu's desktop icons and the taskbar's drawing of
+  the bubble: Windows' desktop menu (New, Paste, Undo, Sort by, Open in
+  Terminal...), File Manager's icons, and dragging to and from File
+  Manager with Ctrl and Shift. The File Manager session has it, end to end,
+  `shell/gnome/` hosting included.
+
 Waiting on the user:
 
-- **Install taskbar 0.3.11 and try the desktop bubble** (the user's design,
+- **Install taskbar 0.3.12 and try the desktop bubble** (the user's design,
   2026-10-26; `shell/gnome/README.md`, "The desktop bubble"). The user
   installed 0.3.10 with Settings 0.3.5 and GNOME Settings patrone7 on
   2026-10-27, but at sign-in the taskbar failed (the desktop has no screen
   for a moment over Remote Desktop; README, "The Recycle Bin on the
   desktop"), so GNOME's top bar showed and the bubble never started.
-  0.3.11 fixes that and adds Show Recycle Bin to the desktop's right-click:
-  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.11_all.deb`,
+  0.3.11 (installed) fixed that and added Show Recycle Bin to the desktop's
+  right-click; 0.3.12 puts the bin half over the bubble's edge, and on it
+  even while it's off the desktop:
+  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.12_all.deb`,
   then sign out from inside the desktop and back in. The desktop icons go;
   a blue pill at the left edge bounces with a tip until it's clicked.
   Click it or drag it out: the desktop's files in a bubble, the Recycle
