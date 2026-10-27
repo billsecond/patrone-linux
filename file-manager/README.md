@@ -226,7 +226,15 @@ dragging, conflicts and undo are File Manager's.
   the drag's action from the keys and hands it to the drop
   (`dnd::drop_action`); before, a window that didn't have the keyboard
   never saw them. Files held over the bubble's pill for half a second open
-  the bubble, to drop them in.
+  the bubble, to drop them in. Icons dragged about the bubble go where
+  they're let go and the others make room (the order is kept in
+  `desktop-bubble-order`; Sort by clears it); dropped on a folder, they
+  go into it. Dropped on the Recycle Bin riding on the bubble's edge, they
+  go to the Recycle Bin: its own drop target stays under the desktop
+  while it rides there, so the bubble takes those drops itself (the bin
+  lies inside the bubble's window). Anything File Manager drags carries
+  the files' addresses, so other apps take them too (Text Editor opens a
+  text file dropped on it).
 - **Launchers** (`.desktop` files), as Ubuntu's desktop icons did them: one
   the account allowed to run (trusted and executable) shows its app's icon
   and name and starts the app; any other shows as a file, and opening it
@@ -273,8 +281,8 @@ changed. Each folder's own view is kept in
 counts behind "frequent folders" in `history.ini` beside it. Pinned folders
 and Favorites are settings (`pinned-folders`, `favorite-files`). The
 desktop's View and Sort by are `desktop-icon-size`, `desktop-auto-arrange`,
-`desktop-show-icons` and `desktop-sort`, and its icons' places
-`desktop-positions`.
+`desktop-show-icons` and `desktop-sort`, its icons' places
+`desktop-positions`, and the bubble's order `desktop-bubble-order`.
 
 ## Icons
 

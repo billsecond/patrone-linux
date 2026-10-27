@@ -73,20 +73,22 @@ Done:
 
 Waiting on the user:
 
-- **Install File Manager 0.3.0 and taskbar 0.4.0: File Manager draws the
+- **Install File Manager 0.3.1 and taskbar 0.4.0: File Manager draws the
   desktop and the bubble** (the user, 2026-10-27: "The desktop and the
   roll out menu must be an extension of the file explorer app, while
-  supporting the desktop and all it can do"; sections 7 and 8), from SSH
-  or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.3.0_amd64.deb
+  supporting the desktop and all it can do"; after trying 0.3.12's bubble:
+  "The icons are all different, and I can't drag and drop them around";
+  sections 7 and 8), from SSH or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.3.1_amd64.deb
   ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.0_all.deb`,
   then sign out from inside the desktop and back in. Ubuntu's desktop
   icons go (the taskbar turns them off); the bubble and, with it off
   (Patrone Settings → Desktop), the desktop itself show File Manager's
   icons. Right-click the desktop for Windows' menu (View, Sort by, New,
-  Paste, Undo...); drag between File Manager and the desktop or the bubble
-  with Ctrl (copy) or Shift (move); hold files over the pill to open the
-  bubble. 0.3.0 has 0.2.10's fixes too. Checked only in a throwaway shell.
+  Paste, Undo...); drag icons about the bubble or the desktop, onto the
+  Recycle Bin, into File Manager or another app, with Ctrl (copy) or
+  Shift (move); hold files from File Manager over the pill to open the
+  bubble. 0.3.1 has 0.2.10's fixes too. Checked only in a throwaway shell.
 
 - **Patrone's featured apps for GNOME Software.** The user said on
   2026-10-27 that they'd send the list shortly, and asked to be reminded.
@@ -222,7 +224,7 @@ Waiting on the user:
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
 - **File Manager 0.2.10's fixes** (section 8; the user runs 0.2.9) come with
-  0.3.0 in the first step: a name being typed (after Compress, New folder,
+  0.3.1 in the first step: a name being typed (after Compress, New folder,
   New file or F2) is kept by a click anywhere else, a new ZIP shows its
   icon and size at once, and going back or up (toolbar, mouse buttons,
   keys, address bar, tree) selects the folder you came out of.
@@ -1331,7 +1333,20 @@ and drag items to copy/move them to the desktop (shift/control-whatever)".
   other screens than the primary one, Align icons to grid off, undo
   shared with File Manager's windows.
 
-Next: the user's verdict on 0.3.0 and the desktop, then the gaps in the
+0.3.1 (2026-10-27, the user: "I can't drag and drop these anywhere",
+after trying taskbar 0.3.12's bubble, which 0.3.0 replaces): icons dragged
+about the bubble go where they're let go (`desktop-bubble-order`), and
+files dropped on the Recycle Bin riding on the bubble's edge go to the
+Recycle Bin (the bubble takes those drops; the bin's own drop target is
+under the desktop then). Checked in a copy of the test shell kept in
+`~/.cache` (in /tmp GIO can't trash): a bubble icon moved onto another's
+place and the rest shifting, one dropped on a folder going into it, one
+dropped on the bin on the bubble's edge and one on the bin in its corner
+both landing in the Recycle Bin, and a desktop icon dropped on Text
+Editor opening there (the first try was lost, as the test shell's first
+click into a new window often is).
+
+Next: the user's verdict on 0.3.1 and the desktop, then the gaps in the
 README's "Not done yet" (group headers in the icon views, the command bar
 folding into "See more" when narrow, Gallery's timeline), and FileManager1.
 

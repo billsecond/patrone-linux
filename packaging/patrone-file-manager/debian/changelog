@@ -1,3 +1,13 @@
+patrone-file-manager (0.3.1) resolute; urgency=medium
+
+  * Icons in the desktop bubble can be dragged to another place in it, as
+    on the desktop: they go where they're let go and the others make room,
+    and the order is kept (Sort by puts them back in order).
+  * Files dropped on the Recycle Bin while it rides on the bubble's edge go
+    to the Recycle Bin (its own drop target is under the desktop then).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 09:05:00 -0500
+
 patrone-file-manager (0.3.0) resolute; urgency=medium
 
   * File Manager draws the desktop and the desktop bubble, as Explorer

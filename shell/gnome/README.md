@@ -243,6 +243,10 @@ On for every account; Patrone Settings → Desktop → Desktop files, or the
   opening, File Manager's right-click menus (on the empty part, the
   desktop's own, with Open Desktop folder first), renaming in place, keys,
   the rubber band, and dragging to and from File Manager's windows.
+  Icons dragged about the bubble go where they're let go, and ones
+  dropped on the Recycle Bin on its edge go to the Recycle Bin (File
+  Manager 0.3.1: the bubble takes those drops, since the bin's own drop
+  target stays under the desktop while it rides there).
   Files an app drags, held over the pill for half a second, open the
   bubble so they can be dropped in it.
 - **The Recycle Bin** leaves its corner as the bubble grows and rides on

@@ -210,6 +210,11 @@ impl Desktop {
         if let Some(grid) = self.grid() {
             grid.connect_outside(|_| send("close"));
             grid.connect_more(|_| open_desktop_folder());
+            grid.connect_trash(|files| {
+                glib::spawn_future_local(async move {
+                    crate::ops::trash(None, files, true).await;
+                });
+            });
             let weak = Rc::downgrade(self);
             grid.connect_reveal(move |_| {
                 if let Some(desktop) = weak.upgrade()

@@ -133,6 +133,11 @@ mod imp {
         pub single_click: Cell<bool>,
         /// Icons' places on the desktop by name, kept in the settings.
         pub saved: RefCell<HashMap<String, (i32, i32)>>,
+        /// The bubble's order, by name, once icons are moved in it (kept in
+        /// the settings); items not in it follow, in the list's order.
+        pub bubble_order: RefCell<Vec<String>>,
+        /// Each item's place in the bubble, by the shape's places.
+        pub bubble_slots: RefCell<Vec<Option<usize>>>,
         pub cursor: Cell<Option<u32>>,
         pub anchor: Cell<Option<u32>>,
         /// The icon pressed last and where: what a drag of it carries.
@@ -152,6 +157,7 @@ mod imp {
         pub on_more: Handler<()>,
         pub on_reveal: Handler<()>,
         pub on_shape: Handler<()>,
+        pub on_trash: Handler<Vec<gio::File>>,
     }
 
     #[glib::object_subclass]
@@ -227,6 +233,13 @@ impl DesktopGrid {
         imp.auto_arrange.set(config::flag("desktop-auto-arrange"));
         imp.shown.set(config::flag("desktop-show-icons"));
         imp.saved.replace(load_places());
+        imp.bubble_order.replace(
+            config::settings()
+                .strv("desktop-bubble-order")
+                .iter()
+                .map(|name| name.to_string())
+                .collect(),
+        );
 
         let weak = grid.downgrade();
         selection.connect_items_changed(move |_, _, _, _| {
@@ -346,7 +359,15 @@ impl DesktopGrid {
     pub fn arrange_in_order(&self) {
         self.imp().saved.borrow_mut().clear();
         save_places(&HashMap::new());
+        self.imp().bubble_order.borrow_mut().clear();
+        save_bubble_order(&[]);
         self.rebuild();
+    }
+
+    /// Files dropped on the Recycle Bin while it rides on the bubble's edge
+    /// (its own drop target is under the desktop then).
+    pub fn connect_trash(&self, handler: impl Fn(Vec<gio::File>) + 'static) {
+        self.imp().on_trash.replace(Some(Rc::new(handler)));
     }
 
     pub fn connect_activate(&self, handler: impl Fn(u32) + 'static) {
@@ -475,9 +496,17 @@ impl DesktopGrid {
                 } else {
                     n
                 };
-                for (place, (x, y)) in places.iter_mut().zip(&shape.cells).take(shown) {
-                    *place = Some((*x, y + top));
+                let names: Vec<String> = (0..n as u32).map(|p| self.name(p)).collect();
+                let mut slots = vec![None; n];
+                for (slot, index) in self.bubble_sequence(&names).into_iter().enumerate() {
+                    if slot >= shown {
+                        break;
+                    }
+                    let (x, y) = shape.cells[slot];
+                    places[index] = Some((x, y + top));
+                    slots[index] = Some(slot);
                 }
+                imp.bubble_slots.replace(slots);
                 imp.more_count.set(if overflow { n - shown } else { 0 });
                 let changed = imp.shape.borrow().as_ref() != Some(&shape);
                 imp.shape.replace(Some(shape));
@@ -1176,6 +1205,10 @@ impl DesktopGrid {
             let Some(folder) = grid.imp().folder.borrow().clone() else {
                 return gdk::DragAction::empty();
             };
+            // The Recycle Bin on the bubble's edge takes anything.
+            if grid.over_bin(x, y) {
+                return gdk::DragAction::MOVE;
+            }
             if !grid.inside(x, y) {
                 return gdk::DragAction::empty();
             }
@@ -1195,10 +1228,14 @@ impl DesktopGrid {
             let Ok(list) = value.get::<gdk::FileList>() else {
                 return false;
             };
+            let files = list.files();
+            if grid.over_bin(x, y) {
+                Self::call(&grid.imp().on_trash, files);
+                return true;
+            }
             if !grid.inside(x, y) {
                 return false;
             }
-            let files = list.files();
             let here = files
                 .iter()
                 .all(|file| file.parent().is_some_and(|parent| parent.equal(&folder)));
@@ -1242,12 +1279,116 @@ impl DesktopGrid {
             })
     }
 
+    /// Whether a point is on the Recycle Bin riding on the bubble's edge
+    /// (it lies inside the bubble's window).
+    fn over_bin(&self, x: f64, y: f64) -> bool {
+        let imp = self.imp();
+        if imp.layout.get() != Layout::Bubble {
+            return false;
+        }
+        let (Some((shape, top)), Some((width, height))) = (self.shape(), imp.bin_size.get()) else {
+            return false;
+        };
+        shape.bin.is_some_and(|(bx, by)| {
+            let by = by + top;
+            x >= bx && x < bx + width && y >= by && y < by + height
+        })
+    }
+
+    /// The order items show in the bubble: the order they were moved
+    /// into, then the rest in the list's order.
+    fn bubble_sequence(&self, names: &[String]) -> Vec<usize> {
+        let order = self.imp().bubble_order.borrow();
+        let mut sequence: Vec<usize> = order
+            .iter()
+            .filter_map(|name| names.iter().position(|other| other == name))
+            .collect();
+        for index in 0..names.len() {
+            if !sequence.contains(&index) {
+                sequence.push(index);
+            }
+        }
+        sequence
+    }
+
+    /// Icons dragged about the bubble: they go into the place where the
+    /// one dragged was let go, and the others make room.
+    fn move_in_bubble(&self, files: &[gio::File], x: f64, y: f64) {
+        let imp = self.imp();
+        let Some((shape, top)) = self.shape() else {
+            return;
+        };
+        let moved: Vec<String> = files
+            .iter()
+            .filter_map(|file| file.basename())
+            .map(|name| name.to_string_lossy().into_owned())
+            .collect();
+        let n = imp.cells.borrow().len() as u32;
+        let names: Vec<String> = (0..n).map(|p| self.name(p)).collect();
+        let places = imp.places.borrow().clone();
+        // Where the dragged icon's room would be, from where it was held.
+        let lead = imp
+            .pressed
+            .get()
+            .filter(|(position, _, _)| moved.contains(&self.name(*position)));
+        let (left, upper) = match lead.and_then(|(position, px, py)| {
+            places
+                .get(position as usize)
+                .copied()
+                .flatten()
+                .map(|(lx, ly)| (x - (px - lx), y - (py - ly)))
+        }) {
+            Some(corner) => corner,
+            None => (x - bubble::CELL_WIDTH / 2.0, y - bubble::CELL_HEIGHT / 2.0),
+        };
+        let shown = imp.bubble_slots.borrow().iter().flatten().count();
+        let Some(target) = shape
+            .cells
+            .iter()
+            .take(shown.max(1))
+            .enumerate()
+            .min_by(|(_, p), (_, q)| {
+                let distance =
+                    |(cx, cy): &(f64, f64)| (cx - left).powi(2) + (cy + top - upper).powi(2);
+                distance(p).total_cmp(&distance(q))
+            })
+            .map(|(slot, _)| slot)
+        else {
+            return;
+        };
+        let sequence: Vec<String> = self
+            .bubble_sequence(&names)
+            .into_iter()
+            .map(|index| names[index].clone())
+            .collect();
+        let (moving, mut rest): (Vec<String>, Vec<String>) = sequence
+            .iter()
+            .cloned()
+            .partition(|name| moved.contains(name));
+        // Into the target place, counted among the icons that stay.
+        let before = sequence
+            .iter()
+            .take(target)
+            .filter(|name| !moved.contains(name))
+            .count();
+        let at = before.min(rest.len());
+        rest.splice(at..at, moving);
+        save_bubble_order(&rest);
+        imp.bubble_order.replace(rest);
+        self.arrange();
+        self.queue_allocate();
+    }
+
     /// Icons dragged about the desktop: the one dragged lands where it was
     /// let go, the others keep their places around it. Auto arrange puts
-    /// them back in order, as on Windows; so does the bubble.
+    /// them back in order, as on Windows.
     fn move_icons(&self, files: &[gio::File], x: f64, y: f64) {
         let imp = self.imp();
-        if imp.layout.get() != Layout::Desktop || imp.auto_arrange.get() {
+        if imp.layout.get() == Layout::Bubble {
+            self.move_in_bubble(files, x, y);
+            return;
+        }
+        if imp.auto_arrange.get() {
             return;
         }
         let names: Vec<String> = files
@@ -1342,6 +1483,13 @@ fn load_places() -> HashMap<String, (i32, i32)> {
         .value("desktop-positions")
         .get::<HashMap<String, (i32, i32)>>()
         .unwrap_or_default()
+}
+
+fn save_bubble_order(order: &[String]) {
+    let names: Vec<&str> = order.iter().map(String::as_str).collect();
+    if let Err(error) = config::settings().set_strv("desktop-bubble-order", names.as_slice()) {
+        eprintln!("patrone-file-manager: could not save the bubble's order: {error}");
+    }
 }
 
 fn save_places(places: &HashMap<String, (i32, i32)>) {

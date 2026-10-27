@@ -265,5 +265,9 @@
       <default>{}</default>
       <summary>Where each icon is on the desktop: its name, column and row</summary>
     </key>
+    <key name="desktop-bubble-order" type="as">
+      <default>[]</default>
+      <summary>The desktop bubble's order, by name, once icons are moved in it</summary>
+    </key>
   </schema>
 </schemalist>
