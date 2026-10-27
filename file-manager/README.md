@@ -19,7 +19,9 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   other app's (raised when active, flat when not): they're `headerbar`
   nodes for style sheets (`util::header_box`), and `data/over-theme.css`
   keeps the tabs readable on any style. Back, Forward, Up and
-  Refresh; breadcrumbs of the whole path from This PC (This PC › Local Disk
+  Refresh (and the mouse's own Back and Forward buttons); going back or up
+  by any route selects the folder you came out of, scrolled into view and
+  with the keyboard focus, as on Windows; breadcrumbs of the whole path from This PC (This PC › Local Disk
   (/) › home › you › folder), any of which goes there when clicked, with
   chevrons listing each folder's subfolders; when the path doesn't fit, its
   start folds into a « button that lists it, as on Windows. Clicking the
@@ -163,6 +165,7 @@ Properties adds the name to `.hidden`, which every GTK app honors.
 | Ctrl+T / Ctrl+W / Ctrl+N | New tab / close tab / new window |
 | Ctrl+Tab, Ctrl+Shift+Tab, Ctrl+1 to 9 | Switch tabs |
 | Alt+Left / Alt+Right / Alt+Up, Backspace | Back / Forward / Up, Back |
+| Mouse Back / Forward buttons | Back / Forward |
 | F5 or Ctrl+R | Refresh |
 | Ctrl+L, Alt+D or F4 | Type a path in the address bar |
 | Ctrl+E, Ctrl+F or F3 | Search |

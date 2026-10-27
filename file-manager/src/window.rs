@@ -265,6 +265,7 @@ impl Window {
         });
         window.add_actions();
         window.add_shortcuts();
+        window.add_history_buttons();
         window.connect_parts();
         window.apply_layout();
         window
@@ -1529,6 +1530,26 @@ impl Window {
             ));
         }
         self.stack.add_controller(controller);
+    }
+
+    /// The mouse's own Back and Forward buttons (8 and 9), anywhere in the
+    /// window, as on Windows.
+    fn add_history_buttons(&self) {
+        let click = gtk::GestureClick::new();
+        click.set_button(0);
+        click.set_propagation_phase(gtk::PropagationPhase::Capture);
+        click.connect_pressed(|gesture, _, _, _| {
+            let action = match gesture.current_button() {
+                8 => "win.back",
+                9 => "win.forward",
+                _ => return,
+            };
+            gesture.set_state(gtk::EventSequenceState::Claimed);
+            if let Some(widget) = gesture.widget() {
+                let _ = widget.activate_action(action, None);
+            }
+        });
+        self.window.add_controller(click);
     }
 }
 

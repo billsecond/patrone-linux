@@ -172,7 +172,9 @@ Waiting on the user:
   `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.10_amd64.deb`,
   then close every File Manager window so the new version starts. A name
   being typed (after Compress, New folder, New file or F2) is kept by a
-  click anywhere else, and a new ZIP shows its icon and size at once.
+  click anywhere else, a new ZIP shows its icon and size at once, and
+  going back or up (toolbar, mouse buttons, keys, address bar, tree)
+  selects the folder you came out of.
 - **Install Patrone Unpack** (section 13), from SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.1_amd64.deb
   ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
@@ -1192,8 +1194,31 @@ account's real setting.)
   problem: GIO sets their times at the end, an attribute change. Files that
   other programs write in place still show their old size until a refresh.
 - A renamed or pasted item that sorts out of view was scrolled to one row
-  short: a row that has just arrived has no height yet. The view scrolls
-  again 100 ms later (`check_pending`).
+  short: a row that has just arrived has no height yet, so GTK scrolled to
+  a zero-height row (or, when the whole folder arrived at once, put the
+  item at the top with the ones above it hidden). The scroll now waits for
+  the folder to finish loading and then for two frame-clock ticks, when
+  the rows are laid out (`FolderView::scroll_when_laid_out`).
+- "If a user goes back either in the tree, the back button on their mouse,
+  or the back button on the toolbar, make sure the folder that got us
+  there is highlighted": `Tab::display` sees both places, and when the one
+  left is inside the one shown it selects the child that leads there
+  (`child_toward`, through `select_when_present`), so Back, Forward, Up,
+  Alt+Left/Up, Backspace, breadcrumbs, the « menu, the folder tree and
+  "Previous locations" all do it; the list gets the keyboard focus on that
+  item. The mouse's Back and Forward buttons (8 and 9) did nothing before:
+  a capture-phase click on the window now runs win.back / win.forward.
+  Checked with real input in the headless shell: Up, toolbar Back, mouse
+  Back and Forward (evdev BTN_SIDE/BTN_EXTRA through Mutter's
+  RemoteDesktop), Alt+Left, Backspace and Alt+Up each selected the folder
+  left; the tree's home entry selected pfm-sample; « → Local Disk from
+  ~/pfm-sample/Reports selected home with bin…etc still in view;
+  /usr/share/icons → Alt+Up selected icons among 299 items; Down then moved
+  to the next item. Back to Home, This PC or Gallery selects nothing (they
+  aren't folder lists).
+- The selected text in the name editor was faint in a selected row (the
+  themes draw entry selections dimly); `over-theme.css` gives it the
+  accent colour.
 
 Next: the user's verdict on 0.2.10, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See

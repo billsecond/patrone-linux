@@ -211,6 +211,14 @@ impl Tab {
             Location::Folder(file) => {
                 self.folder
                     .show_folder(&location, ViewState::for_location(&location));
+                // As on Windows, going back or up (by any route) selects the
+                // folder that led to where we were.
+                if let Some(name) = previous
+                    .folder()
+                    .and_then(|inner| child_toward(file, inner))
+                {
+                    self.folder.select_when_present(vec![name], false);
+                }
                 self.content.set_visible_child_name("folder");
                 viewstate::record_visit(file);
             }
@@ -457,4 +465,31 @@ fn needs_mount_check(file: &gio::File) -> bool {
             file.uri_scheme().as_deref(),
             Some("network" | "recent" | "computer")
         )
+}
+
+/// The item in `folder` that `inner` is, or is inside: from Documents, with
+/// Documents/Projects/2026 just left, "Projects".
+fn child_toward(folder: &gio::File, inner: &gio::File) -> Option<String> {
+    let relative = folder.relative_path(inner)?;
+    let first = relative.components().next()?;
+    Some(first.as_os_str().to_string_lossy().into_owned())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn going_up_selects_the_folder_that_led_here() {
+        let documents = gio::File::for_path("/home/user/Documents");
+        let deep = gio::File::for_path("/home/user/Documents/Projects/2026");
+        assert_eq!(child_toward(&documents, &deep).as_deref(), Some("Projects"));
+        let root = gio::File::for_path("/");
+        assert_eq!(child_toward(&root, &documents).as_deref(), Some("home"));
+        // Going down or sideways selects nothing.
+        assert_eq!(child_toward(&deep, &documents), None);
+        assert_eq!(child_toward(&documents, &documents), None);
+        let music = gio::File::for_path("/home/user/Music");
+        assert_eq!(child_toward(&documents, &music), None);
+    }
 }

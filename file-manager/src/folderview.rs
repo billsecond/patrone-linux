@@ -70,6 +70,8 @@ struct Pending {
     /// (created, then changed), and the second report replaces the item and
     /// drops its selection, so the selection is put back for a moment.
     found: Option<std::time::Instant>,
+    /// Whether the view has been scrolled to the items yet.
+    scrolled: bool,
 }
 
 pub struct FolderView {
@@ -262,9 +264,12 @@ impl FolderView {
                 }
             });
         let weak = self.weak();
-        self.dir.connect_loading_notify(move |_| {
+        self.dir.connect_loading_notify(move |dir| {
             if let Some(view) = weak.upgrade() {
                 view.update_empty();
+                if !dir.is_loading() {
+                    view.check_pending();
+                }
                 view.emit(ViewEvent::ItemsChanged);
             }
         });
@@ -577,6 +582,7 @@ impl FolderView {
             names,
             rename,
             found: None,
+            scrolled: false,
         }));
         self.check_pending();
         let weak = self.weak();
@@ -588,11 +594,17 @@ impl FolderView {
     }
 
     fn check_pending(&self) {
-        let (names, rename, found) = match self.pending.borrow().as_ref() {
-            Some(pending) => (pending.names.clone(), pending.rename, pending.found),
+        let (names, rename, found, scrolled) = match self.pending.borrow().as_ref() {
+            Some(pending) => (
+                pending.names.clone(),
+                pending.rename,
+                pending.found,
+                pending.scrolled,
+            ),
             None => return,
         };
-        if found.is_some_and(|at| at.elapsed() > std::time::Duration::from_millis(1500)) {
+        if scrolled && found.is_some_and(|at| at.elapsed() > std::time::Duration::from_millis(1500))
+        {
             self.pending.take();
             return;
         }
@@ -614,29 +626,48 @@ impl FolderView {
                 self.selection.select_item(*position, false);
             }
         }
-        if first_time {
-            self.scroll_to(positions[0], true);
-            // A row that just arrived has no height yet, so GTK stops a row
-            // short of it. Once it's laid out, scroll again.
+        // Items still loading in above these would push them out of view,
+        // so the scroll waits for the folder to finish.
+        if !scrolled && !self.dir.is_loading() {
+            if let Some(pending) = self.pending.borrow_mut().as_mut() {
+                pending.scrolled = true;
+            }
+            self.scroll_when_laid_out(names.clone());
+        }
+        if first_time && rename {
+            // After GIO's follow-up report, so the editor isn't reset.
             let weak = self.weak();
-            let names = names.clone();
-            glib::timeout_add_local_once(std::time::Duration::from_millis(100), move || {
-                if let Some(view) = weak.upgrade()
-                    && let Some(position) = view.positions_of(&names).first()
-                {
-                    view.scroll_to(*position, false);
+            glib::timeout_add_local_once(std::time::Duration::from_millis(250), move || {
+                if let Some(view) = weak.upgrade() {
+                    view.start_rename();
                 }
             });
-            if rename {
-                // After GIO's follow-up report, so the editor isn't reset.
-                let weak = self.weak();
-                glib::timeout_add_local_once(std::time::Duration::from_millis(250), move || {
-                    if let Some(view) = weak.upgrade() {
-                        view.start_rename();
-                    }
-                });
-            }
         }
+    }
+
+    /// Scrolls to the first of these items (and gives it the keyboard focus)
+    /// once the rows that just arrived are laid out. Before that they have
+    /// no height, and GTK stops a row short or puts the item at the top
+    /// with the ones above it out of sight. A tick callback runs as each
+    /// frame starts, so on the second one the first layout is done.
+    fn scroll_when_laid_out(&self, names: Vec<String>) {
+        let Some(widget) = self.view.borrow().clone() else {
+            return;
+        };
+        let weak = self.weak();
+        let frames = Cell::new(0);
+        widget.add_tick_callback(move |_, _| {
+            frames.set(frames.get() + 1);
+            if frames.get() < 2 {
+                return glib::ControlFlow::Continue;
+            }
+            if let Some(view) = weak.upgrade()
+                && let Some(position) = view.positions_of(&names).first()
+            {
+                view.scroll_to(*position, true);
+            }
+            glib::ControlFlow::Break
+        });
     }
 
     /// Where the items with these names are, in view order.

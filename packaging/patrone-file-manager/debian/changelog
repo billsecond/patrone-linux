@@ -7,8 +7,15 @@ patrone-file-manager (0.2.10) resolute; urgency=medium
     under a hidden .NAME.part and given its name when finished.
   * A renamed or pasted item that sorts out of view is scrolled fully into
     view, not one row short.
+  * Going back or up, by any route (Back, Up, the mouse's Back button,
+    Alt+Left, Alt+Up, Backspace, the address bar or the folder tree),
+    selects the folder you came out of, in view and with the keyboard
+    focus, as on Windows.
+  * The mouse's Back and Forward buttons work.
+  * The selected part of a name being typed is drawn in the accent colour;
+    it was faint.
 
- -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:40:00 -0500
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:55:00 -0500
 
 patrone-file-manager (0.2.9) resolute; urgency=medium
 
