@@ -110,6 +110,24 @@ loaded from `~/.bash_aliases` (`shell-config/bash_aliases`), which Ubuntu's
 own `~/.bashrc` already reads, so Ubuntu's bash setup stays as it is. Both
 ship in `patrone-shell-config`.
 
+New accounts get these from `/etc/skel`, but root's account comes before
+the package, so installing it copies `.bash_aliases` and `.zshrc` to
+`/root` too, unless root has them already. Before that (0.2.0), a root
+shell from `sudo su`, `sudo -i` or `su -` read only Ubuntu's root
+`.bashrc`, whose plain `root@host:dir#` prompt Patrone Dark draws in its
+pale blue text color, with the blue cursor after it: the user saw a blue
+prompt where root's should be red (2026-10-27). What each way to root
+reads:
+
+| Command | Root's shell | Reads |
+| --- | --- | --- |
+| `sudo su`, `sudo bash` | bash | `/etc/bash.bashrc`, `/root/.bashrc` → `/root/.bash_aliases` |
+| `sudo -i`, `su -`, `sudo su -` | login bash | `/etc/profile` (and `/etc/bash.bashrc`, `/etc/profile.d`), `/root/.profile` → `/root/.bashrc` → `/root/.bash_aliases` |
+| `sudo -s` from zsh | zsh, `HOME=/root` | `/etc/zsh/zshrc`, `/root/.zshrc` |
+
+sudo (Ubuntu's is sudo-rs) resets the environment, so nothing of the
+user's own prompt comes along.
+
 zsh is there for those who want it: `shell-config/zshrc` has the same prompt
 plus completion menus, shared history, `zsh-autosuggestions` and
 `zsh-syntax-highlighting`, and `shell-config/zprofile` makes login shells read
