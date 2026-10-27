@@ -6,9 +6,7 @@ Files: *
 Copyright: 2026 William Daugherty
 License: GPL-3+
 
-Files: usr/share/plymouth/themes/patrone/animation-*.png
-       usr/share/plymouth/themes/patrone/throbber-*.png
-       usr/share/plymouth/themes/patrone/bullet.png
+Files: usr/share/plymouth/themes/patrone/bullet.png
        usr/share/plymouth/themes/patrone/capslock.png
        usr/share/plymouth/themes/patrone/entry.png
        usr/share/plymouth/themes/patrone/keyboard.png

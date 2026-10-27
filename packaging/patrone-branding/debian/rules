@@ -23,12 +23,15 @@ override_dh_auto_install:
 	install -Dm755 system/motd/00-header $(pkg)/etc/update-motd.d/00-header
 	install -Dm644 system/plymouth/patrone.plymouth $(theme)/patrone.plymouth
 	install -Dm644 logos/patrone-splash.png $(theme)/watermark.png
-	# The spinner's frames and prompt images, copied from Plymouth's spinner
-	# theme. Copies, not links: the initramfs hook copies the theme folder
-	# with cp -a, so links to the spinner folder would dangle at boot.
+	# Patrone's spinner, three interlinked rings (tools/make_spinner.py)
+	install -m644 -t $(theme) system/plymouth/spinner/throbber-*.png \
+	    system/plymouth/spinner/animation-*.png
+	# The password prompt's images, copied from Plymouth's spinner theme.
+	# Copies, not links: the initramfs hook copies the theme folder with
+	# cp -a, so links to the spinner folder would dangle at boot.
 	for image in $(spinner)/*.png; do \
 	    name=$$(basename $$image); \
-	    case $$name in watermark.png | bgrt-fallback.png) ;; \
+	    case $$name in watermark.png | bgrt-fallback.png | throbber-* | animation-*) ;; \
 	    *) install -m644 $$image $(theme)/$$name ;; esac; \
 	done
 	install -Dm644 system/plymouth/patrone-text.plymouth \

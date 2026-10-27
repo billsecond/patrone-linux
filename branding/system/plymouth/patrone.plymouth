@@ -1,11 +1,12 @@
 [Plymouth Theme]
 Name=Patrone
-Description=The Patrone logo and a spinner on Patrone's near-black
+Description=The Patrone logo over three interlinked spinning rings on Patrone's near-black
 ModuleName=two-step
 
 [two-step]
-# watermark.png is the Patrone logo; the spinner's images come from Ubuntu's
-# spinner theme, linked into this folder.
+# watermark.png is the Patrone logo; throbber-* and animation-* are Patrone's
+# spinner, drawn by branding/tools/make_spinner.py; the password prompt's
+# images are copied from Ubuntu's spinner theme.
 ImageDir=/usr/share/plymouth/themes/patrone
 WatermarkHorizontalAlignment=.5
 WatermarkVerticalAlignment=.42

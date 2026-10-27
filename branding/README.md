@@ -58,7 +58,7 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | What you see | Patrone's version | How |
 | --- | --- | --- |
 | The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "Patrone Linux 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"` | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
-| Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over a spinner on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the spinner frames are copied from Plymouth's spinner theme |
+| Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over Patrone's spinner (below) on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the password prompt's images are copied from Plymouth's spinner theme |
 | Boot splash without graphics | `system/plymouth/patrone-text.plymouth`: "Patrone Linux 0.1" in Patrone's colors | Plymouth text theme, made the default |
 | Login screen | Patrone logo; a navy-to-black background; blue accents; Patrone Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
 | Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
@@ -72,6 +72,37 @@ The login-screen theme is built from the Yaru that's installed when the
 package is built, so rebuild the package when Yaru's GNOME Shell theme
 changes. Accent colors are GNOME's named ones; `blue` is the closest to
 Patrone Blue.
+
+## Boot spinner
+
+![The boot spinner](system/plymouth/previews/spinner-preview.gif)
+
+Three interlinked rings, woven like the Borromean rings: each passes over one
+of the others and under the third, so no two are linked but the three hold
+together. A comet of light runs clockwise round each ring, its head
+sprinting and its tail catching up, and the rings take turns, each a third
+of a loop after the one before. The tracks are Shadow; the comets run from
+a whitened Highlight at the head through Patrone Blue to Mid.
+
+`system/plymouth/spinner/` holds the frames for Plymouth's two-step module,
+96×96 with transparency:
+
+- `throbber-0001.png` to `throbber-0060.png`, the spinner. Plymouth plays it
+  as a 2-second loop whatever the frame count, sampled 30 times a second, so
+  60 frames give each tick a new one.
+- `animation-0001.png` to `animation-0030.png`, the end animation: it carries
+  on from the loop and lights the rings in full. The theme turns it off, but
+  two-step needs the files: without them it takes the throbber's frames for
+  its end animation and shows no spinner.
+
+`tools/make_spinner.py` (Python with NumPy and Pillow) draws them, and with
+`--preview` a contact sheet, the GIF above and a mock-up of the whole splash
+(`system/plymouth/previews/`). The settings are at the top of the script. To
+make them again:
+
+```
+python tools/make_spinner.py system/plymouth/spinner --preview system/plymouth/previews
+```
 
 ## Wallpaper 01
 

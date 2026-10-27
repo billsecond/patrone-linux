@@ -1,3 +1,15 @@
+patrone-branding (0.1.8) resolute; urgency=medium
+
+  * A new boot spinner: three interlinked rings, woven over and under like
+    the Borromean rings, in Patrone's blues. A comet of light runs round
+    each ring, sprinting and catching up, and the three take turns a third
+    of a loop apart. 60 frames for Plymouth's 2-second loop, so a new one at
+    each of its 30 ticks a second, drawn by tools/make_spinner.py. Its end
+    animation, which Patrone's theme keeps off, lights the rings in full.
+    Only the password prompt's images still come from Ubuntu's spinner.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 09:50:00 -0500
+
 patrone-branding (0.1.7) resolute; urgency=medium
 
   * Settings → About shows Patrone's logo: patrone-logo-text.svg and
