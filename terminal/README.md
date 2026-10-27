@@ -8,6 +8,15 @@ The default terminal of Patrone Linux: GTK4 and VTE, written in Rust.
   on Linux.
 - **Links:** Ctrl+click opens web addresses, and links that programs mark with
   the OSC 8 escape sequence. They underline when the pointer is over them.
+- **Escape clears the command line** at a shell's prompt, as in Windows'
+  terminals (the user asked for it, 2026-10-27): the terminal sends the
+  shell Ctrl+E then Ctrl+U, which bash, zsh and fish all take. Only while a
+  shell waits at its prompt in front, so vim, less, htop and mc still get
+  Escape: that's when the PTY's foreground process group is a shell's own
+  (a shell gives each command a group of its own). sudo runs its command on
+  a PTY of its own, so for a root shell from `sudo su` the terminal looks at
+  what's in front on sudo's, through `/proc`. A switch in Preferences turns
+  it off, for a shell's vi mode or Escape as Alt (Escape then `.`).
 - **Asks before closing** a tab or window where a program other than the
   shell is still running, and names the program.
 - **Patrone Dark:** a near-black theme with the Patrone blues, in JetBrains
@@ -18,8 +27,8 @@ The default terminal of Patrone Linux: GTK4 and VTE, written in Rust.
   paints the scrolled window and the `vte-terminal` node, so `theme::CSS`
   clears those along with the window.
 - **Preferences** (menu, or Ctrl+Comma): font, background transparency
-  (0%, solid, to 60%), lines of scrollback, and switches for copy on select
-  and paste on right-click. They're saved in
+  (0%, solid, to 60%), lines of scrollback, and switches for copy on select,
+  paste on right-click and Escape clearing the command line. They're saved in
   `~/.config/patrone-terminal/settings.ini` and apply to open terminals at
   once.
 - Tabs, 100,000 lines of scrollback, and xterm-style `-e` and `-T` options so
@@ -30,6 +39,7 @@ The default terminal of Patrone Linux: GTK4 and VTE, written in Rust.
 | Ctrl+Shift+C / Ctrl+Shift+V | Copy / paste |
 | Shift+Insert | Paste |
 | Ctrl+click | Open a link |
+| Escape | Clear the command being typed (at a shell's prompt) |
 | Ctrl+Shift+T / Ctrl+Shift+N | New tab / new window, in the current directory |
 | Ctrl+Shift+W | Close tab |
 | Ctrl+Page Down / Ctrl+Page Up | Next / previous tab |

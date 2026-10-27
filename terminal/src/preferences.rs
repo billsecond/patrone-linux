@@ -30,6 +30,11 @@ pub fn show(parent: &gtk::ApplicationWindow) {
         .halign(gtk::Align::End)
         .valign(gtk::Align::Center)
         .build();
+    let escape_clears_line = gtk::Switch::builder()
+        .active(current.escape_clears_line)
+        .halign(gtk::Align::End)
+        .valign(gtk::Align::Center)
+        .build();
     // In steps of 5, from solid to as see-through as still reads well
     let transparency = gtk::Scale::with_range(
         gtk::Orientation::Horizontal,
@@ -52,12 +57,16 @@ pub fn show(parent: &gtk::ApplicationWindow) {
         .margin_start(24)
         .margin_end(24)
         .build();
-    let rows: [(&str, &gtk::Widget); 5] = [
+    let rows: [(&str, &gtk::Widget); 6] = [
         ("Font", font.upcast_ref()),
         ("Background transparency", transparency.upcast_ref()),
         ("Lines of scrollback", scrollback.upcast_ref()),
         ("Copy selected text", copy_on_select.upcast_ref()),
         ("Paste with right-click", paste_on_right_click.upcast_ref()),
+        (
+            "Escape clears the command line",
+            escape_clears_line.upcast_ref(),
+        ),
     ];
     for (row, (label, widget)) in rows.into_iter().enumerate() {
         let label = gtk::Label::builder()
@@ -100,6 +109,9 @@ pub fn show(parent: &gtk::ApplicationWindow) {
     });
     paste_on_right_click.connect_active_notify(|switch| {
         settings::update(|s| s.paste_on_right_click = switch.is_active())
+    });
+    escape_clears_line.connect_active_notify(|switch| {
+        settings::update(|s| s.escape_clears_line = switch.is_active())
     });
 
     gtk::Window::builder()

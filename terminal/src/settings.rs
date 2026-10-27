@@ -22,6 +22,8 @@ pub struct Settings {
     pub paste_on_right_click: bool,
     /// How see-through the background is, in percent (0 is solid).
     pub transparency: i64,
+    /// Escape at a shell's prompt clears the command being typed.
+    pub escape_clears_line: bool,
 }
 
 impl Default for Settings {
@@ -34,6 +36,8 @@ impl Default for Settings {
             // The desktop showing faintly through, as in Kali's terminal
             // (the user asked for it, 2026-10-26)
             transparency: 15,
+            // As in Windows' terminals (the user asked for it, 2026-10-27)
+            escape_clears_line: true,
         }
     }
 }
@@ -90,6 +94,9 @@ impl Settings {
                 .int64(GROUP, "background-transparency")
                 .map(|percent| percent.clamp(0, MAX_TRANSPARENCY))
                 .unwrap_or(defaults.transparency),
+            escape_clears_line: file
+                .boolean(GROUP, "escape-clears-line")
+                .unwrap_or(defaults.escape_clears_line),
         }
     }
 
@@ -100,6 +107,7 @@ impl Settings {
         file.set_boolean(GROUP, "copy-on-select", self.copy_on_select);
         file.set_boolean(GROUP, "paste-on-right-click", self.paste_on_right_click);
         file.set_int64(GROUP, "background-transparency", self.transparency);
+        file.set_boolean(GROUP, "escape-clears-line", self.escape_clears_line);
         if let Some(dir) = path.parent() {
             glib::mkdir_with_parents(dir, 0o755);
         }
@@ -121,6 +129,7 @@ mod tests {
             copy_on_select: false,
             paste_on_right_click: false,
             transparency: 40,
+            escape_clears_line: false,
         };
         settings.save_to(&path).unwrap();
         assert_eq!(Settings::load_from(&path), settings);

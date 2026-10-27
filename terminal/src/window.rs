@@ -30,6 +30,12 @@ const PCRE2_CASELESS: u32 = 0x0000_0008;
 const PCRE2_MULTILINE: u32 = 0x0000_0400;
 const PCRE2_UCP: u32 = 0x0002_0000;
 const PCRE2_UTF: u32 = 0x0008_0000;
+/// What Escape sends a shell to clear the command being typed: Ctrl+E (to
+/// the end of the line), then Ctrl+U (delete back to its start). bash, zsh
+/// and fish all take these.
+const CLEAR_LINE: &[u8] = b"\x05\x15";
+/// Shells, by process name, whose prompt Escape clears.
+const SHELLS: [&str; 8] = ["bash", "zsh", "fish", "sh", "dash", "ksh", "mksh", "tcsh"];
 
 /// What to run in a new tab.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -221,6 +227,7 @@ fn configure(terminal: &vte::Terminal) {
     copy_on_select(terminal);
     paste_on_right_click(terminal);
     open_links_on_ctrl_click(terminal);
+    clear_line_on_escape(terminal);
 }
 
 fn apply_settings(terminal: &vte::Terminal, settings: &settings::Settings) {
@@ -371,6 +378,41 @@ fn open_links_on_ctrl_click(terminal: &vte::Terminal) {
         );
     });
     terminal.add_controller(click);
+}
+
+/// Escape clears the command being typed, as in Windows' terminals, while a
+/// shell waits at its prompt (the user asked for it, 2026-10-27). Programs
+/// that use Escape, such as vim, less, htop and mc, still get it.
+fn clear_line_on_escape(terminal: &vte::Terminal) {
+    let keys = gtk::EventControllerKey::builder()
+        .propagation_phase(gtk::PropagationPhase::Capture)
+        .build();
+    keys.connect_key_pressed(|keys, key, _, state| {
+        let modifiers = gdk::ModifierType::SHIFT_MASK
+            | gdk::ModifierType::CONTROL_MASK
+            | gdk::ModifierType::ALT_MASK
+            | gdk::ModifierType::SUPER_MASK
+            | gdk::ModifierType::META_MASK;
+        if key != gdk::Key::Escape
+            || state.intersects(modifiers)
+            || !settings::get().escape_clears_line
+        {
+            return glib::Propagation::Proceed;
+        }
+        let Some(terminal) = keys.widget().and_downcast::<vte::Terminal>() else {
+            return glib::Propagation::Proceed;
+        };
+        if !shell_at_prompt(&terminal) {
+            return glib::Propagation::Proceed;
+        }
+        terminal.feed_child(CLEAR_LINE);
+        // As for any other key typed (scroll_on_keystroke)
+        if let Some(adjustment) = terminal.vadjustment() {
+            adjustment.set_value(adjustment.upper());
+        }
+        glib::Propagation::Stop
+    });
+    terminal.add_controller(keys);
 }
 
 fn add_actions(window: &gtk::ApplicationWindow, notebook: &gtk::Notebook) {
@@ -548,9 +590,83 @@ fn foreground_program(terminal: &vte::Terminal) -> Option<String> {
     if group <= 0 || session <= 0 || group == session {
         return None;
     }
-    let name = std::fs::read_to_string(format!("/proc/{group}/comm")).unwrap_or_default();
-    let name = name.trim();
-    Some(if name.is_empty() { "A program" } else { name }.to_owned())
+    let name = process_name(group);
+    Some(if name.is_empty() {
+        "A program".to_owned()
+    } else {
+        name
+    })
+}
+
+/// Whether a shell waits at its prompt in the terminal's foreground: the
+/// tab's shell, or one started from it. A shell gives each command it runs
+/// a process group of its own, and the terminal to that group, so the
+/// shell's own group is in front only while it's at its prompt. sudo runs
+/// its command on a PTY of its own, so for a root shell from `sudo su`, it's
+/// what's in front on sudo's PTY.
+fn shell_at_prompt(terminal: &vte::Terminal) -> bool {
+    let Some(pty) = terminal.pty() else {
+        return false;
+    };
+    // SAFETY: fd is the terminal's open PTY, borrowed for this call.
+    let group = unsafe { libc::tcgetpgrp(pty.fd().as_raw_fd()) };
+    group > 0 && shell_leads(group, 0)
+}
+
+/// Whether the process group in front on a terminal, by its leader's PID, is
+/// a shell at its prompt, or sudo with one in front on sudo's own terminal.
+fn shell_leads(group: libc::pid_t, depth: u32) -> bool {
+    let name = process_name(group);
+    if SHELLS.contains(&name.as_str()) {
+        // A shell without job control (`bash -c 'make; vim'`) runs its
+        // commands in its own group
+        return children(group).all(|child| process_group(child) != Some(group));
+    }
+    name == "sudo"
+        && depth < 3
+        && children(group).any(|child| {
+            foreground_group(child)
+                .is_some_and(|inner| inner != group && shell_leads(inner, depth + 1))
+        })
+}
+
+fn process_name(pid: libc::pid_t) -> String {
+    let name = std::fs::read_to_string(format!("/proc/{pid}/comm")).unwrap_or_default();
+    name.trim().to_owned()
+}
+
+fn children(pid: libc::pid_t) -> impl Iterator<Item = libc::pid_t> {
+    let children =
+        std::fs::read_to_string(format!("/proc/{pid}/task/{pid}/children")).unwrap_or_default();
+    let children: Vec<libc::pid_t> = children
+        .split_whitespace()
+        .filter_map(|child| child.parse().ok())
+        .collect();
+    children.into_iter()
+}
+
+fn process_group(pid: libc::pid_t) -> Option<libc::pid_t> {
+    stat_field(pid, 2)
+}
+
+/// The foreground process group of the process's terminal.
+fn foreground_group(pid: libc::pid_t) -> Option<libc::pid_t> {
+    stat_field(pid, 5)
+}
+
+/// A number from /proc/PID/stat, counting from the field after the process
+/// name: state, parent, process group, session, terminal, the terminal's
+/// foreground process group...
+fn stat_field(pid: libc::pid_t, index: usize) -> Option<libc::pid_t> {
+    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat")).ok()?;
+    // The name is in parentheses, and can hold spaces and parentheses itself
+    let (_, fields) = stat.rsplit_once(')')?;
+    fields
+        .split_whitespace()
+        .nth(index)?
+        .parse()
+        .ok()
+        .filter(|&id| id > 0)
 }
 
 fn pages(notebook: &gtk::Notebook) -> impl Iterator<Item = gtk::Widget> + '_ {
@@ -594,4 +710,71 @@ fn tab_title(notebook: &gtk::Notebook, page: &gtk::Widget) -> Option<glib::GStri
 fn working_directory(terminal: &vte::Terminal) -> Option<PathBuf> {
     let uri = terminal.current_directory_uri()?;
     glib::filename_from_uri(&uri).ok().map(|(path, _host)| path)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::os::unix::process::CommandExt;
+    use std::process::{Child, Command, Stdio};
+    use std::time::Instant;
+
+    /// Runs `sh -c SCRIPT` as the leader of a process group of its own, as a
+    /// shell runs a command.
+    fn job(script: &str) -> Child {
+        Command::new("sh")
+            .args(["-c", script])
+            .stdin(Stdio::piped())
+            .process_group(0)
+            .spawn()
+            .unwrap()
+    }
+
+    fn end(mut job: Child) {
+        // SAFETY: signals the test's own process group, nothing else.
+        unsafe { libc::kill(-(job.id() as libc::pid_t), libc::SIGKILL) };
+        job.wait().unwrap();
+    }
+
+    fn wait_for(done: impl Fn() -> bool) {
+        let start = Instant::now();
+        while !done() {
+            assert!(start.elapsed() < Duration::from_secs(5), "timed out");
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    }
+
+    #[test]
+    fn stat_fields_are_read_past_the_name() {
+        let pid = std::process::id() as libc::pid_t;
+        // SAFETY: getpgrp can't fail.
+        assert_eq!(process_group(pid), Some(unsafe { libc::getpgrp() }));
+    }
+
+    #[test]
+    fn a_shell_waiting_for_input_is_at_its_prompt() {
+        let shell = job("read line");
+        let pid = shell.id() as libc::pid_t;
+        wait_for(|| process_name(pid) == "sh");
+        assert!(shell_leads(pid, 0));
+        end(shell);
+    }
+
+    #[test]
+    fn a_shell_running_a_command_in_its_group_is_not() {
+        let shell = job("sleep 30; true");
+        let pid = shell.id() as libc::pid_t;
+        wait_for(|| children(pid).next().is_some());
+        assert!(!shell_leads(pid, 0));
+        end(shell);
+    }
+
+    #[test]
+    fn a_program_that_is_not_a_shell_is_not() {
+        let program = job("exec sleep 30");
+        let pid = program.id() as libc::pid_t;
+        wait_for(|| process_name(pid) == "sleep");
+        assert!(!shell_leads(pid, 0));
+        end(program);
+    }
 }

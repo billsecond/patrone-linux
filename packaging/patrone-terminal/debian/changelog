@@ -1,3 +1,13 @@
+patrone-terminal (0.1.4) resolute; urgency=medium
+
+  * Escape clears the command being typed at a shell's prompt, as in
+    Windows' terminals, in a root shell from sudo su too. Programs that use
+    Escape, such as vim, less, htop and mc, still get it. Preferences has a
+    switch for it, "Escape clears the command line", on by default; turn it
+    off to keep Escape for a shell's vi mode or as a stand-in for Alt.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 10:00:00 -0500
+
 patrone-terminal (0.1.3) resolute; urgency=medium
 
   * A see-through background, as in Kali's terminal: the desktop shows
