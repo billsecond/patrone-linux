@@ -74,8 +74,11 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   and thumbnails of PDFs and other files).
 - **Operations** through GIO, so they work on local drives, removable
   drives, network shares and the Recycle Bin: copy, move, delete to the
-  Recycle Bin or for good, restore, rename in place (F2), new folder, new
-  file, shortcuts (symbolic links), compress to ZIP or TAR and extract.
+  Recycle Bin or for good, restore, rename in place (F2; as on Windows,
+  Enter, a click anywhere else or switching windows keeps the name and Esc
+  cancels), new folder, new file, shortcuts (symbolic links), compress to
+  ZIP or TAR (built as a hidden `.NAME.part` and given its name when
+  finished) and extract.
   ZIP and TAR extract here; every other archive Patrone Unpack opens (7z,
   rar, tar.xz, tar.zst, cpio, cab, single files such as `notes.txt.gz`)
   goes to it when it's installed: Extract All… runs

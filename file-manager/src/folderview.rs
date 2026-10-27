@@ -596,19 +596,7 @@ impl FolderView {
             self.pending.take();
             return;
         }
-        let mut positions = Vec::new();
-        for position in 0..self.sort_model.n_items() {
-            if let Some(info) = self
-                .sort_model
-                .item(position)
-                .and_downcast::<gio::FileInfo>()
-                && names
-                    .iter()
-                    .any(|name| *name == info.name().to_string_lossy())
-            {
-                positions.push(position);
-            }
-        }
+        let positions = self.positions_of(&names);
         if positions.len() < names.len() {
             return;
         }
@@ -628,6 +616,17 @@ impl FolderView {
         }
         if first_time {
             self.scroll_to(positions[0], true);
+            // A row that just arrived has no height yet, so GTK stops a row
+            // short of it. Once it's laid out, scroll again.
+            let weak = self.weak();
+            let names = names.clone();
+            glib::timeout_add_local_once(std::time::Duration::from_millis(100), move || {
+                if let Some(view) = weak.upgrade()
+                    && let Some(position) = view.positions_of(&names).first()
+                {
+                    view.scroll_to(*position, false);
+                }
+            });
             if rename {
                 // After GIO's follow-up report, so the editor isn't reset.
                 let weak = self.weak();
@@ -638,6 +637,22 @@ impl FolderView {
                 });
             }
         }
+    }
+
+    /// Where the items with these names are, in view order.
+    fn positions_of(&self, names: &[String]) -> Vec<u32> {
+        (0..self.sort_model.n_items())
+            .filter(|position| {
+                self.sort_model
+                    .item(*position)
+                    .and_downcast::<gio::FileInfo>()
+                    .is_some_and(|info| {
+                        names
+                            .iter()
+                            .any(|name| *name == info.name().to_string_lossy())
+                    })
+            })
+            .collect()
     }
 
     /// Selects the item whose name starts with what was typed.

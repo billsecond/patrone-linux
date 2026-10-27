@@ -237,6 +237,13 @@ pub fn tooltip_text(info: &gio::FileInfo) -> String {
     lines.join("\n")
 }
 
+/// What `begin_rename` hooks onto the window, for `cancel_rename` to undo.
+pub struct RenameHooks {
+    window: glib::WeakRef<gtk::Window>,
+    click: gtk::GestureClick,
+    active: glib::SignalHandlerId,
+}
+
 mod imp {
     use super::*;
 
@@ -258,6 +265,9 @@ mod imp {
         pub editor: RefCell<Option<gtk::Entry>>,
         /// The name of the file being renamed, and where it is in the list.
         pub editing: RefCell<Option<(std::ffi::OsString, u32)>>,
+        /// While renaming: the window's click watcher and its is-active
+        /// handler, which end the edit as Windows does.
+        pub rename_hooks: RefCell<Option<RenameHooks>>,
         pub context: RefCell<Option<Rc<CellContext>>>,
     }
 
@@ -751,6 +761,54 @@ impl FileCell {
             });
         }
         entry.add_controller(focus);
+
+        // As on Windows, a click anywhere else in the window (another item,
+        // empty space, the navigation pane) keeps the name as typed. Those
+        // clicks don't always take the keyboard focus from the editor, so
+        // the window watches for them; switching to another window does
+        // the same.
+        if let Some(window) = self.root().and_downcast::<gtk::Window>() {
+            let click = gtk::GestureClick::new();
+            click.set_button(0);
+            click.set_propagation_phase(gtk::PropagationPhase::Capture);
+            {
+                let finish = finish.clone();
+                let entry_weak = entry.downgrade();
+                click.connect_pressed(move |gesture, _, x, y| {
+                    let (Some(entry), Some(window)) = (entry_weak.upgrade(), gesture.widget())
+                    else {
+                        return;
+                    };
+                    let point = gtk::graphene::Point::new(x as f32, y as f32);
+                    let inside = entry
+                        .compute_bounds(&window)
+                        .is_some_and(|bounds| bounds.contains_point(&point));
+                    if !inside {
+                        // After the click has done its own work.
+                        let text = entry.text().to_string();
+                        let finish = finish.clone();
+                        glib::idle_add_local_once(move || finish(true, text));
+                    }
+                });
+            }
+            window.add_controller(click.clone());
+            let active = {
+                let finish = finish.clone();
+                let entry_weak = entry.downgrade();
+                window.connect_is_active_notify(move |window| {
+                    if !window.is_active()
+                        && let Some(entry) = entry_weak.upgrade()
+                    {
+                        finish(true, entry.text().to_string());
+                    }
+                })
+            };
+            imp.rename_hooks.replace(Some(RenameHooks {
+                window: window.downgrade(),
+                click,
+                active,
+            }));
+        }
     }
 
     pub fn is_renaming(&self) -> bool {
@@ -760,6 +818,12 @@ impl FileCell {
     fn cancel_rename(&self) {
         let imp = self.imp();
         imp.editing.take();
+        if let Some(hooks) = imp.rename_hooks.take()
+            && let Some(window) = hooks.window.upgrade()
+        {
+            window.remove_controller(&hooks.click);
+            window.disconnect(hooks.active);
+        }
         if let Some(entry) = imp.editor.take() {
             entry.unparent();
             if let Some(name) = imp.name.borrow().as_ref() {

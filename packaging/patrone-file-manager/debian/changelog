@@ -1,3 +1,15 @@
+patrone-file-manager (0.2.10) resolute; urgency=medium
+
+  * A name being typed (after Compress, New folder, New file or F2) is kept
+    by a click anywhere else in the window or by switching windows, as on
+    Windows; it had stayed open and highlighted. Esc still cancels.
+  * A new ZIP or TAR file shows its icon, type and size at once: it is built
+    under a hidden .NAME.part and given its name when finished.
+  * A renamed or pasted item that sorts out of view is scrolled fully into
+    view, not one row short.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:40:00 -0500
+
 patrone-file-manager (0.2.9) resolute; urgency=medium
 
   * Text is in the desktop's font, the one Patrone Settings -> Theme -> Font

@@ -167,14 +167,12 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.9** (section 8; the user runs 0.2.7),
+- **Install Patrone File Manager 0.2.10** (section 8; the user runs 0.2.9),
   from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.9_amd64.deb`,
-  then close every File Manager window so the new version starts. GNOME's
-  Files disappears from the app menu and search (Nautilus stays installed
-  for the session and Snap/Flatpak file dialogs), "Show in folder" opens
-  File Manager, Home's Recent columns line up, and Open with no longer
-  picks an app by itself.
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.10_amd64.deb`,
+  then close every File Manager window so the new version starts. A name
+  being typed (after Compress, New folder, New file or F2) is kept by a
+  click anywhere else, and a new ZIP shows its icon and size at once.
 - **Install Patrone Unpack** (section 13), from SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.1_amd64.deb
   ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
@@ -1168,7 +1166,36 @@ with GTK reading a test setting directly (`GDK_DEBUG=no-portals`, keyfile
 `no-portals`, GTK takes the font from the desktop portal, which reads the
 account's real setting.)
 
-Next: the user's verdict on 0.2.9, then the gaps in the README's "Not done
+### 0.2.10 (2026-10-26)
+
+- "When I compress a file, and click exit or out of it with the mouse it
+  should commit. Its still highlighted": the name editor (after Compress,
+  New folder, New file and F2) only closed when it lost keyboard focus, and
+  a click on a file, on empty space or on the title bar doesn't move focus.
+  Now a press anywhere in the window outside the editor, or the window
+  losing focus, keeps the name as typed; Enter keeps it and Esc cancels, as
+  before (`filecell.rs`, `RenameHooks`: a capture-phase click on the window
+  and an `is-active` handler, both removed when the editor closes). The
+  click still does what it was for: clicking another file commits and
+  selects that file. Checked with real clicks in the headless shell:
+  Compress then a click on another file and on the status bar, New folder
+  then a click on the title bar, New text document then another window
+  opening, F2 then a click on another File Manager window, F2 then Esc, F2
+  then Enter.
+- A new archive showed as "Empty document" with a blank icon and 0 bytes:
+  GtkDirectoryList re-reads a file on created, renamed and
+  attribute-changed reports but ignores content changes, and the archive
+  was created empty and filled in place. It's now built as a hidden
+  `.NAME.part` and hard-linked to its name when finished (a link fails
+  rather than replace a file that took the name meanwhile; drives without
+  links get a checked rename), so it appears whole. Copies don't have this
+  problem: GIO sets their times at the end, an attribute change. Files that
+  other programs write in place still show their old size until a refresh.
+- A renamed or pasted item that sorts out of view was scrolled to one row
+  short: a row that has just arrived has no height yet. The view scrolls
+  again 100 ms later (`check_pending`).
+
+Next: the user's verdict on 0.2.10, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 

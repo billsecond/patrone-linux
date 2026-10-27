@@ -112,16 +112,53 @@ pub fn compress(
     progress
         .total
         .store(total_size(&entries), Ordering::Relaxed);
-    // Never replaces an existing file; only a file made here is cleaned up.
-    let file = File::create_new(target)?;
+    // Never replaces an existing file. The archive is built under a hidden
+    // name and appears whole: GTK's folder list ignores writes to a file it
+    // has listed, so an archive filled in place would stay "empty" there.
+    if fs::symlink_metadata(target).is_ok() {
+        return Err(io::ErrorKind::AlreadyExists.into());
+    }
+    let (partial, file) = create_partial(target)?;
     let result = match format {
         Format::Zip => compress_zip(&entries, file, progress),
         Format::TarGz => compress_tar(&entries, file, progress),
-    };
+    }
+    .and_then(|()| publish(&partial, target));
     if result.is_err() {
-        let _ = fs::remove_file(target);
+        let _ = fs::remove_file(&partial);
     }
     result
+}
+
+/// A new hidden file beside `target` to build it in.
+fn create_partial(target: &Path) -> io::Result<(PathBuf, File)> {
+    let name = target.file_name().unwrap_or_default().to_string_lossy();
+    for n in 0..100 {
+        let partial = target.with_file_name(match n {
+            0 => format!(".{name}.part"),
+            _ => format!(".{name}.{n}.part"),
+        });
+        match File::create_new(&partial) {
+            Ok(file) => return Ok((partial, file)),
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => continue,
+            Err(error) => return Err(error),
+        }
+    }
+    Err(io::ErrorKind::AlreadyExists.into())
+}
+
+/// Gives the finished archive its name, unless something took it meanwhile.
+fn publish(partial: &Path, target: &Path) -> io::Result<()> {
+    // A hard link fails rather than replace; drives without links rename.
+    match fs::hard_link(partial, target) {
+        Ok(()) => {
+            let _ = fs::remove_file(partial);
+            Ok(())
+        }
+        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => Err(error),
+        Err(_) if fs::symlink_metadata(target).is_ok() => Err(io::ErrorKind::AlreadyExists.into()),
+        Err(_) => fs::rename(partial, target),
+    }
 }
 
 fn compress_zip(
@@ -421,6 +458,10 @@ mod tests {
                 &Progress::default(),
             )
             .unwrap();
+            assert_eq!(
+                names(&dir),
+                ["Project".as_ref(), archive.file_name().unwrap()]
+            );
             let out = dir.join("out");
             extract(&archive, &out, &Progress::default()).unwrap();
             assert_eq!(
@@ -450,7 +491,28 @@ mod tests {
             .is_err()
         );
         assert_eq!(fs::read_to_string(dir.join("a.zip")).unwrap(), "old");
+        assert_eq!(names(&dir), ["a.txt", "a.zip"]);
         fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn a_name_taken_while_compressing_is_kept() {
+        let dir = scratch("taken");
+        let (partial, _) = create_partial(&dir.join("a.zip")).unwrap();
+        assert_eq!(names(&dir), [".a.zip.part"]);
+        fs::write(dir.join("a.zip"), "old").unwrap();
+        assert!(publish(&partial, &dir.join("a.zip")).is_err());
+        assert_eq!(fs::read_to_string(dir.join("a.zip")).unwrap(), "old");
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    fn names(dir: &Path) -> Vec<std::ffi::OsString> {
+        let mut names: Vec<_> = fs::read_dir(dir)
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect();
+        names.sort();
+        names
     }
 
     #[test]
