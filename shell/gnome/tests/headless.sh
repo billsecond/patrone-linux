@@ -165,8 +165,18 @@ start)
     if [[ $size == none ]]; then
         monitor=()
     fi
+    # With patrone-desktop, the taskbar is one of Ubuntu's session mode's
+    # own extensions, and Ubuntu's GNOME Shell won't load those from the
+    # account's folder, where this shell's copy (the one under test) is:
+    # it would run the installed taskbar instead. Ubuntu's own mode here.
+    mode=/usr/share/gnome-shell/modes/ubuntu.json
+    ubuntu_mode=()
+    if [[ -f $mode.ubuntu ]]; then
+        ubuntu_mode=(--ro-bind "$mode.ubuntu" "$mode")
+    fi
     nohup bwrap --dev-bind / / \
         --bind "$base/empty" /usr/share/gnome-shell/extensions/ding@rastersoft.com \
+        "${ubuntu_mode[@]}" \
         gnome-shell --headless --wayland --no-x11 --mode=ubuntu \
         "${monitor[@]}" --wayland-display "$display" \
         > "$base/shell.log" 2>&1 &

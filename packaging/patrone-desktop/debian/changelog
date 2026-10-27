@@ -1,3 +1,14 @@
+patrone-desktop (0.1.5) resolute; urgency=medium
+
+  * Patrone's taskbar is one of the session's own extensions: Ubuntu's
+    session mode for GNOME Shell (ubuntu.json, moved aside) with the
+    taskbar added, remade whenever gnome-shell-common updates it. GNOME
+    turns off the other extensions after a crash early in a session, and
+    with the taskbar off its own top bar came back; session extensions
+    always load.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 10:05:00 -0500
+
 patrone-desktop (0.1.4) resolute; urgency=medium
 
   * Recommend patrone-software: GNOME Software, with Patrone's picks, in

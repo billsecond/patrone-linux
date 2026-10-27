@@ -1,0 +1,14 @@
+#!/bin/sh
+# GNOME Shell's Ubuntu session mode is moved aside (ubuntu.json.ubuntu) so
+# that postinst can put Patrone's in its place: Ubuntu's, with Patrone's
+# taskbar among the session's own extensions (make-session-mode). postrm
+# puts Ubuntu's back.
+set -e
+
+mode=/usr/share/gnome-shell/modes/ubuntu.json
+
+if [ "$1" = install ] || [ "$1" = upgrade ]; then
+    dpkg-divert --package patrone-desktop --add --rename --divert "$mode.ubuntu" "$mode"
+fi
+
+#DEBHELPER#

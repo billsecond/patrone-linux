@@ -1,0 +1,30 @@
+#!/bin/sh
+# Makes GNOME Shell's Ubuntu session mode Patrone's: Ubuntu's own
+# (/usr/share/gnome-shell/modes/ubuntu.json, which patrone-desktop's preinst
+# moves aside to ubuntu.json.ubuntu) with Patrone's taskbar among the
+# session's own extensions. Those always load: GNOME's safety switch after a
+# crash (disable-user-extensions) only turns the others off, and with the
+# taskbar off GNOME's top bar came back (the user: "I should never see that
+# bar", 2026-10-27). Run by postinst, and again when gnome-shell-common
+# brings a new ubuntu.json (a dpkg trigger on the modes folder).
+set -e
+
+modes=/usr/share/gnome-shell/modes
+ubuntu=$modes/ubuntu.json.ubuntu
+mode=$modes/ubuntu.json
+uuid=patrone-taskbar@patrone-linux
+
+[ -f "$ubuntu" ] || exit 0
+
+sed "s|^\(\s*\"enabledExtensions\": \[\)\$|\1\n        \"$uuid\",|" "$ubuntu" > "$mode.new"
+if ! grep -q "\"$uuid\"" "$mode.new"; then
+    echo "patrone-desktop: Ubuntu's session mode has a new shape; using it as it is" >&2
+    cp "$ubuntu" "$mode.new"
+fi
+if command -v python3 > /dev/null &&
+    ! python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$mode.new" 2> /dev/null; then
+    echo "patrone-desktop: the session mode came out broken; using Ubuntu's as it is" >&2
+    cp "$ubuntu" "$mode.new"
+fi
+chmod 644 "$mode.new"
+mv "$mode.new" "$mode"

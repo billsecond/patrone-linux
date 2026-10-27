@@ -29,4 +29,11 @@ if [ "$1" = configure ]; then
     fi
 fi
 
+# Patrone's session mode, from Ubuntu's (preinst moved it aside), and again
+# whenever gnome-shell-common brings a new one (the modes folder's trigger).
+# It counts from the next sign-in.
+if [ "$1" = configure ] || [ "$1" = triggered ]; then
+    /usr/libexec/patrone-desktop/make-session-mode
+fi
+
 #DEBHELPER#

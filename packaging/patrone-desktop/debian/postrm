@@ -29,4 +29,13 @@ case "$1" in
         ;;
 esac
 
+# Ubuntu's session mode back in its place
+mode=/usr/share/gnome-shell/modes/ubuntu.json
+case "$1" in
+    remove | abort-install | disappear)
+        rm -f "$mode" "$mode.new"
+        dpkg-divert --package patrone-desktop --remove --rename --divert "$mode.ubuntu" "$mode"
+        ;;
+esac
+
 #DEBHELPER#

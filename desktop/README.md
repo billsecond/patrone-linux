@@ -19,6 +19,26 @@ Center.
 | `chrony/patrone-nts.conf` | `/etc/chrony/conf.d/` | `nocerttimecheck 1`: a computer whose clock starts far off can still use NTS (below) |
 | `networkmanager/30-patrone-connectivity.conf` | `/usr/lib/NetworkManager/conf.d/` | NetworkManager's check for Wi-Fi sign-in pages asks GNOME's server (`nmcheck.gnome.org`) in place of `connectivity-check.ubuntu.com`. It comes after Ubuntu's `20-connectivity-ubuntu.conf`, so it wins |
 | `update-manager/patrone.cfg` | `/etc/update-manager/release-upgrades.d/` | `Prompt=never`: nothing offers to upgrade to Ubuntu's next release, or asks `changelogs.ubuntu.com` whether there is one. Patrone moves to a new Ubuntu base itself |
+| `session/make-session-mode` | `/usr/libexec/patrone-desktop/` | Writes `/usr/share/gnome-shell/modes/ubuntu.json`: Ubuntu's session mode (moved aside to `ubuntu.json.ubuntu` by preinst) with Patrone's taskbar among the session's own extensions (below). Run by postinst, and again by a trigger whenever `gnome-shell-common` brings a new one; if Ubuntu's file changes shape, or the result isn't valid JSON, Ubuntu's is used as it is |
+
+### The taskbar is part of the session
+
+For the first minute after GNOME Shell starts, a crash makes GNOME turn
+`disable-user-extensions` on (`extensionSystem.js`: the
+`gnome-shell-disable-extensions` file in the runtime folder), which turns off
+every extension but the session mode's own. Patrone's taskbar was one of the
+others, so after the crashes of 2026-10-27 GNOME's top bar came back, and
+stayed (the user: "I should never see that bar"). As one of the session's
+own extensions (0.1.5) it always loads. The other side of that: a taskbar
+that crashed GNOME Shell at sign-in would keep doing it, with no safety
+switch. `disabled-extensions` still turns it off, over SSH if need be:
+`gsettings set org.gnome.shell disabled-extensions "['patrone-taskbar@patrone-linux']"`
+in the account's session.
+
+Ubuntu's GNOME Shell doesn't load a session-mode extension from an account's
+own folder, so a copy installed there (to try unreleased changes) is ignored:
+`shell/gnome/tests/headless.sh` mounts Ubuntu's own mode file in its
+throwaway shell so that its copy runs.
 
 ### The clock
 
