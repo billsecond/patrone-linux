@@ -3,7 +3,9 @@
 `patrone-desktop` (`packaging/patrone-desktop`) is the package that makes an
 Ubuntu install Patrone's desktop. It depends on Ubuntu's desktop
 (`ubuntu-desktop-minimal`) and `patrone-branding`, recommends Patrone's apps,
-and leaves out everything that reports to Canonical.
+and leaves out everything that reports to Canonical. It also recommends a
+few tools everyone gets (the user asked for them, 2026-10-26): `fastfetch`,
+`nano` and `vim` (Ubuntu installs only `vim-tiny`).
 
 | File | Installed as | What it does |
 | --- | --- | --- |

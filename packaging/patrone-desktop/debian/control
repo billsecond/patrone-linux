@@ -11,6 +11,9 @@ Package: patrone-desktop
 Architecture: all
 Depends: ${misc:Depends}, patrone-branding, ubuntu-desktop-minimal
 Recommends: apport,
+            fastfetch,
+            nano,
+            vim,
             patrone-default-apps,
             patrone-file-manager,
             patrone-gnome-taskbar,
@@ -32,3 +35,6 @@ Description: Patrone Linux's desktop
  The clock is set from NTS servers run by Cloudflare, Netnod, PTB and SIDN
  Labs, NetworkManager checks for Wi-Fi sign-in pages with GNOME's server, and
  nothing offers to upgrade to Ubuntu's next release.
+ .
+ It also brings fastfetch (system information, in Patrone's colors), nano
+ and the full vim.

@@ -145,7 +145,14 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    system-wide connections, as Ubuntu allows), shutting down, restarting
    and sleeping, and mounting drives. It asks logind for the session's type,
    so SSH logins and other text sessions keep the defaults, as does every
-   other action.
+   other action. GNOME 50 runs the desktop's shell and services as units of
+   the account's own service manager (`org.gnome.Shell@ubuntu.service`, in
+   its `session.slice`), outside the login session, so polkit gives them no
+   session at all and, until 0.4.4, the rule never matched them: the Wired
+   menu still wouldn't open. A process with no session now counts when its
+   cgroup is in the account's own `session.slice` and the account's display
+   session is a desktop as above. (Another of the account's processes could
+   move itself there, but only one the same account already runs.)
 
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's

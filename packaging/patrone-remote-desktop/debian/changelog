@@ -1,3 +1,14 @@
+patrone-remote-desktop (0.4.4) resolute; urgency=medium
+
+  * The quick settings' Wired menu opens, and shutting down asks no
+    password, on desktops GNOME 50 runs: their shell runs as a unit of the
+    account's own service manager, outside the login session, so polkit
+    gave it no session and the polkit rule never matched. A process with
+    no session now counts when it's in the account's session.slice and the
+    account's display session is a desktop with no seat.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:55:00 -0500
+
 patrone-remote-desktop (0.4.3) resolute; urgency=medium
 
   * A polkit rule (45-patrone-desktops.rules) that gives Patrone's desktops,

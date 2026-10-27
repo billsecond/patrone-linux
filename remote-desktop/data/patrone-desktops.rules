@@ -40,13 +40,44 @@ var patroneDesktopAdminActions = [
 
 // A graphical session (Wayland or X11) with no seat, active: one of
 // Patrone's desktops
-function patroneIsDesktop(subject) {
-    if (subject.local || !subject.active || !subject.session || subject.seat)
-        return false;
+function patroneSessionIsDesktop(session) {
     try {
-        var type = polkit.spawn(["/usr/bin/loginctl", "show-session",
-            subject.session, "--property=Type", "--value"]).trim();
-        return type === "wayland" || type === "x11";
+        var lines = polkit.spawn(["/usr/bin/loginctl", "show-session", session,
+            "--property=Type", "--property=Seat", "--property=Active"]).split("\n");
+        var props = {};
+        for (var i = 0; i < lines.length; i++) {
+            var at = lines[i].indexOf("=");
+            if (at > 0)
+                props[lines[i].slice(0, at)] = lines[i].slice(at + 1).trim();
+        }
+        return (props.Type === "wayland" || props.Type === "x11") &&
+            !props.Seat && props.Active === "yes";
+    } catch (e) {
+        return false;
+    }
+}
+
+function patroneIsDesktop(subject) {
+    if (subject.local)
+        return false;
+    if (subject.session)
+        return subject.active && !subject.seat && patroneSessionIsDesktop(subject.session);
+
+    // GNOME 50 runs the desktop's shell and services as units of the
+    // account's own service manager (org.gnome.Shell@ubuntu.service, in its
+    // session.slice), outside the login session, so polkit gives them no
+    // session at all and the rule above never matched: the quick settings'
+    // Wired menu still wouldn't open (2026-10-26). For a process with no
+    // session, one of the account's desktop services, in its session.slice,
+    // counts when the account's display session is a desktop as above.
+    try {
+        var cgroup = polkit.spawn(["/usr/bin/cat", "/proc/" + subject.pid + "/cgroup"]);
+        var uid = polkit.spawn(["/usr/bin/id", "-u", subject.user]).trim();
+        if (cgroup.indexOf("/user@" + uid + ".service/session.slice/") < 0)
+            return false;
+        var display = polkit.spawn(["/usr/bin/loginctl", "show-user", subject.user,
+            "--property=Display", "--value"]).trim();
+        return display !== "" && patroneSessionIsDesktop(display);
     } catch (e) {
         return false;
     }
