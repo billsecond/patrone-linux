@@ -73,15 +73,17 @@ Done:
 
 Waiting on the user:
 
-- **Install File Manager 0.3.1 and taskbar 0.4.1: File Manager draws the
-  desktop and the bubble** (the user, 2026-10-27: "The desktop and the
-  roll out menu must be an extension of the file explorer app, while
-  supporting the desktop and all it can do"; after trying 0.3.12's bubble:
-  "The icons are all different, and I can't drag and drop them around";
-  sections 7 and 8; taskbar 0.4.1 is 0.4.0's desktop hosting plus
-  Software in Start's Recommended), from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.3.1_amd64.deb
-  ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.1_all.deb`,
+- **Install taskbar 0.4.3: File Manager draws the desktop and the
+  bubble** (the user, 2026-10-27: "The desktop and the roll out menu must
+  be an extension of the file explorer app, while supporting the desktop
+  and all it can do"; after trying 0.3.12's bubble: "The icons are all
+  different, and I can't drag and drop them around"; sections 7 and 8).
+  The VM has File Manager 0.3.1 and taskbar 0.4.2 (whose pill froze the
+  desktop with the bin off it until 0.4.2's fix, and whose bubble then
+  opened without the bin); 0.4.3 puts the bin back on the bubble's edge
+  and stops the bubble's checks outliving a screen lock. From SSH or a
+  terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.3_all.deb`,
   then sign out from inside the desktop and back in. Ubuntu's desktop
   icons go (the taskbar turns them off); the bubble and, with it off
   (Patrone Settings → Desktop), the desktop itself show File Manager's
@@ -106,8 +108,8 @@ Waiting on the user:
 
 - **The desktop bubble** (the user's design, 2026-10-26;
   `shell/gnome/README.md`, "The desktop bubble"): in the first step's
-  packages (taskbar 0.4.1; the user has 0.3.12, whose bubble the taskbar
-  still drew itself, with its own icons and no dragging). The user
+  packages (taskbar 0.4.3; before 0.4.0 the taskbar drew the bubble
+  itself, with its own icons and no dragging). The user
   installed 0.3.10 with Settings 0.3.5 and GNOME Settings patrone7 on
   2026-10-27, but at sign-in the taskbar failed (the desktop has no screen
   for a moment over Remote Desktop; README, "The Recycle Bin on the

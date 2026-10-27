@@ -262,7 +262,12 @@ On for every account; Patrone Settings → Desktop → Desktop files, or the
   edge, half in the bubble and half out, and it's there even while it's
   off the desktop (from the start of the bubble's opening, since it has no
   corner to come from); its menu's last item then reads **Show on
-  desktop** (the user's asks, 2026-10-27).
+  desktop** (the user's asks, 2026-10-27). Off the desktop it has never
+  been drawn, and its place reads as NaN: 0.4.0 to 0.4.2 started it from
+  there and put it nowhere, so the bubble opened without it (0.4.3).
+  Turned off (as at every screen lock), the bubble stops taking File
+  Manager's desktop's calls before that desktop ends, or the calls queued
+  checks on its removed pill (0.4.3).
 - **The bubble opens over any window**, like a menu (the user's choice:
   only the pill needs the desktop showing). Its window is kept above the
   others (`make_above`) and gets the keyboard while it's open; the pill and

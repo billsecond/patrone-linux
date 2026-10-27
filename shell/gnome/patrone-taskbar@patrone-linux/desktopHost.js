@@ -128,10 +128,13 @@ export class DesktopHost {
      * 'bubble-window' (the bubble's window came or went).
      *
      * @param {string} name - what
-     * @param {Function} callback - called with no arguments
+     * @param {Function|null} callback - called with no arguments; null stops
      */
     on(name, callback) {
-        this._listeners.set(name, callback);
+        if (callback)
+            this._listeners.set(name, callback);
+        else
+            this._listeners.delete(name);
     }
 
     _emit(name) {

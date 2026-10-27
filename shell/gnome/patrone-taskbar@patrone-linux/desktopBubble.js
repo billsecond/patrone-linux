@@ -158,6 +158,13 @@ export class DesktopBubble {
     }
 
     destroy() {
+        // Nothing more is queued from here on, and File Manager's desktop
+        // (ended right after this, when the taskbar is turned off, as GNOME
+        // does at every screen lock) no longer calls in: its last calls
+        // queued checks that ran on the destroyed pill and layer.
+        this._destroyed = true;
+        for (const name of ['open', 'close', 'shape', 'bubble-window'])
+            this._host.on(name, null);
         this.close(false);
         this._stopIntroduction();
         for (const id of [this._tipId, this._dragOpenId]) {
@@ -451,9 +458,10 @@ export class DesktopBubble {
             const spotX = area.x + (shape.bin[0] + width / 2) * grown - width / 2;
             const spotY = middle + (shape.bin[1] + height / 2 - shape.b) * grown - height / 2;
             const along = this._binOnEdge ? 1 : Math.min(Math.max(grown, 0), 1);
-            this._bin.hold(this._layer,
-                Math.round(this._binFrom[0] + (spotX - this._binFrom[0]) * along),
-                Math.round(this._binFrom[1] + (spotY - this._binFrom[1]) * along));
+            const x = this._binFrom[0] + (spotX - this._binFrom[0]) * along;
+            const y = this._binFrom[1] + (spotY - this._binFrom[1]) * along;
+            if (Number.isFinite(x) && Number.isFinite(y))
+                this._bin.hold(this._layer, Math.round(x), Math.round(y));
         }
     }
 
@@ -463,10 +471,16 @@ export class DesktopBubble {
         if (!this._bin?.hold || !this._host.shape?.bin)
             return;
         // Off the desktop, it has no corner to come from: it rides the edge
-        // from the start
+        // from the start. (It has never been drawn then, and its place reads
+        // as NaN: taken as where it came from, that put it nowhere, and the
+        // bubble opened without it, taskbar 0.4.2.)
         this._binOnEdge = !this._bin.actor.visible;
-        this._binFrom = this._bin.actor.get_transformed_position();
-        this._bin.hold(this._layer, ...this._binFrom.map(Math.round));
+        const from = this._bin.actor.get_transformed_position();
+        this._binFrom = from.every(Number.isFinite) ? from : [0, 0];
+        if (this._binOnEdge)
+            this._follow();
+        else
+            this._bin.hold(this._layer, ...this._binFrom.map(Math.round));
     }
 
     _releaseBin() {
@@ -494,7 +508,7 @@ export class DesktopBubble {
 
     _queueChecks() {
         this._queueCoverCheck();
-        if (this._desktopsLater)
+        if (this._desktopsLater || this._destroyed)
             return;
         this._desktopsLater = global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, () => {
             this._desktopsLater = 0;
@@ -548,7 +562,7 @@ export class DesktopBubble {
     }
 
     _queueCoverCheck() {
-        if (this._coverLater)
+        if (this._coverLater || this._destroyed)
             return;
         this._coverLater = global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, () => {
             this._coverLater = 0;

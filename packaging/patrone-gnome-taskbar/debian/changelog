@@ -1,3 +1,14 @@
+patrone-gnome-taskbar (0.4.3) resolute; urgency=medium
+
+  * With the Recycle Bin off the desktop, it rides on the desktop bubble's
+    edge again when the bubble opens, and takes drops there. It had never
+    been drawn, so its place read as nothing, and it was put nowhere.
+  * Locking the screen (which turns the taskbar off and on) no longer
+    leaves the bubble's checks running on its removed pill: File Manager's
+    desktop stops calling into the bubble once it's going.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 10:00:00 -0500
+
 patrone-gnome-taskbar (0.4.2) resolute; urgency=medium
 
   * Fix the desktop freezing, then GNOME Shell crashing and ending the
