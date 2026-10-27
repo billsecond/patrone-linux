@@ -93,18 +93,22 @@ Waiting on the user:
   Shift (move); hold files from File Manager over the pill to open the
   bubble. 0.3.1 has 0.2.10's fixes too. Checked only in a throwaway shell.
 
-- **Where the Craft apps get published, so GNOME Software can show them.**
-  The user's list (2026-10-27) is in `software/org.patrone.Software.Featured.xml`
-  (`patrone-software` 0.1.1): PhotoCraft, PdfCraft, FilmCraft, WordCraft,
-  LightCraft and the rest of storytold's Crafting Apps, the Craft Launcher,
-  ScreenGrabCraft and MailCraft. None is in a catalog GNOME Software reads
-  (`software/README.md`, "The Craft apps"), so for now the well-known apps
-  fill Explore. Ask the user: Flathub (each project submits), or a Flatpak
-  repository of the Craft apps (built from their release `.flatpak` files,
-  on GitHub Pages) that `patrone-software` sets up for every account. They
-  installed 0.1.0 (App Center removed, the placeholder showing with their
-  Flathub); 0.1.1 is `sudo apt install
-  ~/src/patrone-linux/out/patrone-software_0.1.1_all.deb`.
+- **The Craft apps show and install in Patrone Software** (done
+  2026-10-27, `patrone-software` 0.1.4, installed; the user: "Looks
+  great"). They come from Patrone's app index,
+  [billsecond/patrone-app-index](https://github.com/billsecond/patrone-app-index)
+  (a separate public repository, on GitHub Pages): only each app's listing
+  and a link to the tarball on its own GitHub release, which Flatpak
+  downloads at install time; a daily GitHub Actions job follows new
+  releases. The user's terms: host only the index, never apps or
+  installers, nothing to maintain. Don't propose Flathub submissions or
+  hosting the apps (an earlier attempt at both went against those terms).
+  Checked: a system-wide install of MailCraft from the published, signed
+  index ran (`mailcraft-cli --version`), and Patrone Software showed
+  PdfCraft's page with Install. Its signing key's backup is on the VM in
+  `~/.local/share/patrone-app-index/gnupg`. ScreenGrabCraft (private
+  repository) and AniCraft (no releases) aren't in it; see
+  `software/README.md`, "The Craft apps".
 
 - **The desktop bubble** (the user's design, 2026-10-26;
   `shell/gnome/README.md`, "The desktop bubble"): in the first step's
