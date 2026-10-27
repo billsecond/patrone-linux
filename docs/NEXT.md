@@ -86,14 +86,19 @@ Waiting on the user:
   turns it off. Checked only in the throwaway shell, with a stand-in for the
   desktop icons' window: never with the real desktop icons extension.
 
-- **The terminal at sign-in, over the wallpaper's logo** (the user's ask,
-  2026-10-26; `shell/gnome/README.md`, "The terminal at sign-in"): install
-  `~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.9_all.deb` in place of
-  0.3.8 in the step above (it has the desktop bubble too), then sign out
-  and back in. Patrone Terminal should open over the logo, between the
-  `>_` prompt at the bottom left and the dashed line at the top right.
-  Checked only in a throwaway shell at four screen sizes, never at a real
-  sign-in.
+- **The terminal at sign-in, over the wallpaper's logo or centered** (the
+  user's asks, 2026-10-26; `shell/gnome/README.md`, "The terminal at
+  sign-in"): install these in place of the step above's packages (they
+  have the desktop bubble too):
+  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.10_all.deb
+  ~/src/patrone-linux/out/patrone-settings_0.3.5_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone7_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone7_all.deb`,
+  then sign out and back in. Patrone Terminal should open over the logo,
+  between the `>_` prompt at the bottom left and the dashed line at the top
+  right. Patrone Settings → Desktop → Terminal at sign-in (or GNOME
+  Settings → Patrone) picks Centered instead, from the next sign-in.
+  Checked only in a throwaway shell, never at a real sign-in.
 
 - **Install Patrone Task Manager 0.2.0** (section 15). The user has 0.1.0
   and `patrone-desktop` 0.1.2 installed already (Resources is gone):

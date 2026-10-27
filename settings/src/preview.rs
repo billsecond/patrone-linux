@@ -696,6 +696,49 @@ pub fn desktop_files(cr: &Context, w: f64, h: f64, place: &str) {
     }
 }
 
+/// A Patrone Terminal window, see-through: its title bar, then a prompt.
+fn terminal_window(cr: &Context, x: f64, y: f64, w: f64, h: f64) {
+    let _ = cr.save();
+    rounded(cr, x, y, w, h, 4.0);
+    cr.clip();
+    // More see-through than the terminal's own, so the logo shows at this size
+    color(cr, 0x0d0f14, 0.6);
+    let _ = cr.paint();
+    let bar = (h * 0.13).max(7.0);
+    color(cr, 0x26282e, 0.97);
+    cr.rectangle(x, y, w, bar);
+    let _ = cr.fill();
+    let line = (h * 0.035).max(1.5);
+    fill_rounded(cr, x + w * 0.04, y + bar + line * 2.0, w * 0.3, line, line / 2.0, 0x5aa0ff, 0.9);
+    fill_rounded(cr, x + w * 0.04, y + bar + line * 4.0, w * 0.06, line, line / 2.0, 0x5aa0ff, 0.9);
+    let _ = cr.restore();
+}
+
+/// Where the terminal opened at sign-in goes: large, over the wallpaper's
+/// logo, the ">_" prompt at the bottom left and the dashed line at the top
+/// right showing beside it, or at its own size in the middle.
+pub fn sign_in_terminal(cr: &Context, w: f64, h: f64, place: &str) {
+    desktop(cr, w, h);
+    let top = plain_taskbar(cr, w, h);
+    // The wallpaper's logo, its P over the wordmark and the rule
+    let (cx, cy, s) = (w / 2.0, top * 0.5, top * 0.3);
+    start_mark(cr, cx - s / 2.0, cy - s * 0.75, s, 0x3d8eff);
+    fill_rounded(cr, cx - w * 0.18, cy + s * 0.4, w * 0.36, s * 0.2, s * 0.05, 0xffffff, 0.95);
+    fill_rounded(cr, cx - w * 0.18, cy + s * 0.75, w * 0.36, s * 0.07, s * 0.03, 0x3e91de, 0.95);
+    text(cr, w * 0.077, h * 0.77, top * 0.09, 0x9ec5ff, FontWeight::Bold, FontSlant::Normal, ">_");
+    for i in 0..5 {
+        fill_rounded(cr, w * (0.852 + f64::from(i) * 0.016), h * 0.175, w * 0.011, 1.4, 0.7, 0x3e91de, 0.9);
+    }
+    // In the picture's fractions, as the taskbar places it (startupWindows.js);
+    // a terminal's own size is about half a 1920 by 1080 screen
+    if place == "logo" {
+        terminal_window(cr, w * 0.114, h * 0.086, w * 0.719, h * 0.74);
+    } else {
+        let (tw, th) = (w * 0.48, top * 0.64);
+        terminal_window(cr, (w - tw) / 2.0, (top - th) / 2.0, tw, th);
+    }
+}
+
 /// The Recycle Bin docked to the desktop's corner, or a desktop without it.
 pub fn recycle_bin(cr: &Context, w: f64, h: f64, shown: &str) {
     desktop(cr, w, h);

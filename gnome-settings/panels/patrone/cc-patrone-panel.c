@@ -1,9 +1,9 @@
 /* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
- * button icon), the desktop (its files in a bubble or across it, and the
- * Recycle Bin), the title bar buttons (top right or top left, and their
- * style), the theme and the desktop's font (Patrone Sans or Noto Sans,
+ * button icon), the desktop (its files in a bubble or across it, the
+ * Recycle Bin, and where the terminal opens at sign-in), the title bar
+ * buttons (top right or top left, and their style), the theme and the desktop's font (Patrone Sans or Noto Sans,
  * which the page sets itself). The same settings as Patrone Settings' window,
  * which this page leans on: its pictures (/usr/share/patrone/settings/
  * previews) and, to apply a theme or button style, "patrone-settings
@@ -97,6 +97,11 @@ static const Choice desktop_files[] = {
 static const Choice recycle_bin[] = {
   { "shown", N_("On the Desktop"), N_("Docked to a corner; drop files on it to delete them") },
   { "hidden", N_("Hidden"), N_("Still in File Manager's navigation pane") },
+};
+
+static const Choice sign_in_terminal[] = {
+  { "logo", N_("Over the Logo"), N_("Large, over the wallpaper's logo, at any screen size") },
+  { "center", N_("Centered"), N_("At its own size, in the middle of the screen") },
 };
 
 static const Choice sides[] = {
@@ -674,6 +679,15 @@ cc_patrone_panel_init (CcPatronePanel *self)
           group = add_group (page, _("Recycle Bin"), NULL);
           add_choices (self, group, self->taskbar, "show-recycle-bin", read_boolean, write_boolean,
                        recycle_bin, G_N_ELEMENTS (recycle_bin), "bin", 2);
+        }
+
+      if (has_key (self->taskbar, "sign-in-terminal"))
+        {
+          group = add_group (page, _("Terminal at Sign-In"),
+                             _("Patrone Terminal opens each time you sign in. Once you move it, "
+                               "it stays where you put it. A new choice is for the next sign-in."));
+          add_choices (self, group, self->taskbar, "sign-in-terminal", read_string, write_string,
+                       sign_in_terminal, G_N_ELEMENTS (sign_in_terminal), "terminal", 2);
         }
     }
   else

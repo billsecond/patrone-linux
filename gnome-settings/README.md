@@ -45,7 +45,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone5_amd64.deb ./out/gnome-control-center-data_*patrone5_all.deb
+sudo apt install ./out/gnome-control-center_*patrone7_amd64.deb ./out/gnome-control-center-data_*patrone7_all.deb
 ```
 
 ## How it was checked
@@ -63,7 +63,7 @@ elsewhere moved the page's pick. Privacy & Security had no Telemetry row.
 ## Keeping up with Ubuntu
 
 The version is Ubuntu's with `patrone` and a revision added
-(`1:50.3-0ubuntu0.2patrone5`), which apt prefers to the same Ubuntu
+(`1:50.3-0ubuntu0.2patrone7`), which apt prefers to the same Ubuntu
 version. The revision is at the top of `build.sh`: one more with each
 change to the page or the patches, so a new build installs as an upgrade. When Ubuntu updates Settings
 (a newer `0ubuntuN`), apt installs Ubuntu's in its place and the Patrone

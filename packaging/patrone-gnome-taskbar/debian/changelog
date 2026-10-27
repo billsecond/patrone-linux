@@ -1,3 +1,13 @@
+patrone-gnome-taskbar (0.3.10) resolute; urgency=medium
+
+  * The terminal opened at sign-in goes over the wallpaper's logo or, at
+    its own size, in the middle of the screen: the sign-in-terminal
+    setting (logo or center), which Patrone Settings' Desktop page and
+    GNOME Settings' Patrone page set. It replaces 0.3.9's
+    place-sign-in-terminal.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 20:35:00 -0500
+
 patrone-gnome-taskbar (0.3.9) resolute; urgency=medium
 
   * The terminal opened at sign-in goes over the wallpaper's logo, between

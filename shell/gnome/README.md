@@ -243,9 +243,13 @@ Patrone Terminal opens at every sign-in (`patrone-terminal`'s autostart
 entry), and the taskbar puts that window over the wallpaper's logo, which
 shows through its see-through background, as the user arranged it
 (2026-10-26: "when the GUI loads ... the terminal loads up in this position
-and size making sure its sensitive to the logo backdrop placement"). On
-Wayland an app can't place its own window, so the shell does it
-(`startupWindows.js`).
+and size making sure its sensitive to the logo backdrop placement"). Or,
+the user's other choice, at its own size in the middle of the screen
+("or it loads normal size, dead center"): the `sign-in-terminal` setting,
+`logo` or `center`, which Patrone Settings' Desktop page and GNOME
+Settings' Patrone page set ("Terminal at sign-in", Over the logo or
+Centered). On Wayland an app can't place its own window, so the shell does
+it (`startupWindows.js`).
 
 - The place is set in the wallpaper's picture, not the screen: over the
   logo, from just right of the `>_` prompt at the bottom left to just left
@@ -257,23 +261,27 @@ Wayland an app can't place its own window, so the shell does it
   follows the logo at any size, and keeps 16 pixels inside the free area.
   Patrone Badge, with its logo at the bottom right, gets a terminal that
   stops above it; another picture, the same fractions of the screen.
+- Centered keeps the terminal's own size (920×659 in the throwaway shell)
+  and puts it in the middle of the free area, above the taskbar. GNOME often does the same for a first window, but not with
+  other windows already open.
 - Only the first Patrone Terminal window within 30 seconds of the desktop
   starting, and only at sign-in: GNOME Shell turns extensions off on the
-  lock screen and on again after, and then it does nothing.
-- Until the user moves, resizes, maximizes or tiles it, it follows the
-  logo when the free area changes (a Remote Desktop window resized, the
-  taskbar's size or layout). GNOME itself nudges windows out of a new
-  taskbar's way just before it says the free area changed, so a move just
-  before that isn't counted as the user's.
-- `place-sign-in-terminal` off leaves it to GNOME.
+  lock screen and on again after, and then it does nothing. The choice is
+  read as the window shows, so a new one is for the next sign-in.
+- Until the user moves, resizes, maximizes or tiles it, it keeps its place
+  (over the logo, or in the middle) when the free area changes (a Remote
+  Desktop window resized, the taskbar's size or layout). GNOME itself
+  nudges windows out of a new taskbar's way just before it says the free
+  area changed, so a move just before that isn't counted as the user's.
 
 Checked in the throwaway shell (2026-10-26, a private copy of
 `tests/headless.sh`, the dark style, the 8K wallpaper) at 1920×1080,
 1536×988, 1280×1024 and 2560×1080; following the taskbar to the top and
 back; a title bar drag, a move by a script and maximizing, each left
-alone after; a second window left to GNOME; the setting off; and the
-extension turned off and on again, as after the lock screen. Not tried at
-a real sign-in.
+alone after; a second window left to GNOME; and the extension turned off
+and on again, as after the lock screen. Centered at 1920×1080, and
+Patrone Settings' Desktop page run in that shell: both cards, and clicking
+one set the setting. Not tried at a real sign-in.
 
 ### Settings
 
@@ -297,7 +305,7 @@ the taskbar follows when it's installed):
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
 | `art-app` | `''` | The art slot's app; empty for ArtCraft, else the first drawing app installed |
 | `web-search-url` | `'https://www.google.com/search?q=%s'` | Where web searches go |
-| `place-sign-in-terminal` | `true` | Put the terminal opened at sign-in over the wallpaper's logo |
+| `sign-in-terminal` | `'logo'` | Where the terminal opened at sign-in goes: `logo` (over the wallpaper's logo) or `center` (its own size, in the middle) |
 
 ## Decisions (with the user, 2026-10-26)
 

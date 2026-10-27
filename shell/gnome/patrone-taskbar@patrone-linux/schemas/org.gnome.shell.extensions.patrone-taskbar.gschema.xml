@@ -170,14 +170,20 @@
         browser.
       </description>
     </key>
-    <key name="place-sign-in-terminal" type="b">
-      <default>true</default>
-      <summary>Put the terminal opened at sign-in over the wallpaper's logo</summary>
+    <key name="sign-in-terminal" type="s">
+      <choices>
+        <choice value="logo"/>
+        <choice value="center"/>
+      </choices>
+      <default>'logo'</default>
+      <summary>Where the terminal opened at sign-in goes</summary>
       <description>
-        Patrone Terminal's first window after signing in goes over the logo
-        of Patrone's wallpaper, between the pictures in its corners, at any
-        screen size (on another wallpaper, the same part of the screen). It's
-        left alone once moved, resized or maximized. Off, GNOME places it.
+        Patrone Terminal's first window after signing in. "logo": over the
+        logo of Patrone's wallpaper, between the pictures in its corners, at
+        any screen size (on another wallpaper, the same part of the screen).
+        "center": at its own size, in the middle of the screen above the
+        taskbar. It's left alone once moved, resized or maximized. Patrone
+        Settings sets it, on its Desktop page.
       </description>
     </key>
   </schema>

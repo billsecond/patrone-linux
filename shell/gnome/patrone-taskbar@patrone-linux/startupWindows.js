@@ -1,11 +1,13 @@
 // Windows opened at sign-in, put in place. Patrone Terminal, which
 // patrone-terminal's autostart entry opens at every sign-in, goes over the
 // wallpaper's logo, which shows through its see-through background, the
-// way the user arranged it (2026-10-26). On Wayland an app can't place its
-// own window, so the shell does it. Only the first terminal window opened
-// soon after signing in is placed, and it's left alone once the user moves,
-// resizes, maximizes or tiles it. Until then it follows the logo when the
-// screen's size changes (a Remote Desktop window resized).
+// way the user arranged it (2026-10-26), or with the sign-in-terminal
+// setting at "center", at its own size in the middle of the screen (the
+// user: "or it loads normal size, dead center"). On Wayland an app can't
+// place its own window, so the shell does it. Only the first terminal
+// window opened soon after signing in is placed, and it's left alone once
+// the user moves, resizes, maximizes or tiles it. Until then it keeps its
+// place when the screen's size changes (a Remote Desktop window resized).
 
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
@@ -137,10 +139,10 @@ export class StartupWindows {
         if ((window.get_gtk_application_id() ?? window.get_wm_class()) !== TERMINAL_ID)
             return;
         this._stopWaiting();
-        if (!this._settings.get_boolean('place-sign-in-terminal'))
-            return;
 
         this._window = window;
+        // Read once: a new choice is for the next sign-in
+        this._where = this._settings.get_string('sign-in-terminal');
         window.connectObject(
             'position-changed', () => this._onMoved(),
             'unmanaged', () => this._leave(), this);
@@ -180,8 +182,7 @@ export class StartupWindows {
         // changed. A move before that was the user's, Ubuntu's tiling or
         // the like, as are maximizing and full screen.
         if ((this._movedAt && GLib.get_monotonic_time() - this._movedAt > GNOME_MOVE_TIME) ||
-            window.get_maximize_flags() || window.is_fullscreen() ||
-            !this._settings.get_boolean('place-sign-in-terminal')) {
+            window.get_maximize_flags() || window.is_fullscreen()) {
             this._leave();
             return;
         }
@@ -195,25 +196,42 @@ export class StartupWindows {
         if (!monitor)
             return;
         const workArea = Main.layoutManager.getWorkAreaForMonitor(index);
-
-        const background = new Gio.Settings({schema_id: BACKGROUND_SCHEMA});
-        const dark = new Gio.Settings({schema_id: INTERFACE_SCHEMA})
-            .get_string('color-scheme') === 'prefer-dark';
-        const uri = (dark && background.get_string('picture-uri-dark')) ||
-            background.get_string('picture-uri');
-        const name = GLib.path_get_basename(uri).replace(/\.[^.]*$/, '');
-        // Another picture: the same fractions of the screen
-        const box = PATRONE_WALLPAPER.test(name)
-            ? pictureBox(monitor, background.get_string('picture-options'))
-            : monitor;
-        const f = FRAMES[name] ?? FRAME;
-
-        const x0 = Math.round(Math.max(box.x + box.width * f.x0, workArea.x + MARGIN));
-        const y0 = Math.round(Math.max(box.y + box.height * f.y0, workArea.y + MARGIN));
-        const x1 = Math.round(Math.min(box.x + box.width * f.x1, workArea.x + workArea.width - MARGIN));
-        const y1 = Math.round(Math.min(box.y + box.height * f.y1, workArea.y + workArea.height - MARGIN));
-        this._placed = {x: x0, y: y0};
+        const {x, y, width, height} = this._where === 'center'
+            ? centered(window.get_frame_rect(), workArea)
+            : overLogo(monitor, workArea);
+        this._placed = {x, y};
         this._movedAt = 0;
-        window.move_resize_frame(false, x0, y0, x1 - x0, y1 - y0);
+        window.move_resize_frame(false, x, y, width, height);
     }
+}
+
+/** Over the wallpaper's logo, inside the free area. */
+function overLogo(monitor, workArea) {
+    const background = new Gio.Settings({schema_id: BACKGROUND_SCHEMA});
+    const dark = new Gio.Settings({schema_id: INTERFACE_SCHEMA})
+        .get_string('color-scheme') === 'prefer-dark';
+    const uri = (dark && background.get_string('picture-uri-dark')) ||
+        background.get_string('picture-uri');
+    const name = GLib.path_get_basename(uri).replace(/\.[^.]*$/, '');
+    // Another picture: the same fractions of the screen
+    const box = PATRONE_WALLPAPER.test(name)
+        ? pictureBox(monitor, background.get_string('picture-options'))
+        : monitor;
+    const f = FRAMES[name] ?? FRAME;
+
+    const x0 = Math.round(Math.max(box.x + box.width * f.x0, workArea.x + MARGIN));
+    const y0 = Math.round(Math.max(box.y + box.height * f.y0, workArea.y + MARGIN));
+    const x1 = Math.round(Math.min(box.x + box.width * f.x1, workArea.x + workArea.width - MARGIN));
+    const y1 = Math.round(Math.min(box.y + box.height * f.y1, workArea.y + workArea.height - MARGIN));
+    return {x: x0, y: y0, width: x1 - x0, height: y1 - y0};
+}
+
+/** At its own size, in the middle of the free area (above the taskbar). */
+function centered(frame, workArea) {
+    return {
+        x: Math.round(workArea.x + Math.max(0, workArea.width - frame.width) / 2),
+        y: Math.round(workArea.y + Math.max(0, workArea.height - frame.height) / 2),
+        width: frame.width,
+        height: frame.height,
+    };
 }

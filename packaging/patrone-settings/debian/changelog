@@ -1,3 +1,12 @@
+patrone-settings (0.3.5) resolute; urgency=medium
+
+  * Desktop page: Terminal at sign-in, Over the logo (large, over the
+    wallpaper's logo) or Centered (at its own size, in the middle of the
+    screen), with pictures. It needs patrone-gnome-taskbar 0.3.10; with an
+    older taskbar the choice isn't shown.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 20:35:00 -0500
+
 patrone-settings (0.3.4) resolute; urgency=medium
 
   * A Desktop page: the desktop's files in a bubble at the screen's left

@@ -1,7 +1,7 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
-//! Desktop (the desktop's files in a bubble or across the desktop, and the
-//! Recycle Bin), Title bar buttons (where minimize, maximize and close go,
+//! Desktop (the desktop's files in a bubble or across the desktop, the
+//! Recycle Bin, and where the terminal opens at sign-in), Title bar buttons (where minimize, maximize and close go,
 //! and their style) and Theme (the theme, and the desktop's font: Patrone
 //! Sans or Noto Sans). Patrone's build of GNOME Settings has the same
 //! settings on its Patrone page, and uses this program to apply a theme or
@@ -92,6 +92,13 @@ const DESKTOP_FILES: [(&str, &str, &str); 2] = [
 const RECYCLE_BIN: [(&str, &str, &str); 2] = [
     ("shown", "On the desktop", "Docked to a corner; drop files on it to delete them"),
     ("hidden", "Hidden", "Still in File Manager's navigation pane"),
+];
+
+/// Where the terminal opened at sign-in goes (the taskbar's
+/// sign-in-terminal setting).
+const SIGN_IN_TERMINAL: [(&str, &str, &str); 2] = [
+    ("logo", "Over the logo", "Large, over the wallpaper's logo, at any screen size"),
+    ("center", "Centered", "At its own size, in the middle of the screen"),
 ];
 
 /// The taskbar's icons folder: in the account's extensions, or the system's.
@@ -230,6 +237,9 @@ fn export_previews(dir: &Path) -> glib::ExitCode {
     }
     for &(value, _, _) in &RECYCLE_BIN {
         pictures.push((format!("bin-{value}"), drawing(move |cr, w, h| preview::recycle_bin(cr, w, h, value))));
+    }
+    for &(value, _, _) in &SIGN_IN_TERMINAL {
+        pictures.push((format!("terminal-{value}"), drawing(move |cr, w, h| preview::sign_in_terminal(cr, w, h, value))));
     }
     for (value, layout) in [("right", Layout::Right), ("left", Layout::Left)] {
         pictures.push((format!("buttons-{value}"), drawing(move |cr, w, h| preview::buttons(cr, w, h, layout))));
@@ -646,7 +656,8 @@ fn yes_no_choices(content: &gtk::Box, settings: &gio::Settings, key: &'static st
 fn desktop_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Desktop",
-        "Where the files on your desktop show, and whether the Recycle Bin is on it.",
+        "Where the files on your desktop show, whether the Recycle Bin is on it, and where \
+         the terminal opens when you sign in.",
     );
     let Some(taskbar) = settings(TASKBAR_SCHEMA) else {
         note(&content, "Patrone's taskbar isn't installed (the patrone-gnome-taskbar package).");
@@ -686,7 +697,26 @@ fn desktop_page() -> gtk::ScrolledWindow {
             .collect();
         yes_no_choices(&content, &taskbar, "show-recycle-bin", items, "shown", "hidden");
     }
-    if !has_key("desktop-bubble") && !has_key("show-recycle-bin") {
+    if has_key("sign-in-terminal") {
+        section_title(&content, "Terminal at sign-in");
+        note(
+            &content,
+            "Patrone Terminal opens each time you sign in. Once you move it, it stays where you \
+             put it. A new choice is for the next sign-in.",
+        );
+        let items = SIGN_IN_TERMINAL
+            .iter()
+            .map(|&(value, title, detail)| Choice {
+                value,
+                title,
+                detail,
+                draw: drawing(move |cr, w, h| preview::sign_in_terminal(cr, w, h, value)),
+            })
+            .collect();
+        let refresh = choices(&content, items, &taskbar.string("sign-in-terminal"), setter(&taskbar, "sign-in-terminal"));
+        bind(&taskbar, "sign-in-terminal", refresh);
+    }
+    if !has_key("desktop-bubble") && !has_key("show-recycle-bin") && !has_key("sign-in-terminal") {
         note(&content, "The taskbar installed is older than these settings: update patrone-gnome-taskbar.");
     }
     scrolled
