@@ -173,7 +173,27 @@ a corner: bottom right unless moved, inside the taskbar.
   uses too). It takes whole margins, so that's the strip from the screen's
   edge to the Recycle Bin's far side.
 - **Remove from desktop** in its menu turns `show-recycle-bin` off; Patrone
-  Settings' Desktop page brings it back.
+  Settings' Desktop page brings it back, and so does **Show Recycle Bin** in
+  GNOME's desktop menu (0.3.11; the user asked for it on the desktop's
+  right-click). That's the menu a right-click on the empty desktop opens
+  while the desktop bubble keeps the desktop icons out of sight. GNOME makes
+  one for each screen and wallpaper (`ui/backgroundMenu.js`), so the
+  Recycle Bin overrides `BackgroundMenu.prototype.open` through GNOME's
+  `InjectionManager` and adds the item, under Change Background, as each
+  opens; it shows only while the bin's off the desktop. With the bubble
+  off, the right-click goes to the desktop icons' own menu, which is built
+  inside their program (`desktopManager.js`, in Ubuntu's
+  `gnome-shell-ubuntu-extensions`) and has no place to add to.
+- **Over Remote Desktop the desktop starts with no screen**, until the
+  client's arrives. 0.3.10 read the screen's size then, got nothing, and
+  the error took the whole taskbar down at the user's sign-in
+  (2026-10-27): GNOME's top bar came back, with the Recycle Bin and the
+  terminal at sign-in but no taskbar. It never showed in the throwaway
+  shell, which always had a screen and no desktop icons, whose area API is
+  what led there. 0.3.11 places the Recycle Bin and the bubble only once
+  there's a screen, and starts the extras (the Recycle Bin, the windows
+  placed at sign-in, the bubble) through `startExtra` (`util.js`), so an
+  error in one is logged and the taskbar carries on.
 - Every two seconds it checks it's still right above the desktop icons, and
   moves back if not: once more, on the user's desktop, it was under them,
   and that session can't be looked into from here.
@@ -405,6 +425,7 @@ desktop, so it never touches anyone's desktop:
 
 ```
 tests/headless.sh start 1600x900 light   # or dark
+tests/headless.sh start none             # no screen, as over Remote Desktop at sign-in
 tests/headless.sh run gnome-text-editor  # an app, for running buttons
 tests/headless.sh click 23 883           # the Start button
 tests/headless.sh type sett

@@ -1,3 +1,17 @@
+patrone-gnome-taskbar (0.3.11) resolute; urgency=medium
+
+  * Start when the desktop has no screen yet, as over Remote Desktop at
+    sign-in. 0.3.10's Recycle Bin read the missing screen's size, and the
+    error stopped the whole taskbar: GNOME's top bar came back instead. The
+    Recycle Bin and the desktop bubble now wait for the screen, and an
+    error in the Recycle Bin, the bubble or the terminal at sign-in is
+    logged without stopping the taskbar.
+  * Taken off the desktop, the Recycle Bin is offered back in the desktop's
+    right-click menu: Show Recycle Bin, under Change Background, while the
+    desktop bubble is on.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 07:45:00 -0500
+
 patrone-gnome-taskbar (0.3.10) resolute; urgency=medium
 
   * The terminal opened at sign-in goes over the wallpaper's logo or, at

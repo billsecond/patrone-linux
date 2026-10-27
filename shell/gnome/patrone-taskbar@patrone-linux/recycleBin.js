@@ -5,7 +5,8 @@
 // the corner or takes it off the desktop. Dragged while docked, it docks to
 // the nearest corner; not docked, it stays where it's dropped. Files and
 // folders dropped on it go to the trash, through a clear window under it
-// (dropTarget.js), and the desktop icons keep out of its column.
+// (dropTarget.js), and the desktop icons keep out of its column. Taken off
+// the desktop, GNOME's desktop menu offers it back.
 
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
@@ -13,6 +14,8 @@ import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
 
+import {InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as BackgroundMenu from 'resource:///org/gnome/shell/ui/backgroundMenu.js';
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -133,6 +136,20 @@ export class RecycleBin {
 
         this._buildMenu();
 
+        // Taken off the desktop, it's offered back in GNOME's desktop menu:
+        // the one a right-click on the empty desktop opens while the desktop
+        // bubble keeps the desktop icons out of sight (the user, 2026-10-27).
+        // GNOME makes one for each screen and wallpaper, so the item goes in
+        // as each opens.
+        this._desktopMenuItems = new Set();
+        this._injections = new InjectionManager();
+        const bin = this;
+        this._injections.overrideMethod(BackgroundMenu.BackgroundMenu.prototype, 'open',
+            open => function (...args) {
+                bin._offerInDesktopMenu(this);
+                return open.call(this, ...args);
+            });
+
         this._trash = Gio.File.new_for_uri(TRASH);
         try {
             this._monitor = this._trash.monitor_directory(Gio.FileMonitorFlags.NONE, null);
@@ -175,6 +192,9 @@ export class RecycleBin {
         this._endGrab();
         this._stopDropTarget();
         this._areaApi()?.setMarginsForExtension(OWN_UUID, null);
+        this._injections.clear();
+        for (const item of this._desktopMenuItems)
+            item.destroy();
         this._monitor?.cancel();
         if (this._restackLater)
             global.compositor.get_laters().remove(this._restackLater);
@@ -232,6 +252,25 @@ export class RecycleBin {
         this._restack();
     }
 
+    // "Show Recycle Bin" in one of GNOME's desktop menus, under Change
+    // Background, added the first time it opens and shown while the bin's
+    // off the desktop
+    _offerInDesktopMenu(menu) {
+        let item = menu._patroneShowBin;
+        if (!item) {
+            item = new PopupMenu.PopupMenuItem(`Show ${NAME}`);
+            item.connect('activate', () => this._settings.set_boolean('show-recycle-bin', true));
+            item.connect('destroy', () => {
+                this._desktopMenuItems.delete(item);
+                delete menu._patroneShowBin;
+            });
+            menu.addMenuItem(item, 1);
+            menu._patroneShowBin = item;
+            this._desktopMenuItems.add(item);
+        }
+        item.visible = !this._settings.get_boolean('show-recycle-bin');
+    }
+
     // Shows or hides the drop target's window (a hidden window actor neither
     // draws nor takes the pointer; a desktop window can't be minimized)
     _showDropTarget(shown) {
@@ -268,6 +307,12 @@ export class RecycleBin {
             this.actor.set_position(...this._held);
             return;
         }
+        // Over Remote Desktop the desktop starts with no screen, until the
+        // client's arrives (monitors-changed places it then). Read as
+        // nothing, the screen's size took the whole taskbar down at the
+        // user's sign-in (2026-10-27).
+        if (!Main.layoutManager.primaryMonitor)
+            return;
         const area = Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex);
         if (!area)
             return;
@@ -309,6 +354,8 @@ export class RecycleBin {
             return;
         }
         const monitor = Main.layoutManager.primaryMonitor;
+        if (!monitor)
+            return;
         const [x, width] = [this.actor.x, this.actor.width];
         const left = x + width / 2 < monitor.x + monitor.width / 2;
         api.setMarginsForExtension(OWN_UUID, {
@@ -516,6 +563,8 @@ export class RecycleBin {
         }
         // Above it in the lower half of the screen, below it in the upper
         const monitor = Main.layoutManager.primaryMonitor;
+        if (!monitor)
+            return;
         const lower = this.actor.y + this.actor.height / 2 > monitor.y + monitor.height / 2;
         this._menu._boxPointer.updateArrowSide(lower ? St.Side.BOTTOM : St.Side.TOP);
         this._menu.open(BoxPointer.PopupAnimation.FULL);

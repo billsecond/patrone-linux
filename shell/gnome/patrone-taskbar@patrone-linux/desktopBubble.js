@@ -191,7 +191,11 @@ export class DesktopBubble {
         return St.ThemeContext.get_for_stage(global.stage).scale_factor;
     }
 
+    // None until there's a screen: over Remote Desktop, a moment after
+    // sign-in (monitors-changed syncs it then)
     _area() {
+        if (!Main.layoutManager.primaryMonitor)
+            return null;
         return Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex);
     }
 

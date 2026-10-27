@@ -28,7 +28,7 @@ import {ROLES, appForRole, roleOf} from './roles.js';
 import {StartMenu} from './startMenu.js';
 import {StartupWindows} from './startupWindows.js';
 import {WallpaperColor} from './tint.js';
-import {taskbarWindows} from './util.js';
+import {startExtra, taskbarWindows} from './util.js';
 
 // Icon sizes for each taskbar size (the bar's own sizes are in common.css).
 // Medium is a third larger than the taskbar first was, which is small.
@@ -469,8 +469,8 @@ export class Taskbar {
         Main.ctrlAltTabManager.addGroup(this.actor, 'Taskbar', 'shell-focus-top-bar-symbolic',
             {sortGroup: CtrlAltTab.SortGroup.TOP});
 
-        this.recycleBin = new RecycleBin(this.settings, this._iconsDir);
-        this._startupWindows = new StartupWindows(this.settings);
+        this.recycleBin = startExtra('Recycle Bin', () => new RecycleBin(this.settings, this._iconsDir));
+        this._startupWindows = startExtra('sign-in windows', () => new StartupWindows(this.settings));
         this.startMenu = new StartMenu(this, this._startButton);
         this._startButton.connect('clicked', () => this.startMenu.toggle('start'));
         this._searchButton.connect('clicked', () => this.startMenu.toggle('search'));
@@ -545,8 +545,8 @@ export class Taskbar {
         Main.layoutManager.disconnectObject(this);
 
         this.startMenu.destroy();
-        this.recycleBin.destroy();
-        this._startupWindows.destroy();
+        this.recycleBin?.destroy();
+        this._startupWindows?.destroy();
         this._backgroundMenu.destroy();
         Main.ctrlAltTabManager.removeGroup(this.actor);
         this.actor.destroy();

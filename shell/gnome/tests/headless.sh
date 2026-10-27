@@ -5,7 +5,7 @@
 # /tmp/patrone-taskbar-test, and runs in Ubuntu's session mode (Yaru, its
 # extensions) like the real desktop.
 #
-#   tests/headless.sh start [WIDTHxHEIGHT] [light|dark]
+#   tests/headless.sh start [WIDTHxHEIGHT|none] [light|dark]
 #   tests/headless.sh eval 'JAVASCRIPT'      run in the shell, print the result
 #   tests/headless.sh shot FILE.png          screenshot
 #   tests/headless.sh key KEY                press and release a key (Return, Escape, Down...)
@@ -158,10 +158,17 @@ start)
     # the real desktop's icons (2026-10-26). A copy run from a folder of its
     # own did it too, when it started and when it stopped.
     mkdir -p "$base/empty"
+    # "none" starts it with no screen at all, as the desktop starts over
+    # Remote Desktop until the client's screen arrives: the taskbar failed
+    # to start that way at the user's sign-in (2026-10-27)
+    monitor=(--virtual-monitor "$size")
+    if [[ $size == none ]]; then
+        monitor=()
+    fi
     nohup bwrap --dev-bind / / \
         --bind "$base/empty" /usr/share/gnome-shell/extensions/ding@rastersoft.com \
         gnome-shell --headless --wayland --no-x11 --mode=ubuntu \
-        --virtual-monitor "$size" --wayland-display "$display" \
+        "${monitor[@]}" --wayland-display "$display" \
         > "$base/shell.log" 2>&1 &
     echo $! > "$base/shell.pid"
 

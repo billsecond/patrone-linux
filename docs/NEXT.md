@@ -73,13 +73,14 @@ Done:
 
 Waiting on the user:
 
-- **Install the desktop bubble and try it** (the user's design, 2026-10-26;
-  `shell/gnome/README.md`, "The desktop bubble"), from SSH or a terminal
-  (these also bring the terminal at sign-in, the next step):
-  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.10_all.deb
-  ~/src/patrone-linux/out/patrone-settings_0.3.5_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone7_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone7_all.deb`,
+- **Install taskbar 0.3.11 and try the desktop bubble** (the user's design,
+  2026-10-26; `shell/gnome/README.md`, "The desktop bubble"). The user
+  installed 0.3.10 with Settings 0.3.5 and GNOME Settings patrone7 on
+  2026-10-27, but at sign-in the taskbar failed (the desktop has no screen
+  for a moment over Remote Desktop; README, "The Recycle Bin on the
+  desktop"), so GNOME's top bar showed and the bubble never started.
+  0.3.11 fixes that and adds Show Recycle Bin to the desktop's right-click:
+  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.11_all.deb`,
   then sign out from inside the desktop and back in. The desktop icons go;
   a blue pill at the left edge bounces with a tip until it's clicked.
   Click it or drag it out: the desktop's files in a bubble, the Recycle
