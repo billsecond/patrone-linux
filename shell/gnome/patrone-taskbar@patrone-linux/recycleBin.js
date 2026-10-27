@@ -211,6 +211,9 @@ export class RecycleBin {
             this.actor.get_parent()?.remove_child(this.actor);
             parent.add_child(this.actor);
             this.actor.add_style_class_name('on-bubble');
+            // Left uncovered in its corner, the drop target's all but clear
+            // window showed as a faint square
+            this._showDropTarget(false);
         }
         this._held = [x, y];
         this.actor.set_position(x, y);
@@ -224,8 +227,17 @@ export class RecycleBin {
         this.actor.remove_style_class_name('on-bubble');
         this.actor.get_parent()?.remove_child(this.actor);
         global.window_group.add_child(this.actor);
+        this._showDropTarget(true);
         this._place();
         this._restack();
+    }
+
+    // Shows or hides the drop target's window (a hidden window actor neither
+    // draws nor takes the pointer; a desktop window can't be minimized)
+    _showDropTarget(shown) {
+        const actor = this._dropWindow?.get_compositor_private();
+        if (actor)
+            actor.visible = shown;
     }
 
     _countItems() {
@@ -373,9 +385,16 @@ export class RecycleBin {
             window.stick();
             this._placeDropTarget();
             this._queueRestack();
-            // Showing gave it the focus: back to the window that had it
-            if (global.display.focus_window === window && focused && focused !== window)
-                focused.activate(global.get_current_time());
+            if (this._held)
+                this._showDropTarget(false);
+            // Showing gave it the focus: back to the window that had it, or
+            // to none when none did (it kept it at sign-in)
+            if (global.display.focus_window === window) {
+                if (focused && focused !== window)
+                    focused.activate(global.get_current_time());
+                else
+                    global.display.unset_input_focus(global.get_current_time());
+            }
         }, this.actor);
     }
 
