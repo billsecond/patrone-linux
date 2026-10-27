@@ -11,8 +11,16 @@ Package: patrone-desktop
 Architecture: all
 Depends: ${misc:Depends}, patrone-branding, ubuntu-desktop-minimal
 Recommends: apport,
+            7zip,
+            bat,
+            btop,
             fastfetch,
+            fzf,
+            htop,
             nano,
+            ncdu,
+            ripgrep,
+            tree,
             vim,
             patrone-default-apps,
             patrone-file-manager,
@@ -36,5 +44,7 @@ Description: Patrone Linux's desktop
  Labs, NetworkManager checks for Wi-Fi sign-in pages with GNOME's server, and
  nothing offers to upgrade to Ubuntu's next release.
  .
- It also brings fastfetch (system information, in Patrone's colors), nano
- and the full vim.
+ It also brings a few everyday tools: fastfetch (system information, in
+ Patrone's colors), nano and the full vim; btop and htop (what's running);
+ tree, ripgrep (rg) and fzf (finding files and text); bat (files with
+ highlighting, run as batcat); ncdu (what's using the disk); and 7zip (7z).
