@@ -1126,7 +1126,15 @@ here on several archives at once.
   the call, and owns the name with ALLOW_REPLACEMENT | REPLACE). Nautilus
   still runs on demand: DING (desktop icons) activates org.gnome.Nautilus
   at sign-in, and Nautilus then holds FileManager1 itself until it idles
-  out. Verified in the headless shell: with the new service file first in
+  out. DING (`use-nemo` false) sends "Show in Files" and Properties through
+  FileManager1 (ShowItems, ShowItemProperties: File Manager answers) and
+  copy, move and trash on the desktop through Nautilus's FileOperations2,
+  which keeps working since Nautilus stays. The chain that blocks removal:
+  xdg-desktop-portal-gnome Depends `nautilus (>= 47~beta)`, ubuntu-session
+  Depends xdg-desktop-portal-gnome, ubuntu-desktop-minimal Depends both, and
+  patrone-desktop Depends ubuntu-desktop-minimal. The account's
+  `org.gnome.shell favorite-apps` still lists org.gnome.Nautilus.desktop;
+  that's the user's to change. Verified in the headless shell: with the new service file first in
   XDG_DATA_DIRS and no File Manager running, a FileManager1.ShowItems call
   started it and showed the folder with the file selected.
 - "It didn't open flatpak": the user's own mimeapps.list said
