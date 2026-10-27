@@ -11,7 +11,7 @@ file on the machine, so Patrone's list needs no server.
 
 | File | Installed as | What it does |
 | --- | --- | --- |
-| `org.patrone.Software.Featured.xml` | `/usr/share/swcatalog/xml/` | Patrone's picks: the banners at the top of Explore, Editor's Choice, and each category's picks. First the Craft apps (the user's list, 2026-10-27), then well-known apps that fill Explore until the Craft apps can show |
+| `org.patrone.Software.Featured.xml` | `/usr/share/swcatalog/xml/` | Patrone's picks: the banners at the top of Explore, Editor's Choice, and each category's picks. The Craft apps (the user's list, 2026-10-27), and only them |
 
 ## The Craft apps
 
@@ -95,8 +95,12 @@ marks, as GNOME's `gnome-app-list` documents them:
 
 An app that neither Ubuntu's archive nor a Flatpak remote has is skipped.
 
-What the placeholder showed (2026-10-27, GNOME Software 50.0, in the
-throwaway shell):
+The well-known apps that first stood in (GIMP, Inkscape, Krita, Blender,
+VLC, Audacity, OBS Studio) are gone since 0.1.3: the user wants only the
+Craft apps featured. Until those are in a repository GNOME Software reads,
+Explore shows only its categories. What the stand-ins showed (2026-10-27,
+GNOME Software 50.0, in the throwaway shell), which holds for the Craft
+apps too:
 
 - **The banners need Flathub.** GNOME Software puts an app in them only
   with a 128-pixel icon, and Ubuntu's archive has icons up to 64 (64@2 for
