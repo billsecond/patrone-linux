@@ -203,8 +203,9 @@ and the taskbar's Files pin is a copy of it
 (`shell/gnome/patrone-taskbar@patrone-linux/icons/pin-files.svg`), so a new
 app icon goes there too. The line glyphs of the command bar and
 menus are vector paths in `src/glyph.rs`, drawn in the text color so they
-follow light and dark mode. The text is Patrone's typeface, Noto Sans, at
-Windows' 9 points; file lists draw
+follow light and dark mode. The text is the desktop's font (Patrone
+Settings → Theme → Font: Noto Sans or Patrone Sans), at Windows' 9 points;
+monospace is Ubuntu Sans Mono. File lists draw
 their icons at 20 pixels, which with the artwork's margins makes the item
 itself about Windows' 16.
 

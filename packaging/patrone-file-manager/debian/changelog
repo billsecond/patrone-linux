@@ -1,3 +1,11 @@
+patrone-file-manager (0.2.9) resolute; urgency=medium
+
+  * Text is in the desktop's font, the one Patrone Settings -> Theme -> Font
+    sets (Noto Sans or Patrone Sans), at the same 9 points; the style sheet
+    named Noto Sans.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 18:55:00 -0500
+
 patrone-file-manager (0.2.8) resolute; urgency=medium
 
   * GNOME's Files (Nautilus) is retired without being removed: Ubuntu's

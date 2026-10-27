@@ -27,7 +27,8 @@ window, tooltip, popover, dnd {
   --shadow: rgba(0, 0, 0, 0.16);
   --danger: #c42b1c;
   --progress: #13a10e;
-  font-family: "Noto Sans", sans-serif;
+  /* The desktop's font (Patrone Settings → Theme → Font: Noto Sans or
+     Patrone Sans), at Windows' 9 points. */
   font-size: 9pt;
   color: var(--text);
 }

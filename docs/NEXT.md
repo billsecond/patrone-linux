@@ -161,9 +161,9 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.8** (section 8; the user runs 0.2.7),
+- **Install Patrone File Manager 0.2.9** (section 8; the user runs 0.2.7),
   from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.8_amd64.deb`,
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.9_amd64.deb`,
   then close every File Manager window so the new version starts. GNOME's
   Files disappears from the app menu and search (Nautilus stays installed
   for the session and Snap/Flatpak file dialogs), "Show in folder" opens
@@ -1143,7 +1143,18 @@ here on several archives at once.
 - `util::content_type` asked FileInfos for an attribute they lacked,
   logging "GFileInfo created without standard::content-type".
 
-Next: the user's verdict on 0.2.8, then the gaps in the README's "Not done
+### 0.2.9 (2026-10-26)
+
+At the Patrone Sans session's request: the style sheet no longer names a
+font family (it said Noto Sans), so File Manager uses the desktop font that
+Patrone Settings → Theme → Font sets (Noto Sans or Patrone Sans), still at
+9 points; monospace stays Ubuntu Sans Mono. Checked in the headless shell
+with GTK reading a test setting directly (`GDK_DEBUG=no-portals`, keyfile
+`font-name='DejaVu Serif 11'`): File Manager drew in DejaVu Serif. (Without
+`no-portals`, GTK takes the font from the desktop portal, which reads the
+account's real setting.)
+
+Next: the user's verdict on 0.2.9, then the gaps in the README's "Not done
 yet" (group headers in the icon views, the command bar folding into "See
 more" when narrow, Gallery's timeline), and FileManager1.
 
