@@ -12,4 +12,11 @@ if [ "$1" = configure ] && [ -z "$2" ] && command -v snap > /dev/null 2>&1 &&
         echo "patrone-software: App Center (the snap-store snap) is still installed; remove it with: sudo snap remove snap-store" >&2
 fi
 
+# The store's launcher, named "Patrone Software", from GNOME Software's
+# (preinst moved it aside), and again whenever gnome-software brings a new
+# one (the applications folder's trigger)
+if [ "$1" = configure ] || [ "$1" = triggered ]; then
+    /usr/libexec/patrone-software/make-software-launcher
+fi
+
 #DEBHELPER#

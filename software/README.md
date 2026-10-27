@@ -64,6 +64,16 @@ The package:
   to `org.gnome.Software.Featured.xml.gnome`, a name GNOME Software doesn't
   read, so only Patrone's picks show; removing the package puts it back
   (postrm).
+- **Names it Patrone Software** (0.1.2; the user looked for it by that
+  name): GNOME Software's launcher,
+  `/usr/share/applications/org.gnome.Software.desktop`, is diverted to
+  `org.gnome.Software.desktop.gnome` (not read, not ending in `.desktop`),
+  and `make-software-launcher` (`/usr/libexec/patrone-software/`) writes it
+  again with `Name=Patrone Software`, keeping its desktop file ID, so pins,
+  the default favorites and the Start menu's suggestion still find it. A
+  trigger on `/usr/share/applications` writes it again whenever
+  gnome-software updates its launcher. Translations of the name are left as
+  they are, and the app's own window still says Software.
 - **Removes App Center** when it's first installed (postinst): `snap remove
   snap-store`. App Center is a snap, which Ubuntu's installer adds, so no
   package dependency can remove it. If snapd can't (no snapd, as in a

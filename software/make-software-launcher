@@ -1,0 +1,23 @@
+#!/bin/sh
+# Names the app store "Patrone Software" (the user looked for it by that
+# name, 2026-10-27): GNOME Software's launcher
+# (/usr/share/applications/org.gnome.Software.desktop, which
+# patrone-software's preinst moves aside to org.gnome.Software.desktop.gnome)
+# with its English name changed, so it keeps its desktop file ID and
+# everything else. Run by postinst, and again when gnome-software brings a
+# new launcher (a dpkg trigger on the applications folder).
+set -e
+
+apps=/usr/share/applications
+gnome=$apps/org.gnome.Software.desktop.gnome
+launcher=$apps/org.gnome.Software.desktop
+
+[ -f "$gnome" ] || exit 0
+
+sed 's/^Name=Software$/Name=Patrone Software/' "$gnome" > "$launcher.new"
+if ! grep -q '^Name=Patrone Software$' "$launcher.new"; then
+    echo "patrone-software: GNOME Software's launcher has a new name line; using it as it is" >&2
+    cp "$gnome" "$launcher.new"
+fi
+chmod 644 "$launcher.new"
+mv "$launcher.new" "$launcher"

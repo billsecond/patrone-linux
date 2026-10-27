@@ -1,3 +1,11 @@
+patrone-software (0.1.2) resolute; urgency=medium
+
+  * The store is named Patrone Software: GNOME Software's launcher, moved
+    aside, is written again with that name (and its desktop file ID kept),
+    and again whenever gnome-software updates it.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 10:30:00 -0500
+
 patrone-software (0.1.1) resolute; urgency=medium
 
   * Patrone's picks are the Craft apps, in place of the placeholder:

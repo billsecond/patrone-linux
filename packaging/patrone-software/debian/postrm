@@ -1,12 +1,16 @@
 #!/bin/sh
-# Puts back GNOME's picks, which preinst moved aside.
+# Puts back GNOME's picks and GNOME Software's own launcher, which preinst
+# moved aside.
 set -e
 
-diverted=/usr/share/swcatalog/xml/org.gnome.Software.Featured.xml
+featured=/usr/share/swcatalog/xml/org.gnome.Software.Featured.xml
+launcher=/usr/share/applications/org.gnome.Software.desktop
 
 case "$1" in
     remove | abort-install | disappear)
-        dpkg-divert --package patrone-software --remove --rename --divert "$diverted.gnome" "$diverted"
+        dpkg-divert --package patrone-software --remove --rename --divert "$featured.gnome" "$featured"
+        rm -f "$launcher" "$launcher.new"
+        dpkg-divert --package patrone-software --remove --rename --divert "$launcher.gnome" "$launcher"
         ;;
 esac
 

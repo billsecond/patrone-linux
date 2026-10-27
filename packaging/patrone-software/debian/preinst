@@ -1,14 +1,18 @@
 #!/bin/sh
-# Moves GNOME's own picks for GNOME Software (60 GNOME Circle apps, which
-# Ubuntu's gnome-software-common ships) aside, to a name GNOME Software
-# doesn't read, so its Explore page shows only Patrone's. They come back
-# when this package is removed (postrm).
+# Moves two of GNOME Software's files aside, to names it doesn't read, and
+# postrm puts them back when this package is removed:
+# - GNOME's own picks (60 GNOME Circle apps, from Ubuntu's
+#   gnome-software-common), so its Explore page shows only Patrone's.
+# - Its launcher, which postinst writes again from it named "Patrone
+#   Software" (make-software-launcher).
 set -e
 
-diverted=/usr/share/swcatalog/xml/org.gnome.Software.Featured.xml
+featured=/usr/share/swcatalog/xml/org.gnome.Software.Featured.xml
+launcher=/usr/share/applications/org.gnome.Software.desktop
 
 if [ "$1" = install ] || [ "$1" = upgrade ]; then
-    dpkg-divert --package patrone-software --add --rename --divert "$diverted.gnome" "$diverted"
+    dpkg-divert --package patrone-software --add --rename --divert "$featured.gnome" "$featured"
+    dpkg-divert --package patrone-software --add --rename --divert "$launcher.gnome" "$launcher"
 fi
 
 #DEBHELPER#
