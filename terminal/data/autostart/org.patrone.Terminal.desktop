@@ -4,6 +4,7 @@
 Type=Application
 Name=Patrone Terminal
 Comment=Open a terminal when you log in
-Exec=patrone-terminal
+# After the first-login setup, on an account's first login
+Exec=/usr/libexec/patrone-terminal/patrone-terminal-autostart
 Icon=org.patrone.Terminal
 Terminal=false

@@ -1,3 +1,11 @@
+patrone-terminal (0.1.5) resolute; urgency=medium
+
+  * On an account's first login, the terminal opens once the first-login
+    setup has closed, not on top of its pages (the user, 2026-10-27, after
+    installing from Patrone's ISO).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 16:30:00 -0500
+
 patrone-terminal (0.1.4) resolute; urgency=medium
 
   * Escape clears the command being typed at a shell's prompt, as in
