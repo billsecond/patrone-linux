@@ -1552,7 +1552,9 @@ comparison sheet (`fonts/comparison.png`, Noto Sans and Patrone Sans at 9,
 3 new); GNOME Settings revision 4 compiled with no warnings in the page;
 both settings apps in the throwaway shell: the cards, picking Patrone Sans
 and Noto Sans in each (the four keys checked after each click), Patrone
-Settings' own text and the taskbar's clock switching at once.
+Settings' own text and the taskbar's clock switching at once, the font
+cards in light and dark, and Patrone Settings without Patrone Sans (its
+card greyed and naming the package; clicking it changed nothing).
 `fonts-patrone-sans` passes lintian with no tags. Not checked: installed
 for real, the login screen, Chromium and web pages (they follow fontconfig's
 sans-serif, still Noto Sans), apps other than these.
