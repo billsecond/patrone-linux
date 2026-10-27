@@ -103,12 +103,19 @@ Waiting on the user:
   `PatroneTest` VM (Secure Boot on). The user wants to **watch the install
   from start to finish**: don't start one in the VM without them. Found on
   the way:
-  - **Ubuntu's installer can't be renamed.** Its look is Patrone's
-    (`branding/system/desktop-provision/whitelabel.yaml`), but its name
-    comes from a fixed list of Ubuntu's flavors (`UbuntuFlavor.fromName`
-    in ubuntu-desktop-provision's `flavor_service.dart`; anything else is
-    "Ubuntu"), so it says "Welcome to Ubuntu", "Install Ubuntu". Saying
-    Patrone takes another installer front end (a decision for the user).
+  - **The installer is Patrone's build of Ubuntu's** (`installer/README.md`,
+    package `patrone-installer`, live session only). Ubuntu's front end
+    takes its name from a fixed list of Ubuntu's flavors
+    (`UbuntuFlavor.fromName`), so the user chose rebuilding it with Ubuntu's
+    flavor named Patrone Linux; checked in QEMU: "Welcome to Patrone
+    Linux". Its look and slides are `patrone-branding`'s
+    (`branding/system/desktop-provision/`). A new Ubuntu ISO means
+    rebuilding it at that snap's commit.
+  - **Swapping the ISO in Hyper-V:** inserting it right after replacing
+    the file fails ("the object was not found") and leaves the drive empty
+    while `Get-VMDvdDrive` still shows the path for a moment, so the VM
+    falls to network boot. Insert it again with the VM off, check
+    `DvdMediaType` is `ISO`, then `Set-VMFirmware -FirstBootDevice`.
   - **Remote Desktop breaks automatic login.** With `patrone-remote-desktop`,
     an account that logs in by itself (the live session; an install with
     "log in automatically") falls back to the login screen: GDM refuses
