@@ -26,6 +26,7 @@ import {RecentFiles} from './recent.js';
 import {RecycleBin} from './recycleBin.js';
 import {ROLES, appForRole, roleOf} from './roles.js';
 import {StartMenu} from './startMenu.js';
+import {StartupWindows} from './startupWindows.js';
 import {WallpaperColor} from './tint.js';
 import {taskbarWindows} from './util.js';
 
@@ -469,6 +470,7 @@ export class Taskbar {
             {sortGroup: CtrlAltTab.SortGroup.TOP});
 
         this.recycleBin = new RecycleBin(this.settings, this._iconsDir);
+        this._startupWindows = new StartupWindows(this.settings);
         this.startMenu = new StartMenu(this, this._startButton);
         this._startButton.connect('clicked', () => this.startMenu.toggle('start'));
         this._searchButton.connect('clicked', () => this.startMenu.toggle('search'));
@@ -544,6 +546,7 @@ export class Taskbar {
 
         this.startMenu.destroy();
         this.recycleBin.destroy();
+        this._startupWindows.destroy();
         this._backgroundMenu.destroy();
         Main.ctrlAltTabManager.removeGroup(this.actor);
         this.actor.destroy();

@@ -1,3 +1,14 @@
+patrone-gnome-taskbar (0.3.9) resolute; urgency=medium
+
+  * The terminal opened at sign-in goes over the wallpaper's logo, between
+    the pictures in the wallpaper's corners, as the user arranged it, at
+    any screen size. Until it's moved, resized or maximized, it follows the
+    logo when the screen's size or the taskbar changes. Only that first
+    window, and not after the lock screen. The place-sign-in-terminal
+    setting turns it off.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 20:00:00 -0500
+
 patrone-gnome-taskbar (0.3.8) resolute; urgency=medium
 
   * The desktop bubble: the desktop's files kept off the desktop, in a
