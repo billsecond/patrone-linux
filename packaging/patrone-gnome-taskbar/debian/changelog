@@ -5,6 +5,11 @@ patrone-gnome-taskbar (0.3.10) resolute; urgency=medium
     setting (logo or center), which Patrone Settings' Desktop page and
     GNOME Settings' Patrone page set. It replaces 0.3.9's
     place-sign-in-terminal.
+  * While the desktop bubble holds the Recycle Bin up on its edge, the
+    bin's drop target hides, instead of showing as a faint square in its
+    corner.
+  * At sign-in, with no window open, the Recycle Bin's drop target no
+    longer keeps the keyboard focus.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 20:35:00 -0500
 

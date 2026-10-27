@@ -74,11 +74,12 @@ Done:
 Waiting on the user:
 
 - **Install the desktop bubble and try it** (the user's design, 2026-10-26;
-  `shell/gnome/README.md`, "The desktop bubble"), from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.8_all.deb
-  ~/src/patrone-linux/out/patrone-settings_0.3.4_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone6_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone6_all.deb`,
+  `shell/gnome/README.md`, "The desktop bubble"), from SSH or a terminal
+  (these also bring the terminal at sign-in, the next step):
+  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.10_all.deb
+  ~/src/patrone-linux/out/patrone-settings_0.3.5_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone7_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone7_all.deb`,
   then sign out from inside the desktop and back in. The desktop icons go;
   a blue pill at the left edge bounces with a tip until it's clicked.
   Click it or drag it out: the desktop's files in a bubble, the Recycle
@@ -88,13 +89,8 @@ Waiting on the user:
 
 - **The terminal at sign-in, over the wallpaper's logo or centered** (the
   user's asks, 2026-10-26; `shell/gnome/README.md`, "The terminal at
-  sign-in"): install these in place of the step above's packages (they
-  have the desktop bubble too):
-  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.10_all.deb
-  ~/src/patrone-linux/out/patrone-settings_0.3.5_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone7_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone7_all.deb`,
-  then sign out and back in. Patrone Terminal should open over the logo,
+  sign-in"): in the step above's packages. After signing in again,
+  Patrone Terminal should open over the logo,
   between the `>_` prompt at the bottom left and the dashed line at the top
   right. Patrone Settings → Desktop → Terminal at sign-in (or GNOME
   Settings → Patrone) picks Centered instead, from the next sign-in.
