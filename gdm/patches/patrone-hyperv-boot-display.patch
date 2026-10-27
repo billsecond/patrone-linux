@@ -1,0 +1,43 @@
+Description: Count Hyper-V's synthetic video as the boot display
+ GDM waits up to 10 seconds at startup for a primary GPU: a platform
+ device, or a PCI or DRM device that the firmware booted on (boot_vga or
+ boot_display). A generation 2 Hyper-V VM has one display, Hyper-V's
+ synthetic video, on the VMBus, which is none of those, so the login
+ screen waited the full 10 seconds on every boot while the boot splash,
+ deactivated by GDM as it started, stood still. Its driver, hyperv_drm,
+ takes over the framebuffer the VM's firmware booted on, so it is the
+ boot display.
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: no
+Last-Update: 2026-10-27
+---
+--- a/daemon/gdm-local-display-factory.c
++++ b/daemon/gdm-local-display-factory.c
+@@ -429,6 +429,7 @@
+                 g_autoptr (GUdevDevice) platform_device = NULL;
+                 g_autoptr (GUdevDevice) pci_device = NULL;
+                 g_autoptr (GUdevDevice) drm_device = NULL;
++                g_autoptr (GUdevDevice) vmbus_device = NULL;
+ 
+                 if (g_strrstr (id_path, "platform-simple-framebuffer") != NULL) {
+                         node = next_node;
+@@ -474,6 +475,19 @@
+                         }
+                 }
+ 
++                /* Hyper-V's synthetic video is on the VMBus, neither a
++                 * platform nor a PCI device, and it's the display a
++                 * generation 2 VM's firmware boots on: its driver takes over
++                 * the firmware's framebuffer. */
++                vmbus_device = g_udev_device_get_parent_with_subsystem (device, "vmbus", NULL);
++
++                if (vmbus_device != NULL) {
++                        g_debug ("GdmLocalDisplayFactory: Found Hyper-V synthetic video, the boot display, proceeding.");
++                        factory->seat0_has_boot_up_graphics = TRUE;
++                        is_settled = TRUE;
++                        break;
++                }
++
+                 if (pci_device != NULL || drm_device != NULL) {
+                         g_debug ("GdmLocalDisplayFactory: Found secondary PCI graphics adapter, not proceeding yet.");
+                 }
