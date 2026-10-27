@@ -116,8 +116,8 @@ export class RecycleBin {
             'workareas-changed', () => this._place(),
             'restacked', () => this._queueRestack(),
             'window-created', (_, window) => this._watchWindow(window), this);
-        for (const actor of global.get_window_actors())
-            this._watchWindow(actor.meta_window);
+        for (const window of global.display.list_all_windows())
+            this._watchWindow(window);
         Main.layoutManager.connectObject('monitors-changed', () => this._place(), this);
         // Its size is only known once it's styled, after it's on the stage
         this.actor.connect('notify::width', () => this._place());
@@ -237,9 +237,13 @@ export class RecycleBin {
         });
     }
 
+    // The window group's own children, not global.get_window_actors(): the
+    // desktop icons extension takes its window out of that list on Wayland
+    // (gnomeShellOverride.js), so 0.3.3 and 0.3.4 never found it and stayed
+    // under it
     _restack() {
-        const desktops = global.get_window_actors().filter(actor =>
-            this._isDesktop(actor.meta_window) && actor.get_parent() === global.window_group);
+        const desktops = global.window_group.get_children().filter(actor =>
+            actor instanceof Meta.WindowActor && this._isDesktop(actor.meta_window));
         const below = desktops.at(-1) ?? Main.layoutManager._backgroundGroup;
         global.window_group.set_child_above_sibling(this.actor, below);
     }

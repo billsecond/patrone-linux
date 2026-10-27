@@ -141,6 +141,12 @@ a corner: bottom right unless moved, inside the taskbar.
   window's type, and knows the desktop icons' window by their own
   `customJS_ding` mark too. While it's dragged it holds the pointer, or the
   window the pointer passes over (that full-screen one) takes the drag.
+  0.3.4 still didn't work: on Wayland the desktop icons extension takes its
+  window out of `global.get_window_actors()` (its `gnomeShellOverride.js`),
+  so the Recycle Bin looked there and never found it. 0.3.5 looks at the
+  window group's own children. Checked once with the real desktop icons
+  running in the throwaway shell: the Recycle Bin above their window, its
+  own menu on right-click, and dragging.
 
 Not done: dropping files onto it (GNOME Shell takes no drops from apps), and
 docked top left it can cover the first desktop file, since the desktop icons

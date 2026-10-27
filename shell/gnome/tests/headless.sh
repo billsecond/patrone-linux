@@ -136,7 +136,12 @@ start)
     gsettings set org.gnome.shell enabled-extensions "['$uuid', 'unsafe@patrone-linux']"
     # Not Ubuntu's desktop icons, which end every desktop-icons process of
     # the account when they start, the real desktop's included; nor its
-    # snap permission prompts, which deal with the system's snapd
+    # snap permission prompts, which deal with the system's snapd. Even a
+    # copy run from a folder of its own (Ubuntu's session loads it only
+    # from system folders, so it took a data folder of the test's own,
+    # with the system's copy hidden by bwrap) restarted the real desktop's
+    # desktop icons when it started and when it stopped (2026-10-26), so
+    # don't run them here at all.
     gsettings set org.gnome.shell disabled-extensions \
         "['ubuntu-dock@ubuntu.com', 'ding@rastersoft.com', 'snapd-prompting@canonical.com']"
     gsettings set org.gnome.shell welcome-dialog-last-shown-version '999'
