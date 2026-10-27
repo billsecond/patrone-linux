@@ -147,7 +147,9 @@ open_layer() {
     ln -s /bin/true "$root/usr/sbin/update-grub"
 
     mkdir -p "$root/tmp/patrone-debs"
-    cp "${newest[@]}" "$root/tmp/patrone-debs/"
+    for deb in "${newest[@]}"; do
+        [[ " $leave_out " == *" $(dpkg-deb -f "$deb" Package) "* ]] || cp "$deb" "$root/tmp/patrone-debs/"
+    done
     for deb in "$root"/tmp/patrone-debs/*.deb; do
         install+=("/tmp/patrone-debs/${deb##*/}")
     done
@@ -188,11 +190,16 @@ close_layer() {
 step "What the installer installs ($install_layer)"
 # Ubuntu's English layer and Patrone's packages: the installer puts no
 # language layer of its own on it.
+leave_out=
 open_layer "$install_layer" minimal.en minimal
 close_layer "$install_layer"
 install_size=$(cat "$work/iso/$install_layer.size")
 
 step "The live session ($live_layer)"
+# Without Patrone Remote Desktop, whose desktop on the screen starts at the
+# login screen: the live session logs in by itself, and GDM then refuses
+# the account's desktop ("There's already an opened session").
+leave_out=patrone-remote-desktop
 open_layer "$live_layer" "" minimal.standard.live minimal.standard minimal
 # Patrone Terminal opens at login on an installed system; here the
 # installer has the screen (Ctrl+Alt+T still opens it).
