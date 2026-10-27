@@ -24,7 +24,7 @@ Services. The taskbar's right-click "Task Manager" opens it first
 | Performance | CPU (overall, or each processor), Memory (with its composition: in use, modified, cached, free), each disk, each network adapter, and graphics cards that say how busy they are; each with a minute's graph and figures like Windows' | `/proc/stat`, `/proc/meminfo`, `/proc/diskstats`, `/proc/net/dev`, `/sys` (cpufreq, caches, block devices, adapters, `gpu_busy_percent`), `getifaddrs` |
 | App history | Processor time, peak memory and times opened for each app since the computer started | systemd's "Consumed … CPU time" records for each app's scope in your journal (`journalctl --user --boot`), plus the scopes still running (`cpu.stat`, `memory.peak`) |
 | Startup apps | Each autostart entry with a switch, the package it came from, whether it's everyone's or yours, and its command | `/etc/xdg/autostart`, `~/.config/autostart`, `dpkg-query -S` |
-| Users | Each signed-in account, its state and sessions (here or remote), what its processes use, and its apps and processes under it | logind's `ListSessions` over D-Bus |
+| Users | Each signed-in account, its state and sessions (its desktop, whether it's shown on the screen, terminal sign-ins), what its processes use, and its apps and processes under it. Sign out and Disconnect (below) | logind's `ListSessions` over D-Bus |
 | Details | Every process, kernel threads too: name, PID, status, account, CPU, private memory, threads, command line | `/proc` |
 | Services | System services or your own (a list to choose from): name, main PID, description, status, and how each starts (Automatically, Manually, When needed, Never) | systemd's `ListUnitsByPatterns` and `ListUnitFilesByPatterns` over D-Bus |
 
@@ -94,6 +94,40 @@ first, since ending it can stop the desktop or the computer from working.
 Processes of other accounts are asked through `pkexec kill -TERM`, which
 asks for an administrator's password; so is a priority above Normal
 (`pkexec renice`). PID 1 and kernel threads are never ended.
+
+## Signing out and disconnecting accounts
+
+The Users page has Sign out and Disconnect, as buttons above the list and in
+an account's right-click menu (the user asked for this on 2026-10-26, with a
+password asked for at that moment). Each asks first, as Windows does:
+"Sign out Base? Unsaved work in their apps will be lost.", with Cancel and
+Sign out.
+
+- **Sign out another account**: logind's `TerminateUser` over D-Bus, with
+  interactive authorization allowed (`ALLOW_INTERACTIVE_AUTHORIZATION`). Its
+  polkit action, `org.freedesktop.login1.manage`, is `auth_admin_keep`, so
+  polkit asks for an administrator's password right then, in the desktop's
+  own dialog. Task Manager never asks for or sees a password, and adds no
+  polkit rule (Patrone Remote Desktop's rule for seatless desktops covers
+  network, power and drives, not this).
+- **Sign out your own account**: the desktop's own log-out
+  (`org.gnome.SessionManager.Logout` with mode 1, since Task Manager has
+  already asked), which lets apps speak up about unsaved work.
+- **Disconnect**: in Patrone an account's desktop is a graphical session
+  with no seat (GDM's headless session) that keeps running, and signing in
+  on the screen adds a session on a seat that shows it. Disconnect ends only
+  those screen sessions (`TerminateSession`, same password rule), so the
+  screen goes back to the sign-in screen and the desktop keeps running with
+  its apps, as Disconnect does on Windows. It's off for an account whose
+  desktop isn't shown on a screen, and for a plain desktop on a seat with
+  nothing behind it, where ending the session would end the desktop.
+  Disconnecting a Remote Desktop client isn't offered: Patrone Remote
+  Desktop's connections aren't logind sessions (the headless desktop is),
+  so there's nothing to end that wouldn't sign the account out.
+- If the password isn't given or the request fails, it says so ("Base
+  wasn't signed out. To sign out another account, an administrator's
+  password is needed, and it wasn't given. Nothing was changed.") and
+  changes nothing.
 
 ## Startup apps
 
@@ -177,6 +211,13 @@ own folder (`/tmp/patrone-tm-test`) and display (`wayland-patrone-tm`):
   Clutter's virtual keyboard in `headless.sh eval`.
 - Use `pgrep -x patrone-task-ma` (the 15-character command name), not
   `pgrep -f`, whose pattern also matches the SSH command's own shell.
+- polkit's password dialog can't be shown there: GNOME Shell's polkit agent
+  answers for its own sign-in session, and a test shell started over SSH
+  belongs to an SSH session that has ended (logind's State `closing`), so a
+  request that needs a password fails at once with "interactive
+  authentication required" (and `pkexec` refuses to run: "Refusing to
+  render service to dead parents"). Try password prompts on a real desktop,
+  and cancel them.
 
 ## Findings
 

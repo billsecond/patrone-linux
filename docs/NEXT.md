@@ -73,11 +73,14 @@ Done:
 
 Waiting on the user:
 
-- **Install Patrone Task Manager** (section 15), which removes Ubuntu's
-  Resources, then sign out and back in so Ctrl+Shift+Esc works:
-  `sudo apt install ~/src/patrone-linux/out/patrone-task-manager_0.1.0_amd64.deb ~/src/patrone-linux/out/patrone-desktop_0.1.2_all.deb`.
+- **Install Patrone Task Manager 0.2.0** (section 15), which removes
+  Ubuntu's Resources, then sign out and back in so Ctrl+Shift+Esc works:
+  `sudo apt install ~/src/patrone-linux/out/patrone-task-manager_0.2.0_amd64.deb ~/src/patrone-linux/out/patrone-desktop_0.1.2_all.deb`.
   Try Ctrl+Shift+Esc, the taskbar's right-click "Task Manager", End task
   on an app, and Start or Stop on a system service (asks for the password).
+  On the Users page, select Base and choose Sign out: the password dialog
+  should appear (cancel it, or give the password to really sign Base out).
+  That dialog couldn't be shown in a throwaway shell.
 
 - **Install the new packages, turn on Patrone Remote Desktop, reboot, then
   connect** (needs their sudo password; section 3 has the steps). Their
@@ -1730,6 +1733,27 @@ Findings (more in `task-manager/README.md`):
   `~/.config/autostart/org.patrone.Terminal.desktop` and the launcher in
   `~/.local/share/applications`, within 40 ms), leaving the package's.
   Not Task Manager's doing; noted in case it wasn't meant.
+
+**0.2.0 (2026-10-26): Sign out and Disconnect on the Users page.** The
+user asked to be able to sign accounts out from the Users page, with the
+administrator's password asked for at that moment. Sign out of another account is logind's `TerminateUser` with
+interactive authorization (polkit's `org.freedesktop.login1.manage`,
+`auth_admin_keep`, so an administrator's password is asked for then);
+your own account signs out through the desktop's own log-out. Disconnect
+ends only the sessions showing an account's desktop on a screen
+(`TerminateSession`), leaving the headless desktop running. Both ask first.
+`task-manager/README.md` has the details.
+
+Checked in a throwaway shell: the buttons (Disconnect only where a desktop
+is shown on a screen), the confirmations for Base and for the user's own
+account, and the failure path: with no password agent there, Sign out of
+Base said "Base wasn't signed out ... Nothing was changed", and Base's
+sessions (701 to 703) were untouched. Not checked: polkit's password dialog
+itself (a test shell started over SSH has no working agent: its SSH
+session has ended), signing out or disconnecting for real (no real
+session was ended), and the own-account log-out. The Sessions column also
+changed: "Desktop, on the screen, 1 terminal sign-in"; it used to call
+headless desktops remote.
 
 ## Suggested order
 

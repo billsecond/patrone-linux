@@ -1,3 +1,21 @@
+patrone-task-manager (0.2.0) resolute; urgency=medium
+
+  * Users: Sign out and Disconnect, from buttons above the list or an
+    account's right-click menu, as in Windows. Each asks first ("Sign out
+    Base? Unsaved work in their apps will be lost."). Signing out another
+    account goes to logind (TerminateUser) with interactive authorization,
+    so polkit asks for an administrator's password right then; signing out
+    your own account goes through the desktop's own log-out. Disconnect
+    ends only the sessions that show an account's desktop on a screen
+    (TerminateSession), leaving the desktop running with its apps open. If
+    the password isn't given or the request fails, it says so and nothing
+    changes.
+  * The Sessions column says what an account has: its desktop, whether
+    it's shown on the screen, and terminal sign-ins. It used to count
+    desktops that keep running without a screen as remote.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 20:05:00 -0500
+
 patrone-task-manager (0.1.0) resolute; urgency=medium
 
   * First package: Patrone Task Manager, in the place of Ubuntu's Resources

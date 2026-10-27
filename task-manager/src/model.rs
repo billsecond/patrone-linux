@@ -46,8 +46,71 @@ pub struct AppEntry {
 #[derive(Clone, Default)]
 pub struct Login {
     pub state: String,
-    pub sessions: u32,
-    pub remote: u32,
+    pub sessions: Vec<Session>,
+}
+
+/// One of an account's logind sessions.
+#[derive(Clone, Default)]
+pub struct Session {
+    pub id: String,
+    pub seat: String,
+    /// wayland or x11 (a desktop or a screen), tty (a terminal or SSH)
+    pub graphical: bool,
+}
+
+impl Login {
+    /// The account's desktop: a graphical session with no seat, which
+    /// keeps running whether or not anything shows it (GDM's headless
+    /// session, Patrone Remote Desktop's desktop).
+    pub fn desktop(&self) -> Option<&Session> {
+        self.sessions
+            .iter()
+            .find(|session| session.graphical && session.seat.is_empty())
+    }
+
+    /// The sessions that only show the account's desktop on a screen: on a
+    /// seat, while the desktop itself runs without one. Ending them
+    /// disconnects the screen and leaves the desktop running. Without a
+    /// seatless desktop, a session on a seat is the desktop itself.
+    pub fn viewers(&self) -> Vec<&Session> {
+        if self.desktop().is_none() {
+            return Vec::new();
+        }
+        self.sessions
+            .iter()
+            .filter(|session| session.graphical && !session.seat.is_empty())
+            .collect()
+    }
+
+    /// "Desktop, on the screen", "Desktop, 2 terminal sign-ins".
+    pub fn describe(&self) -> String {
+        let mut parts = Vec::new();
+        if self.desktop().is_some() {
+            parts.push("Desktop".to_string());
+        }
+        if self
+            .sessions
+            .iter()
+            .any(|session| session.graphical && !session.seat.is_empty())
+        {
+            parts.push(if parts.is_empty() {
+                "On the screen".into()
+            } else {
+                "on the screen".into()
+            });
+        }
+        let terminals = self
+            .sessions
+            .iter()
+            .filter(|session| !session.graphical)
+            .count();
+        match terminals {
+            0 => {}
+            1 => parts.push("1 terminal sign-in".into()),
+            n => parts.push(format!("{n} terminal sign-ins")),
+        }
+        parts.join(", ")
+    }
 }
 
 #[derive(Default, Clone, Copy)]
@@ -269,13 +332,7 @@ impl Model {
                     _ => "",
                 },
             );
-            let sessions = match (login.sessions, login.remote) {
-                (0, _) => String::new(),
-                (n, 0) => format!("{n} here"),
-                (n, r) if n == r => format!("{r} remote"),
-                (n, r) => format!("{} here, {r} remote", n - r),
-            };
-            row.put_text("description", &sessions);
+            row.put_text("description", &login.describe());
             let groups: Vec<Row> = members
                 .keys()
                 .filter(|key| {
@@ -340,15 +397,27 @@ fn fold_spawned_scopes(list: &[Process], members: &mut HashMap<Rc<str>, Vec<usiz
     }
     let spawned: Vec<Rc<str>> = members
         .keys()
-        .filter(|key| key.rsplit('/').next().is_some_and(|unit| unit.starts_with("vte-spawn-")))
+        .filter(|key| {
+            key.rsplit('/')
+                .next()
+                .is_some_and(|unit| unit.starts_with("vte-spawn-"))
+        })
         .cloned()
         .collect();
     for key in spawned {
-        let Some(indexes) = members.get(&key) else { continue };
-        let Some(first) = indexes.iter().map(|&index| &list[index]).min_by_key(|process| process.pid) else {
+        let Some(indexes) = members.get(&key) else {
             continue;
         };
-        let Some(parent) = group_of.get(&first.ppid).cloned() else { continue };
+        let Some(first) = indexes
+            .iter()
+            .map(|&index| &list[index])
+            .min_by_key(|process| process.pid)
+        else {
+            continue;
+        };
+        let Some(parent) = group_of.get(&first.ppid).cloned() else {
+            continue;
+        };
         if parent == key || !members.contains_key(&parent) {
             continue;
         }
@@ -610,6 +679,52 @@ mod tests {
         );
         assert_eq!(app_id("session-819.scope"), None);
         assert_eq!(app_id("NetworkManager.service"), None);
+    }
+
+    #[test]
+    fn sessions() {
+        let session = |id: &str, seat: &str, graphical| Session {
+            id: id.into(),
+            seat: seat.into(),
+            graphical,
+        };
+        // Patrone: a headless desktop, shown on the screen, and an SSH
+        // sign-in
+        let shown = Login {
+            state: "active".into(),
+            sessions: vec![
+                session("702", "", true),
+                session("703", "seat0", true),
+                session("9", "", false),
+            ],
+        };
+        assert_eq!(
+            shown
+                .viewers()
+                .iter()
+                .map(|s| s.id.as_str())
+                .collect::<Vec<_>>(),
+            ["703"]
+        );
+        assert_eq!(
+            shown.describe(),
+            "Desktop, on the screen, 1 terminal sign-in"
+        );
+        // A desktop on the screen itself, with nothing behind it: nothing
+        // to disconnect
+        let plain = Login {
+            state: "active".into(),
+            sessions: vec![session("3", "seat0", true)],
+        };
+        assert!(plain.viewers().is_empty());
+        assert_eq!(plain.describe(), "On the screen");
+        // Only the headless desktop (or Remote Desktop showing it)
+        let headless = Login {
+            state: "active".into(),
+            sessions: vec![session("1428", "", true)],
+        };
+        assert!(headless.viewers().is_empty());
+        assert_eq!(headless.describe(), "Desktop");
     }
 
     #[test]

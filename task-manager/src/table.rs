@@ -418,7 +418,16 @@ fn keep_at_top(
         pinned,
         move |_, key, _, _| {
             use gdk::Key;
-            if [Key::Down, Key::Page_Down, Key::End, Key::KP_Down, Key::KP_Page_Down, Key::KP_End].contains(&key) {
+            if [
+                Key::Down,
+                Key::Page_Down,
+                Key::End,
+                Key::KP_Down,
+                Key::KP_Page_Down,
+                Key::KP_End,
+            ]
+            .contains(&key)
+            {
                 pinned.set(false);
             }
             glib::Propagation::Proceed

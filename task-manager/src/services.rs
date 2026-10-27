@@ -291,7 +291,10 @@ impl Page {
                 .entry(name.to_string())
                 .or_insert_with(|| Row::new(name))
                 .clone();
-            row.put_text("name", &crate::model::unescape(name.trim_end_matches(".service")));
+            row.put_text(
+                "name",
+                &crate::model::unescape(name.trim_end_matches(".service")),
+            );
             let description = match unit {
                 Some(unit) if !unit.description.is_empty() => unit.description.clone(),
                 _ => file

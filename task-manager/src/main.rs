@@ -631,6 +631,22 @@ impl Window {
             Box::new(|this| actions::run_new_task(&this.context)),
         );
         simple(
+            "sign-out",
+            Box::new(|this| {
+                if let Some(row) = this.target() {
+                    users::end(&this.context, &row, users::Ending::SignOut);
+                }
+            }),
+        );
+        simple(
+            "disconnect",
+            Box::new(|this| {
+                if let Some(row) = this.target() {
+                    users::end(&this.context, &row, users::Ending::Disconnect);
+                }
+            }),
+        );
+        simple(
             "search",
             Box::new(|this| {
                 this.search.grab_focus();
