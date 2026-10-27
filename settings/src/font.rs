@@ -1,6 +1,7 @@
-//! The desktop's font: Noto Sans, which Patrone has used from the start, or
-//! Patrone Sans, Noto Sans with a tailed l and a slashed zero
-//! (`fonts/` in Patrone's repository, the fonts-patrone-sans package).
+//! The desktop's font: Patrone Sans, Patrone's own (the default since
+//! patrone-branding 0.1.6), Noto Sans with a tailed l and a slashed zero
+//! (`fonts/` in Patrone's repository, the fonts-patrone-sans package), or
+//! Noto Sans itself, the font it's based on.
 //! Picking one changes the family of GNOME's interface and document fonts
 //! and of the title bar font, and keeps their sizes and styles; the
 //! monospace font stays as it is.
@@ -10,15 +11,21 @@ use gtk::{gio, pango};
 
 pub const INTERFACE_SCHEMA: &str = "org.gnome.desktop.interface";
 
-/// The fonts to pick from: family (the value), name, description and the
-/// package that installs it.
+/// The fonts to pick from, the default first: family (the value), name,
+/// description and the package that installs it. The descriptions are of
+/// about the same length, so the cards are of the same height.
 pub const FONTS: [(&str, &str, &str, &str); 2] = [
-    ("Noto Sans", "Noto Sans", "The font Patrone has used until now", "fonts-noto-core"),
     (
         "Patrone Sans",
         "Patrone Sans",
-        "Noto Sans with a tailed l and a slashed zero, easier to tell apart",
+        "Patrone's font: Noto Sans with a tailed l and a slashed zero",
         "fonts-patrone-sans",
+    ),
+    (
+        "Noto Sans",
+        "Noto Sans",
+        "The font Patrone Sans is based on, without those changes",
+        "fonts-noto-core",
     ),
 ];
 

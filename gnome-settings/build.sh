@@ -17,7 +17,7 @@ set -euo pipefail
 
 # Patrone's revision of the page and patches: one more with each change to
 # them, so a new build of the same Ubuntu version installs as an upgrade
-revision=4
+revision=5
 # What changed in it, for the package's changelog
 changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, title bar button position and style, theme, font), and no Telemetry page."
 

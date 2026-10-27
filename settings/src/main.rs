@@ -1,8 +1,8 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
 //! Title bar buttons (where minimize, maximize and close go, and their
-//! style) and Theme (the theme, and the desktop's font: Noto Sans or
-//! Patrone Sans). Patrone's build of GNOME Settings has the same settings on
+//! style) and Theme (the theme, and the desktop's font: Patrone Sans or
+//! Noto Sans). Patrone's build of GNOME Settings has the same settings on
 //! its Patrone page, and uses this program to apply a theme or button style
 //! and for its pictures.
 //!

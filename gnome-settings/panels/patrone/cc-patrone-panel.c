@@ -2,7 +2,7 @@
 /*
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
  * button icon), the title bar buttons (top right or top left, and their
- * style), the theme and the desktop's font (Noto Sans or Patrone Sans,
+ * style), the theme and the desktop's font (Patrone Sans or Noto Sans,
  * which the page sets itself). The same settings as Patrone Settings' window,
  * which this page leans on: its pictures (/usr/share/patrone/settings/
  * previews) and, to apply a theme or button style, "patrone-settings
@@ -108,12 +108,13 @@ static const Choice themes[] = {
   { "studio", N_("Studio"), N_("Soft and translucent, with round colored window buttons") },
 };
 
-/* The desktop's fonts, by family, and the packages that install them */
+/* The desktop's fonts, by family, the default first, and the packages that
+ * install them */
 static const Choice fonts[] = {
-  { "Noto Sans", N_("Noto Sans"), N_("The font Patrone has used until now") },
-  { "Patrone Sans", N_("Patrone Sans"), N_("Noto Sans with a tailed l and a slashed zero, easier to tell apart") },
+  { "Patrone Sans", N_("Patrone Sans"), N_("Patrone's font: Noto Sans with a tailed l and a slashed zero") },
+  { "Noto Sans", N_("Noto Sans"), N_("The font Patrone Sans is based on, without those changes") },
 };
-static const char * const font_packages[] = { "fonts-noto-core", "fonts-patrone-sans" };
+static const char * const font_packages[] = { "fonts-patrone-sans", "fonts-noto-core" };
 
 /* What a font's card shows, in that font */
 #define FONT_SAMPLE_BIG "Aa"

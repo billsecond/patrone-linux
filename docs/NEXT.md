@@ -185,15 +185,17 @@ Waiting on the user:
   new to the session). Also open a zip or tar.gz (Extract all, Extract here)
   and a `.deb`: Install asks for your password with "Installing software for
   everyone on this computer needs an administrator's password".
-- **Install Patrone Sans and try it** (section 14), from SSH or a terminal:
+- **Install Patrone Sans, Patrone's default font now** (section 14), from
+  SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/fonts-patrone-sans_1.0.0_all.deb
-  ~/src/patrone-linux/out/patrone-settings_0.3.2_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone4_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone4_all.deb`.
-  Then Patrone Settings → Theme → Font (or GNOME Settings → Patrone → Font)
-  → Patrone Sans: open apps and the taskbar change at once. Then decide
-  whether Patrone Sans becomes Patrone's default (recommended, once tried;
-  section 14 says what that changes).
+  ~/src/patrone-linux/out/patrone-branding_0.1.6_all.deb
+  ~/src/patrone-linux/out/patrone-settings_0.3.3_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone5_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone5_all.deb`,
+  then sign out and back in. The desktop, apps, window titles and web pages
+  are in Patrone Sans (unless the account picked a font itself), and
+  Patrone Settings → Theme → Font (or GNOME Settings → Patrone → Font)
+  switches between it and Noto Sans at once.
 
 ## 1. Patrone Terminal
 
@@ -1597,18 +1599,15 @@ between the two in Patrone Settings. Done:
   the monospace font stays. Each card shows text in its own font (not a
   picture: the package build has no Patrone Sans to draw with). A font
   that isn't installed can't be picked.
-- **The default stays Noto Sans.** Recommended: make Patrone Sans the
-  default once the user has tried it on their desktop. It changes only l
-  and 0, keeps every line the same height, and brings the medium and
-  semibold weights Ubuntu's Noto Sans lacks. That's the user's call. Making
-  it the default touches `branding/` (another session's): the font lines
-  of `system/schemas/90_patrone.gschema.override` and
-  `system/gdm/95-patrone-settings` (login screen), the aliases in
-  `system/fontconfig/05-patrone-fonts.conf` (sans-serif, system-ui, Segoe
-  UI, for Chromium and web pages too), and a dependency of
-  `patrone-branding` on `fonts-patrone-sans`. File Manager names "Noto
-  Sans" in its style sheet, so it keeps Noto Sans whatever is picked; its
-  session was asked to follow the system font instead.
+- **Patrone Sans is the default** since `patrone-branding` 0.1.6 (89f10b5,
+  the user's decision, 2026-10-26): GNOME's interface and document fonts,
+  title bars (SemiBold), the login screen, and fontconfig's sans-serif,
+  system-ui and Segoe UI names, with Noto Sans second for the scripts
+  Patrone Sans lacks. `patrone-settings` 0.3.3 and GNOME Settings
+  `...patrone5` list it first, with Noto Sans as the font it's based on.
+  File Manager names "Noto Sans" in its style sheet, so it keeps Noto Sans
+  whatever is picked; its session was asked to follow the system font
+  instead.
 
 Checked: fontbakery 1.1.0's universal checks (5 fails, all inherited from
 Noto Sans 2.015, which fails the same checks built the same way; see
