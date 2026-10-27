@@ -251,9 +251,10 @@ fn app_icons(cr: &Context, x: f64, y: f64, size: f64, count: usize, dots: Option
     left - gap
 }
 
-/// The Patrone "P", simplified.
-fn start_mark(cr: &Context, x: f64, y: f64, size: f64) {
-    color(cr, 0x3d8eff, 1.0);
+/// The Patrone "P", simplified, in Patrone blue or, on a colored Start
+/// button, white.
+fn start_mark(cr: &Context, x: f64, y: f64, size: f64, rgb: u32) {
+    color(cr, rgb, 1.0);
     cr.move_to(x + size * 0.15, y);
     cr.line_to(x + size * 0.85, y);
     cr.line_to(x + size, y + size * 0.4);
@@ -276,7 +277,7 @@ pub fn taskbar_size(cr: &Context, w: f64, h: f64, bar: f64, icon: f64) {
     cr.rectangle(0.0, h - bar, w, bar);
     let _ = cr.fill();
     let y = h - bar + (bar - icon) / 2.0;
-    start_mark(cr, 6.0, y, icon);
+    start_mark(cr, 6.0, y, icon, 0x3d8eff);
     app_icons(cr, 8.0 + icon * 1.6, y, icon, 4, None);
     clock(cr, w, y, icon);
 }
@@ -309,15 +310,15 @@ pub fn taskbar_layout(cr: &Context, w: f64, h: f64, layout: &str) {
     match layout {
         "center" => {
             let x = (w - icon - gap - apps_width) / 2.0;
-            start_mark(cr, x, iy, icon);
+            start_mark(cr, x, iy, icon, 0x3d8eff);
             app_icons(cr, x + icon + gap, iy, icon, apps, None);
         }
         "split" => {
-            start_mark(cr, 5.0, iy, icon);
+            start_mark(cr, 5.0, iy, icon, 0x3d8eff);
             app_icons(cr, (w - apps_width) / 2.0, iy, icon, apps, None);
         }
         _ => {
-            start_mark(cr, 5.0, iy, icon);
+            start_mark(cr, 5.0, iy, icon, 0x3d8eff);
             app_icons(cr, 5.0 + icon + gap, iy, icon, apps, None);
         }
     }
@@ -341,7 +342,7 @@ pub fn taskbar_color(cr: &Context, w: f64, h: f64, source: &str) {
 
     let icon = bar * 0.56;
     let iy = ty + (bar - icon) / 2.0;
-    start_mark(cr, 5.0, iy, icon);
+    start_mark(cr, 5.0, iy, icon, 0x3d8eff);
     app_icons(cr, 5.0 + icon * 1.55, iy, icon, 4, None);
     clock(cr, w, iy, icon);
 }
@@ -558,7 +559,8 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
             rounded(cr, -6.0, ty, start + 6.0, tb, tb / 2.0);
             vertical_gradient(cr, ty, tb, 0x45a845, 0x2c7f2c);
             let _ = cr.fill();
-            start_mark(cr, icon * 0.45, iy, icon);
+            // White on green, as the taskbar draws it
+            start_mark(cr, icon * 0.45, iy, icon, 0xffffff);
             app_icons(cr, start + 6.0, iy, icon, 4, None);
             // The tray
             vertical_gradient(cr, ty, tb, 0x1594f0, 0x0d6fd6);
@@ -572,7 +574,7 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
             color(cr, 0xc2c7cf, 1.0);
             cr.rectangle(0.0, ty, w, 1.0);
             let _ = cr.fill();
-            start_mark(cr, 5.0, iy, icon);
+            start_mark(cr, 5.0, iy, icon, 0x3d8eff);
             // The app in front: a square highlight with a line under it
             let ax = 5.0 + icon * 1.55;
             fill_rounded(cr, ax - icon * 0.2, ty + 1.0, icon * 1.4, tb - 1.0, 0.0, 0xccd2da, 1.0);
@@ -584,7 +586,7 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
             color(cr, 0xf6f6f8, 0.7);
             cr.rectangle(0.0, ty, w, tb);
             let _ = cr.fill();
-            start_mark(cr, 5.0, iy, icon);
+            start_mark(cr, 5.0, iy, icon, 0x3d8eff);
             let count = 4;
             let shelf = icon * count as f64 + icon * 0.55 * (count - 1) as f64 + icon * 0.8;
             let sx = 5.0 + icon * 1.45;
@@ -596,7 +598,7 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
             color(cr, 0xf3f4f7, 0.96);
             cr.rectangle(0.0, ty, w, tb);
             let _ = cr.fill();
-            start_mark(cr, 5.0, iy, icon);
+            start_mark(cr, 5.0, iy, icon, 0x3d8eff);
             let ax = 7.0 + icon * 1.55;
             app_icons(cr, ax, iy, icon, 4, None);
             for i in 0..2 {
@@ -612,7 +614,7 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
             color(cr, 0xdfe1e6, 1.0);
             cr.rectangle(0.0, ty, w, 1.0);
             let _ = cr.fill();
-            start_mark(cr, 5.0, iy, icon);
+            start_mark(cr, 5.0, iy, icon, 0x3d8eff);
             app_icons(cr, 7.0 + icon * 1.55, iy, icon, 4, None);
             clock(cr, w, iy, icon);
         }
