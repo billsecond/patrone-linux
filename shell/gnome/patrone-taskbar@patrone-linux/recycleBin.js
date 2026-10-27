@@ -236,6 +236,7 @@ export class RecycleBin {
             this._showDropTarget(false);
         }
         this._held = [x, y];
+        this.actor.visible = true;
         this.actor.set_position(x, y);
     }
 
@@ -297,14 +298,17 @@ export class RecycleBin {
     // (inside the taskbar), or where it was dropped, kept as a fraction of
     // the work area so it stays put when the screen size changes
     _place() {
+        // Held on the desktop bubble's edge, it shows there even while it's
+        // off the desktop (the user, 2026-10-27)
+        if (this._held) {
+            this.actor.visible = true;
+            this.actor.set_position(...this._held);
+            return;
+        }
         this.actor.visible = this._settings.get_boolean('show-recycle-bin');
         if (!this.actor.visible) {
             this._stopDropTarget();
             this._reserveArea();
-            return;
-        }
-        if (this._held) {
-            this.actor.set_position(...this._held);
             return;
         }
         // Over Remote Desktop the desktop starts with no screen, until the
@@ -547,11 +551,13 @@ export class RecycleBin {
             item.dockValue = value;
             return item;
         });
-        // Back through Patrone Settings (its Desktop page), or the
-        // show-recycle-bin setting
+        // Back through Patrone Settings (its Desktop page), the
+        // show-recycle-bin setting, or this item while it's on the desktop
+        // bubble, where it shows anyway
         this._menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._menu.addAction('Remove from desktop', () =>
-            this._settings.set_boolean('show-recycle-bin', false), 'list-remove-symbolic');
+        this._desktopItem = this._menu.addAction('Remove from desktop', () =>
+            this._settings.set_boolean('show-recycle-bin',
+                !this._settings.get_boolean('show-recycle-bin')), 'list-remove-symbolic');
     }
 
     _openMenu() {
@@ -561,6 +567,9 @@ export class RecycleBin {
                 ? PopupMenu.Ornament.DOT
                 : PopupMenu.Ornament.NO_DOT ?? PopupMenu.Ornament.NONE);
         }
+        const shown = this._settings.get_boolean('show-recycle-bin');
+        this._desktopItem.label.text = shown ? 'Remove from desktop' : 'Show on desktop';
+        this._desktopItem.setIcon(shown ? 'list-remove-symbolic' : 'list-add-symbolic');
         // Above it in the lower half of the screen, below it in the upper
         const monitor = Main.layoutManager.primaryMonitor;
         if (!monitor)

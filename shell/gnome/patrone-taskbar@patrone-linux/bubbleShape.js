@@ -43,7 +43,7 @@ export function bubbleShape({width, height, count, bin = null, scale = 1}) {
     const wanted = Math.max(count, 1);
     for (let a = Math.min(MIN_WIDTH * scale, maxA); ; a = Math.min(a + STEP * scale, maxA)) {
         const b = Math.round(Math.min(Math.max(a / ASPECT, MIN_HEIGHT * scale), maxB));
-        const spot = bin ? binSpot(a, b, bin, scale) : null;
+        const spot = bin ? binSpot(a, b, bin) : null;
         const gap = BIN_GAP * scale;
         const avoid = spot && [spot[0] - gap, spot[1] - gap, bin[0] + 2 * gap, bin[1] + 2 * gap];
         const cells = cellsIn(a, b, avoid, scale);
@@ -52,29 +52,13 @@ export function bubbleShape({width, height, count, bin = null, scale = 1}) {
     }
 }
 
-// Whether a point is in the ellipse: x from the left edge, y from the middle
-function inside(x, y, a, b) {
-    return (x / a) ** 2 + (y / b) ** 2 <= 1;
-}
-
-// The Recycle Bin's top left corner: on a line out from the middle of the
-// left edge, down and to the right, as far out as it fits inside the edge
-function binSpot(a, b, [width, height], scale) {
-    const edge = EDGE * scale;
-    const ra = a - edge;
-    const rb = b - edge;
-    let spot = null;
-    for (let t = 0.96; t > 0.2; t -= 0.02) {
-        const x = t * ra * Math.cos(BIN_ANGLE);
-        const y = t * rb * Math.sin(BIN_ANGLE);
-        const [left, right] = [x - width / 2, x + width / 2];
-        const [top, bottom] = [y - height / 2, y + height / 2];
-        spot = [Math.max(left, edge), b + top];
-        if (left >= edge && [[left, top], [left, bottom], [right, top], [right, bottom]]
-            .every(([px, py]) => inside(px, py, ra, rb)))
-            break;
-    }
-    return spot.map(Math.round);
+// The Recycle Bin's top left corner: centred on the curved edge, down and
+// to the right of the middle, half in the bubble and half out (the user,
+// 2026-10-27; it used to sit just inside the edge)
+function binSpot(a, b, [width, height]) {
+    const x = a * Math.cos(BIN_ANGLE);
+    const y = b * Math.sin(BIN_ANGLE);
+    return [Math.round(x - width / 2), Math.round(b + y - height / 2)];
 }
 
 // The files' places: rows across the middle, each as long as the curve

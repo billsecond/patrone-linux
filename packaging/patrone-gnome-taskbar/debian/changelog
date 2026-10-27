@@ -1,3 +1,11 @@
+patrone-gnome-taskbar (0.3.12) resolute; urgency=medium
+
+  * On the desktop bubble, the Recycle Bin sits centred on the lower right
+    edge, half in the bubble and half out, and it's there even while it's
+    off the desktop. Its menu then offers Show on desktop.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 07:55:00 -0500
+
 patrone-gnome-taskbar (0.3.11) resolute; urgency=medium
 
   * Start when the desktop has no screen yet, as over Remote Desktop at

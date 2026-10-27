@@ -333,9 +333,10 @@ export class DesktopBubble {
         if (!area)
             return false;
         const scale = this._scale;
-        const showBin = this._bin?.hold && this._settings.get_boolean('show-recycle-bin');
+        // The Recycle Bin rides on its edge even while it's off the desktop
+        // (the user, 2026-10-27)
         let bin = null;
-        if (showBin) {
+        if (this._bin?.hold) {
             const [, , width, height] = this._bin.actor.get_preferred_size();
             bin = [width, height];
         }
@@ -483,7 +484,7 @@ export class DesktopBubble {
             const [width, height] = this._bin.actor.get_size();
             const spotX = area.x + (this._binSpot[0] + width / 2) * grown - width / 2;
             const spotY = middle + (this._binSpot[1] + height / 2 - this._b) * grown - height / 2;
-            const along = Math.min(Math.max(grown, 0), 1);
+            const along = this._binOnEdge ? 1 : Math.min(Math.max(grown, 0), 1);
             this._bin.hold(this._layer,
                 Math.round(this._binFrom[0] + (spotX - this._binFrom[0]) * along),
                 Math.round(this._binFrom[1] + (spotY - this._binFrom[1]) * along));
@@ -491,8 +492,11 @@ export class DesktopBubble {
     }
 
     _holdBin() {
-        if (!this._bin?.hold || !this._binSpot || !this._bin.actor.visible)
+        if (!this._bin?.hold || !this._binSpot)
             return;
+        // Off the desktop, it has no corner to come from: it rides the edge
+        // from the start
+        this._binOnEdge = !this._bin.actor.visible;
         this._binFrom = this._bin.actor.get_transformed_position();
         this._bin.hold(this._layer, ...this._binFrom.map(Math.round));
     }

@@ -236,7 +236,11 @@ On for every account; Patrone Settings → Desktop → Desktop files, or the
 - **The Recycle Bin** leaves its corner as the bubble grows and rides on
   the bubble's lower right edge, above the windows (`recycleBin.hold()`),
   then goes back when it closes (`release()`). It still opens, empties and
-  docks as usual while it's there.
+  docks as usual while it's there. Since 0.3.12 it sits centred on the
+  edge, half in the bubble and half out, and it's there even while it's
+  off the desktop (from the start of the bubble's opening, since it has no
+  corner to come from); its menu's last item then reads **Show on
+  desktop** (the user's asks, 2026-10-27).
 - **The bubble opens over any window**, like a menu (the user's choice:
   only the pill needs the desktop showing). It sits above the windows and
   below the taskbar and every menu.
