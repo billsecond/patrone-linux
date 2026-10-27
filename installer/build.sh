@@ -56,6 +56,10 @@ dart run melos bootstrap
 
 # The text that names Ubuntu itself in place of {DISTRO}
 python3 -I "$here/debrand_l10n.py" apps/ubuntu_bootstrap/lib/l10n packages/ubuntu_provision/lib/src/l10n
+# Patrone's pictures, blue in place of Ubuntu's orange, Flutter's spinner
+# and the username it suggests (patch_source.py)
+"$here/../branding/tools/make_installer_images.sh" "$work/images" >/dev/null
+python3 -I "$here/patch_source.py" "$src" "$work/images"
 
 cd apps/ubuntu_bootstrap
 printf '  ubuntu_flavor:\n    path: %s\n' "$flavor" >>pubspec_overrides.yaml

@@ -1,3 +1,13 @@
+patrone-branding (0.1.10) resolute; urgency=medium
+
+  * The boot spinner is a single ring, its comet running round it, in place
+    of the three interlinked rings (the user, 2026-10-27).
+  * The installer's pictures come from Patrone's build of it
+    (patrone-installer), which the installer's settings here now point to:
+    it ignored pictures from this folder.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 15:45:00 -0500
+
 patrone-branding (0.1.9) resolute; urgency=medium
 
   * The installer looks like Patrone's: /usr/share/desktop-provision/ has

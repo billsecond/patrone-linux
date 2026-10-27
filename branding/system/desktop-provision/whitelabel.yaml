@@ -1,28 +1,28 @@
-# Patrone's look for the installer, Ubuntu's ubuntu-desktop-bootstrap snap,
-# which reads the YAML files in /usr/share/desktop-provision/ in place of its
-# own whitelabel.yml: Patrone's blue, and Patrone's wordmark and P in place
-# of Ubuntu's logo and mascot. The other pages keep the snap's own pictures
-# (the paths under assets/ are the snap's), listed as its file lists them.
+# Patrone's settings for the installer (installer/README.md), which reads the
+# YAML files in /usr/share/desktop-provision/ in place of its own
+# whitelabel.yml: Patrone's blue, and the page offering an update of the
+# installer's snap hidden. slides/ has Patrone's slides, shown during the
+# install, in English for every language.
 #
-# Its name can't be set here: "flavor" is one of Ubuntu's flavors' names
-# (UbuntuFlavor.fromName in ubuntu-desktop-provision's flavor_service.dart),
-# and any other falls back to Ubuntu. Patrone's build of the installer
-# (installer/, patrone-installer) names Ubuntu's flavor Patrone Linux.
-# slides/ has Patrone's slides, shown during the install, in English for
-# every language.
+# The pictures are the installer's own (assets/...), which Patrone's build
+# of it makes Patrone's: the wordmark and P in place of Ubuntu's logo and
+# mascot, the rest in Patrone's blue (installer/patch_source.py). The list is
+# the installer's own whitelabel.yml's, so every page keeps its picture.
+# Patrone's name comes from that build too: here, "flavor" can only be one of
+# Ubuntu's flavors' names.
 theme:
   accent-color: "#288BFA"
   elevated-button-color: "#288BFA"
   elevated-button-text-color: "#FFFFFF"
 pages:
   locale:
-    image: "/usr/share/desktop-provision/patrone-logo.svg"
-    image-dark: "/usr/share/desktop-provision/patrone-logo-dark.svg"
+    image: "assets/images/logo-light.svg"
+    image-dark: "assets/images/logo-dark.svg"
   accessibility:
     image: "assets/images/accessibility.svg"
   try-or-install:
-    image: "/usr/share/desktop-provision/patrone-mark.svg"
-    image-dark: "/usr/share/desktop-provision/patrone-mark.svg"
+    image: "assets/images/mascot-light.svg"
+    image-dark: "assets/images/mascot-dark.svg"
   rst:
     image: "assets/images/rst.svg"
   keyboard:
@@ -30,11 +30,11 @@ pages:
   network:
     image: "assets/images/wifi.svg"
   # The page offering an update of the installer's snap: an update would
-  # start Ubuntu's own installer in place of Patrone's (installer/README.md).
+  # start Ubuntu's own installer in place of Patrone's.
   refresh:
     visible: false
-    image: "/usr/share/desktop-provision/patrone-mark.svg"
-    image-dark: "/usr/share/desktop-provision/patrone-mark.svg"
+    image: "assets/images/mascot-light.svg"
+    image-dark: "assets/images/mascot-dark.svg"
   autoinstall:
     image: "assets/images/disk.svg"
   autoinstall-direct:
@@ -89,9 +89,9 @@ pages:
     image: "assets/images/telemetry.svg"
   welcome:
   done:
-    image: "/usr/share/desktop-provision/patrone-mark.svg"
-    image-dark: "/usr/share/desktop-provision/patrone-mark.svg"
+    image: "assets/images/mascot-light.svg"
+    image-dark: "assets/images/mascot-dark.svg"
   storage-icon:
-    image: "/usr/share/desktop-provision/patrone-mark.svg"
+    image: "assets/images/ubuntu_storage_icon.svg"
   error:
     image: "assets/images/error.svg"

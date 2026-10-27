@@ -12,7 +12,21 @@ front end with a Patrone Linux flavor.
 
 `patrone-installer` is that build. It's the front end at the commit the
 ISO's snap was built from (`6623407`, ubuntu-desktop-bootstrap 26.04.1,
-snap revision 665), with two changes, both made by `build.sh`:
+snap revision 665), with these changes, all made by `build.sh`:
+
+- **Pictures** (`patch_source.py`; the user, 2026-10-27: "remove all of the
+  images that have the ubuntu orange"): Patrone's wordmark and P in place of
+  Ubuntu's logo, mascot and disk icon (the one beside the new system's
+  partition), and every other picture's orange turned to Patrone's blue at
+  the same lightness, so the drawings keep their shading. The installer
+  takes pictures only from its own files; a path to a file elsewhere in its
+  settings shows nothing.
+- **The spinner** (`patch_source.py`): Flutter's plain turning ring, in
+  Patrone's blue, in place of Yaru's (on the Next button while a page
+  works, and on the loading page).
+- **The suggested username** (`patch_source.py`): the first initial and last
+  name, "wdaugherty" for "William Daugherty" (Ubuntu's runs the whole name
+  together).
 
 - **Ubuntu's flavor is named Patrone Linux** (`ubuntu_flavor` 0.5.0+1, from
   pub.dev, with `ubuntu('Ubuntu')` made `ubuntu('Patrone Linux')`). The

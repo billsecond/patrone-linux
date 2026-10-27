@@ -77,12 +77,10 @@ Patrone Blue.
 
 ![The boot spinner](system/plymouth/previews/spinner-preview.gif)
 
-Three interlinked rings, woven like the Borromean rings: each passes over one
-of the others and under the third, so no two are linked but the three hold
-together. A comet of light runs clockwise round each ring, its head
-sprinting and its tail catching up, and the rings take turns, each a third
-of a loop after the one before. The tracks are Shadow; the comets run from
-a whitened Highlight at the head through Patrone Blue to Mid.
+A single ring (the user, 2026-10-27; it was three interlinked rings before).
+A comet of light runs clockwise round it, its head sprinting and its tail
+catching up, once a loop. The track is Shadow; the comet runs from a
+whitened Highlight at the head through Patrone Blue to Mid.
 
 `system/plymouth/spinner/` holds the frames for Plymouth's two-step module,
 96×96 with transparency:
@@ -91,7 +89,7 @@ a whitened Highlight at the head through Patrone Blue to Mid.
   as a 2-second loop whatever the frame count, sampled 30 times a second, so
   60 frames give each tick a new one.
 - `animation-0001.png` to `animation-0030.png`, the end animation: it carries
-  on from the loop and lights the rings in full. The theme turns it off, but
+  on from the loop and lights the ring in full. The theme turns it off, but
   two-step needs the files: without them it takes the throbber's frames for
   its end animation and shows no spinner.
 

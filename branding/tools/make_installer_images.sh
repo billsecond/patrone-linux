@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# Makes the installer's images (system/desktop-provision/, see
-# whitelabel.yaml there): Patrone's wordmark in place of Ubuntu's logo, 66
-# pixels tall as Ubuntu's is (patrone-logo.svg with dark text for the light
-# style, patrone-logo-dark.svg with light text for the dark style), and the
-# P in place of Ubuntu's mascot (patrone-mark.svg, square). Each is the PNG
-# inside an SVG, as make_about_logos.sh makes them.
+# Makes Patrone's pictures for the installer, for installer/build.sh, which
+# puts them in place of Ubuntu's (installer/patch_source.py): Patrone's
+# wordmark in place of Ubuntu's logo, 66 pixels tall as Ubuntu's is
+# (patrone-logo.svg with dark text for the light style, patrone-logo-dark.svg
+# with light text for the dark style), and the P in place of Ubuntu's mascot
+# and disk icon (patrone-mark.svg, square). Each is the PNG inside an SVG, as
+# make_about_logos.sh makes them.
 #
-#   branding/tools/make_installer_images.sh
+#   branding/tools/make_installer_images.sh OUT-DIR
 set -euo pipefail
 
 branding=$(cd "$(dirname "$0")/.." && pwd)
-out=$branding/system/desktop-provision
+out=${1:?Usage: $0 OUT-DIR}
+mkdir -p "$out"
 
 wrap() { # PNG OUT HEIGHT (0: no size, only a viewBox)
     local size w h width

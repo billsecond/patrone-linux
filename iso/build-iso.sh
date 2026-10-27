@@ -184,6 +184,9 @@ close_layer() {
     size=$(du -sbx "$root" | cut -f1)
     echo "$size" >"$work/iso/$name.size"
     unmount_to "$layer_mounts"
+    # The disc's mount point, made for the build: the installer makes /cdrom
+    # in the new system itself, and stops if it's there already.
+    rmdir "$layer/upper/cdrom"
     mksquashfs "$layer/upper" "$work/iso/$name.squashfs" -noappend -comp xz -b 131072 -xattrs -quiet
 }
 
@@ -259,7 +262,9 @@ EOF
 sed -i -e 's/"Try or Install Ubuntu"/"Try or Install Patrone Linux"/' \
     -e 's/"Ubuntu (safe graphics)"/"Patrone Linux (safe graphics)"/' \
     "$work/iso/grub.cfg" "$work/iso/loopback.cfg"
-echo "Patrone Linux 26.04.1, on Ubuntu 26.04.1 LTS \"Resolute Raccoon\" - amd64 ($(date -u +%Y%m%d))" >"$work/iso/info"
+# Ubuntu's form; the installer shows what comes before the quote as the new
+# system's name.
+echo "Patrone Linux 26.04.1 \"Patrone Linux\" - Release amd64 ($(date -u +%Y%m%d))" >"$work/iso/info"
 
 # What's new on the disc
 declare -A put=([/casper/initrd]=initrd [/casper/install-sources.yaml]=install-sources.yaml
