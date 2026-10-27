@@ -252,8 +252,11 @@ Every window shares one process.
   `GDK_BACKEND=broadway BROADWAY_DISPLAY=:7 dbus-run-session -- patrone-file-manager`,
   and open `http://localhost:8087` (tunnel the port over SSH from Windows).
 - **A screenshot under Wayland:** inside a throwaway
-  `dbus-run-session gnome-shell --headless --virtual-monitor 1600x1000 --wayland --no-x11 --wayland-display NAME`,
-  run the app with `WAYLAND_DISPLAY=NAME PATRONE_FM_SCREENSHOT=out.png`; it
+  `dbus-run-session bwrap --die-with-parent --dev-bind / / --bind EMPTY /usr/share/gnome-shell/extensions/ding@rastersoft.com gnome-shell --headless --virtual-monitor 1600x1000 --wayland --no-x11 --wayland-display NAME`
+  (EMPTY is an empty folder; it hides Ubuntu's desktop icons, whose
+  start-up ends every desktop-icons process of the account and so
+  restarted the real desktop's icons, as `shell/gnome/tests/headless.sh`
+  found), run the app with `WAYLAND_DISPLAY=NAME PATRONE_FM_SCREENSHOT=out.png`; it
   draws its first window into `out.png` after
   `PATRONE_FM_SCREENSHOT_DELAY` milliseconds (2000) and quits.
   `PATRONE_FM_COLOR_SCHEME=dark` or `light` forces a color scheme. With
