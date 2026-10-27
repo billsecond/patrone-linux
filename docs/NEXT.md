@@ -93,6 +93,33 @@ Waiting on the user:
   Shift (move); hold files from File Manager over the pill to open the
   bubble. 0.3.1 has 0.2.10's fixes too. Checked only in a throwaway shell.
 
+- **The first Patrone ISO** (2026-10-27, `iso/README.md`): `iso/build-iso.sh`
+  remasters Ubuntu 26.04.1's desktop ISO with two Patrone layers, what the
+  installer installs and the live session, so the boot splash, live
+  desktop, installer (patrone-branding 0.1.9) and installed system are
+  Patrone's, with no Ptyxis and Chromium seeded in place of Firefox and App
+  Center (the user: "IT SHOULDN'T SAY UBUNTU"; "the other terminal
+  shouldn't even show up"). `scripts/hyperv/new-test-vm.ps1` made the
+  `PatroneTest` VM (Secure Boot on). The user wants to **watch the install
+  from start to finish**: don't start one in the VM without them. Found on
+  the way:
+  - **Ubuntu's installer can't be renamed.** Its look is Patrone's
+    (`branding/system/desktop-provision/whitelabel.yaml`), but its name
+    comes from a fixed list of Ubuntu's flavors (`UbuntuFlavor.fromName`
+    in ubuntu-desktop-provision's `flavor_service.dart`; anything else is
+    "Ubuntu"), so it says "Welcome to Ubuntu", "Install Ubuntu". Saying
+    Patrone takes another installer front end (a decision for the user).
+  - **Remote Desktop breaks automatic login.** With `patrone-remote-desktop`,
+    an account that logs in by itself (the live session; an install with
+    "log in automatically") falls back to the login screen: GDM refuses
+    the account's headless desktop because the screen's session is already
+    open ("There's already an opened session for user ..."). The ISO's
+    live session leaves the package out; installs should require the
+    password until it's fixed (section 3).
+  - **patrone-branding asks about `/etc/issue`** when it's installed: dpkg
+    takes Ubuntu's copy, moved aside by the diversion, as deleted by the
+    user. The ISO build answers with `--force-confnew`; an install with apt
+    on a running system asks.
 - **The Craft apps show and install in Patrone Software** (done
   2026-10-27, `patrone-software` 0.1.4, installed; the user: "Looks
   great"). They come from Patrone's app index,

@@ -204,6 +204,15 @@ open_layer "$live_layer" "" minimal.standard.live minimal.standard minimal
 # Patrone Terminal opens at login on an installed system; here the
 # installer has the screen (Ctrl+Alt+T still opens it).
 echo "Hidden=true" >>"$root/etc/xdg/autostart/org.patrone.Terminal.desktop"
+# Ubuntu's live layer turns off only Ubuntu's desktop icons
+# (livecd-rootfs.gschema.override, which comes after Patrone's 90_patrone
+# and so wins), which brought Ubuntu's dock back. Patrone's taskbar is the
+# panel here too.
+cat >"$root/usr/share/glib-2.0/schemas/zz_patrone-live.gschema.override" <<'EOF'
+[org.gnome.shell]
+disabled-extensions=['ubuntu-dock@ubuntu.com', 'ding@rastersoft.com']
+EOF
+in_root glib-compile-schemas /usr/share/glib-2.0/schemas
 
 step "The live session's boot image"
 # Ubuntu's own, which knows the disc (conf/uuid.conf) and how to start the

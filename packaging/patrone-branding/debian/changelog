@@ -1,10 +1,10 @@
 patrone-branding (0.1.9) resolute; urgency=medium
 
-  * The installer says Patrone Linux: /usr/share/desktop-provision/ has
-    Patrone's name, blue, wordmark and P for Ubuntu's installer
-    (ubuntu-desktop-bootstrap), in place of Ubuntu's name, orange, logo
-    and mascot. The user, 2026-10-27, of the ISO's installer: "IT
-    SHOULDN'T SAY UBUNTU".
+  * The installer looks like Patrone's: /usr/share/desktop-provision/ has
+    Patrone's blue, wordmark and P for Ubuntu's installer
+    (ubuntu-desktop-bootstrap), in place of Ubuntu's orange, logo and
+    mascot. The user, 2026-10-27, of the ISO's installer: "IT SHOULDN'T
+    SAY UBUNTU". Its name stays Ubuntu's: it knows only Ubuntu's flavors.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 13:55:00 -0500
 

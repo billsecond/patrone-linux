@@ -1,11 +1,12 @@
 # Patrone's look for the installer, Ubuntu's ubuntu-desktop-bootstrap snap,
 # which reads the YAML files in /usr/share/desktop-provision/ in place of its
-# own whitelabel.yml: Patrone's name and blue, and Patrone's wordmark and P
-# in place of Ubuntu's logo and mascot. The other pages keep the snap's own
-# pictures (the paths under assets/ are the snap's), listed as its file
-# lists them.
-flavor:
-  name: Patrone Linux
+# own whitelabel.yml: Patrone's blue, and Patrone's wordmark and P in place
+# of Ubuntu's logo and mascot. The other pages keep the snap's own pictures
+# (the paths under assets/ are the snap's), listed as its file lists them.
+#
+# Its name can't be set here: "flavor" is one of Ubuntu's flavors' names
+# (UbuntuFlavor.fromName in ubuntu-desktop-provision's flavor_service.dart),
+# and any other falls back to Ubuntu.
 theme:
   accent-color: "#288BFA"
   elevated-button-color: "#288BFA"
