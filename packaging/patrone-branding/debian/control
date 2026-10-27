@@ -15,6 +15,7 @@ Package: patrone-branding
 Architecture: all
 Depends: ${misc:Depends},
          fonts-noto-core,
+         fonts-patrone-sans,
          plymouth-theme-spinner,
          plymouth-theme-ubuntu-text
 # Patrone's wallpapers in place of Ubuntu's: GNOME Shell depends on

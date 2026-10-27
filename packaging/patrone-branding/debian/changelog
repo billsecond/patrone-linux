@@ -1,3 +1,13 @@
+patrone-branding (0.1.6) resolute; urgency=medium
+
+  * Patrone Sans is the typeface: the desktop's, documents', window titles'
+    (now semibold) and the login screen's font, and what sans-serif,
+    system-ui and Segoe UI mean in apps and web pages, Chromium included,
+    with Noto Sans behind it for scripts it doesn't cover. Depends on
+    fonts-patrone-sans. Accounts that chose a font keep it.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 20:05:00 -0500
+
 patrone-branding (0.1.5) resolute; urgency=medium
 
   * Remove Ubuntu's wallpapers (ubuntu-wallpapers and

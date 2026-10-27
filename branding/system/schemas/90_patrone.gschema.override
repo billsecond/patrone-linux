@@ -14,24 +14,26 @@ disabled-extensions=['ubuntu-dock@ubuntu.com']
 accent-color='blue'
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
-font-name='Noto Sans 11'
-document-font-name='Noto Sans 11'
+font-name='Patrone Sans 11'
+document-font-name='Patrone Sans 11'
 
 [org.gnome.desktop.interface:ubuntu]
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
-font-name='Noto Sans 11'
-document-font-name='Noto Sans 11'
+font-name='Patrone Sans 11'
+document-font-name='Patrone Sans 11'
 
-# Noto Sans, Patrone's typeface (the font of Patrone File Manager), for the
-# desktop, apps and window titles; it comes in regular and bold, so titles
-# are bold. Web pages and apps that ask for sans-serif or Segoe UI get it
-# through 05-patrone-fonts.conf. Monospace stays Ubuntu Sans Mono.
+# Patrone Sans, Patrone's typeface (fonts-patrone-sans: Noto Sans with a
+# tailed l and a slashed zero), for the desktop, apps and window titles,
+# which are semibold now that the typeface has one. Web pages and apps that
+# ask for sans-serif or Segoe UI get it through 05-patrone-fonts.conf, with
+# Noto Sans behind it for scripts it doesn't cover. Patrone Settings' Theme
+# page switches between the two. Monospace stays Ubuntu Sans Mono.
 [org.gnome.desktop.wm.preferences]
-titlebar-font='Noto Sans Bold 11'
+titlebar-font='Patrone Sans SemiBold 11'
 
 [org.gnome.desktop.wm.preferences:ubuntu]
-titlebar-font='Noto Sans Bold 11'
+titlebar-font='Patrone Sans SemiBold 11'
 
 # Wallpaper 01, light in the light style and dark in the dark one
 [org.gnome.desktop.background]
