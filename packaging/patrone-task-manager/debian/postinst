@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = configure ]; then
+    # Compile Patrone's dconf database (/etc/dconf/db/patrone) from
+    # patrone.d, as ibus does its own. Signed-in accounts read it from their
+    # next sign-in, when the profile is read.
+    if command -v dconf > /dev/null; then
+        dconf update
+    fi
+fi
+
+#DEBHELPER#

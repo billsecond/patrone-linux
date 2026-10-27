@@ -1,3 +1,11 @@
+patrone-desktop (0.1.2) resolute; urgency=medium
+
+  * Recommend Patrone Task Manager, which takes the place of Ubuntu's
+    Resources (patrone-task-manager conflicts with it) and opens with
+    Ctrl+Shift+Esc.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:20:00 -0500
+
 patrone-desktop (0.1.1) resolute; urgency=medium
 
   * Set the time from NTS servers run by Cloudflare, Netnod, PTB and SIDN

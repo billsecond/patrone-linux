@@ -11,6 +11,7 @@
 #   ./packaging/build.sh patrone-settings -d
 #   ./packaging/build.sh patrone-desktop
 #   ./packaging/build.sh patrone-unpack -d
+#   ./packaging/build.sh patrone-task-manager -d
 #   ./packaging/build.sh fonts-patrone-sans
 #
 # The packages land in out/. For a Rust package the crates are vendored into
@@ -34,6 +35,7 @@ case $package in
     patrone-settings) source_dir=settings ;;
     patrone-desktop) source_dir=desktop ;;
     patrone-unpack) source_dir=unpack ;;
+    patrone-task-manager) source_dir=task-manager ;;
     fonts-patrone-sans) source_dir=fonts ;;
     *)
         echo "Unknown package: $package" >&2

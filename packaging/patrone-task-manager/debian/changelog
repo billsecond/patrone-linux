@@ -1,0 +1,20 @@
+patrone-task-manager (0.1.0) resolute; urgency=medium
+
+  * First package: Patrone Task Manager, in the place of Ubuntu's Resources
+    (Conflicts and Replaces). Pages: Processes (apps, background processes
+    and system processes, each with its processes under it, and their
+    processor, memory, disk and network use, shaded as they get busier),
+    Performance (processors, memory, disks, network adapters and graphics
+    cards that say how busy they are, each with a minute's graph), App
+    history (processor time per app since the computer started, from the
+    journal), Startup apps (a switch for each autostart entry), Users,
+    Details (every process) and Services (start, stop and restart system
+    services or your own).
+  * End task, End process tree, Set priority, Open file location,
+    Properties and Run new task; ending something other than an app asks
+    first, and other accounts' processes go through pkexec.
+  * Ctrl+Shift+Esc opens it: a custom shortcut in a new Patrone dconf
+    database (/etc/dconf/db/patrone.d), read through a vendor profile in
+    /usr/share/dconf/profile/user, from the next sign-in.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:15:00 -0500

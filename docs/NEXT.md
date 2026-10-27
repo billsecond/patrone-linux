@@ -73,6 +73,12 @@ Done:
 
 Waiting on the user:
 
+- **Install Patrone Task Manager** (section 15), which removes Ubuntu's
+  Resources, then sign out and back in so Ctrl+Shift+Esc works:
+  `sudo apt install ~/src/patrone-linux/out/patrone-task-manager_0.1.0_amd64.deb ~/src/patrone-linux/out/patrone-desktop_0.1.2_all.deb`.
+  Try Ctrl+Shift+Esc, the taskbar's right-click "Task Manager", End task
+  on an app, and Start or Stop on a system service (asks for the password).
+
 - **Install the new packages, turn on Patrone Remote Desktop, reboot, then
   connect** (needs their sudo password; section 3 has the steps). Their
   favorites and icon theme were already reset to Patrone's defaults
@@ -1586,6 +1592,93 @@ Findings:
   apps the fonts without touching the account.
 - libadwaita draws buttons' text in bold, so text inside a card button
   needs its weight set to show a font's regular weight.
+
+## 15. Patrone Task Manager (patrone-task-manager)
+
+The user asked (2026-10-26) for "a more windows like task manager,
+replacing the current one", which was Ubuntu's Resources. `task-manager/`
+is a Rust and GTK 4 app laid out like Windows 11's Task Manager: Processes
+(apps, background processes, system processes, each with its processes
+under it), Performance, App history, Startup apps, Users, Details and
+Services. `task-manager/README.md` has how it works and what was learned.
+
+- **Replacing Resources:** `patrone-task-manager` has `Conflicts` and
+  `Replaces: resources`. Resources is only recommended by
+  `ubuntu-desktop-minimal` (`apt-cache rdepends --installed resources`), so
+  `apt-get install -s` of the package removes Resources and nothing else.
+  `patrone-desktop` 0.1.2 recommends `patrone-task-manager`.
+- **Ctrl+Shift+Esc:** a custom shortcut in a Patrone dconf database
+  (`/etc/dconf/db/patrone.d/`, compiled by `dconf update` in postinst, as
+  ibus does) read through a vendor profile,
+  `/usr/share/dconf/profile/user`. Not a gschema override: a custom
+  shortcut's values live at a path of its own, which an override can't
+  reach, and overriding the shared `custom-keybinding` schema would start
+  every new shortcut made in Settings as Task Manager's. Nothing else
+  Patrone ships sets `custom-keybindings`. An account with custom
+  shortcuts of its own keeps its own list, without this one.
+- **The taskbar** already lists `org.patrone.TaskManager.desktop` first in
+  its "Task Manager" menu item (main session).
+
+Checked, all in a private copy of the throwaway GNOME Shell
+(`/tmp/patrone-tm-test`, display `wayland-patrone-tm`, so other sessions'
+use of the shared one was untouched), with clicks and keys from the
+shell's virtual devices:
+
+- Every page, with screenshots: Processes (sections, totals in the column
+  headers, shading, a terminal's shells under the terminal), Performance
+  (CPU, memory, two disks, Ethernet; this VM has no graphics card that
+  reports how busy it is, so no GPU page), App history (from the journal),
+  Startup apps, Users (two accounts), Details, Services.
+- End task on a stand-in app (a `sleep` in an `app-gnome-…` scope) ended
+  it at once; End task on a plain process asked first, and ended it. The
+  right-click menu, search, Properties and Run new task (it started the
+  program) worked.
+- A Startup apps switch wrote the per-account copy with `Hidden=true` and
+  removed it again (in the test shell's own config folder).
+- Stop on a throwaway user service (`systemd-run --user`) stopped it, from
+  a copy run on the user's session bus (the test shell's own bus has no
+  systemd). System services' Start, Stop and Restart weren't tried: they
+  ask for the user's password.
+- **Ctrl+Shift+Esc** opened Task Manager: the keyfile compiled with
+  `dconf compile`, a profile found through `XDG_DATA_DIRS` (as
+  `/usr/share/dconf/profile/user` will be, but pointing at a test file
+  with `file-db:`), and `gsd-media-keys` running in that shell. The
+  installed `system-db:patrone` and postinst's `dconf update` need root,
+  so they weren't tried.
+- The package builds with `build.sh -d` (9 tests pass) and with Rust 1.93,
+  Ubuntu's.
+- Dark: checked with the user's real appearance settings (a copy on their
+  session bus): consistent after the stylesheet change below.
+- Its own use: about 4% of one core on Processes, 3% on Performance, in
+  this VM where GTK draws in software.
+
+Not checked: the installed package itself, the shortcut in the user's real
+session, a graphics card's page, and per-process network on a busy
+browser (UDP and QUIC aren't counted; the README says why). Once, running
+on the user's session bus, the app quit while switching to "Your
+services" with nothing in its log and no kernel trap logged; it didn't
+happen again in ten more tries, with gdb and without.
+
+Findings (more in `task-manager/README.md`):
+
+- GTK lists keep their place by a row and follow it as rows move, so a list
+  re-sorted every second wandered off and hid the first section's header.
+  Making GTK re-anchor right after rows change crashed it with a divide by
+  zero (`libgtk-4.so.1.2200.4`); `table.rs` instead keeps a list that's at
+  the top there, safely.
+- A `PopoverMenu` made and opened at once is measured without its
+  separators and cuts off its last items: make each menu once.
+- In the user's session GTK draws its parts dark while
+  `@media (prefers-color-scheme: dark)` rules don't apply (theme
+  `Yaru-blue-dark`, which plain GTK 4 apps can't load), so a stylesheet
+  keyed to that media query showed light panels with light text. Task
+  Manager's tints come from `currentColor`. File Manager's stylesheet uses
+  that media query; worth checking it in the user's session.
+- At 18:31:03 on 2026-10-26 the dev install of Patrone Terminal was
+  removed (`~/.local/bin/patrone-terminal`,
+  `~/.config/autostart/org.patrone.Terminal.desktop` and the launcher in
+  `~/.local/share/applications`, within 40 ms), leaving the package's.
+  Not Task Manager's doing; noted in case it wasn't meant.
 
 ## Suggested order
 

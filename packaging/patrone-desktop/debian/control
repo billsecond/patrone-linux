@@ -17,6 +17,7 @@ Recommends: apport,
             patrone-remote-desktop,
             patrone-settings,
             patrone-shell-config,
+            patrone-task-manager,
             patrone-terminal
 Conflicts: apport-gtk, ubuntu-insights, ubuntu-report, whoopsie
 Description: Patrone Linux's desktop

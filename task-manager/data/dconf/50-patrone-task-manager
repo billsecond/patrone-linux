@@ -1,0 +1,15 @@
+# Ctrl+Shift+Esc opens Patrone Task Manager. A custom shortcut of the
+# desktop's media keys, given here as a default rather than in a schema
+# override: a custom shortcut lives at a path of its own, which only dconf
+# can give values, and overriding the shared custom-keybinding schema would
+# start every shortcut a person adds in Settings as this one. Each account
+# can change or remove it in Settings > Keyboard > Custom Shortcuts. An
+# account that already has custom shortcuts of its own keeps its own list,
+# without this one.
+[org/gnome/settings-daemon/plugins/media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/patrone-task-manager/']
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/patrone-task-manager]
+name='Task Manager'
+command='patrone-task-manager'
+binding='<Control><Shift>Escape'
