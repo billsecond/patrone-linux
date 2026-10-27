@@ -71,18 +71,22 @@ Done:
   `fastfetch` still showed Ubuntu's logo and looked like a false claim. Say
   exactly how something was checked.)
 
-In progress:
-
-- **Patrone File Manager draws the desktop and the bubble** (the user,
-  2026-10-27: "The desktop and the roll out menu must be an extension of
-  the file explorer app, while supporting the desktop and all it can
-  do"), in place of Ubuntu's desktop icons and the taskbar's drawing of
-  the bubble: Windows' desktop menu (New, Paste, Undo, Sort by, Open in
-  Terminal...), File Manager's icons, and dragging to and from File
-  Manager with Ctrl and Shift. The File Manager session has it, end to end,
-  `shell/gnome/` hosting included.
-
 Waiting on the user:
+
+- **Install File Manager 0.3.0 and taskbar 0.4.0: File Manager draws the
+  desktop and the bubble** (the user, 2026-10-27: "The desktop and the
+  roll out menu must be an extension of the file explorer app, while
+  supporting the desktop and all it can do"; sections 7 and 8), from SSH
+  or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.3.0_amd64.deb
+  ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.0_all.deb`,
+  then sign out from inside the desktop and back in. Ubuntu's desktop
+  icons go (the taskbar turns them off); the bubble and, with it off
+  (Patrone Settings → Desktop), the desktop itself show File Manager's
+  icons. Right-click the desktop for Windows' menu (View, Sort by, New,
+  Paste, Undo...); drag between File Manager and the desktop or the bubble
+  with Ctrl (copy) or Shift (move); hold files over the pill to open the
+  bubble. 0.3.0 has 0.2.10's fixes too. Checked only in a throwaway shell.
 
 - **Patrone's featured apps for GNOME Software.** The user said on
   2026-10-27 that they'd send the list shortly, and asked to be reminded.
@@ -97,22 +101,19 @@ Waiting on the user:
   (the snap-store snap) is removed on install; GNOME Software is in the
   Start menu as Software.
 
-- **Install taskbar 0.3.12 and try the desktop bubble** (the user's design,
-  2026-10-26; `shell/gnome/README.md`, "The desktop bubble"). The user
+- **The desktop bubble** (the user's design, 2026-10-26;
+  `shell/gnome/README.md`, "The desktop bubble"): in the step above's
+  packages (taskbar 0.4.0 replaces 0.3.12, never installed). The user
   installed 0.3.10 with Settings 0.3.5 and GNOME Settings patrone7 on
   2026-10-27, but at sign-in the taskbar failed (the desktop has no screen
   for a moment over Remote Desktop; README, "The Recycle Bin on the
   desktop"), so GNOME's top bar showed and the bubble never started.
-  0.3.11 (installed) fixed that and added Show Recycle Bin to the desktop's
-  right-click; 0.3.12 puts the bin half over the bubble's edge, and on it
-  even while it's off the desktop:
-  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.12_all.deb`,
-  then sign out from inside the desktop and back in. The desktop icons go;
-  a blue pill at the left edge bounces with a tip until it's clicked.
-  Click it or drag it out: the desktop's files in a bubble, the Recycle
-  Bin on its edge. Patrone Settings → Desktop (or GNOME Settings → Patrone)
-  turns it off. Checked only in the throwaway shell, with a stand-in for the
-  desktop icons' window: never with the real desktop icons extension.
+  0.3.11 (installed) fixed that; 0.3.12 put the bin half over the bubble's
+  edge, and on it even while it's off the desktop. After signing in, a
+  blue pill at the left edge bounces with a tip until it's clicked. Click
+  it or drag it out: the desktop's files in a bubble, the Recycle Bin on
+  its edge. Patrone Settings → Desktop (or GNOME Settings → Patrone) turns
+  it off.
 
 - **The terminal at sign-in, over the wallpaper's logo or centered** (the
   user's asks, 2026-10-26; `shell/gnome/README.md`, "The terminal at
@@ -220,14 +221,11 @@ Waiting on the user:
   traced from the concept instead; their file would only matter for
   `/etc/issue` or if they prefer that look.
 - **Try the compositor's input handling** (section 2).
-- **Install Patrone File Manager 0.2.10** (section 8; the user runs 0.2.9),
-  from SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/patrone-file-manager_0.2.10_amd64.deb`,
-  then close every File Manager window so the new version starts. A name
-  being typed (after Compress, New folder, New file or F2) is kept by a
-  click anywhere else, a new ZIP shows its icon and size at once, and
-  going back or up (toolbar, mouse buttons, keys, address bar, tree)
-  selects the folder you came out of.
+- **File Manager 0.2.10's fixes** (section 8; the user runs 0.2.9) come with
+  0.3.0 in the first step: a name being typed (after Compress, New folder,
+  New file or F2) is kept by a click anywhere else, a new ZIP shows its
+  icon and size at once, and going back or up (toolbar, mouse buttons,
+  keys, address bar, tree) selects the folder you came out of.
 - **Install Patrone Unpack** (section 13), from SSH or a terminal:
   `sudo apt install ~/src/patrone-linux/out/patrone-unpack_0.1.1_amd64.deb
   ~/src/patrone-linux/out/patrone-default-apps_0.1.3_all.deb` (apt adds
@@ -912,6 +910,25 @@ Findings:
   each layout, Start opening downward from the top, every icon (white on
   Royal). A highlight on the tray at the top was the test's own pointer,
   left where the tray landed.
+- **0.4.0** (2026-10-27, with File Manager 0.3.0): the desktop and the
+  bubble are File Manager's (section 8). The taskbar starts
+  `patrone-file-manager --desktop` as its own Wayland client
+  (`desktopHost.js`), makes "Patrone Desktop" a desktop window and keeps
+  "Patrone Desktop Bubble" above the windows, unseen until the pill opens
+  it; the two talk over File Manager's standard input and output. It
+  turns Ubuntu's desktop icons off through `disabled-extensions` once
+  File Manager's desktop shows (`ding-replaced` remembers, so they come
+  back only if the taskbar turned them off and File Manager's desktop
+  can't run). `bubbleShape.js` moved into File Manager
+  (`src/bubble.rs`). Found while testing: with a client's surface under
+  them, GNOME 50 ended the pill's and the Recycle Bin's drag gestures the
+  moment they were pressed (a drag opened the bubble like a click; the
+  bin couldn't be moved), so File Manager's windows stop taking the
+  pointer while it's on one of them (`shieldPointer`). And the bubble's
+  window was first half the screen and clear outside the bubble, which
+  swallowed drops meant for the File Manager window under it; it's the
+  bubble's size now. Details and what was checked: `shell/gnome/README.md`,
+  "The desktop and the bubble: File Manager's windows".
 
 ## 8. Patrone File Manager (patrone-file-manager)
 
@@ -1275,9 +1292,48 @@ account's real setting.)
   themes draw entry selections dimly); `over-theme.css` gives it the
   accent colour.
 
-Next: the user's verdict on 0.2.10, then the gaps in the README's "Not done
-yet" (group headers in the icon views, the command bar folding into "See
-more" when narrow, Gallery's timeline), and FileManager1.
+### 0.3.0 (2026-10-27): the desktop
+
+The user, 2026-10-27: "The desktop and the roll out menu must be an
+extension of the file explorer app, while supporting the desktop and all it
+can do", with Windows' desktop menu ("all of the items that windows would
+have such as creating a new file, folder, and other things"), File
+Manager's look for the files, and "From the file explorer app, I can't copy
+and drag items to copy/move them to the desktop (shift/control-whatever)".
+
+- `patrone-file-manager --desktop` (`src/desktop.rs`) draws the desktop and
+  the desktop bubble, hosted by the taskbar (0.4.0, section 7): File
+  Manager's own `Window` in a desktop mode (no chrome, the Desktop folder
+  only, dialogs with no parent), whose view moves into the bubble's window
+  while the bubble is on. Its own process, not on D-Bus; folders open in
+  File Manager's windows. `README.md`, "The desktop", has the whole of it.
+- `src/desktopgrid.rs` places File Manager's cells itself: down the left
+  side first, each where it was put (by name in `desktop-positions`,
+  carried over a rename), none under the Recycle Bin, or in the bubble's
+  places (`src/bubble.rs`), drawing the bubble behind them. Selection by
+  click, Ctrl, Shift, rubber band and arrow keys; moving icons by
+  dragging; drops from elsewhere land where they're let go.
+- Windows' desktop menu (`menus::desktop_menu`): View, Sort by, Refresh,
+  Paste, Paste shortcut, Undo/Redo, New with Templates, Show Recycle Bin,
+  Display settings, Personalize, Open in Terminal. Launchers: Allow
+  Launching, and an untrusted one asks before it runs.
+- Ctrl and Shift while dragging from one app's window to another's: the
+  window under the pointer doesn't have the keyboard and never saw them, so
+  a drop from File Manager on the desktop always moved. GNOME picks the
+  drag's action from the keys and the drop carries it; `dnd::drop_action`
+  uses that, in every drop handler.
+- Checked with real pointer and key events in a throwaway GNOME Shell
+  hosted by the new taskbar; the list is in `shell/gnome/README.md`
+  ("Trying it"). Not checked on the user's desktop, nor at a real sign-in
+  (where the desktop has no screen for a moment over Remote Desktop: in the
+  test shell with no screen, no errors and the windows waiting, but a
+  screen arriving later couldn't be tried). Not done: the desktop on
+  other screens than the primary one, Align icons to grid off, undo
+  shared with File Manager's windows.
+
+Next: the user's verdict on 0.3.0 and the desktop, then the gaps in the
+README's "Not done yet" (group headers in the icon views, the command bar
+folding into "See more" when narrow, Gallery's timeline), and FileManager1.
 
 ## 9. Patrone Settings (patrone-settings)
 

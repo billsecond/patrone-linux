@@ -1,3 +1,20 @@
+patrone-gnome-taskbar (0.4.0) resolute; urgency=medium
+
+  * The desktop and the desktop bubble are Patrone File Manager's (0.3.0):
+    the taskbar starts it, makes its windows the desktop and the bubble,
+    and keeps the pill, the bubble's opening and the Recycle Bin on its
+    edge. Ubuntu's desktop icons extension is turned off while it runs,
+    and back on if File Manager's desktop can't run (only if the taskbar
+    turned it off).
+  * Files dragged from an app and held over the pill open the bubble, to
+    drop them in it.
+  * The pill and the Recycle Bin can be dragged over File Manager's
+    desktop (its window stops taking the pointer under them).
+  * The desktop's own right-click menu offers Show Recycle Bin while the
+    bin is off the desktop, and no desktop icon goes under the bin.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 08:55:00 -0500
+
 patrone-gnome-taskbar (0.3.12) resolute; urgency=medium
 
   * On the desktop bubble, the Recycle Bin sits centred on the lower right

@@ -311,15 +311,31 @@ export class RecycleBin {
             this._reserveArea();
             return;
         }
+        const home = this.homePosition();
+        if (!home)
+            return;
+        this.actor.set_position(...home);
+        this._startDropTarget();
+        this._placeDropTarget();
+        this._reserveArea();
+    }
+
+    /**
+     * Its own place on the desktop, wherever it is now: File Manager's
+     * desktop (desktopHost.js) keeps its icons out from under it.
+     *
+     * @returns {number[]|null} x and y, or null with no screen yet
+     */
+    homePosition() {
         // Over Remote Desktop the desktop starts with no screen, until the
         // client's arrives (monitors-changed places it then). Read as
         // nothing, the screen's size took the whole taskbar down at the
         // user's sign-in (2026-10-27).
         if (!Main.layoutManager.primaryMonitor)
-            return;
+            return null;
         const area = Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex);
         if (!area)
-            return;
+            return null;
         const [, width] = this.actor.get_preferred_width(-1);
         const [, height] = this.actor.get_preferred_height(width);
         const dock = this._settings.get_string('recycle-bin-dock');
@@ -332,10 +348,7 @@ export class RecycleBin {
             x = dock.endsWith('left') ? area.x + MARGIN : area.x + area.width - width - MARGIN;
             y = dock.startsWith('top') ? area.y + MARGIN : area.y + area.height - height - MARGIN;
         }
-        this.actor.set_position(Math.round(x), Math.round(y));
-        this._startDropTarget();
-        this._placeDropTarget();
-        this._reserveArea();
+        return [Math.round(x), Math.round(y)];
     }
 
     // The desktop icons' area API, when that extension is running

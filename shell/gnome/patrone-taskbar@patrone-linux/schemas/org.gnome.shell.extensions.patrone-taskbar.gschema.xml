@@ -130,9 +130,9 @@
       <description>
         A small pill at the left edge of the primary screen, shown while no
         window covers it, opens a bubble with the files in the Desktop
-        folder, and the desktop icons extension's icons are hidden. Off, that
-        extension shows them across the desktop. Patrone Settings sets it, on
-        its Desktop page.
+        folder, which Patrone File Manager draws. Off, File Manager shows
+        them across the desktop. Patrone Settings sets it, on its Desktop
+        page.
       </description>
     </key>
     <key name="desktop-bubble-introduced" type="b">
@@ -141,6 +141,17 @@
       <description>
         Until it has, its pill bounces now and then, with a tip saying what
         it does.
+      </description>
+    </key>
+    <key name="ding-replaced" type="b">
+      <default>false</default>
+      <summary>Whether the taskbar turned Ubuntu's desktop icons off</summary>
+      <description>
+        Patrone File Manager draws the desktop in place of Ubuntu's desktop
+        icons extension, so the taskbar adds that extension to GNOME's
+        disabled-extensions while it does. This remembers that it did, so
+        it can turn the extension back on if File Manager's desktop goes
+        (not installed, or failing to start).
       </description>
     </key>
     <key name="terminal-app" type="s">
