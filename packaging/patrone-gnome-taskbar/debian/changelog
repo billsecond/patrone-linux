@@ -1,3 +1,18 @@
+patrone-gnome-taskbar (0.3.8) resolute; urgency=medium
+
+  * The desktop bubble: the desktop's files kept off the desktop, in a
+    bubble that comes out of the screen's left edge. A small pill there,
+    shown whenever no window covers it, opens it when clicked or dragged
+    out; it's as big as the files need, up to half the screen, and opens
+    over any window, like a menu. The Recycle Bin rides on its lower right
+    edge while it's open. Until it's first opened, the pill bounces now and
+    then with a tip saying what it does.
+  * While the bubble is on (Patrone Settings → Desktop; on by default), the
+    desktop icons extension's icons are hidden, and a right-click on the
+    empty desktop gives GNOME's own menu.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 20:30:00 -0500
+
 patrone-gnome-taskbar (0.3.7) resolute; urgency=medium
 
   * Files and folders dragged onto the Recycle Bin, from the desktop or a

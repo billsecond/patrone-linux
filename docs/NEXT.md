@@ -73,6 +73,19 @@ Done:
 
 Waiting on the user:
 
+- **Install the desktop bubble and try it** (the user's design, 2026-10-26;
+  `shell/gnome/README.md`, "The desktop bubble"), from SSH or a terminal:
+  `sudo apt install ~/src/patrone-linux/out/patrone-gnome-taskbar_0.3.8_all.deb
+  ~/src/patrone-linux/out/patrone-settings_0.3.4_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone6_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone6_all.deb`,
+  then sign out from inside the desktop and back in. The desktop icons go;
+  a blue pill at the left edge bounces with a tip until it's clicked.
+  Click it or drag it out: the desktop's files in a bubble, the Recycle
+  Bin on its edge. Patrone Settings → Desktop (or GNOME Settings → Patrone)
+  turns it off. Checked only in the throwaway shell, with a stand-in for the
+  desktop icons' window: never with the real desktop icons extension.
+
 - **Install Patrone Task Manager 0.2.0** (section 15). The user has 0.1.0
   and `patrone-desktop` 0.1.2 installed already (Resources is gone):
   `sudo apt install ~/src/patrone-linux/out/patrone-task-manager_0.2.0_amd64.deb`,

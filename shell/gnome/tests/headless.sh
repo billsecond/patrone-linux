@@ -95,6 +95,16 @@ Welcome letter.odt|application/vnd.oasis.opendocument.text|LibreOffice|libreoffi
 EOF
         echo '</xbel>'
     } > "$XDG_DATA_HOME/recently-used.xbel"
+
+    # And a Desktop folder of its own, for the desktop bubble, so the test
+    # shell never shows (or trashes) the account's real desktop files
+    local desktop=$base/desktop
+    mkdir -p "$desktop/Projects" "$desktop/Photos"
+    for name in 'Quarterly report.odt' 'Budget 2027.ods' 'Meeting notes.txt' \
+        'Team photo.png' 'Invoice 1042.pdf'; do
+        echo "sample $name" > "$desktop/$name"
+    done
+    echo "XDG_DESKTOP_DIR=\"$desktop\"" > "$XDG_CONFIG_HOME/user-dirs.dirs"
 }
 
 shell_eval() {

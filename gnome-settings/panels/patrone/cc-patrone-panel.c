@@ -1,7 +1,8 @@
 /* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
- * button icon), the title bar buttons (top right or top left, and their
+ * button icon), the desktop (its files in a bubble or across it, and the
+ * Recycle Bin), the title bar buttons (top right or top left, and their
  * style), the theme and the desktop's font (Patrone Sans or Noto Sans,
  * which the page sets itself). The same settings as Patrone Settings' window,
  * which this page leans on: its pictures (/usr/share/patrone/settings/
@@ -87,6 +88,17 @@ static const Choice pin_icons[] = {
   { "app", N_("Each App's Own"), N_("The icon of the app each one opens, in its own style") },
 };
 
+/* Yes-or-no settings: the first choice turns them on */
+static const Choice desktop_files[] = {
+  { "bubble", N_("In a Bubble"), N_("A pill at the screen's left edge opens them, over any window") },
+  { "desktop", N_("On the Desktop"), N_("Across the desktop, under your windows") },
+};
+
+static const Choice recycle_bin[] = {
+  { "shown", N_("On the Desktop"), N_("Docked to a corner; drop files on it to delete them") },
+  { "hidden", N_("Hidden"), N_("Still in File Manager's navigation pane") },
+};
+
 static const Choice sides[] = {
   { "right", N_("Top Right"), N_("Minimize, maximize, then close in the corner") },
   { "left", N_("Top Left"), N_("Close in the corner, then minimize, maximize") },
@@ -130,6 +142,7 @@ struct _ChoiceSet
 {
   GSettings *settings;
   const char *key;
+  const Choice *choices;
   ReadFunc read;
   WriteFunc write;
   GPtrArray *buttons;
@@ -191,6 +204,19 @@ static void
 write_string (ChoiceSet *set, const char *value)
 {
   g_settings_set_string (set->settings, set->key, value);
+}
+
+/* A yes-or-no setting as two choices, the first for yes */
+static char *
+read_boolean (ChoiceSet *set)
+{
+  return g_strdup (set->choices[g_settings_get_boolean (set->settings, set->key) ? 0 : 1].value);
+}
+
+static void
+write_boolean (ChoiceSet *set, const char *value)
+{
+  g_settings_set_boolean (set->settings, set->key, g_str_equal (value, set->choices[0].value));
 }
 
 /* Which corner a button-layout puts the buttons in: the left if close is
@@ -466,6 +492,7 @@ add_choices (CcPatronePanel      *self,
 
   set->settings = settings;
   set->key = key;
+  set->choices = choices;
   set->read = read;
   set->write = write;
   set->buttons = g_ptr_array_new ();
@@ -630,6 +657,23 @@ cc_patrone_panel_init (CcPatronePanel *self)
                              _("What the taskbar's web, terminal, files and mail pins show."));
           add_choices (self, group, self->taskbar, "pin-icons", read_string, write_string,
                        pin_icons, G_N_ELEMENTS (pin_icons), "pins", 2);
+        }
+
+      if (has_key (self->taskbar, "desktop-bubble"))
+        {
+          group = add_group (page, _("Desktop Files"),
+                             _("In a bubble, they're kept off the desktop: a small pill at the "
+                               "screen's left edge, shown whenever no window covers it, opens "
+                               "them. Click it, or drag it out."));
+          add_choices (self, group, self->taskbar, "desktop-bubble", read_boolean, write_boolean,
+                       desktop_files, G_N_ELEMENTS (desktop_files), "files", 2);
+        }
+
+      if (has_key (self->taskbar, "show-recycle-bin"))
+        {
+          group = add_group (page, _("Recycle Bin"), NULL);
+          add_choices (self, group, self->taskbar, "show-recycle-bin", read_boolean, write_boolean,
+                       recycle_bin, G_N_ELEMENTS (recycle_bin), "bin", 2);
         }
     }
   else

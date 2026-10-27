@@ -476,3 +476,51 @@
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
 }
+
+/* The desktop bubble (desktopBubble.js): the pill at the screen's left
+ * edge, Patrone blue so it shows on any wallpaper, and the files in the
+ * bubble it opens. The bubble's colors are the light and dark sheets'
+ * -patrone-bubble-fill and -patrone-bubble-border. */
+.patrone-desktop-pill {
+  background-color: #288bfa;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.patrone-desktop-pill:hover {
+  background-color: #4ca0ff;
+}
+
+/* Open, at the bubble's edge, rounded at both ends */
+.patrone-desktop-pill.open {
+  border-radius: 8px;
+}
+
+.patrone-desktop-pill-icon {
+  icon-size: 12px;
+  color: #ffffff;
+}
+
+.patrone-bubble-item {
+  padding: 4px 4px 2px 4px;
+  border-radius: 6px;
+}
+
+.patrone-bubble-item:focus {
+  box-shadow: inset 0 0 0 2px rgba(40, 139, 250, 0.9);
+}
+
+.patrone-bubble-item-label {
+  margin-top: 2px;
+  text-align: center;
+}
+
+.patrone-bubble-empty {
+  font-style: italic;
+}
+
+/* The Recycle Bin while it rides on the bubble: its name on the bubble's
+ * own color, not the wallpaper */
+.patrone-desktop-icon.on-bubble .patrone-desktop-icon-label {
+  text-shadow: none;
+}

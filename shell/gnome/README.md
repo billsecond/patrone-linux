@@ -181,6 +181,62 @@ a corner: bottom right unless moved, inside the taskbar.
 Not done: docked top left it can still sit where the first desktop file
 would; the reserved strip moves that file over one column.
 
+### The desktop bubble
+
+The user's design (2026-10-26): the desktop's files kept off the desktop,
+in a bubble that comes out of the screen's left edge (`desktopBubble.js`).
+On for every account; Patrone Settings → Desktop → Desktop files, or the
+`desktop-bubble` setting, turns it off.
+
+- **The pill**: a small Patrone-blue tab at the middle of the primary
+  screen's left edge, shown whenever no window covers its spot (a window
+  moved over it, or maximized, hides it). Hovering shows how many items the
+  desktop has. Until it's first opened, it bounces every six seconds with
+  a tip, "Your desktop files are in here: click, or drag it out" (the user
+  asked for that; `desktop-bubble-introduced` remembers it was opened).
+- **Clicking it, or dragging it out**, opens the bubble: half an ellipse
+  growing out of the edge, with a little overshoot, the pill riding at its
+  tip as a handle. Dragged, it follows the pointer; let go more than a
+  quarter of the way out and it opens, else it goes back. Dragging the
+  pill back, clicking it, clicking outside the bubble or Escape closes it.
+- **Its size** follows the files (`bubbleShape.js`): 250 pixels across for
+  one file or none, growing a little wider than tall until it's as tall as
+  the screen, then wider, up to half the screen. On a 1600×900 screen that
+  holds 43 files; with more, the last place is "N more", which opens the
+  Desktop folder.
+- **The files** are those in the Desktop folder (`xdg-user-dir DESKTOP`;
+  none when that's the home folder), hidden ones left out, folders first,
+  then by name, filling down the left side first as on Windows. Their icons
+  are the file's own or a thumbnail when one exists; a launcher the account
+  allowed to run starts its app. Click opens; right-click has **Open**,
+  **Show in folder** (the file manager, with it selected) and **Move to
+  Recycle Bin**. Right-click on the bubble's empty part: **Open Desktop
+  folder** and **Desktop settings**. Arrow keys and Tab move between files,
+  Enter opens.
+- **The Recycle Bin** leaves its corner as the bubble grows and rides on
+  the bubble's lower right edge, above the windows (`recycleBin.hold()`),
+  then goes back when it closes (`release()`). It still opens, empties and
+  docks as usual while it's there.
+- **The bubble opens over any window**, like a menu (the user's choice:
+  only the pill needs the desktop showing). It sits above the windows and
+  below the taskbar and every menu.
+- **The desktop icons** extension keeps running, but its windows (marked
+  `customJS_ding`) wait in a hidden actor of the bubble's while the setting
+  is on, so they neither draw nor take clicks, and a right-click on the
+  empty desktop gets GNOME's own menu (Change Background, Display
+  Settings). Clipping their actors to nothing didn't work: mutter still drew
+  them. Mutter keeps restacking them there, as it does windows GNOME Shell's
+  effects move. Turned off, they go back right above the wallpaper. Their
+  window gets the keyboard when the last window closes, so the bubble
+  takes it away from them (`unset_input_focus`), or keys would act on
+  hidden files.
+
+Not done: dropping files from apps onto the bubble (GNOME Shell takes no
+drops); renaming or making files in it (File Manager does that); thumbnails
+for files GNOME hasn't thumbnailed yet; the bubble on screens other than
+the primary one. Ubuntu's desktop icons may show for a frame or two when
+that extension starts, before they're hidden.
+
 ### Settings
 
 `org.gnome.shell.extensions.patrone-taskbar` (Patrone Settings sets the
@@ -198,6 +254,8 @@ the taskbar follows when it's installed):
 | `show-recycle-bin` | `true` | Show the Recycle Bin on the desktop |
 | `recycle-bin-dock` | `'bottom-right'` | `bottom-right`, `bottom-left`, `top-right`, `top-left`, or `none` (where it's dropped) |
 | `recycle-bin-position` | `(1.0, 1.0)` | Where it is when not docked, across and down the free area from 0 to 1 |
+| `desktop-bubble` | `true` | The desktop's files in the bubble at the left edge, not across the desktop |
+| `desktop-bubble-introduced` | `false` | Whether the bubble has been opened yet; until then its pill bounces with a tip |
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
 | `art-app` | `''` | The art slot's app; empty for ArtCraft, else the first drawing app installed |
 | `web-search-url` | `'https://www.google.com/search?q=%s'` | Where web searches go |
@@ -240,6 +298,11 @@ the taskbar follows when it's installed):
 - Light or dark follows the system style (Settings → Appearance), with
   Patrone blue (`#288bfa`) for focus and selection.
 
+- The desktop's files go in a bubble out of the left edge, opened from a
+  pill there, with the Recycle Bin riding on its edge. Asked: the files show
+  only in the bubble; the pill shows while its own spot is clear and the
+  bubble opens over windows; on by default, the pill bouncing with a tip
+  until it's first opened.
 ## How it works
 
 | File | |
@@ -254,6 +317,8 @@ the taskbar follows when it's installed):
 | `dropTarget.js` | The Recycle Bin's drop target, a small GTK 4 window run with `gjs -m` (never imported by GNOME Shell) |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
 | `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
+| `desktopBubble.js` | The desktop bubble and its pill, and hiding the desktop icons while it's on |
+| `bubbleShape.js` | The bubble's size and its files' places, with no imports, so it can be tried with Node |
 | `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, `patrone-start-light.svg` (the P in light tones, for Royal's green button, where the blues washed out), the `-symbolic` ones drawn in the bar's text color. The Recycle Bin's, `recycle-bin.svg` and `recycle-bin-full.svg`. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
 | `tests/headless.sh` | The throwaway GNOME Shell (below) |
 
@@ -301,8 +366,12 @@ tests/headless.sh close-apps             # only the apps it started
 tests/headless.sh stop
 ```
 
-It also fills the recent files list with a few sample files, and leaves out
-two of Ubuntu's extensions that reach outside the test: the desktop icons
+It also fills the recent files list with a few sample files, gives the
+shell a Desktop folder of its own with a few more
+(`/tmp/patrone-taskbar-test/desktop`, through `user-dirs.dirs`), so the
+desktop bubble never shows or trashes the account's real desktop files,
+and leaves out two of Ubuntu's extensions that reach outside the test: the
+desktop icons
 (when they start, they end every desktop-icons process of the account,
 the real desktop's included; early test runs made the real desktop's icons
 restart this way) and the snap permission prompts. A helper
@@ -326,6 +395,23 @@ with Patrone Settings running in the shell, all three sizes and four
 themes.
 
 ## Not done yet
+
+The desktop bubble (2026-10-26, 1600×900, light and dark): the pill and
+its first-run tip; the bubble with 1, 7, 20 and 60 files (the last at half
+the screen, with "21 more"); dragging it halfway out (the bubble at 41%,
+the Recycle Bin on its way from its corner) and letting go; the Recycle
+Bin on its edge and back in its corner after Escape; a click outside
+closing it and one on its empty part not; both right-click menus; a click
+on a file opening it (WordCraft for an .odt). With a stand-in for the
+desktop icons' window (a Text Editor window marked as they mark theirs,
+made a desktop window and lowered, and left out of
+`global.get_window_actors()`): hidden, its keyboard focus taken away, a
+right-click on the empty desktop giving GNOME's menu, still hidden after
+another app restacked the windows, and back above the wallpaper, under the
+other windows, when the setting was turned off. A window moved over the
+pill hid it. Patrone Settings' Desktop page, run in the shell, turned the
+bubble and the Recycle Bin off and on. Not tried: the real desktop icons
+extension (it mustn't run in the test shell), and opening a launcher.
 
 - Window thumbnails when hovering a running app.
 - A taskbar on other monitors (it's on the primary one only).

@@ -1,12 +1,13 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
-//! Title bar buttons (where minimize, maximize and close go, and their
-//! style) and Theme (the theme, and the desktop's font: Patrone Sans or
-//! Noto Sans). Patrone's build of GNOME Settings has the same settings on
-//! its Patrone page, and uses this program to apply a theme or button style
-//! and for its pictures.
+//! Desktop (the desktop's files in a bubble or across the desktop, and the
+//! Recycle Bin), Title bar buttons (where minimize, maximize and close go,
+//! and their style) and Theme (the theme, and the desktop's font: Patrone
+//! Sans or Noto Sans). Patrone's build of GNOME Settings has the same
+//! settings on its Patrone page, and uses this program to apply a theme or
+//! button style and for its pictures.
 //!
-//!   patrone-settings [--page taskbar|buttons|theme]
+//!   patrone-settings [--page taskbar|desktop|buttons|theme]
 //!   patrone-settings --set-theme THEME          apply a theme, and quit
 //!   patrone-settings --set-title-buttons STYLE  apply a button style, and quit
 //!   patrone-settings --apply                    write the account's GTK styles
@@ -30,8 +31,9 @@ const APP_ID: &str = "org.patrone.Settings";
 const TASKBAR_SCHEMA: &str = "org.gnome.shell.extensions.patrone-taskbar";
 const DESKTOP_SCHEMA: &str = "org.patrone.desktop";
 const WINDOW_MANAGER_SCHEMA: &str = "org.gnome.desktop.wm.preferences";
-const PAGES: [(&str, &str, &str); 3] = [
+const PAGES: [(&str, &str, &str); 4] = [
     ("taskbar", "Taskbar", "user-desktop-symbolic"),
+    ("desktop", "Desktop", "view-grid-symbolic"),
     ("buttons", "Title bar buttons", "window-maximize-symbolic"),
     ("theme", "Theme", "applications-graphics-symbolic"),
 ];
@@ -76,6 +78,20 @@ const COLORS: [(&str, &str, &str); 2] = [
 const PIN_ICONS: [(&str, &str, &str); 2] = [
     ("patrone", "Patrone's", "A globe, a prompt, a folder and an envelope"),
     ("app", "Each app's own", "The icon of the app each one opens, in its own style"),
+];
+
+/// Where the desktop's files show (the taskbar's desktop-bubble setting,
+/// on for the first).
+const DESKTOP_FILES: [(&str, &str, &str); 2] = [
+    ("bubble", "In a bubble", "A pill at the screen's left edge opens them, over any window"),
+    ("desktop", "On the desktop", "Across the desktop, under your windows"),
+];
+
+/// Whether the Recycle Bin is on the desktop (its show-recycle-bin setting,
+/// on for the first).
+const RECYCLE_BIN: [(&str, &str, &str); 2] = [
+    ("shown", "On the desktop", "Docked to a corner; drop files on it to delete them"),
+    ("hidden", "Hidden", "Still in File Manager's navigation pane"),
 ];
 
 /// The taskbar's icons folder: in the account's extensions, or the system's.
@@ -209,6 +225,12 @@ fn export_previews(dir: &Path) -> glib::ExitCode {
     for &(value, _, _) in &PIN_ICONS {
         pictures.push((format!("pins-{value}"), drawing(move |cr, w, h| preview::pin_icons(cr, w, h, value))));
     }
+    for &(value, _, _) in &DESKTOP_FILES {
+        pictures.push((format!("files-{value}"), drawing(move |cr, w, h| preview::desktop_files(cr, w, h, value))));
+    }
+    for &(value, _, _) in &RECYCLE_BIN {
+        pictures.push((format!("bin-{value}"), drawing(move |cr, w, h| preview::recycle_bin(cr, w, h, value))));
+    }
     for (value, layout) in [("right", Layout::Right), ("left", Layout::Left)] {
         pictures.push((format!("buttons-{value}"), drawing(move |cr, w, h| preview::buttons(cr, w, h, layout))));
     }
@@ -309,6 +331,7 @@ fn build_window(app: &gtk::Application) -> gtk::ApplicationWindow {
         .vexpand(true)
         .build();
     stack.add_named(&taskbar_page(), Some("taskbar"));
+    stack.add_named(&desktop_page(), Some("desktop"));
     stack.add_named(&buttons_page(), Some("buttons"));
     stack.add_named(&theme_page(), Some("theme"));
 
@@ -606,6 +629,69 @@ fn taskbar_page() -> gtk::ScrolledWindow {
     scrolled
 }
 
+/// Choices for a yes-or-no setting: `yes` is the choice that turns it on,
+/// `no` the one that turns it off.
+fn yes_no_choices(content: &gtk::Box, settings: &gio::Settings, key: &'static str, items: Vec<Choice>, yes: &'static str, no: &'static str) {
+    let value = move |on: bool| if on { yes } else { no };
+    let target = settings.clone();
+    let refresh = choices(content, items, value(settings.boolean(key)), move |picked| {
+        let on = picked == yes;
+        if target.boolean(key) != on {
+            let _ = target.set_boolean(key, on);
+        }
+    });
+    settings.connect_changed(Some(key), move |settings, key| refresh(value(settings.boolean(key))));
+}
+
+fn desktop_page() -> gtk::ScrolledWindow {
+    let (scrolled, content) = page(
+        "Desktop",
+        "Where the files on your desktop show, and whether the Recycle Bin is on it.",
+    );
+    let Some(taskbar) = settings(TASKBAR_SCHEMA) else {
+        note(&content, "Patrone's taskbar isn't installed (the patrone-gnome-taskbar package).");
+        return scrolled;
+    };
+    // An older taskbar's settings may have neither (reading a missing key
+    // would end the app)
+    let has_key = |key: &str| taskbar.settings_schema().is_some_and(|schema| schema.has_key(key));
+    if has_key("desktop-bubble") {
+        section_title(&content, "Desktop files");
+        note(
+            &content,
+            "In a bubble, they're kept off the desktop: a small pill at the screen's left \
+             edge, shown whenever no window covers it, opens them. Click it, or drag it out.",
+        );
+        let items = DESKTOP_FILES
+            .iter()
+            .map(|&(value, title, detail)| Choice {
+                value,
+                title,
+                detail,
+                draw: drawing(move |cr, w, h| preview::desktop_files(cr, w, h, value)),
+            })
+            .collect();
+        yes_no_choices(&content, &taskbar, "desktop-bubble", items, "bubble", "desktop");
+    }
+    if has_key("show-recycle-bin") {
+        section_title(&content, "Recycle Bin");
+        let items = RECYCLE_BIN
+            .iter()
+            .map(|&(value, title, detail)| Choice {
+                value,
+                title,
+                detail,
+                draw: drawing(move |cr, w, h| preview::recycle_bin(cr, w, h, value)),
+            })
+            .collect();
+        yes_no_choices(&content, &taskbar, "show-recycle-bin", items, "shown", "hidden");
+    }
+    if !has_key("desktop-bubble") && !has_key("show-recycle-bin") {
+        note(&content, "The taskbar installed is older than these settings: update patrone-gnome-taskbar.");
+    }
+    scrolled
+}
+
 /// Which corner a button-layout puts the buttons in: the left if close is
 /// before the colon (GNOME's layouts list the left side's buttons first).
 fn side_of(layout: &str) -> &'static str {
@@ -842,6 +928,7 @@ mod tests {
         let args = |list: &[&str]| list.iter().map(|s| s.to_string()).collect::<Vec<_>>();
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page", "theme"])).as_deref(), Some("theme"));
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page=buttons"])).as_deref(), Some("buttons"));
+        assert_eq!(super::requested_page(&args(&["patrone-settings", "--page", "desktop"])).as_deref(), Some("desktop"));
         assert_eq!(super::requested_page(&args(&["patrone-settings"])), None);
     }
 

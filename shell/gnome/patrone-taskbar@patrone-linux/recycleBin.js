@@ -196,6 +196,38 @@ export class RecycleBin {
         }
     }
 
+    /**
+     * Holds it away from its own place: the desktop bubble (desktopBubble.js)
+     * lifts it above the windows while it's open, onto the bubble's edge.
+     * Called again to move it; release() puts it back. Dropped while held,
+     * it still docks where it was dropped, and comes back here.
+     *
+     * @param {Clutter.Actor} parent - where it goes, above the windows
+     * @param {number} x - across, in the parent
+     * @param {number} y - down, in the parent
+     */
+    hold(parent, x, y) {
+        if (this.actor.get_parent() !== parent) {
+            this.actor.get_parent()?.remove_child(this.actor);
+            parent.add_child(this.actor);
+            this.actor.add_style_class_name('on-bubble');
+        }
+        this._held = [x, y];
+        this.actor.set_position(x, y);
+    }
+
+    /** Back on the desktop, in its own place. */
+    release() {
+        if (!this._held)
+            return;
+        this._held = null;
+        this.actor.remove_style_class_name('on-bubble');
+        this.actor.get_parent()?.remove_child(this.actor);
+        global.window_group.add_child(this.actor);
+        this._place();
+        this._restack();
+    }
+
     _countItems() {
         this._trash.query_info_async('trash::item-count', Gio.FileQueryInfoFlags.NONE,
             GLib.PRIORITY_LOW, null, (file, result) => {
@@ -218,6 +250,10 @@ export class RecycleBin {
         if (!this.actor.visible) {
             this._stopDropTarget();
             this._reserveArea();
+            return;
+        }
+        if (this._held) {
+            this.actor.set_position(...this._held);
             return;
         }
         const area = Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex);
@@ -408,7 +444,8 @@ export class RecycleBin {
     // (gnomeShellOverride.js), so 0.3.3 and 0.3.4 never found it and stayed
     // under it
     _restack() {
-        global.window_group.set_child_above_sibling(this.actor, this._below());
+        if (!this._held)
+            global.window_group.set_child_above_sibling(this.actor, this._below());
     }
 
     // What it goes right above: the topmost desktop window, else the
@@ -420,6 +457,8 @@ export class RecycleBin {
     }
 
     _stackedRight() {
+        if (this._held)
+            return true;
         const children = global.window_group.get_children();
         return children.indexOf(this.actor) === children.indexOf(this._below()) + 1;
     }

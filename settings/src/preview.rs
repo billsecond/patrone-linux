@@ -620,3 +620,90 @@ pub fn theme(cr: &Context, w: f64, h: f64, theme: &str) {
         }
     }
 }
+
+/// A plain taskbar along the bottom, for the Desktop page's pictures; where
+/// its top edge is.
+fn plain_taskbar(cr: &Context, w: f64, h: f64) -> f64 {
+    let bar = (h * 0.15).max(14.0);
+    let ty = h - bar;
+    color(cr, 0xf3f4f7, 0.96);
+    cr.rectangle(0.0, ty, w, bar);
+    let _ = cr.fill();
+    let icon = bar * 0.56;
+    let iy = ty + (bar - icon) / 2.0;
+    start_mark(cr, 5.0, iy, icon, 0x3d8eff);
+    app_icons(cr, 5.0 + icon * 1.55, iy, icon, 3, None);
+    clock(cr, w, iy, icon);
+    ty
+}
+
+/// A file on the desktop: a page in its color over a line for its name.
+fn desktop_file(cr: &Context, x: f64, y: f64, s: f64, rgb: u32, ink: u32) {
+    fill_rounded(cr, x + s * 0.2, y, s * 0.6, s * 0.68, s * 0.1, rgb, 1.0);
+    fill_rounded(cr, x + s * 0.08, y + s * 0.8, s * 0.84, s * 0.12, s * 0.06, ink, 0.75);
+}
+
+/// Patrone's Recycle Bin: a blue bin under its lid, a white loop on it.
+fn recycle_bin_icon(cr: &Context, x: f64, y: f64, s: f64) {
+    fill_rounded(cr, x + s * 0.1, y, s * 0.8, s * 0.13, s * 0.06, 0x288bfa, 1.0);
+    cr.move_to(x + s * 0.16, y + s * 0.2);
+    cr.line_to(x + s * 0.84, y + s * 0.2);
+    cr.line_to(x + s * 0.76, y + s);
+    cr.line_to(x + s * 0.24, y + s);
+    cr.close_path();
+    color(cr, 0x288bfa, 1.0);
+    let _ = cr.fill();
+    cr.set_line_width(s * 0.08);
+    cr.set_line_cap(LineCap::Round);
+    cr.arc(x + s * 0.5, y + s * 0.6, s * 0.17, -0.3 * PI, 1.4 * PI);
+    color(cr, 0xffffff, 1.0);
+    let _ = cr.stroke();
+}
+
+const FILE_COLORS: [u32; 6] = [0x3d8eff, 0xf2b636, 0x4c9a55, 0xd9473f, 0x5aa0ff, 0xc061cb];
+
+/// Where the desktop's files show: in a bubble out of the left edge, the
+/// pill at its tip and the Recycle Bin on its lower right, or across the
+/// desktop with the Recycle Bin in its corner.
+pub fn desktop_files(cr: &Context, w: f64, h: f64, place: &str) {
+    desktop(cr, w, h);
+    let top = plain_taskbar(cr, w, h);
+    let s = top * 0.17;
+    if place == "bubble" {
+        let (a, b, middle) = (w * 0.44, top * 0.44, top / 2.0);
+        let _ = cr.save();
+        cr.translate(0.0, middle);
+        cr.scale(a, b);
+        cr.arc(0.0, 0.0, 1.0, -PI / 2.0, PI / 2.0);
+        let _ = cr.restore();
+        cr.close_path();
+        color(cr, 0xf3f4f7, 0.97);
+        let _ = cr.fill();
+        // Down the left side, then the next column; the Recycle Bin where a
+        // third file of the second column would go
+        for (i, &rgb) in FILE_COLORS.iter().take(5).enumerate() {
+            let (column, row) = ((i / 3) as f64, (i % 3) as f64);
+            desktop_file(cr, 7.0 + column * s * 1.3, middle - s * 1.75 + row * s * 1.2, s, rgb, 0x5a5f6b);
+        }
+        recycle_bin_icon(cr, 7.0 + s * 1.45, middle + s * 0.7, s * 0.8);
+        fill_rounded(cr, a - 2.5, middle - top * 0.12, 5.0, top * 0.24, 2.5, 0x288bfa, 1.0);
+    } else {
+        for (i, &rgb) in FILE_COLORS.iter().enumerate() {
+            let (column, row) = ((i / 3) as f64, (i % 3) as f64);
+            desktop_file(cr, 7.0 + column * s * 1.3, 8.0 + row * s * 1.25, s, rgb, 0xffffff);
+        }
+        recycle_bin_icon(cr, w - s - 10.0, top - s * 1.25, s * 0.85);
+    }
+}
+
+/// The Recycle Bin docked to the desktop's corner, or a desktop without it.
+pub fn recycle_bin(cr: &Context, w: f64, h: f64, shown: &str) {
+    desktop(cr, w, h);
+    let top = plain_taskbar(cr, w, h);
+    fill_rounded(cr, w * 0.12, top * 0.12, w * 0.5, top * 0.55, 4.0, 0xffffff, 0.92);
+    if shown == "shown" {
+        let s = top * 0.26;
+        recycle_bin_icon(cr, w - s - 12.0, top - s * 1.45, s);
+        fill_rounded(cr, w - s * 1.15 - 12.0, top - s * 0.32, s * 1.3, s * 0.13, s * 0.06, 0xffffff, 0.8);
+    }
+}
