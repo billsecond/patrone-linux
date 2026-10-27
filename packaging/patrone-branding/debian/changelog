@@ -1,3 +1,12 @@
+patrone-branding (0.1.7) resolute; urgency=medium
+
+  * Settings → About shows Patrone's logo: patrone-logo-text.svg and
+    patrone-logo-text-dark.svg in /usr/share/pixmaps, the wordmarks at the
+    72-pixel height Ubuntu's logo has there, which Patrone's build of GNOME
+    Settings (revision 8) shows in place of Ubuntu's.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 09:45:00 -0500
+
 patrone-branding (0.1.6) resolute; urgency=medium
 
   * Patrone Sans is the typeface: the desktop's, documents', window titles'

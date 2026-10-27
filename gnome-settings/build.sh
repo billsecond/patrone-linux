@@ -17,9 +17,9 @@ set -euo pipefail
 
 # Patrone's revision of the page and patches: one more with each change to
 # them, so a new build of the same Ubuntu version installs as an upgrade
-revision=7
+revision=8
 # What changed in it, for the package's changelog
-changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop files, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), and no Telemetry page."
+changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop files, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), no Telemetry page, and Patrone's logo on the About page."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -50,6 +50,19 @@ cp "$here"/patches/*.patch debian/patches/
 printf '%s\n' "$added" patrone-register-patrone-panel.patch patrone-hide-telemetry.patch \
     >> debian/patches/series
 QUILT_PATCHES=debian/patches quilt push -a
+
+# The About page's logo: Ubuntu's build sets it to Ubuntu's own logo files
+# (distributor_logo in debian/rules), so os-release's LOGO is never read and
+# the page showed Ubuntu's (the user found it, 2026-10-27). Patrone's, from
+# patrone-branding, take their place.
+sed -i \
+    -e 's|^\(\s*DISTRIBUTOR_LOGO := \)/usr/share/pixmaps/ubuntu-logo-text\.svg$|\1/usr/share/pixmaps/patrone-logo-text.svg|' \
+    -e 's|^\(\s*DISTRIBUTOR_LOGO_DARK := \)/usr/share/pixmaps/ubuntu-logo-text-dark\.svg$|\1/usr/share/pixmaps/patrone-logo-text-dark.svg|' \
+    debian/rules
+if ! grep -q 'patrone-logo-text\.svg$' debian/rules || ! grep -q 'patrone-logo-text-dark\.svg$' debian/rules; then
+    echo "debian/rules no longer names Ubuntu's logo as this expects: update gnome-settings/build.sh" >&2
+    exit 1
+fi
 
 DEBFULLNAME="William Daugherty" \
 DEBEMAIL="31995458+billsecond@users.noreply.github.com" \

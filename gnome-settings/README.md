@@ -14,6 +14,12 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 - **No Telemetry page** under Privacy & Security. Its switches send error
   reports and system information to Canonical, which Patrone doesn't do
   (`patrone-desktop` removes the programs that would), so they did nothing.
+- **Patrone's logo on the About page** (revision 8; the user found Ubuntu's
+  there, 2026-10-27). Ubuntu's `debian/rules` builds Ubuntu's logo in
+  (`distributor_logo`, `/usr/share/pixmaps/ubuntu-logo-text.svg` and its
+  `-dark` twin), so `os-release`'s `LOGO=` is never read. `build.sh` points
+  them at `patrone-logo-text.svg` and `patrone-logo-text-dark.svg` from
+  `patrone-branding` (0.1.7), and stops if Ubuntu's lines change.
 
 | File | |
 | --- | --- |

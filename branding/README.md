@@ -35,6 +35,7 @@ written as actual text characters so terminals can print it.
 | `patrone-logo.png` | 420×420 | The mark alone (Settings → About, `LOGO=` in `os-release`) |
 | `patrone-logo-text-dark.png` | 1146×248 | Mark beside the wordmark, light text, for dark backgrounds (login screen) |
 | `patrone-logo-text.png` | 1146×248 | The same with dark text, for light backgrounds |
+| `patrone-logo-text.svg`, `patrone-logo-text-dark.svg` | 333×72 | The two above inside SVGs 72 pixels tall, Ubuntu's logo's height on Settings → About, which shows its logo at its own size (Patrone's GNOME Settings, revision 8). Made by `tools/make_about_logos.sh`; sharp on HiDPI screens |
 | `patrone-logo-stacked.png` | 840×507 | The whole primary logo, as in the concept |
 | `patrone-splash.png` | 380×220 | The stacked logo at boot-splash size |
 

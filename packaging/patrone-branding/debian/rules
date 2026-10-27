@@ -51,7 +51,8 @@ override_dh_auto_install:
 	    $(pkg)/etc/fonts/snap-override/05-patrone-fonts.conf
 	install -Dm644 -t $(pkg)/usr/share/pixmaps \
 	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png \
-	    logos/patrone-logo-login.png
+	    logos/patrone-logo-login.png \
+	    logos/patrone-logo-text.svg logos/patrone-logo-text-dark.svg
 	# Wallpaper 01 and its variants, listed in Settings > Appearance
 	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/patrone-back-01-*.png
 	install -Dm644 system/backgrounds/patrone-wallpapers.xml \
