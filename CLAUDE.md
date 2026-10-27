@@ -17,8 +17,13 @@ Read these before starting work:
   (already set in both clones' local git config).
 - The stack is decided: Rust + Smithay for the compositor, GTK4 (gtk4-rs,
   gtk4-layer-shell) for the shell and apps. Don't revisit it without asking.
-- Never type passwords or approve sign-ins for the user. `sudo` on the VM needs
-  the user's password: they type it. Don't set up passwordless sudo.
+- Never type passwords or approve sign-ins for the user. Root work on the VM
+  goes through the `claude` account (`ssh patronedev-claude`), which has
+  passwordless sudo: the user's choice, 2026-10-27
+  (`scripts/vm/add-claude-account.sh`, which also says how to undo it). Build
+  as `wdaugherty` (`ssh patronedev`); use `claude` to install the packages
+  you build, read system logs and debug. Don't sign the user out, end their
+  session, reboot the VM, or change their settings without asking.
 
 ## Machines and paths
 
@@ -29,6 +34,7 @@ Read these before starting work:
 | VM login | user `wdaugherty`, hostname `DevDistro-PatroneLinux` (`DevDistro-PatroneLinux.local` on the LAN) |
 | VM clone | `~/src/patrone-linux` |
 | SSH from Windows | `ssh patronedev` (key `~/.ssh/patronedev_ed25519`, alias in `~/.ssh/config`) |
+| Root on the VM | `ssh patronedev-claude`: user `claude` (no password, key `~/.ssh/patronedev_claude_ed25519`), passwordless sudo, in `adm` and `systemd-journal` |
 | Ubuntu ISO | `N:\Hyper-V\ISO\ubuntu-26.04.1-desktop-amd64.iso` (SHA256 verified) |
 
 Keep the two clones in sync through GitHub: push from one, pull in the other.
