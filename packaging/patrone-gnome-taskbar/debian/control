@@ -9,7 +9,7 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 
 Package: patrone-gnome-taskbar
 Architecture: all
-Depends: ${misc:Depends}, gnome-shell (>= 50~), gnome-shell (<< 51~)
+Depends: ${misc:Depends}, gnome-shell (>= 50~), gnome-shell (<< 51~), gjs, gir1.2-gtk-4.0
 Recommends: patrone-settings
 Description: Patrone Desktop's taskbar, for its GNOME-based desktop
  A compact taskbar along the bottom of the screen, in place of GNOME's top

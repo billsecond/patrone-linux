@@ -156,9 +156,30 @@ a corner: bottom right unless moved, inside the taskbar.
   running in the throwaway shell: the Recycle Bin above their window, its
   own menu on right-click, and dragging.
 
-Not done: dropping files onto it (GNOME Shell takes no drops from apps), and
-docked top left it can cover the first desktop file, since the desktop icons
-start there.
+- **Files and folders dropped on it go to the trash** (0.3.7; the user: "I
+  can't drag into the trash a folder"). GNOME Shell's actors take no drops
+  from apps, so the taskbar runs `dropTarget.js` (GJS and GTK 4, like the
+  desktop icons' own window) as a Wayland client of its own: a window the
+  Recycle Bin's size, made a desktop window once it shows (no taskbar
+  button, Alt+Tab or focus), on every workspace, right under the Recycle
+  Bin. While an app drags something (`dnd-enter` to `dnd-leave` from
+  `global.backend.get_dnd()`) the Recycle Bin stops taking the pointer, so
+  the drop reaches that window, which trashes what it's given; the Recycle
+  Bin lights up while the drag is over it. Drawn fully clear, GTK gave the
+  window no buffer and it never showed, so its background is 1% black.
+- **The desktop icons keep out of its column** (0.3.7: a folder moved under
+  it couldn't be clicked), through the desktop icons' area API
+  (`DesktopIconsUsableArea.setMarginsForExtension`, which Ubuntu's dock
+  uses too). It takes whole margins, so that's the strip from the screen's
+  edge to the Recycle Bin's far side.
+- **Remove from desktop** in its menu turns `show-recycle-bin` off; Patrone
+  Settings' Desktop page brings it back.
+- Every two seconds it checks it's still right above the desktop icons, and
+  moves back if not: once more, on the user's desktop, it was under them,
+  and that session can't be looked into from here.
+
+Not done: docked top left it can still sit where the first desktop file
+would; the reserved strip moves that file over one column.
 
 ### Settings
 
@@ -230,6 +251,7 @@ the taskbar follows when it's installed):
 | `roles.js` | The slots, and which app each one opens |
 | `tint.js` | The bar's color from the wallpaper |
 | `recycleBin.js` | The Recycle Bin on the desktop |
+| `dropTarget.js` | The Recycle Bin's drop target, a small GTK 4 window run with `gjs -m` (never imported by GNOME Shell) |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
 | `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
 | `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, `patrone-start-light.svg` (the P in light tones, for Royal's green button, where the blues washed out), the `-symbolic` ones drawn in the bar's text color. The Recycle Bin's, `recycle-bin.svg` and `recycle-bin-full.svg`. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |

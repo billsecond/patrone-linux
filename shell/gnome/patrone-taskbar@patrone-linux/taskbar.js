@@ -902,20 +902,25 @@ export class Taskbar {
                 this._appSystem.lookup_app(SETTINGS_APP)?.launch_action('taskbar', global.get_current_time(), -1);
         }, 'emblem-system-symbolic');
 
-        const gesture = new Clutter.ClickGesture({
-            required_button: Clutter.BUTTON_SECONDARY,
-            recognize_on_press: true,
-        });
-        gesture.connect('recognize', () => {
-            const installed = !!(this._appSystem.lookup_app(SETTINGS_PAGE) ||
-                this._appSystem.lookup_app(SETTINGS_APP));
-            this._settingsItem.visible = installed;
-            this._settingsSeparator.visible = installed;
-            const coords = gesture.get_coords_abs();
-            Main.layoutManager.setDummyCursorGeometry(coords.x, coords.y, 0, 0);
-            this._backgroundMenu.open(BoxPointer.PopupAnimation.FULL);
-        });
-        this._spacer.add_action(gesture);
+        // The same menu on the empty bar either side of the buttons (the
+        // centered and split layouts have space on the left too; the user
+        // found it gave something else, 2026-10-26)
+        for (const spacer of [this._spacer, this._leftSpacer]) {
+            const gesture = new Clutter.ClickGesture({
+                required_button: Clutter.BUTTON_SECONDARY,
+                recognize_on_press: true,
+            });
+            gesture.connect('recognize', () => {
+                const installed = !!(this._appSystem.lookup_app(SETTINGS_PAGE) ||
+                    this._appSystem.lookup_app(SETTINGS_APP));
+                this._settingsItem.visible = installed;
+                this._settingsSeparator.visible = installed;
+                const coords = gesture.get_coords_abs();
+                Main.layoutManager.setDummyCursorGeometry(coords.x, coords.y, 0, 0);
+                this._backgroundMenu.open(BoxPointer.PopupAnimation.FULL);
+            });
+            spacer.add_action(gesture);
+        }
     }
 
     // GNOME's top bar: hidden, with its status icons and menus moved into

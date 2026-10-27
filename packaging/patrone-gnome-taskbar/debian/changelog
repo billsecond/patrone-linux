@@ -1,3 +1,18 @@
+patrone-gnome-taskbar (0.3.7) resolute; urgency=medium
+
+  * Files and folders dragged onto the Recycle Bin, from the desktop or a
+    file manager, go to the trash, and the Recycle Bin lights up while a
+    drag is over it.
+  * The desktop icons keep out of the Recycle Bin's column, so none ends up
+    under it where it can't be clicked.
+  * "Remove from desktop" in the Recycle Bin's menu hides it.
+  * The Recycle Bin checks every two seconds that it's above the desktop
+    icons, and moves back if anything put it under them.
+  * Right-clicking the empty bar left of the buttons, in the centered and
+    split layouts, gives the same menu as on the right.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:45:00 -0500
+
 patrone-gnome-taskbar (0.3.6) resolute; urgency=medium
 
   * New pinned slots for documents, spreadsheets, presentations, PDF files

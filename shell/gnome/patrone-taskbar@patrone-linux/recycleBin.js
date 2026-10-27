@@ -1,9 +1,11 @@
 // The Recycle Bin on the desktop. Patrone draws it, in place of the desktop
 // icons extension's trash, so that it can stay docked to a corner of the
 // screen: bottom right unless moved (the user asked for it on 2026-10-26).
-// Double-click opens it in the file manager. Right-click empties it or picks
-// the corner. Dragged while docked, it docks to the nearest corner; not
-// docked, it stays where it's dropped.
+// Double-click opens it in the file manager. Right-click empties it, picks
+// the corner or takes it off the desktop. Dragged while docked, it docks to
+// the nearest corner; not docked, it stays where it's dropped. Files and
+// folders dropped on it go to the trash, through a clear window under it
+// (dropTarget.js), and the desktop icons keep out of its column.
 
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
@@ -23,6 +25,16 @@ const ICON_SIZE = 48;
 // From the edges of the screen, inside the taskbar
 const MARGIN = 12;
 
+// The desktop icons extension, and the ID its area API answers to (Ubuntu's
+// dock uses the same, desktopIconsIntegration.js)
+const DING_UUID = 'ding@rastersoft.com';
+const DING_AREA_ID = '130cbc66-235c-4bd6-8571-98d2d8bba5e2';
+const OWN_UUID = 'patrone-taskbar@patrone-linux';
+// Before the drop target starts again, if it ends on its own
+const RESTART_DELAY = 3; // seconds
+// How often it makes sure it's still right above the desktop icons
+const STACK_CHECK = 2; // seconds
+
 // The corners it can stay docked to (its recycle-bin-dock setting), and
 // "none" for wherever it's put
 const DOCKS = [
@@ -41,8 +53,10 @@ export class RecycleBin {
     constructor(settings, iconsDir) {
         this._settings = settings;
         this._iconsDir = iconsDir;
+        this._dropTargetPath = iconsDir.get_parent().get_child('dropTarget.js').get_path();
         this._items = 0;
         this._restackLater = 0;
+        this._restartId = 0;
 
         this._icon = new St.Icon({icon_size: ICON_SIZE});
         const box = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL});
@@ -97,6 +111,26 @@ export class RecycleBin {
         });
         this.actor.add_action(this._pan);
 
+        // While an app drags something (a file from the desktop or a file
+        // manager), the drop goes through to the drop target under it, and
+        // the Recycle Bin lights up when it's over it
+        global.backend.get_dnd().connectObject(
+            'dnd-enter', () => {
+                this.actor.reactive = false;
+            },
+            'dnd-position-change', (_, x, y) => this._dragOver(x, y),
+            'dnd-leave', () => {
+                this.actor.reactive = true;
+                this._dragOver(-1, -1);
+            }, this);
+
+        // The desktop icons keep out of its column, through their area API,
+        // whenever that extension is (re)started
+        Main.extensionManager.connectObject('extension-state-changed', (_, extension) => {
+            if (extension?.uuid === DING_UUID)
+                this._reserveArea();
+        }, this);
+
         this._buildMenu();
 
         this._trash = Gio.File.new_for_uri(TRASH);
@@ -125,15 +159,29 @@ export class RecycleBin {
 
         this._place();
         this._restack();
+        // And a look every couple of seconds, in case a restack was missed
+        // (the user's desktop showed the desktop icons over it once more,
+        // after they'd restarted, and it couldn't be checked from here)
+        this._stackCheckId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, STACK_CHECK, () => {
+            if (!this._stackedRight())
+                this._queueRestack();
+            return GLib.SOURCE_CONTINUE;
+        });
     }
 
     destroy() {
+        this._destroyed = true;
+        GLib.source_remove(this._stackCheckId);
         this._endGrab();
+        this._stopDropTarget();
+        this._areaApi()?.setMarginsForExtension(OWN_UUID, null);
         this._monitor?.cancel();
         if (this._restackLater)
             global.compositor.get_laters().remove(this._restackLater);
         this._settings.disconnectObject(this);
         global.display.disconnectObject(this);
+        global.backend.get_dnd().disconnectObject(this);
+        Main.extensionManager.disconnectObject(this);
         Main.layoutManager.disconnectObject(this);
         this._menu.destroy();
         this.actor.destroy();
@@ -167,6 +215,11 @@ export class RecycleBin {
     // the work area so it stays put when the screen size changes
     _place() {
         this.actor.visible = this._settings.get_boolean('show-recycle-bin');
+        if (!this.actor.visible) {
+            this._stopDropTarget();
+            this._reserveArea();
+            return;
+        }
         const area = Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex);
         if (!area)
             return;
@@ -183,6 +236,117 @@ export class RecycleBin {
             y = dock.startsWith('top') ? area.y + MARGIN : area.y + area.height - height - MARGIN;
         }
         this.actor.set_position(Math.round(x), Math.round(y));
+        this._startDropTarget();
+        this._placeDropTarget();
+        this._reserveArea();
+    }
+
+    // The desktop icons' area API, when that extension is running
+    _areaApi() {
+        const extension = Main.extensionManager.lookup(DING_UUID);
+        const api = extension?.stateObj?.DesktopIconsUsableArea;
+        return api?.uuid === DING_AREA_ID ? api : null;
+    }
+
+    // Keeps the desktop icons out of the strip of the screen the Recycle Bin
+    // is in, from the side it's nearest to, so none sits under it where it
+    // can't be clicked (the user moved a folder there, 2026-10-26). The API
+    // takes whole margins, so that's its column, the width of one icon.
+    _reserveArea() {
+        const api = this._areaApi();
+        if (!api)
+            return;
+        if (!this.actor.visible) {
+            api.setMarginsForExtension(OWN_UUID, null);
+            return;
+        }
+        const monitor = Main.layoutManager.primaryMonitor;
+        const [x, width] = [this.actor.x, this.actor.width];
+        const left = x + width / 2 < monitor.x + monitor.width / 2;
+        api.setMarginsForExtension(OWN_UUID, {
+            [Main.layoutManager.primaryIndex]: {
+                top: 0,
+                bottom: 0,
+                left: left ? x - monitor.x + width + MARGIN : 0,
+                right: left ? 0 : monitor.x + monitor.width - x + MARGIN,
+            },
+        });
+    }
+
+    // Lights up while something an app drags is over it
+    _dragOver(x, y) {
+        const [ax, ay] = this.actor.get_transformed_position();
+        const [width, height] = this.actor.get_transformed_size();
+        const over = this.actor.visible && x >= ax && x < ax + width && y >= ay && y < ay + height;
+        if (over)
+            this.actor.add_style_pseudo_class('drop');
+        else
+            this.actor.remove_style_pseudo_class('drop');
+    }
+
+    _startDropTarget() {
+        if (this._dropClient || this._restartId || this._destroyed)
+            return;
+        const [width, height] = this.actor.get_size();
+        if (width <= 0 || height <= 0)
+            return; // not styled yet
+        try {
+            const launcher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.NONE});
+            const client = Meta.WaylandClient.new_subprocess(global.context, launcher,
+                ['gjs', '-m', this._dropTargetPath, `${Math.round(width)}`, `${Math.round(height)}`]);
+            this._dropClient = client;
+            client.get_subprocess().wait_async(null, () => {
+                if (this._dropClient !== client)
+                    return;
+                // Ended on its own: again in a moment, while it's wanted
+                this._dropClient = null;
+                this._dropWindow = null;
+                this._restartId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, RESTART_DELAY, () => {
+                    this._restartId = 0;
+                    if (this.actor.visible)
+                        this._startDropTarget();
+                    return GLib.SOURCE_REMOVE;
+                });
+            });
+        } catch (e) {
+            console.warn(`Patrone taskbar: can't start the Recycle Bin's drop target: ${e.message}`);
+        }
+    }
+
+    _stopDropTarget() {
+        if (this._restartId) {
+            GLib.source_remove(this._restartId);
+            this._restartId = 0;
+        }
+        const client = this._dropClient;
+        this._dropClient = null;
+        this._dropWindow = null;
+        client?.get_subprocess()?.force_exit();
+    }
+
+    // The drop target's window: a desktop window like the desktop icons'
+    // (no taskbar button, no Alt+Tab, no focus), on every workspace, right
+    // under the Recycle Bin
+    _adoptDropTarget(window) {
+        this._dropWindow = window;
+        const focused = global.display.focus_window;
+        // Only once it's shown: made a desktop window, or moved, as soon as
+        // it was created, it never showed
+        window.connectObject('shown', () => {
+            window.set_type?.(Meta.WindowType.DESKTOP);
+            window.stick();
+            this._placeDropTarget();
+            this._queueRestack();
+            // Showing gave it the focus: back to the window that had it
+            if (global.display.focus_window === window && focused && focused !== window)
+                focused.activate(global.get_current_time());
+        }, this.actor);
+    }
+
+    _placeDropTarget() {
+        const [width, height] = this.actor.get_size();
+        this._dropWindow?.move_resize_frame(false, this.actor.x, this.actor.y,
+            Math.round(width), Math.round(height));
     }
 
     _endGrab() {
@@ -218,6 +382,8 @@ export class RecycleBin {
     // covers the screen and took its clicks (the user found it couldn't be
     // right-clicked or moved, 2026-10-26).
     _watchWindow(window) {
+        if (window && this._dropClient?.owns_window(window))
+            this._adoptDropTarget(window);
         window?.connectObject('notify::window-type', () => this._queueRestack(), this.actor);
         this._queueRestack();
     }
@@ -242,10 +408,20 @@ export class RecycleBin {
     // (gnomeShellOverride.js), so 0.3.3 and 0.3.4 never found it and stayed
     // under it
     _restack() {
+        global.window_group.set_child_above_sibling(this.actor, this._below());
+    }
+
+    // What it goes right above: the topmost desktop window, else the
+    // wallpaper
+    _below() {
         const desktops = global.window_group.get_children().filter(actor =>
             actor instanceof Meta.WindowActor && this._isDesktop(actor.meta_window));
-        const below = desktops.at(-1) ?? Main.layoutManager._backgroundGroup;
-        global.window_group.set_child_above_sibling(this.actor, below);
+        return desktops.at(-1) ?? Main.layoutManager._backgroundGroup;
+    }
+
+    _stackedRight() {
+        const children = global.window_group.get_children();
+        return children.indexOf(this.actor) === children.indexOf(this._below()) + 1;
     }
 
     _buildMenu() {
@@ -266,6 +442,11 @@ export class RecycleBin {
             item.dockValue = value;
             return item;
         });
+        // Back through Patrone Settings (its Desktop page), or the
+        // show-recycle-bin setting
+        this._menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this._menu.addAction('Remove from desktop', () =>
+            this._settings.set_boolean('show-recycle-bin', false), 'list-remove-symbolic');
     }
 
     _openMenu() {
