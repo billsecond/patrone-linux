@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The spreadsheets pin: a sheet of green cells under a darker header
+       row and column. -->
+  <defs>
+    <linearGradient id="sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6f3ea"/>
+    </linearGradient>
+    <linearGradient id="head" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3fc56b"/>
+      <stop offset="1" stop-color="#1e9a4c"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="16" width="104" height="96" rx="12" fill="url(#sheet)" stroke="#b5d3bf" stroke-width="2"/>
+  <path d="M13 28A12 12 0 0 1 24 17H104A12 12 0 0 1 115 28V40H13Z" fill="url(#head)"/>
+  <path d="M13 40H40V111H24A11 11 0 0 1 13 100Z" fill="#c9ead4"/>
+  <path d="M40 40V111M66 40V111M92 40V111M13 58H115M13 76H115M13 94H115" stroke="#3fae66" stroke-width="3"/>
+  <rect x="68" y="60" width="22" height="14" fill="#3fc56b"/>
+</svg>

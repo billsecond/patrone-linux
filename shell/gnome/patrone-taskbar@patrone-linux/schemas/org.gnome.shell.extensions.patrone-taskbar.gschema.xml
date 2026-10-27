@@ -3,13 +3,15 @@
   <schema id="org.gnome.shell.extensions.patrone-taskbar"
           path="/org/gnome/shell/extensions/patrone-taskbar/">
     <key name="pinned" type="as">
-      <default>['role:web', 'role:terminal', 'role:files', 'role:mail']</default>
+      <default>['role:web', 'role:terminal', 'role:files', 'role:mail', 'role:documents', 'role:spreadsheets', 'role:presentations', 'role:pdf', 'role:art']</default>
       <summary>What's pinned to the taskbar, in order</summary>
       <description>
         Each entry is an app's desktop file ID ("org.gnome.TextEditor.desktop")
-        or a role: "role:web", "role:terminal", "role:files" or "role:mail".
-        A role is a slot for whichever app is the default for that job: it
-        opens that app, and the app's windows show under it.
+        or a role: "role:web", "role:terminal", "role:files", "role:mail",
+        "role:documents", "role:spreadsheets", "role:presentations",
+        "role:pdf" or "role:art". A role is a slot for whichever app is the
+        default for that job: it opens that app, and the app's windows show
+        under it. A role no installed app does isn't shown.
       </description>
     </key>
     <key name="size" type="s">
@@ -127,8 +129,18 @@
       <summary>The app the terminal slot opens</summary>
       <description>
         A desktop file ID. Empty: Patrone Terminal, or another terminal if
-        it isn't installed. (Web browser, files and mail follow the system's
+        it isn't installed. (The other slots but art follow the system's
         default apps instead.)
+      </description>
+    </key>
+    <key name="art-app" type="s">
+      <default>''</default>
+      <summary>The app the art slot opens</summary>
+      <description>
+        A desktop file ID. Empty: ArtCraft, else LibreOffice Draw, GIMP,
+        Krita, Inkscape or Pinta, whichever is installed first, else another
+        drawing app. (Drawing has no file type of its own to take the
+        default app of.)
       </description>
     </key>
     <key name="web-search-url" type="s">

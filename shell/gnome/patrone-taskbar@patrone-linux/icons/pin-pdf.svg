@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The PDF pin: a page with a red folded corner and a red band along its
+       foot, holding three white lines: a finished, fixed page. -->
+  <defs>
+    <linearGradient id="page" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eceff4"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2585d"/>
+      <stop offset="1" stop-color="#c62f35"/>
+    </linearGradient>
+  </defs>
+  <path d="M28 10H80L104 34V110A8 8 0 0 1 96 118H28A8 8 0 0 1 20 110V18A8 8 0 0 1 28 10Z" fill="url(#page)" stroke="#c4cbd6" stroke-width="2"/>
+  <path d="M80 10V28A6 6 0 0 0 86 34H104Z" fill="#e5484d"/>
+  <path d="M34 44H70M34 56H80" stroke="#8a95a6" stroke-width="6" stroke-linecap="round"/>
+  <path d="M21 70H103V110A7 7 0 0 1 96 117H28A7 7 0 0 1 21 110Z" fill="url(#band)"/>
+  <path d="M34 84H90M34 98H76" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+</svg>

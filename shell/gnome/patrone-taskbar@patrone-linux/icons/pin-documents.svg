@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The documents pin: a page with a folded corner, lines of text and a
+       band of Patrone Blue across its head. -->
+  <defs>
+    <linearGradient id="page" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e4ebf5"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4da0fc"/>
+      <stop offset="1" stop-color="#1d5cc4"/>
+    </linearGradient>
+  </defs>
+  <path d="M28 10H80L104 34V110A8 8 0 0 1 96 118H28A8 8 0 0 1 20 110V18A8 8 0 0 1 28 10Z" fill="url(#page)" stroke="#b9c7da" stroke-width="2"/>
+  <path d="M80 10V28A6 6 0 0 0 86 34H104Z" fill="#c9d6ea"/>
+  <path d="M21 26H79V44H21Z" fill="url(#band)"/>
+  <path d="M34 60H90M34 74H90M34 88H90M34 102H70" stroke="#5f7393" stroke-width="7" stroke-linecap="round"/>
+</svg>

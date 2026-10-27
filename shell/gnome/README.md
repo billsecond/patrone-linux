@@ -46,14 +46,22 @@ From the left:
 - **Search** opens the same menu in search mode: the most used apps and
   recent files, then results as you type.
 - **Pinned items**: apps, and **slots** for a job: web browser, terminal,
-  file manager, mail (the defaults, in that order). A slot shows Patrone's
-  icon for its job (a globe, a prompt, a folder, an envelope, in
+  file manager, mail, documents, spreadsheets, presentations, PDF files and
+  art (the defaults, in that order). A slot shows Patrone's icon for its
+  job (a globe, a prompt, a folder, an envelope, a page, a sheet of cells,
+  a screen with a chart, a red-banded page, a palette, in
   `icons/pin-*.svg`), or with the `pin-icons` setting at `app`, the icon of
   the app it opens. It opens whichever app is the default for its job, and
-  that app's windows show under it, not as a separate button. For the
-  browser, files and mail that's the system default (Settings → Apps →
-  Default Apps); for the terminal, Patrone Terminal unless changed in the
-  slot's menu.
+  that app's windows show under it, not as a separate button. For most
+  that's the system default for its file types (Settings → Apps → Default
+  Apps): WordCraft for documents while it's the default for .docx and
+  .odt, LibreOffice Writer once that is (the user, 2026-10-26: "just icons
+  if those are the default apps, otherwise if libreoffice is installed and
+  its the primary app for each make those the primary"). The terminal is
+  Patrone Terminal and art is ArtCraft (else LibreOffice Draw, GIMP,
+  Krita, Inkscape or Pinta) unless changed in the slot's menu. A slot no
+  installed app can do isn't shown. With Patrone's icons, Settings shows
+  Patrone's gear too, so it matches.
 - **Running apps** that aren't pinned, in the order they started. An app
   shows the moment it's opened, its icon pulsing until its first window
   appears, as on Windows, so a slow one (a snap or a Flatpak starting for
@@ -160,7 +168,7 @@ the taskbar follows when it's installed):
 
 | Key | Default | |
 | --- | --- | --- |
-| `pinned` | `['role:web', 'role:terminal', 'role:files', 'role:mail']` | Pinned items in order: desktop file IDs, or `role:` slots |
+| `pinned` | `['role:web', 'role:terminal', 'role:files', 'role:mail', 'role:documents', 'role:spreadsheets', 'role:presentations', 'role:pdf', 'role:art']` | Pinned items in order: desktop file IDs, or `role:` slots |
 | `size` | `'medium'` | `small`, `medium` or `large` |
 | `layout` | `'left'` | `left`, `center`, `split` or `top` |
 | `start-icon` | `'patrone'` | The Start button's icon, from `icons/` |
@@ -170,6 +178,7 @@ the taskbar follows when it's installed):
 | `recycle-bin-dock` | `'bottom-right'` | `bottom-right`, `bottom-left`, `top-right`, `top-left`, or `none` (where it's dropped) |
 | `recycle-bin-position` | `(1.0, 1.0)` | Where it is when not docked, across and down the free area from 0 to 1 |
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
+| `art-app` | `''` | The art slot's app; empty for ArtCraft, else the first drawing app installed |
 | `web-search-url` | `'https://www.google.com/search?q=%s'` | Where web searches go |
 
 ## Decisions (with the user, 2026-10-26)

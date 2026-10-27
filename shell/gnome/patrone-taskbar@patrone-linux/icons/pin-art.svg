@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The art pin: a purple painter's palette with four dabs of color and a
+       thumb hole. -->
+  <defs>
+    <linearGradient id="palette" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c99bff"/>
+      <stop offset="1" stop-color="#7b3fe0"/>
+    </linearGradient>
+  </defs>
+  <path d="M64 12C34 12 10 34 10 62C10 90 32 116 60 116C72 116 74 108 70 100C66 92 72 84 82 86C102 90 118 80 118 60C118 32 94 12 64 12Z" fill="url(#palette)"/>
+  <circle cx="40" cy="82" r="10" fill="#ffffff" opacity="0.92"/>
+  <circle cx="36" cy="52" r="10" fill="#4da0fc"/>
+  <circle cx="58" cy="32" r="10" fill="#ffd97a"/>
+  <circle cx="86" cy="36" r="10" fill="#6ee592"/>
+  <circle cx="98" cy="62" r="10" fill="#ff6b6f"/>
+</svg>

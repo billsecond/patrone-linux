@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The presentations pin: an orange screen on a stand, with a white bar
+       chart on it. -->
+  <defs>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff9a4d"/>
+      <stop offset="1" stop-color="#e2621c"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="12" width="108" height="10" rx="5" fill="#5f6b7d"/>
+  <path d="M16 22H112V86A8 8 0 0 1 104 94H24A8 8 0 0 1 16 86Z" fill="url(#screen)"/>
+  <path d="M64 94V112M64 100L44 118M64 100L84 118" stroke="#5f6b7d" stroke-width="7" stroke-linecap="round"/>
+  <rect x="34" y="58" width="12" height="22" rx="2" fill="#ffffff"/>
+  <rect x="58" y="44" width="12" height="36" rx="2" fill="#ffffff"/>
+  <rect x="82" y="34" width="12" height="46" rx="2" fill="#ffffff" opacity="0.85"/>
+</svg>

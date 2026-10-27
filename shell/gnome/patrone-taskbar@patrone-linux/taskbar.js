@@ -59,6 +59,13 @@ const LIGHT_START_ICONS = {
     patrone: 'patrone-start-light.svg',
 };
 const LIGHT_START_THEMES = ['royal'];
+// Apps drawn with Patrone's icons on the taskbar, like the role slots, while
+// the pin-icons setting is "patrone": Settings with the gear, so it matches
+// the globe, the folder and the rest (the user, 2026-10-26)
+const APP_ICONS = {
+    'org.gnome.Settings.desktop': 'pin-settings.svg',
+    'org.patrone.Settings.desktop': 'pin-settings.svg',
+};
 const DESKTOP_SCHEMA = 'org.patrone.desktop';
 // The taskbar's settings: GNOME Settings' Patrone page, in Patrone's build
 // of GNOME Settings, or else Patrone Settings' own window
@@ -223,12 +230,15 @@ class TaskbarItem extends St.Button {
         return this.entry ?? this.app?.get_id() ?? null;
     }
 
-    // A role slot shows Patrone's icon for its job, or with the pin-icons
-    // setting at "app", the icon of the app it opens (Patrone's still while
-    // no app does the job)
+    // A role slot shows Patrone's icon for its job, and Settings Patrone's
+    // gear, or with the pin-icons setting at "app", the app's own icon
     _makeIcon(size) {
-        if (this.role && (!this.app || this.taskbar.pinIcons === 'patrone'))
+        const patrone = this.taskbar.pinIcons === 'patrone' || !this.app;
+        if (this.role && patrone)
             return new St.Icon({gicon: this.taskbar.roleIcon(this.role), icon_size: size});
+        const own = APP_ICONS[this.app.get_id()];
+        if (own && patrone)
+            return new St.Icon({gicon: this.taskbar.patroneIcon(own), icon_size: size});
         return this.app.create_icon_texture(size);
     }
 
@@ -585,7 +595,12 @@ export class Taskbar {
 
     /** Patrone's icon for a role slot's job, in icons/. */
     roleIcon(role) {
-        return new Gio.FileIcon({file: this._iconsDir.get_child(`pin-${role}.svg`)});
+        return this.patroneIcon(`pin-${role}.svg`);
+    }
+
+    /** One of Patrone's icons, in icons/. */
+    patroneIcon(file) {
+        return new Gio.FileIcon({file: this._iconsDir.get_child(file)});
     }
 
     _applyTheme() {
@@ -774,8 +789,8 @@ export class Taskbar {
             const app = role
                 ? appForRole(role, this.settings)
                 : this._appSystem.lookup_app(entry);
-            if (!role && !app)
-                continue; // uninstalled
+            if (!app)
+                continue; // uninstalled, or no app does the slot's job
             if (app && shown.has(app))
                 continue; // a slot already shows it
             if (app)

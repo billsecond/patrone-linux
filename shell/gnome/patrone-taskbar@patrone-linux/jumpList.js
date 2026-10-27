@@ -9,7 +9,7 @@ import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-import {ROLES, candidatesForRole, setAppForRole} from './roles.js';
+import {candidatesForRole, roleMenuName, setAppForRole} from './roles.js';
 import {taskbarWindows, launchApp} from './util.js';
 
 const RECENT_ITEMS = 8;
@@ -130,8 +130,7 @@ export class JumpList extends PopupMenu.PopupMenu {
         if (candidates.length === 0)
             return;
 
-        const submenu = new PopupMenu.PopupSubMenuMenuItem(
-            `Default ${ROLES[role].name.toLowerCase()}`, true);
+        const submenu = new PopupMenu.PopupSubMenuMenuItem(roleMenuName(role), true);
         submenu.icon.icon_name = 'emblem-default-symbolic';
         for (const candidate of candidates) {
             const item = submenu.menu.addAction(candidate.get_name(), () => {

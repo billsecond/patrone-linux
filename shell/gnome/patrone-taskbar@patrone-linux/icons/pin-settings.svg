@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- The settings pin: a Patrone-blue gear with a white hub, drawn as an
+       object like the other pins (the globe, the folder) rather than on a
+       tile. -->
+  <defs>
+    <linearGradient id="gear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4da0fc"/>
+      <stop offset="1" stop-color="#1d5cc4"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#gear)" transform="translate(64 64)">
+    <circle r="38"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4" transform="rotate(45)"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4" transform="rotate(90)"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4" transform="rotate(135)"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4" transform="rotate(180)"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4" transform="rotate(225)"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4" transform="rotate(270)"/>
+    <rect x="-10" y="-56" width="20" height="24" rx="4" transform="rotate(315)"/>
+  </g>
+  <circle cx="64" cy="64" r="37" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2"/>
+  <circle cx="64" cy="64" r="16" fill="#ffffff"/>
+</svg>

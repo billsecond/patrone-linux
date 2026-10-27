@@ -1,3 +1,15 @@
+patrone-gnome-taskbar (0.3.6) resolute; urgency=medium
+
+  * New pinned slots for documents, spreadsheets, presentations, PDF files
+    and art, with Patrone's own icons like the browser, terminal, files and
+    mail ones. Each opens the default app for its files: WordCraft,
+    GridCraft, DeckCraft and PdfCraft while they're the defaults,
+    LibreOffice's apps once those are. Art opens ArtCraft, or another
+    drawing app. A slot no installed app can do isn't shown.
+  * With Patrone's pin icons, Settings shows Patrone's gear, matching them.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Mon, 26 Oct 2026 19:20:00 -0500
+
 patrone-gnome-taskbar (0.3.5) resolute; urgency=medium
 
   * The Recycle Bin really can be clicked and dragged now: on Wayland the
