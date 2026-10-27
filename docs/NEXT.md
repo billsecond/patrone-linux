@@ -114,8 +114,15 @@ Waiting on the user:
   - **Swapping the ISO in Hyper-V:** inserting it right after replacing
     the file fails ("the object was not found") and leaves the drive empty
     while `Get-VMDvdDrive` still shows the path for a moment, so the VM
-    falls to network boot. Insert it again with the VM off, check
-    `DvdMediaType` is `ISO`, then `Set-VMFirmware -FirstBootDevice`.
+    falls to network boot. `scripts/hyperv/swap-iso.ps1 -New <file>` does
+    the swap: it inserts again until `DvdMediaType` is `ISO`, then puts the
+    DVD first in the boot order.
+  - **The first install failed** on the ISO's leftover `/cdrom` folder
+    (`FileExistsError` in subiquity's `configure_for_install`); the build
+    now removes it. The user's notes from watching it (fixed in
+    `0ba7950`, `b4b0c4c`): no orange or Ubuntu logos in the installer,
+    a plain spinner, the first initial and last name as the username, a
+    single ring at boot.
   - **Remote Desktop breaks automatic login.** With `patrone-remote-desktop`,
     an account that logs in by itself (the live session; an install with
     "log in automatically") falls back to the login screen: GDM refuses
