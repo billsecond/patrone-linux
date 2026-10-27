@@ -1166,3 +1166,99 @@ progressbar.operation-progress progress {
   color: var(--text-secondary);
   font-size: 9pt;
 }
+
+/* --- The desktop and the desktop bubble (desktop.rs) --------------------------- */
+
+/* The desktop's window is see-through: the wallpaper is GNOME's. Drawn
+   fully clear, GTK gives a window no picture and GNOME never shows it, so
+   it's 1% black. The bubble's window is clear but for the bubble. */
+window.desktop {
+  background-color: rgba(0, 0, 0, 0.01);
+  box-shadow: none;
+}
+
+window.desktop-bubble {
+  background: none;
+  box-shadow: none;
+}
+
+window.desktop .tab-content,
+window.desktop .file-list,
+window.desktop .content,
+window.desktop-bubble .tab-content,
+window.desktop-bubble .file-list,
+window.desktop-bubble .content,
+.desktop-backdrop {
+  background: none;
+}
+
+desktopgrid > filecell {
+  padding: 4px 4px 2px 4px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: background-color 90ms ease-out;
+}
+
+desktopgrid > filecell:hover {
+  background-color: var(--hover);
+}
+
+desktopgrid > filecell:selected {
+  background-color: var(--selected);
+}
+
+desktopgrid > filecell:selected:hover {
+  background-color: var(--selected-hover);
+}
+
+desktopgrid:focus-within > filecell.cursor {
+  border-color: var(--selected-edge);
+}
+
+desktopgrid > filecell:drop(active) {
+  background-color: var(--selected-hover);
+  border-color: var(--accent);
+}
+
+/* On the wallpaper, names are white with a shadow, as on Windows, and the
+   selection is a stronger blue so it shows on a dark picture. */
+desktopgrid.desktop > filecell .item-name {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.45);
+}
+
+desktopgrid.desktop > filecell:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+desktopgrid.desktop > filecell:selected {
+  background-color: rgba(40, 139, 250, 0.42);
+  border-color: rgba(140, 192, 255, 0.55);
+}
+
+desktopgrid.desktop > filecell:selected:hover {
+  background-color: rgba(40, 139, 250, 0.52);
+}
+
+desktopgrid.desktop:focus-within > filecell.cursor {
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+desktopgrid.desktop > filecell:drop(active) {
+  background-color: rgba(40, 139, 250, 0.5);
+  border-color: #ffffff;
+}
+
+desktopgrid.desktop entry.rename-entry {
+  color: var(--text);
+}
+
+desktopgrid button.more-cell {
+  padding: 4px;
+  border-radius: 4px;
+}
+
+desktopgrid .bubble-empty {
+  font-style: italic;
+  color: var(--text-secondary);
+}

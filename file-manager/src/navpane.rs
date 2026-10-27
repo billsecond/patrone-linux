@@ -381,7 +381,7 @@ impl NavPane {
             if files.iter().any(|file| file.equal(&folder)) {
                 return false;
             }
-            let action = crate::dnd::preferred_action(target, &folder);
+            let action = crate::dnd::drop_action(target, &folder);
             pane.emit(NavEvent::Drop {
                 files,
                 folder: folder.clone(),

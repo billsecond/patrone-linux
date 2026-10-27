@@ -231,5 +231,39 @@
       <default>[]</default>
       <summary>The folders open at the last sign-out, for restoring windows</summary>
     </key>
+
+    <!-- The desktop, which File Manager draws, as Windows' desktop
+         right-click menu sets it: View and Sort by. -->
+    <key name="desktop-icon-size" type="s">
+      <choices>
+        <choice value="large"/>
+        <choice value="medium"/>
+        <choice value="small"/>
+      </choices>
+      <default>'medium'</default>
+      <summary>The desktop's icons: large, medium or small</summary>
+    </key>
+    <key name="desktop-auto-arrange" type="b">
+      <default>false</default>
+      <summary>Keep the desktop's icons in order, down the left side first</summary>
+    </key>
+    <key name="desktop-show-icons" type="b">
+      <default>true</default>
+      <summary>Show icons on the desktop</summary>
+    </key>
+    <key name="desktop-sort" type="s">
+      <choices>
+        <choice value="name"/>
+        <choice value="size"/>
+        <choice value="type"/>
+        <choice value="modified"/>
+      </choices>
+      <default>'name'</default>
+      <summary>What the desktop's icons are sorted by (folders first)</summary>
+    </key>
+    <key name="desktop-positions" type="a{s(ii)}">
+      <default>{}</default>
+      <summary>Where each icon is on the desktop: its name, column and row</summary>
+    </key>
   </schema>
 </schemalist>

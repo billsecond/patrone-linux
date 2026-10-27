@@ -180,7 +180,9 @@ pub fn show(window: &Window) {
         return;
     }
     let dialog = Dialog::new(None, "Folder Options");
-    dialog.window.set_transient_for(Some(&window.gtk_window()));
+    dialog
+        .window
+        .set_transient_for(window.dialog_parent().as_ref());
     dialog.window.set_default_size(440, 560);
     dialog.window.add_css_class("options-window");
     OPEN.with(|open| open.replace(Some(dialog.window.downgrade())));

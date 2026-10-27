@@ -27,7 +27,7 @@ pub enum OpenIn {
 }
 
 fn parent(window: &Window) -> Option<gtk::Window> {
-    Some(window.gtk_window())
+    window.dialog_parent()
 }
 
 /// Whether GVfs can browse inside archives (`archive://`).
@@ -65,6 +65,14 @@ pub fn open_infos(window: &Window, infos: Vec<gio::FileInfo>, how: OpenIn) {
             Some(folder) => folders.push(folder),
             None => files.push(info),
         }
+    }
+    // From the desktop, folders open in File Manager's windows.
+    if window.desktop {
+        crate::desktop::open_in_file_manager(&folders);
+        for info in files {
+            launch(window, &info);
+        }
+        return;
     }
     let own_window = config::flag("open-folders-in-new-window");
     for (index, folder) in folders.into_iter().enumerate() {
@@ -108,6 +116,15 @@ pub fn launch(window: &Window, info: &gio::FileInfo) {
         return;
     };
     let mime = util::content_type(info);
+    if mime == "application/x-desktop"
+        && window.desktop
+        && filecell::trusted_launcher(info).is_none()
+    {
+        // As Ubuntu's desktop icons did: a launcher runs only once the
+        // account allows it (Allow Launching).
+        allow_launching_then_run(window, info);
+        return;
+    }
     if mime == "application/x-desktop" {
         // GLib's own launcher reads the entry and starts the app.
         if let Some(path) = file.path()
@@ -173,6 +190,93 @@ pub fn launch(window: &Window, info: &gio::FileInfo) {
         return;
     }
     open_with_default(window, &file, &mime);
+}
+
+/// An untrusted launcher, opened: asks before allowing it to run.
+fn allow_launching_then_run(window: &Window, info: &gio::FileInfo) {
+    let Some(file) = util::file_of(info) else {
+        return;
+    };
+    let window = window.clone();
+    let name = info.display_name().to_string();
+    glib::spawn_future_local(async move {
+        let choice = dialogs::message(
+            parent(&window).as_ref(),
+            "Untrusted Launcher",
+            "question",
+            &format!("\"{name}\" hasn't been allowed to run."),
+            "Allow it only if you trust where it came from. It starts a program.",
+            &[("_Allow and Run", 0), ("_Open as Text", 1), ("Cancel", 2)],
+            2,
+        )
+        .await;
+        match choice {
+            0 => {
+                if set_launching_allowed(&file, true).await
+                    && let Some(path) = file.path()
+                {
+                    let _ = std::process::Command::new("gio")
+                        .arg("launch")
+                        .arg(&path)
+                        .spawn();
+                }
+            }
+            1 => open_with_default(&window, &file, "text/plain"),
+            _ => {}
+        }
+    });
+}
+
+/// Allow Launching: a launcher marked trusted and made executable, as
+/// Ubuntu's desktop icons and Files do it; or neither.
+pub async fn set_launching_allowed(file: &gio::File, allowed: bool) -> bool {
+    let trusted = gio::FileInfo::new();
+    trusted.set_attribute_string("metadata::trusted", if allowed { "true" } else { "false" });
+    if file
+        .set_attributes_future(
+            &trusted,
+            gio::FileQueryInfoFlags::NONE,
+            glib::Priority::DEFAULT,
+        )
+        .await
+        .is_err()
+    {
+        return false;
+    }
+    let Ok(info) = file
+        .query_info_future(
+            "unix::mode",
+            gio::FileQueryInfoFlags::NONE,
+            glib::Priority::DEFAULT,
+        )
+        .await
+    else {
+        return false;
+    };
+    let mode = info.attribute_uint32("unix::mode");
+    let mode = if allowed { mode | 0o100 } else { mode & !0o111 };
+    file.set_attribute_uint32(
+        "unix::mode",
+        mode,
+        gio::FileQueryInfoFlags::NONE,
+        gio::Cancellable::NONE,
+    )
+    .is_ok()
+}
+
+/// Allow Launching, from a launcher's menu: on or off for the selected ones.
+pub fn toggle_launching(window: &Window) {
+    let infos = window.tab().selected_infos();
+    let allow = infos
+        .iter()
+        .any(|info| filecell::trusted_launcher(info).is_none());
+    let files: Vec<gio::File> = infos.iter().filter_map(util::file_of).collect();
+    // The mode changes last, and the desktop reads the launcher again then.
+    glib::spawn_future_local(async move {
+        for file in &files {
+            set_launching_allowed(file, allow).await;
+        }
+    });
 }
 
 fn open_with_default(window: &Window, file: &gio::File, mime: &str) {

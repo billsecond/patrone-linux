@@ -3,12 +3,15 @@
 
 mod addressbar;
 mod archive;
+mod bubble;
 mod clipboard;
 mod commandbar;
 mod commands;
 mod config;
 mod conflicts;
 mod dbus;
+mod desktop;
+mod desktopgrid;
 mod dialogs;
 mod dnd;
 mod filecell;
@@ -59,12 +62,17 @@ Opens a File Manager window for each folder. A file opens in its app.
       --restore      Reopen the folders open at the last sign-out, if
                      Folder Options says to
       --quit         Close every File Manager window
+      --desktop      Draw the desktop and the desktop bubble (the
+                     taskbar starts it, and hosts its windows)
   -h, --help         Show this help
   -V, --version      Show the version
 ";
 
 fn main() -> glib::ExitCode {
     gio::resources_register_include!("resources.gresource").expect("the app's resources");
+    if std::env::args().nth(1).as_deref() == Some("--desktop") {
+        return desktop::run();
+    }
     let app = gtk::Application::builder()
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::HANDLES_COMMAND_LINE)
@@ -78,6 +86,16 @@ fn main() -> glib::ExitCode {
 }
 
 fn startup(app: &gtk::Application) {
+    load_style();
+    window::set_accels(app);
+    dbus::register(app);
+    thumbs::set_enabled(config::flag("show-thumbnails"));
+}
+
+/// The look: GTK's own theme under File Manager's style sheet, light or
+/// dark with the desktop, and the icons. The desktop (desktop.rs) uses it
+/// too.
+pub fn load_style() {
     let display = gdk::Display::default().expect("File Manager needs a display");
     if let Some(settings) = gtk::Settings::default() {
         // GTK's own theme: Ubuntu's Yaru doesn't load in plain GTK4 apps,
@@ -116,9 +134,6 @@ fn startup(app: &gtk::Application) {
         gtk::STYLE_PROVIDER_PRIORITY_USER + 1,
     );
     gtk::Window::set_default_icon_name(APP_ID);
-    window::set_accels(app);
-    dbus::register(app);
-    thumbs::set_enabled(config::flag("show-thumbnails"));
 }
 
 /// Runs for the first launch and, through D-Bus, for every later one, so

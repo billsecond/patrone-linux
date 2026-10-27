@@ -1,3 +1,25 @@
+patrone-file-manager (0.3.0) resolute; urgency=medium
+
+  * File Manager draws the desktop and the desktop bubble, as Explorer
+    draws Windows' desktop, in place of Ubuntu's desktop icons: run as
+    patrone-file-manager --desktop by Patrone's taskbar (0.4.0), which
+    hosts its windows. The desktop's files have File Manager's icons,
+    thumbnails, names, selection, renaming, menus, commands and undo.
+  * Windows' desktop right-click menu: View (icon size, Auto arrange, Show
+    desktop icons), Sort by, Refresh, Paste, Paste shortcut, Undo, New
+    (Folder, Text Document, Templates), Show Recycle Bin while it's off the
+    desktop, Display settings, Personalize and Open in Terminal.
+  * Icons on the desktop fill down the left side first and stay where
+    they're put; rubber band, arrow keys and File Manager's shortcuts work
+    there. Launchers need Allow Launching, as with Ubuntu's desktop icons.
+  * Dragging between File Manager and the desktop, or the bubble, works
+    both ways: a move on one drive, a copy to another, Shift to move and
+    Ctrl to copy, with File Manager's conflict dialog and undo. Ctrl and
+    Shift now reach a window that isn't in front through GNOME, in every
+    drop in File Manager too.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 08:55:00 -0500
+
 patrone-file-manager (0.2.10) resolute; urgency=medium
 
   * A name being typed (after Compress, New folder, New file or F2) is kept

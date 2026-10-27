@@ -68,7 +68,7 @@ fn run(window: &Window, files: Vec<gio::File>, mime: String, default_only: bool)
     } else {
         format!("{extension} file")
     };
-    let dialog = Dialog::new(Some(&window.gtk_window()), "Open with");
+    let dialog = Dialog::new(window.dialog_parent().as_ref(), "Open with");
     dialog.window.set_default_size(420, 520);
     dialog.window.set_resizable(true);
     let heading = gtk::Label::builder()
@@ -177,7 +177,7 @@ fn run(window: &Window, files: Vec<gio::File>, mime: String, default_only: bool)
             && let Err(error) = app.set_as_default_for_type(&mime)
         {
             crate::dialogs::error(
-                Some(&window.gtk_window()),
+                window.dialog_parent().as_ref(),
                 "Open with",
                 "The default app couldn't be changed.",
                 &error.to_string(),

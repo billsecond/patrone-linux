@@ -14,6 +14,7 @@ use std::rc::{Rc, Weak};
 use gtk::{gdk, gio, glib, prelude::*};
 
 use crate::config;
+use crate::desktopgrid::DesktopGrid;
 use crate::filecell::{self, CellContext, CellKind, FileCell};
 use crate::icons::{self, Kind};
 use crate::location::Location;
@@ -99,6 +100,10 @@ pub struct FolderView {
     typed: RefCell<String>,
     typed_timer: RefCell<Option<glib::SourceId>>,
     events: crate::util::Handler<ViewEvent>,
+    /// Showing the desktop (desktop.rs): the desktop's own grid and sort,
+    /// no banner or "This folder is empty."
+    desktop: Cell<bool>,
+    desktop_grid: RefCell<Option<DesktopGrid>>,
     me: RefCell<Weak<FolderView>>,
 }
 
@@ -227,6 +232,8 @@ impl FolderView {
             typed: RefCell::default(),
             typed_timer: RefCell::default(),
             events: RefCell::default(),
+            desktop: Cell::new(false),
+            desktop_grid: RefCell::default(),
             me: RefCell::default(),
         });
         *view.me.borrow_mut() = Rc::downgrade(&view);
@@ -249,6 +256,22 @@ impl FolderView {
 
     fn weak(&self) -> Weak<FolderView> {
         self.me.borrow().clone()
+    }
+
+    /// Makes this the desktop's view, before it shows the Desktop folder.
+    pub fn set_desktop_mode(&self) {
+        self.desktop.set(true);
+        self.context.launchers.set(true);
+        self.dir
+            .set_attributes(Some(&format!("{ATTRIBUTES},metadata::trusted")));
+        self.banner.widget.set_visible(false);
+        self.scrolled
+            .set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
+    }
+
+    /// The desktop's grid, in desktop mode.
+    pub fn desktop_grid(&self) -> Option<DesktopGrid> {
+        self.desktop_grid.borrow().clone()
     }
 
     fn connect_models(&self) {
@@ -312,6 +335,14 @@ impl FolderView {
         }
         self.filter_state.folder.replace(Some(file.clone()));
         self.dir.set_file(Some(file));
+        if self.desktop.get() {
+            if let Some(grid) = self.desktop_grid() {
+                grid.set_folder(file);
+            }
+            self.set_state(self.state.get(), false);
+            self.update_empty();
+            return;
+        }
         self.banner.show(Some(file));
         self.empty.set_label("This folder is empty.");
         self.set_state(state, false);
@@ -445,7 +476,9 @@ impl FolderView {
             Some(Location::Folder(file)) => Some(file.clone()),
             _ => None,
         };
-        self.banner.show(folder.as_ref());
+        if !self.desktop.get() {
+            self.banner.show(folder.as_ref());
+        }
         crate::thumbs::set_enabled(config::flag("show-thumbnails"));
         if let Some(view) = self.view.borrow().as_ref() {
             set_single_click(view, config::flag("single-click"));
@@ -497,6 +530,10 @@ impl FolderView {
     }
 
     fn update_empty(&self) {
+        if self.desktop.get() {
+            self.empty.set_visible(false);
+            return;
+        }
         let loading = self.dir.is_loading()
             && self.filter_model.model().as_ref() == Some(self.dir.upcast_ref());
         let empty = self.filter_model.n_items() == 0;
@@ -757,6 +794,10 @@ impl FolderView {
 
     fn build_view(&self) {
         let state = self.state.get();
+        if self.desktop.get() {
+            self.build_desktop_grid(state);
+            return;
+        }
         let grouped = state.group.is_some();
         let (widget, horizontal): (gtk::Widget, bool) = match state.view {
             View::Details => (self.build_details(state).upcast(), false),
@@ -807,6 +848,24 @@ impl FolderView {
         if had_focus {
             widget.grab_focus();
         }
+    }
+
+    /// The desktop's view: one grid for good, whatever the sort.
+    fn build_desktop_grid(&self, state: ViewState) {
+        if self.desktop_grid.borrow().is_none() {
+            let grid = DesktopGrid::new(&self.selection, &self.context, &self.dir);
+            if let Some(Location::Folder(folder)) = self.location.borrow().as_ref() {
+                grid.set_folder(folder);
+            }
+            self.context.cells.borrow_mut().clear();
+            self.scrolled.set_child(Some(&grid));
+            set_single_click(grid.upcast_ref(), config::flag("single-click"));
+            self.add_view_controllers(grid.upcast_ref());
+            self.view.replace(Some(grid.clone().upcast()));
+            self.desktop_grid.replace(Some(grid));
+        }
+        self.built
+            .set(Some((state.view, state.group, self.context.in_trash.get())));
     }
 
     fn build_grid(&self, kind: CellKind, horizontal: bool) -> gtk::GridView {
@@ -1102,6 +1161,8 @@ impl FolderView {
             list.connect_activate(move |_, position| activate(position));
         } else if let Some(columns) = widget.downcast_ref::<gtk::ColumnView>() {
             columns.connect_activate(move |_, position| activate(position));
+        } else if let Some(grid) = widget.downcast_ref::<DesktopGrid>() {
+            grid.connect_activate(activate);
         }
 
         // Right-click.
@@ -1260,6 +1321,10 @@ impl FolderView {
                 return glib::Propagation::Proceed;
             }
             if let Some(view) = weak.upgrade() {
+                if view.desktop.get() {
+                    crate::desktop::step_icon_size(dy < 0.0);
+                    return glib::Propagation::Stop;
+                }
                 let mut state = view.state.get();
                 state.view = state.view.step(dy < 0.0);
                 view.set_state(state, true);
@@ -1321,7 +1386,7 @@ impl FolderView {
             {
                 return false;
             }
-            let action = crate::dnd::preferred_action(target, &folder);
+            let action = crate::dnd::drop_action(target, &folder);
             view.emit(ViewEvent::Drop {
                 files,
                 folder,
@@ -1339,7 +1404,9 @@ impl FolderView {
             gtk::ListScrollFlags::NONE
         };
         let view = self.view.borrow().clone();
-        if let Some(grid) = view
+        if let Some(grid) = view.as_ref().and_then(|w| w.downcast_ref::<DesktopGrid>()) {
+            grid.focus_item(position, select_focus);
+        } else if let Some(grid) = view
             .as_ref()
             .and_then(|w| w.downcast_ref::<gtk::GridView>())
         {
@@ -1382,7 +1449,9 @@ impl FolderView {
 }
 
 fn set_single_click(view: &gtk::Widget, single: bool) {
-    if let Some(grid) = view.downcast_ref::<gtk::GridView>() {
+    if let Some(grid) = view.downcast_ref::<DesktopGrid>() {
+        grid.set_single_click(single);
+    } else if let Some(grid) = view.downcast_ref::<gtk::GridView>() {
         grid.set_single_click_activate(single);
     } else if let Some(list) = view.downcast_ref::<gtk::ListView>() {
         list.set_single_click_activate(single);
@@ -1393,6 +1462,10 @@ fn set_single_click(view: &gtk::Widget, single: bool) {
 
 /// The file cell under a point of a list widget.
 fn find_cell(widget: &gtk::Widget, x: f64, y: f64) -> Option<FileCell> {
+    // The desktop places its own cells, and knows which is where.
+    if let Some(grid) = widget.downcast_ref::<DesktopGrid>() {
+        return grid.cell_at_point(x, y);
+    }
     let picked = widget.pick(x, y, gtk::PickFlags::DEFAULT)?;
     let mut current = Some(picked);
     while let Some(candidate) = current {

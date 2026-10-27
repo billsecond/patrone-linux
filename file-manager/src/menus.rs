@@ -165,13 +165,15 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
         act(window, "open"),
     );
     if all_folders {
-        menu.item(
-            Icon::Glyph("tab-new"),
-            "Open in new tab",
-            None,
-            true,
-            act(window, "open-new-tab"),
-        );
+        if !window.desktop {
+            menu.item(
+                Icon::Glyph("tab-new"),
+                "Open in new tab",
+                None,
+                true,
+                act(window, "open-new-tab"),
+            );
+        }
         menu.item(
             Icon::Glyph("window-new"),
             "Open in new window",
@@ -261,6 +263,22 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
         true,
         act(window, "copy-path"),
     );
+    // Launchers on the desktop, as Ubuntu's desktop icons offered them.
+    let launchers = selected
+        .iter()
+        .all(|info| util::content_type(info) == "application/x-desktop");
+    if window.desktop && launchers {
+        let allowed = selected
+            .iter()
+            .all(|info| crate::filecell::trusted_launcher(info).is_some());
+        menu.check(
+            Icon::None,
+            "Allow Launching",
+            None,
+            allowed,
+            act(window, "allow-launching"),
+        );
+    }
     if enabled(window, "set-background") {
         menu.item(
             Icon::Glyph("picture"),
@@ -470,7 +488,7 @@ fn send_to_submenu(window: &Window, menu: &Rc<Menu>) {
                     None,
                     true,
                     move || {
-                        let parent = Some(w.gtk_window());
+                        let parent = w.dialog_parent();
                         let (files, desktop) = (files.clone(), desktop.clone());
                         glib::spawn_future_local(async move {
                             crate::ops::link(parent, files, desktop, true).await;
@@ -486,7 +504,7 @@ fn send_to_submenu(window: &Window, menu: &Rc<Menu>) {
                     None,
                     true,
                     move || {
-                        let parent = Some(w.gtk_window());
+                        let parent = w.dialog_parent();
                         let (files, documents) = (files.clone(), documents.clone());
                         glib::spawn_future_local(async move {
                             crate::ops::copy(parent, files, documents, true).await;
@@ -505,7 +523,7 @@ fn send_to_submenu(window: &Window, menu: &Rc<Menu>) {
                     None,
                     true,
                     move || {
-                        let parent = Some(w.gtk_window());
+                        let parent = w.dialog_parent();
                         let (files, target) = (files.clone(), target.clone());
                         glib::spawn_future_local(async move {
                             crate::ops::copy(parent, files, target, true).await;
@@ -636,6 +654,169 @@ pub fn background_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
         );
     }
     menu.popup_at(widget, x, y);
+}
+
+/// The desktop's right-click menu, as Windows 11's: View, Sort by, Refresh,
+/// Paste, Undo, New, Display settings, Personalize, Open in Terminal (the
+/// user, 2026-10-27). With the desktop bubble on it serves the empty
+/// desktop and the bubble's empty part, and shows the bubble's files.
+pub fn desktop_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
+    let menu = Menu::new();
+    let bubble = crate::desktop::bubble_on();
+    if bubble {
+        menu.item(
+            Icon::Color("pfm-nav-desktop"),
+            "Open Desktop folder",
+            None,
+            true,
+            crate::desktop::open_desktop_folder,
+        );
+        menu.separator();
+    } else {
+        menu.submenu(Icon::Glyph("view"), "View", true, desktop_view_items);
+    }
+    let w = window.clone();
+    menu.submenu(Icon::Glyph("sort"), "Sort by", true, move |sub| {
+        desktop_sort_items(&w, sub)
+    });
+    menu.item(
+        Icon::Glyph("refresh"),
+        "Refresh",
+        Some("F5"),
+        true,
+        act(window, "refresh"),
+    );
+    menu.separator();
+    menu.item(
+        Icon::Glyph("paste"),
+        "Paste",
+        Some("Ctrl+V"),
+        enabled(window, "paste"),
+        act(window, "paste"),
+    );
+    menu.item(
+        Icon::Glyph("shortcut"),
+        "Paste shortcut",
+        None,
+        enabled(window, "paste-shortcut"),
+        act(window, "paste-shortcut"),
+    );
+    if undo::can_undo() {
+        menu.item(
+            Icon::Glyph("undo"),
+            &undo::undo_label(),
+            Some("Ctrl+Z"),
+            true,
+            act(window, "undo"),
+        );
+    }
+    if undo::can_redo() {
+        menu.item(
+            Icon::Glyph("redo"),
+            &undo::redo_label(),
+            Some("Ctrl+Y"),
+            true,
+            act(window, "redo"),
+        );
+    }
+    menu.separator();
+    let w = window.clone();
+    menu.submenu(
+        Icon::Glyph("new"),
+        "New",
+        enabled(window, "new-folder"),
+        move |sub| new_items(&w, sub),
+    );
+    menu.separator();
+    if !crate::desktop::bin_shown() {
+        menu.item(
+            Icon::Color("pfm-nav-trash"),
+            "Show Recycle Bin",
+            None,
+            true,
+            crate::desktop::show_bin,
+        );
+    }
+    menu.item(
+        Icon::Glyph("computer"),
+        "Display settings",
+        None,
+        true,
+        crate::desktop::display_settings,
+    );
+    menu.item(
+        Icon::Glyph("picture"),
+        "Personalize",
+        None,
+        true,
+        crate::desktop::personalize,
+    );
+    menu.separator();
+    menu.item(
+        Icon::Glyph("terminal"),
+        "Open in Terminal",
+        None,
+        enabled(window, "open-terminal"),
+        act(window, "open-terminal"),
+    );
+    menu.popup_at(widget, x, y);
+}
+
+/// The desktop's View: icon size, Auto arrange, and showing the icons.
+fn desktop_view_items(menu: &Rc<Menu>) {
+    let current = config::string("desktop-icon-size");
+    for (id, label, _) in crate::desktopgrid::ICON_SIZES {
+        menu.radio(
+            Icon::Glyph(match id {
+                "large" => "view-large",
+                "small" => "view-small",
+                _ => "view-medium",
+            }),
+            label,
+            None,
+            current == id,
+            move || {
+                let _ = config::settings().set_string("desktop-icon-size", id);
+            },
+        );
+    }
+    menu.separator();
+    menu.check(
+        Icon::None,
+        "Auto arrange icons",
+        None,
+        config::flag("desktop-auto-arrange"),
+        || {
+            let on = config::flag("desktop-auto-arrange");
+            let _ = config::settings().set_boolean("desktop-auto-arrange", !on);
+        },
+    );
+    menu.separator();
+    menu.check(
+        Icon::None,
+        "Show desktop icons",
+        None,
+        config::flag("desktop-show-icons"),
+        || {
+            let on = config::flag("desktop-show-icons");
+            let _ = config::settings().set_boolean("desktop-show-icons", !on);
+        },
+    );
+}
+
+/// The desktop's Sort by, as Windows': name, size, type, date modified.
+fn desktop_sort_items(window: &Window, menu: &Rc<Menu>) {
+    let current = config::string("desktop-sort");
+    for column in [Column::Name, Column::Size, Column::Type, Column::Modified] {
+        let label = match column {
+            Column::Type => "Item type",
+            other => other.label(),
+        };
+        let w = window.clone();
+        menu.radio(Icon::None, label, None, current == column.id(), move || {
+            crate::desktop::sort_by(&w, column)
+        });
+    }
 }
 
 /// View: the eight views, Compact view, and Show.

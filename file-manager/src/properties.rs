@@ -140,7 +140,9 @@ pub fn show(window: &Window, infos: Vec<gio::FileInfo>) {
         "Properties".to_owned()
     };
     let dialog = Dialog::new(None, &title);
-    dialog.window.set_transient_for(Some(&window.gtk_window()));
+    dialog
+        .window
+        .set_transient_for(window.dialog_parent().as_ref());
     dialog.window.set_modal(false);
     dialog.window.set_default_size(400, -1);
     dialog.window.add_css_class("properties-window");
@@ -498,7 +500,7 @@ pub fn show(window: &Window, infos: Vec<gio::FileInfo>) {
         let applied_hidden = Rc::new(Cell::new(initial_hidden));
         let applied_name = Rc::new(RefCell::new(initial_name));
         Rc::new(move || {
-            let parent = Some(window.gtk_window());
+            let parent = window.dialog_parent();
             // With a Permissions tab, Read-only is one of its Write boxes.
             if let Some(permissions) = permissions.clone() {
                 applied_read_only.set(read_only.is_active());
@@ -608,7 +610,9 @@ fn show_drive(window: &Window, info: &gio::FileInfo) {
     };
     let name = info.display_name().to_string();
     let dialog = Dialog::new(None, &format!("{name} Properties"));
-    dialog.window.set_transient_for(Some(&window.gtk_window()));
+    dialog
+        .window
+        .set_transient_for(window.dialog_parent().as_ref());
     dialog.window.set_modal(false);
     dialog.window.set_default_size(380, -1);
     let notebook = gtk::Notebook::new();

@@ -14,6 +14,9 @@ gtk = { package = "gtk4", version = "0.11", features = ["gnome_50"] }
 zip = { version = "9", default-features = false, features = ["deflate-flate2-zlib-rs"] }
 tar = "0.4"
 flate2 = "1"
+# The desktop moves its standard streams aside (desktop.rs); GLib already
+# brings it in.
+libc = "0.2"
 
 [profile.release]
 lto = true

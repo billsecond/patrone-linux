@@ -44,6 +44,9 @@ pub struct CellContext {
     /// "System folder hints": say what system folders are for.
     pub hints: Cell<bool>,
     pub in_trash: Cell<bool>,
+    /// On the desktop: launchers the account allowed to run show their
+    /// app's icon and name, as Ubuntu's desktop icons did.
+    pub launchers: Cell<bool>,
     pub cells: RefCell<Vec<glib::WeakRef<FileCell>>>,
     /// Files dropped on a folder: the files, the folder, and copy or move.
     pub on_drop: RefCell<Option<Rc<DropHandler>>>,
@@ -58,6 +61,7 @@ impl CellContext {
             checkboxes: Cell::new(false),
             hints: Cell::new(false),
             in_trash: Cell::new(false),
+            launchers: Cell::new(false),
             cells: RefCell::default(),
             on_drop: RefCell::default(),
         })
@@ -225,6 +229,41 @@ pub fn permissions_text(info: &gio::FileInfo) -> String {
         .collect()
 }
 
+/// What a launcher shows: the app's name and icon.
+pub struct Launcher {
+    pub name: String,
+    pub icon: Option<gio::Icon>,
+}
+
+/// A launcher (a `.desktop` file) the account allowed to run (Allow
+/// Launching: trusted and executable), as the app it starts.
+pub fn trusted_launcher(info: &gio::FileInfo) -> Option<Launcher> {
+    if util::content_type(info) != "application/x-desktop"
+        || info.attribute_string("metadata::trusted").as_deref() != Some("true")
+        || !info.boolean("access::can-execute")
+    {
+        return None;
+    }
+    let path = util::file_of(info)?.path()?;
+    let entry = glib::KeyFile::new();
+    entry.load_from_file(&path, glib::KeyFileFlags::NONE).ok()?;
+    let name = entry
+        .locale_string("Desktop Entry", "Name", None)
+        .ok()?
+        .to_string();
+    let icon = entry
+        .string("Desktop Entry", "Icon")
+        .ok()
+        .map(|icon| -> gio::Icon {
+            if icon.starts_with('/') {
+                gio::FileIcon::new(&gio::File::for_path(icon.as_str())).upcast()
+            } else {
+                gio::ThemedIcon::new(&icon).upcast()
+            }
+        });
+    Some(Launcher { name, icon })
+}
+
 /// The tooltip Windows shows when pointing at an item.
 pub fn tooltip_text(info: &gio::FileInfo) -> String {
     let mut lines = vec![format!("Type: {}", type_text(info))];
@@ -254,6 +293,8 @@ mod imp {
         /// The list item showing this cell: its position stays current
         /// when items are added above it, without a rebind.
         pub list_item: RefCell<Option<glib::WeakRef<gtk::ListItem>>>,
+        /// Its position, for a cell the desktop places itself (no list item).
+        pub placed: Cell<Option<u32>>,
         pub bound: Cell<bool>,
         /// Bumped on every bind, so a late thumbnail can't land on a reused cell.
         pub generation: Cell<u64>,
@@ -341,6 +382,8 @@ impl FileCell {
                 let width = match size {
                     256 => 272,
                     96 => 112,
+                    // The desktop's small icons
+                    32 => 76,
                     _ => 84,
                 };
                 cell.set_size_request(width, -1);
@@ -484,6 +527,9 @@ impl FileCell {
     }
 
     pub fn position(&self) -> u32 {
+        if let Some(position) = self.imp().placed.get() {
+            return position;
+        }
         self.imp()
             .list_item
             .borrow()
@@ -495,6 +541,11 @@ impl FileCell {
 
     pub fn set_list_item(&self, item: &gtk::ListItem) {
         self.imp().list_item.replace(Some(item.downgrade()));
+    }
+
+    /// For a cell the desktop places itself: where its item is in the list.
+    pub fn set_position(&self, position: u32) {
+        self.imp().placed.set(Some(position));
     }
 
     pub fn is_bound(&self) -> bool {
@@ -521,10 +572,16 @@ impl FileCell {
         };
         let hide = context.hide_extensions.get();
         let kind = self.kind();
+        let launcher = context
+            .launchers
+            .get()
+            .then(|| trusted_launcher(info))
+            .flatten();
 
         if let Some(name) = imp.name.borrow().as_ref() {
-            let text = match kind {
-                CellKind::Detail(column) => column_text(info, column, hide),
+            let text = match (kind, &launcher) {
+                (CellKind::Detail(column), _) => column_text(info, column, hide),
+                (_, Some(launcher)) => launcher.name.clone(),
                 _ => shown_name(info, hide),
             };
             name.set_label(&text);
@@ -626,8 +683,18 @@ impl FileCell {
             // The artwork has margins: at 20 the item itself is about 16.
             _ => 20,
         };
-        icons::set_image(&icon, icons::for_info(&info), size);
         icon.remove_css_class("thumbnail");
+        let launcher = self
+            .context()
+            .filter(|context| context.launchers.get())
+            .and_then(|_| trusted_launcher(&info))
+            .and_then(|launcher| launcher.icon);
+        if let Some(app_icon) = launcher {
+            icon.set_from_gicon(&app_icon);
+            icon.set_pixel_size(size);
+            return;
+        }
+        icons::set_image(&icon, icons::for_info(&info), size);
         if size < 32 || !thumbs::enabled() || util::is_dir(&info) {
             return;
         }
@@ -915,7 +982,7 @@ impl FileCell {
                 if files.iter().any(|file| file.equal(&folder)) {
                     return false;
                 }
-                let action = crate::dnd::preferred_action(target, &folder);
+                let action = crate::dnd::drop_action(target, &folder);
                 let on_drop = context.on_drop.borrow().clone();
                 if let Some(on_drop) = on_drop {
                     on_drop(files, folder, action);

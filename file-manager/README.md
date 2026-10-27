@@ -158,6 +158,82 @@ Hidden files (names starting with a dot, and names listed in a folder's
 items says otherwise, and show faded when they're shown. Hidden in
 Properties adds the name to `.hidden`, which every GTK app honors.
 
+## The desktop
+
+Since 0.3.0 File Manager draws the desktop and the desktop bubble, as
+Explorer draws Windows' desktop (the user, 2026-10-27: "The desktop and the
+roll out menu must be an extension of the file explorer app, while
+supporting the desktop and all it can do"), in place of Ubuntu's desktop
+icons extension and the taskbar's own bubble. `patrone-file-manager
+--desktop` (`src/desktop.rs`) shows the Desktop folder (`xdg-user-dir
+DESKTOP`, made if missing) with File Manager's own view, cells, menus,
+commands and undo, so the icons, thumbnails, names, selection, renaming,
+dragging, conflicts and undo are File Manager's.
+
+- **The taskbar runs it.** A Wayland app can't make its window the desktop
+  or keep it above the others, so Patrone's taskbar starts it as a Wayland
+  client of its own and finds its windows by their titles ("Patrone
+  Desktop", "Patrone Desktop Bubble"; `shell/gnome/README.md`, "The desktop
+  and the bubble"). The two talk over the desktop's standard input and
+  output, a line at a time (the list is at the top of `src/desktop.rs`):
+  the screen's free area, the Recycle Bin's place and size and whether
+  it's on the desktop, the bubble setting and the bubble opening and
+  closing, one way; the item count, the bubble's shape and requests to
+  open or close it, the other. It runs on its own (not on D-Bus, not
+  sharing a process with File Manager's windows), so the taskbar can start
+  and stop it, and a fault in either never closes the other. Opening a
+  folder from the desktop opens a File Manager window; dialogs (conflicts,
+  Properties, delete) belong to no window, so GNOME centres them.
+- **Two windows.** One as big as the screen, with the icons on it (a
+  desktop window: under every other window, on every workspace, no taskbar
+  button), and, while the taskbar's `desktop-bubble` setting is on, the
+  bubble's, which takes the icons into half an ellipse at the left edge
+  (`src/bubble.rs`, the taskbar's old `bubbleShape.js` with the same sizes)
+  and leaves the desktop empty but still taking right-clicks, drops and
+  keys. The view moves between them (`Window::content`), and the bubble's
+  window runs the desktop window's commands (`win.*`). New, Paste and drops
+  on the empty desktop open the bubble on what they made.
+- **Icons on the desktop** (`src/desktopgrid.rs`, a widget of its own in
+  place of a list view): down the left side first, then the next column,
+  as on Windows; each stays where it's put (dragged about the desktop, or
+  dropped there from elsewhere) unless Auto arrange is on. Places are kept
+  by name in the `desktop-positions` setting, as columns and rows, so they
+  survive a change of icon size; a renamed icon keeps its place. None goes
+  under the Recycle Bin. Names are white with a shadow over the wallpaper;
+  selection is File Manager's blue, stronger so it shows on a dark picture.
+- **Selecting:** click, Ctrl+click, Shift+click, a rubber band from empty
+  space (with Ctrl, adding), the arrow keys, Home and End, Ctrl+Space, and
+  typing a name's start. Enter or a double-click opens (one click with
+  Folder Options' single-click).
+- **Right-click on the desktop**, as Windows 11's: View (Large, Medium or
+  Small icons, Auto arrange icons, Show desktop icons), Sort by (Name, Size,
+  Item type, Date modified; with Auto arrange off it arranges the icons
+  once, as on Windows), Refresh, Paste, Paste shortcut, Undo and Redo, New
+  (Folder, Shortcut, Text Document and the Templates folder's files),
+  Show Recycle Bin while it's off the desktop, Display settings (GNOME
+  Settings' Displays), Personalize (Patrone Settings' Theme page, else
+  GNOME's Appearance) and Open in Terminal. In the bubble, Open Desktop
+  folder comes first and View is left out (the bubble lays itself out). On
+  an icon, File Manager's own menu (without Open in new tab).
+- **Keys:** File Manager's, from the desktop or the bubble: Delete,
+  Shift+Delete, F2, Ctrl+A, Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+Z, Ctrl+Y,
+  Ctrl+Shift+N, F5, Alt+Enter, Ctrl+Shift+C, Shift+F10 and the Menu key.
+  Ctrl+mouse wheel changes the icon size. Escape closes the bubble.
+- **Dragging** works between the desktop (or the bubble) and File Manager
+  both ways with Windows' rules (`src/dnd.rs`): a move on the same drive, a
+  copy to another, Shift to move and Ctrl to copy. Holding Ctrl or Shift
+  over a window that isn't in front reaches it through GNOME, which picks
+  the drag's action from the keys and hands it to the drop
+  (`dnd::drop_action`); before, a window that didn't have the keyboard
+  never saw them. Files held over the bubble's pill for half a second open
+  the bubble, to drop them in.
+- **Launchers** (`.desktop` files), as Ubuntu's desktop icons did them: one
+  the account allowed to run (trusted and executable) shows its app's icon
+  and name and starts the app; any other shows as a file, and opening it
+  asks first (Allow and Run, Open as Text, Cancel). Allow Launching in its
+  right-click menu turns that on or off (`metadata::trusted`, and the
+  owner's run bit).
+
 ## Keyboard
 
 | Keys | Action |
@@ -195,7 +271,10 @@ can change the defaults for everyone with a `.gschema.override` file, and
 changed. Each folder's own view is kept in
 `~/.local/share/patrone-file-manager/folder-views.ini`, and the visit
 counts behind "frequent folders" in `history.ini` beside it. Pinned folders
-and Favorites are settings (`pinned-folders`, `favorite-files`).
+and Favorites are settings (`pinned-folders`, `favorite-files`). The
+desktop's View and Sort by are `desktop-icon-size`, `desktop-auto-arrange`,
+`desktop-show-icons` and `desktop-sort`, and its icons' places
+`desktop-positions`.
 
 ## Icons
 
@@ -241,7 +320,8 @@ the favorites in Files' place, so the taskbar's Files button opens it.
 
 Command line: `patrone-file-manager [--new-window] [--select] [LOCATION...]`;
 a file opens in its app, `--select` shows items selected in their folders.
-Every window shares one process.
+Every window shares one process. `--desktop` draws the desktop, in a
+process of its own; only the taskbar starts it.
 
 ## Testing without a desktop session
 
@@ -278,6 +358,14 @@ Every window shares one process.
 - Test runs in a private D-Bus session get their own dconf service, which
   fights the desktop's over `~/.config/dconf/user`. Give them their own
   database: `DCONF_PROFILE=` a file containing `user-db:pfm-test`.
+- **The desktop** needs the taskbar to host it: run
+  `shell/gnome/tests/headless.sh start` with a folder holding a
+  `patrone-file-manager` link to the build first on `PATH`, and the
+  taskbar in that shell starts it (a copy of the script with its own
+  `base` and `display` keeps clear of anyone else's test shell). Its
+  `drag`, `click` and `eval` drive it; a drag with a key held, or one that
+  pauses on the way, is a few more lines of the same `eval`. The shell's
+  Desktop folder is in `/tmp`, where GIO can't use the Recycle Bin.
 
 ## Not done yet
 
@@ -288,3 +376,8 @@ Every window shares one process.
 - Windows' Gallery timeline and collections, OneDrive-style cloud states,
   libraries, and indexed search (search reads the disk each time).
 - Folders don't show previews of their contents on their icons.
+- The desktop: icons on the primary screen only (other screens show the
+  wallpaper and GNOME's own menu); Windows' "Align icons to grid" off (free
+  placement); undo shared with File Manager's windows (each keeps its own:
+  Ctrl+Z on the desktop undoes what was done there, a drop from a window
+  included); the name editor growing to more lines for a long name.

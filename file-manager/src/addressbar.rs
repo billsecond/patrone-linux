@@ -492,7 +492,7 @@ impl AddressBar {
                 let Ok(list) = value.get::<gdk::FileList>() else {
                     return false;
                 };
-                let action = crate::dnd::preferred_action(drop, &folder);
+                let action = crate::dnd::drop_action(drop, &folder);
                 bar.emit(AddressEvent::Drop {
                     files: list.files(),
                     folder: folder.clone(),

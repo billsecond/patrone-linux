@@ -28,6 +28,28 @@ pub fn preferred_action(target: &gtk::DropTarget, folder: &gio::File) -> gdk::Dr
     }
 }
 
+/// What a drop does once it's let go. Dragged from another window (File
+/// Manager to the desktop, or back), this one never had the keyboard, so
+/// it can't see Ctrl or Shift itself; GNOME picks the action from them for
+/// the drag (Shift moves, Ctrl copies) and the drop carries it.
+pub fn drop_action(target: &gtk::DropTarget, folder: &gio::File) -> gdk::DragAction {
+    let preferred = preferred_action(target, folder);
+    if places::is_trash(folder) {
+        return preferred;
+    }
+    let chosen = target.current_drop().map(|drop| drop.actions());
+    match chosen {
+        Some(action)
+            if action == gdk::DragAction::COPY
+                || action == gdk::DragAction::MOVE
+                || action == gdk::DragAction::LINK =>
+        {
+            action
+        }
+        _ => preferred,
+    }
+}
+
 /// Whether two locations are on the same drive, where a move is a rename.
 pub fn same_drive(a: &gio::File, b: &gio::File) -> bool {
     if a.is_native() && b.is_native() {

@@ -51,6 +51,9 @@ pub struct Inner {
     side_paned: gtk::Paned,
     tabs: RefCell<Vec<Rc<Tab>>>,
     current: RefCell<Option<Rc<Tab>>>,
+    /// The desktop's window (desktop.rs): the Desktop folder alone, with
+    /// no title bar, panes or tabs.
+    pub desktop: bool,
 }
 
 impl std::ops::Deref for Window {
@@ -94,6 +97,11 @@ pub fn all() -> Vec<Window> {
 /// windows at sign-in". A sign-out ends the app without closing windows,
 /// so the list is kept current as windows move around.
 fn save_open_windows() {
+    // The desktop runs apart from File Manager's windows, and mustn't write
+    // their list.
+    if crate::desktop::is_running() {
+        return;
+    }
     let settings = config::settings();
     if !settings.boolean("restore-windows") {
         if !settings.strv("open-windows").is_empty() {
@@ -147,20 +155,29 @@ pub fn start_location() -> Location {
 
 impl Window {
     pub fn new(app: &gtk::Application, location: Location) -> Window {
-        let window = Window::build(app);
+        let window = Window::build(app, false);
         window.new_tab(location, true);
         window
     }
 
     /// A window for a tab taken from another one.
     pub fn with_tab(app: &gtk::Application, tab: Rc<Tab>) -> Window {
-        let window = Window::build(app);
+        let window = Window::build(app, false);
         window.attach_tab(tab, 0);
         window
     }
 
+    /// The desktop's window, showing the Desktop folder (desktop.rs). The
+    /// taskbar finds it by its title and makes it the desktop.
+    pub fn new_desktop(app: &gtk::Application, folder: gio::File, title: &str) -> Window {
+        let window = Window::build(app, true);
+        window.window.set_title(Some(title));
+        window.new_tab(Location::Folder(folder), true);
+        window
+    }
+
     /// A window with no tabs yet: the caller adds one straight away.
-    fn build(app: &gtk::Application) -> Window {
+    fn build(app: &gtk::Application, desktop: bool) -> Window {
         let settings = config::settings();
         let window = gtk::ApplicationWindow::builder()
             .application(app)
@@ -168,13 +185,27 @@ impl Window {
             .default_width(settings.int("window-width").max(480))
             .default_height(settings.int("window-height").max(360))
             .build();
-        window.add_css_class("file-manager");
-        if settings.boolean("window-maximized") {
-            window.maximize();
+        if desktop {
+            window.add_css_class("desktop");
+            window.set_decorated(false);
+            let size = gdk::Display::default()
+                .and_then(|display| display.monitors().item(0))
+                .and_downcast::<gdk::Monitor>()
+                .map(|monitor| monitor.geometry());
+            if let Some(size) = size {
+                window.set_default_size(size.width(), size.height());
+            }
+        } else {
+            window.add_css_class("file-manager");
+            if settings.boolean("window-maximized") {
+                window.maximize();
+            }
         }
 
         let tabbar = TabBar::new();
-        window.set_titlebar(Some(&tabbar.widget));
+        if !desktop {
+            window.set_titlebar(Some(&tabbar.widget));
+        }
 
         let address = AddressBar::new();
         let menus_slot: Rc<RefCell<Option<WeakWindow>>> = Rc::default();
@@ -230,7 +261,13 @@ impl Window {
         content.append(&header);
         content.append(&outer_paned);
         content.append(&status.widget);
-        window.set_child(Some(&content));
+        if desktop {
+            // The tab alone fills the screen; the rest stays unused.
+            side_paned.set_start_child(None::<&gtk::Widget>);
+            window.set_child(Some(&stack));
+        } else {
+            window.set_child(Some(&content));
+        }
 
         let inner = Rc::new(Inner {
             window,
@@ -245,6 +282,7 @@ impl Window {
             side_paned,
             tabs: RefCell::default(),
             current: RefCell::default(),
+            desktop,
         });
         let window = Window(inner);
         menus_slot.replace(Some(window.downgrade()));
@@ -283,6 +321,17 @@ impl Window {
         self.window.clone().upcast()
     }
 
+    /// What dialogs belong to. None on the desktop: tied to the desktop's
+    /// window, GNOME would hang a dialog from the screen's top edge.
+    pub fn dialog_parent(&self) -> Option<gtk::Window> {
+        (!self.desktop).then(|| self.gtk_window())
+    }
+
+    /// The tabs' content, which the desktop moves into its bubble.
+    pub fn content(&self) -> gtk::Widget {
+        self.stack.clone().upcast()
+    }
+
     /// The tab on screen.
     pub fn tab(&self) -> Rc<Tab> {
         self.current
@@ -314,6 +363,9 @@ impl Window {
     /// Opens a tab after the current one.
     pub fn new_tab(&self, location: Location, activate: bool) -> Rc<Tab> {
         let tab = Tab::new();
+        if self.desktop {
+            tab.folder.set_desktop_mode();
+        }
         self.adopt(&tab);
         let index = self
             .current
@@ -617,6 +669,14 @@ impl Window {
     /// Goes to a place in the current tab, or a new window when Folder
     /// Options says so.
     pub fn navigate(&self, location: Location) {
+        // The desktop always shows the desktop: elsewhere opens in File
+        // Manager.
+        if self.desktop {
+            if let Some(folder) = location.folder() {
+                crate::desktop::open_in_file_manager(std::slice::from_ref(folder));
+            }
+            return;
+        }
         self.tab().navigate(location);
     }
 
@@ -719,6 +779,8 @@ impl Window {
                 } => {
                     if on_item {
                         menus::item_menu(self, &widget, x, y);
+                    } else if self.desktop {
+                        menus::desktop_menu(self, &widget, x, y);
                     } else {
                         menus::background_menu(self, &widget, x, y);
                     }
@@ -733,7 +795,14 @@ impl Window {
                     folder,
                     action,
                 } => commands::drop_files(self, files, folder, action),
-                ViewEvent::Rename { file, name } => commands::rename_to(self, file, name),
+                ViewEvent::Rename { file, name } => {
+                    if let Some(grid) = tab.folder.desktop_grid()
+                        && let Some(old) = file.basename()
+                    {
+                        grid.carry_place(&old.to_string_lossy(), &name);
+                    }
+                    commands::rename_to(self, file, name)
+                }
                 ViewEvent::StateChanged => {
                     if is_current {
                         self.update_view_actions();
@@ -886,7 +955,13 @@ impl Window {
             });
 
         // Remember the window's size and panes.
-        self.window.connect_close_request(|window| {
+        let desktop = self.desktop;
+        self.window.connect_close_request(move |window| {
+            // The desktop stays (Alt+F4 on it does nothing); the taskbar
+            // ends it when it's done with it.
+            if desktop {
+                return glib::Propagation::Stop;
+            }
             let settings = config::settings();
             let _ = settings.set_boolean("window-maximized", window.is_maximized());
             if !window.is_maximized() {
@@ -976,6 +1051,10 @@ impl Window {
     }
 
     fn update_title(&self) {
+        // The taskbar knows the desktop's window by its title.
+        if self.desktop {
+            return;
+        }
         let location = self.tab().location();
         let title = if config::flag("show-full-path-in-title") {
             location.edit_text()
@@ -1265,7 +1344,28 @@ impl Window {
 
     fn add_actions(&self) {
         let window = &self.window;
+        // What the desktop has no use for: it has no history, tabs, address
+        // bar or other windows of its own.
+        const NOT_ON_DESKTOP: &[&str] = &[
+            "back",
+            "forward",
+            "up",
+            "focus-address",
+            "focus-search",
+            "new-tab",
+            "close-tab",
+            "new-window",
+            "next-tab",
+            "previous-tab",
+            "fullscreen",
+            "expand-to-folder",
+            "open-new-tab",
+        ];
+        let desktop = self.desktop;
         let simple = |name: &str, run: fn(&Window)| {
+            if desktop && NOT_ON_DESKTOP.contains(&name) {
+                return;
+            }
             let action = gio::SimpleAction::new(name, None);
             let weak = self.downgrade();
             action.connect_activate(move |_, _| {
@@ -1318,14 +1418,14 @@ impl Window {
         simple("undo", |w| {
             let window = w.clone();
             glib::spawn_future_local(async move {
-                let files = undo::undo(Some(window.gtk_window())).await;
+                let files = undo::undo(window.dialog_parent()).await;
                 window.select_files(&files);
             });
         });
         simple("redo", |w| {
             let window = w.clone();
             glib::spawn_future_local(async move {
-                let files = undo::redo(Some(window.gtk_window())).await;
+                let files = undo::redo(window.dialog_parent()).await;
                 window.select_files(&files);
             });
         });
@@ -1360,9 +1460,10 @@ impl Window {
         simple("extract", commands::extract);
         simple("extract-here", commands::extract_here);
         simple("create-shortcut", commands::create_shortcut);
+        simple("allow-launching", commands::toggle_launching);
         simple("new-folder", commands::new_folder);
         simple("empty-trash", |w| {
-            let parent = Some(w.gtk_window());
+            let parent = w.dialog_parent();
             glib::spawn_future_local(async move { crate::ops::empty_trash(parent).await });
         });
         simple("restore-all", |w| commands::restore(w, true));
@@ -1506,30 +1607,7 @@ impl Window {
     /// when the focus is in the file list, so typing in the address bar or
     /// search box keeps its own Ctrl+C, Delete and Backspace.
     fn add_shortcuts(&self) {
-        let controller = gtk::ShortcutController::new();
-        controller.set_propagation_phase(gtk::PropagationPhase::Bubble);
-        let shortcuts: &[(&str, &str)] = &[
-            ("Delete|KP_Delete|<Control>d", "win.delete"),
-            ("<Shift>Delete|<Shift>KP_Delete", "win.delete-permanently"),
-            ("F2", "win.rename"),
-            ("<Control>a", "win.select-all"),
-            ("<Control>c", "win.copy"),
-            ("<Control>x", "win.cut"),
-            ("<Control>v", "win.paste"),
-            ("<Control>z", "win.undo"),
-            ("<Control>y|<Control><Shift>z", "win.redo"),
-            ("BackSpace", "win.back"),
-            ("<Alt>Return|<Alt>KP_Enter", "win.properties"),
-            ("<Control><Shift>c", "win.copy-path"),
-        ];
-        for (trigger, action) in shortcuts {
-            let trigger = gtk::ShortcutTrigger::parse_string(trigger).expect("a valid trigger");
-            controller.add_shortcut(gtk::Shortcut::new(
-                Some(trigger),
-                Some(gtk::NamedAction::new(action)),
-            ));
-        }
-        self.stack.add_controller(controller);
+        self.stack.add_controller(file_shortcuts());
     }
 
     /// The mouse's own Back and Forward buttons (8 and 9), anywhere in the
@@ -1551,6 +1629,37 @@ impl Window {
         });
         self.window.add_controller(click);
     }
+}
+
+/// The keys that act on the files (Delete, F2, Ctrl+C...), for whatever
+/// holds them: a window's file list, or the desktop's empty background.
+pub fn file_shortcuts() -> gtk::ShortcutController {
+    let controller = gtk::ShortcutController::new();
+    controller.set_propagation_phase(gtk::PropagationPhase::Bubble);
+    let shortcuts: &[(&str, &str)] = &[
+        ("Delete|KP_Delete|<Control>d", "win.delete"),
+        ("<Shift>Delete|<Shift>KP_Delete", "win.delete-permanently"),
+        ("F2", "win.rename"),
+        ("<Control>a", "win.select-all"),
+        ("<Control>c", "win.copy"),
+        ("<Control>x", "win.cut"),
+        ("<Control>v", "win.paste"),
+        ("<Control>z", "win.undo"),
+        ("<Control>y|<Control><Shift>z", "win.redo"),
+        ("BackSpace", "win.back"),
+        ("<Alt>Return|<Alt>KP_Enter", "win.properties"),
+        ("<Control><Shift>c", "win.copy-path"),
+        ("F5|<Control>r", "win.refresh"),
+        ("<Control><Shift>n", "win.new-folder"),
+    ];
+    for (trigger, action) in shortcuts {
+        let trigger = gtk::ShortcutTrigger::parse_string(trigger).expect("a valid trigger");
+        controller.add_shortcut(gtk::Shortcut::new(
+            Some(trigger),
+            Some(gtk::NamedAction::new(action)),
+        ));
+    }
+    controller
 }
 
 impl StatusBar {
