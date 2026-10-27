@@ -190,7 +190,8 @@ close_layer() {
 step "What the installer installs ($install_layer)"
 # Ubuntu's English layer and Patrone's packages: the installer puts no
 # language layer of its own on it.
-leave_out=
+# Patrone's installer is for the live session only.
+leave_out=patrone-installer
 open_layer "$install_layer" minimal.en minimal
 close_layer "$install_layer"
 install_size=$(cat "$work/iso/$install_layer.size")

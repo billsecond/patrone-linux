@@ -1,0 +1,17 @@
+#!/bin/sh
+# Starts Patrone's build of Ubuntu's installer front end (installer/README.md)
+# the way the snap's own launcher starts Ubuntu's: the install engine is the
+# ubuntu-desktop-bootstrap snap's, its subiquity-server service on
+# /run/subiquity/socket, and the front end reports errors under the snap's
+# name.
+export LIVE_RUN=1
+export SNAP_NAME=ubuntu-desktop-bootstrap
+export LOG_LEVEL=debug
+# The snap's launcher: GTK's OpenGL backend draws glitches on X11.
+export GDK_RENDERING=image
+
+# Drives don't mount by themselves while the installer works on them, as in
+# the snap's launcher.
+trap 'sudo systemctl stop udisks2-inhibit.service' EXIT HUP INT TERM
+sudo systemctl start udisks2-inhibit.service
+/usr/lib/patrone-installer/ubuntu_bootstrap "$@"

@@ -1,0 +1,8 @@
+[Desktop Entry]
+# The snap's own launcher ("Install Ubuntu"), which snapd puts in
+# /var/lib/snapd/desktop/applications: this file has its name, comes first
+# in XDG_DATA_DIRS, and hides it. patrone-installer.desktop is Patrone's.
+Type=Application
+Name=Ubuntu Desktop Installer
+Exec=ubuntu-desktop-bootstrap
+NoDisplay=true

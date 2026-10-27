@@ -14,6 +14,7 @@
 #   ./packaging/build.sh patrone-task-manager -d
 #   ./packaging/build.sh fonts-patrone-sans
 #   ./packaging/build.sh patrone-software
+#   ./packaging/build.sh patrone-installer   (after installer/build.sh)
 #
 # The packages land in out/. For a Rust package the crates are vendored into
 # the source tree first, so the build itself runs offline, as it will in a
@@ -39,6 +40,7 @@ case $package in
     patrone-task-manager) source_dir=task-manager ;;
     fonts-patrone-sans) source_dir=fonts ;;
     patrone-software) source_dir=software ;;
+    patrone-installer) source_dir=installer ;;
     *)
         echo "Unknown package: $package" >&2
         exit 1

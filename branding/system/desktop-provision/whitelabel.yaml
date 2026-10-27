@@ -6,7 +6,10 @@
 #
 # Its name can't be set here: "flavor" is one of Ubuntu's flavors' names
 # (UbuntuFlavor.fromName in ubuntu-desktop-provision's flavor_service.dart),
-# and any other falls back to Ubuntu.
+# and any other falls back to Ubuntu. Patrone's build of the installer
+# (installer/, patrone-installer) names Ubuntu's flavor Patrone Linux.
+# slides/ has Patrone's slides, shown during the install, in English for
+# every language.
 theme:
   accent-color: "#288BFA"
   elevated-button-color: "#288BFA"
@@ -26,7 +29,10 @@ pages:
     image: "assets/images/keyboard.svg"
   network:
     image: "assets/images/wifi.svg"
+  # The page offering an update of the installer's snap: an update would
+  # start Ubuntu's own installer in place of Patrone's (installer/README.md).
   refresh:
+    visible: false
     image: "/usr/share/desktop-provision/patrone-mark.svg"
     image-dark: "/usr/share/desktop-provision/patrone-mark.svg"
   autoinstall:

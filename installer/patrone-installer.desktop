@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Install Patrone Linux
+Comment=Install Patrone Linux on this computer
+Exec=patrone-installer
+Icon=/usr/share/desktop-provision/patrone-mark.svg
+Terminal=false
+Categories=System;

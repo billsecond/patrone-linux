@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+
+pkg = debian/patrone-installer
+lib = $(pkg)/usr/lib/patrone-installer
+
+%:
+	dh $@
+
+# The app comes built (installer/build.sh, which needs Flutter and the
+# network); this packages it.
+override_dh_auto_install:
+	test -x bundle/ubuntu_bootstrap || { echo "Run installer/build.sh first" >&2; exit 1; }
+	install -d $(lib)
+	cp -r bundle/. $(lib)/
+	install -Dm755 patrone-installer $(pkg)/usr/bin/patrone-installer
+	install -Dm644 patrone-installer.desktop $(pkg)/usr/share/applications/patrone-installer.desktop
+	install -Dm644 ubuntu-desktop-bootstrap_ubuntu-desktop-bootstrap.desktop \
+	    $(pkg)/usr/share/applications/ubuntu-desktop-bootstrap_ubuntu-desktop-bootstrap.desktop
+	install -Dm644 ubuntu-desktop-installer.service.d/patrone.conf \
+	    $(pkg)/usr/lib/systemd/user/ubuntu-desktop-installer.service.d/patrone.conf
+
+# Flutter's libraries (libflutter_linux_gtk.so, the app's libapp.so) are the
+# app's own, and libapp.so is Dart's compiled code, which stripping breaks.
+override_dh_shlibdeps:
+	dh_shlibdeps -l$(CURDIR)/$(lib)/lib
+
+override_dh_strip override_dh_dwz:
