@@ -1,0 +1,13 @@
+#!/bin/sh
+# Puts back GNOME's picks, which preinst moved aside.
+set -e
+
+diverted=/usr/share/swcatalog/xml/org.gnome.Software.Featured.xml
+
+case "$1" in
+    remove | abort-install | disappear)
+        dpkg-divert --package patrone-software --remove --rename --divert "$diverted.gnome" "$diverted"
+        ;;
+esac
+
+#DEBHELPER#

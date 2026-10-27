@@ -7,7 +7,9 @@ and leaves out everything that reports to Canonical. It also recommends a
 few tools everyone gets (the user asked for them, 2026-10-26): `fastfetch`,
 `nano` and `vim` (Ubuntu installs only `vim-tiny`), `btop` and `htop`,
 `tree`, `ripgrep` (`rg`), `fzf`, `bat` (Ubuntu names its command `batcat`),
-`ncdu` and `7zip` (`7z`).
+`ncdu` and `7zip` (`7z`). Its app store is GNOME Software, with Patrone's
+picks (`patrone-software`, `software/README.md`), in place of Canonical's App
+Center.
 
 | File | Installed as | What it does |
 | --- | --- | --- |

@@ -2,7 +2,7 @@
 # the web, Patrone File Manager for folders, and Patrone Unpack for
 # archives, .deb packages and Flatpak files. The apps after each Patrone app
 # are fallbacks for when it isn't installed (Nautilus, Ubuntu's Files,
-# extracts archives itself; App Center is Canonical's snap-store). It's read
+# extracts archives itself; GNOME Software installs .deb packages). It's read
 # before Ubuntu's lists in /usr/share/applications, and a user's own choices
 # (~/.config/mimeapps.list) still win.
 [Default Applications]
@@ -36,7 +36,7 @@ application/x-lzma=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
 application/x-lzip=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
 application/x-cpio=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
 application/vnd.ms-cab-compressed=org.patrone.Unpack.desktop;
-application/vnd.debian.binary-package=org.patrone.Unpack.desktop;snap-store_snap-store.desktop;
+application/vnd.debian.binary-package=org.patrone.Unpack.desktop;gnome-software-local-file-packagekit.desktop;
 application/vnd.flatpak=org.patrone.Unpack.desktop;
 application/vnd.flatpak.ref=org.patrone.Unpack.desktop;
 application/vnd.flatpak.repo=org.patrone.Unpack.desktop;

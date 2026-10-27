@@ -84,6 +84,19 @@ In progress:
 
 Waiting on the user:
 
+- **Patrone's featured apps for GNOME Software.** The user said on
+  2026-10-27 that they'd send the list shortly, and asked to be reminded.
+  `software/org.patrone.Software.Featured.xml` holds a placeholder (GIMP,
+  Inkscape, Krita, Blender, VLC, Audacity, OBS Studio) until it comes;
+  `software/README.md` says how each app is marked. Install
+  `patrone-software` 0.1.0, `patrone-desktop` 0.1.4 and
+  `patrone-default-apps` 0.1.4: `sudo apt install
+  ~/src/patrone-linux/out/patrone-software_0.1.0_all.deb
+  ~/src/patrone-linux/out/patrone-desktop_0.1.4_all.deb
+  ~/src/patrone-linux/out/patrone-default-apps_0.1.4_all.deb`. App Center
+  (the snap-store snap) is removed on install; GNOME Software is in the
+  Start menu as Software.
+
 - **Install taskbar 0.3.12 and try the desktop bubble** (the user's design,
   2026-10-26; `shell/gnome/README.md`, "The desktop bubble"). The user
   installed 0.3.10 with Settings 0.3.5 and GNOME Settings patrone7 on

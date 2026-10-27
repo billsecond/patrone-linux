@@ -1,0 +1,15 @@
+#!/bin/sh
+# GNOME Software takes the place of Ubuntu's App Center, Canonical's
+# snap-store snap. Ubuntu's installer adds it as a snap, so no package
+# dependency can remove it: this does, the first time this package is
+# installed, so someone who puts it back later keeps it. Without snapd (in
+# a chroot, say) the install goes on.
+set -e
+
+if [ "$1" = configure ] && [ -z "$2" ] && command -v snap > /dev/null 2>&1 &&
+    snap list snap-store > /dev/null 2>&1; then
+    snap remove snap-store ||
+        echo "patrone-software: App Center (the snap-store snap) is still installed; remove it with: sudo snap remove snap-store" >&2
+fi
+
+#DEBHELPER#

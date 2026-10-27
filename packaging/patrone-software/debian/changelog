@@ -1,0 +1,8 @@
+patrone-software (0.1.0) resolute; urgency=medium
+
+  * First package: GNOME Software, with its plugins for Ubuntu's archive and
+    Flatpak but not snaps, in place of Ubuntu's App Center (the snap-store
+    snap, removed when this is first installed). Its Explore page shows
+    Patrone's picks in place of GNOME's; for now they're a placeholder.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 08:20:00 -0500

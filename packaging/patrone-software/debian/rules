@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+pkg = debian/patrone-software
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm644 org.patrone.Software.Featured.xml \
+	    $(pkg)/usr/share/swcatalog/xml/org.patrone.Software.Featured.xml

@@ -1,0 +1,20 @@
+Source: patrone-software
+Section: gnome
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-software
+Architecture: all
+Depends: ${misc:Depends}, gnome-software, gnome-software-plugin-flatpak
+Description: Patrone Linux's app store: GNOME Software with Patrone's picks
+ GNOME Software, in place of Ubuntu's App Center (Canonical's snap-store
+ snap, which this removes when it's first installed). It finds apps in
+ Ubuntu's archive and on Flatpak remotes such as Flathub, and its Explore
+ page shows Patrone's own picks in place of GNOME's.
+ .
+ It leaves out GNOME Software's snap plugin, so Canonical's Snap Store isn't
+ browsed; installed snaps, such as Chromium, still update through snapd.

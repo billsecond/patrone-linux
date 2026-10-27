@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Patrone's picks for GNOME Software, installed as
+  /usr/share/swcatalog/xml/org.patrone.Software.Featured.xml by
+  patrone-software, in place of GNOME's list (see README.md).
+
+  PLACEHOLDER (2026-10-27): the user is sending Patrone's real list. Until
+  then these stand in, enough of them that every section shows.
+
+  Each app is its AppStream ID, as Ubuntu's archive or Flathub knows it,
+  with up to three marks (GNOME's gnome-app-list README):
+    GnomeSoftware::FeatureTile    the banners at the top of Explore (5 or more)
+    kudo GnomeSoftware::popular   Editor's Choice on Explore (6 or more)
+    category Featured             the picks on its category's page (3 or more
+                                  in a category)
+  An app that neither the archive nor a Flatpak remote has is left out.
+-->
+<components>
+  <!-- Graphics -->
+  <component merge="append">
+    <id>org.gimp.GIMP</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>org.inkscape.Inkscape</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>org.kde.krita</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>org.blender.Blender</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <!-- Audio and video -->
+  <component merge="append">
+    <id>org.videolan.VLC</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>org.audacityteam.Audacity</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>com.obsproject.Studio</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+</components>

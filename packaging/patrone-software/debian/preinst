@@ -1,0 +1,14 @@
+#!/bin/sh
+# Moves GNOME's own picks for GNOME Software (60 GNOME Circle apps, which
+# Ubuntu's gnome-software-common ships) aside, to a name GNOME Software
+# doesn't read, so its Explore page shows only Patrone's. They come back
+# when this package is removed (postrm).
+set -e
+
+diverted=/usr/share/swcatalog/xml/org.gnome.Software.Featured.xml
+
+if [ "$1" = install ] || [ "$1" = upgrade ]; then
+    dpkg-divert --package patrone-software --add --rename --divert "$diverted.gnome" "$diverted"
+fi
+
+#DEBHELPER#
