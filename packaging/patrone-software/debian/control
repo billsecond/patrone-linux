@@ -14,7 +14,9 @@ Description: Patrone Linux's app store: GNOME Software with Patrone's picks
  GNOME Software, in place of Ubuntu's App Center (Canonical's snap-store
  snap, which this removes when it's first installed). It finds apps in
  Ubuntu's archive and on Flatpak remotes such as Flathub, and its Explore
- page shows Patrone's own picks in place of GNOME's.
+ page shows Patrone's own picks in place of GNOME's. It adds Patrone's app
+ index, which lists the Craft apps and installs them from their own GitHub
+ releases, and Flathub.
  .
  It leaves out GNOME Software's snap plugin, so Canonical's Snap Store isn't
  browsed; installed snaps, such as Chromium, still update through snapd.

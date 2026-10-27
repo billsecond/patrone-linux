@@ -12,6 +12,21 @@ if [ "$1" = configure ] && [ -z "$2" ] && command -v snap > /dev/null 2>&1 &&
         echo "patrone-software: App Center (the snap-store snap) is still installed; remove it with: sudo snap remove snap-store" >&2
 fi
 
+# Patrone's app index (the Craft apps, downloaded from their own GitHub
+# releases) and Flathub (the runtime they run on), for every account. Added
+# on the first install, or the upgrade that brings them, so a remote someone
+# deletes stays deleted. The index's listings are fetched now when there's a
+# network; GNOME Software fetches them later otherwise.
+if [ "$1" = configure ] && { [ -z "$2" ] || dpkg --compare-versions "$2" lt 0.1.4; } &&
+    command -v flatpak > /dev/null 2>&1; then
+    for remote in flathub patrone-app-index; do
+        flatpak remote-add --system --if-not-exists --from "$remote" \
+            "/usr/share/patrone-software/$remote.flatpakrepo" ||
+            echo "patrone-software: couldn't add the Flatpak remote $remote" >&2
+    done
+    timeout 60 flatpak update --system --appstream patrone-app-index > /dev/null 2>&1 || true
+fi
+
 # The store's launcher, named "Patrone Software", from GNOME Software's
 # (preinst moved it aside), and again whenever gnome-software brings a new
 # one (the applications folder's trigger)

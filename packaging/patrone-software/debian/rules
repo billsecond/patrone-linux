@@ -10,3 +10,5 @@ override_dh_auto_install:
 	    $(pkg)/usr/share/swcatalog/xml/org.patrone.Software.Featured.xml
 	install -Dm755 make-software-launcher \
 	    $(pkg)/usr/libexec/patrone-software/make-software-launcher
+	install -Dm644 -t $(pkg)/usr/share/patrone-software \
+	    patrone-app-index.flatpakrepo flathub.flatpakrepo

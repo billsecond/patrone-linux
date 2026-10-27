@@ -11,6 +11,11 @@ case "$1" in
         dpkg-divert --package patrone-software --remove --rename --divert "$featured.gnome" "$featured"
         rm -f "$launcher" "$launcher.new"
         dpkg-divert --package patrone-software --remove --rename --divert "$launcher.gnome" "$launcher"
+        # Patrone's app index, unless apps installed from it still need it
+        # for updates. Flathub stays: other apps may come from it.
+        if command -v flatpak > /dev/null 2>&1; then
+            flatpak remote-delete --system patrone-app-index > /dev/null 2>&1 || true
+        fi
         ;;
 esac
 

@@ -12,6 +12,8 @@ file on the machine, so Patrone's list needs no server.
 | File | Installed as | What it does |
 | --- | --- | --- |
 | `org.patrone.Software.Featured.xml` | `/usr/share/swcatalog/xml/` | Patrone's picks: the banners at the top of Explore, Editor's Choice, and each category's picks. The Craft apps (the user's list, 2026-10-27), and only them |
+| `patrone-app-index.flatpakrepo` | `/usr/share/patrone-software/` | Patrone's app index, where the Craft apps come from; postinst adds it as a system Flatpak remote |
+| `flathub.flatpakrepo` | `/usr/share/patrone-software/` | Flathub's own remote file (from `dl.flathub.org`): the Craft apps' runtime, and Flathub's apps |
 
 ## The Craft apps
 
@@ -40,16 +42,30 @@ ScreenGrabCraft and MailCraft. Each is listed by the ID in its own
 | ScreenGrabCraft | `io.github.billsecond.screengrabcraft` | Yes |
 | MailCraft | `io.github.billsecond.mailcraft` | Yes |
 
-All of them are in Editor's Choice and their categories' picks. **None
-shows yet**: none is in Ubuntu's archive or on Flathub. Each project's
-GitHub releases have `.deb`, `.flatpak` and AppImage files, which GNOME
-Software doesn't read; it reads the catalogs of apt repositories and
-Flatpak remotes. A `.flatpak` file installed by hand gets a remote of its
-own with no catalog (the user's PdfCraft is from `pdfcraft-origin`), so it
-shows under Installed but never on Explore. They'll show once they're in a
-Flatpak repository with a catalog (Flathub, or one of the Craft apps' own)
-that's set up on the machine. ArtCraft has no Linux build (its releases are
-for macOS and Windows), so it isn't listed.
+All of them are in Editor's Choice and their categories' picks. They come
+from **Patrone's app index** (since 0.1.4), a Flatpak repository in the
+user's GitHub that holds no apps: [billsecond/patrone-app-index](https://github.com/billsecond/patrone-app-index),
+published with GitHub Pages at `https://billsecond.github.io/patrone-app-index/repo/`.
+Each entry is an app's listing (name, icon, description, permissions, from
+the `.flatpak` on its latest GitHub release) and the address and checksum of
+the Linux tarball on that release; installing the app makes Flatpak download
+the tarball from the project's release and unpack it (Flatpak's "extra
+data"). A GitHub Actions job there checks for new releases once a day, so a
+release needs nothing from anyone. The user's terms (2026-10-27): host only
+the index, never the apps or installers, and nothing that needs regular
+upkeep. GNOME Software doesn't read a project's GitHub releases by itself:
+only the catalogs of apt repositories and Flatpak remotes.
+
+postinst adds the index and Flathub (whose freedesktop runtime the apps
+run on) as system remotes on the first install, or the upgrade to 0.1.4,
+so every account sees the apps and a remote someone deletes stays deleted.
+Removing the package deletes the index's remote unless apps installed from
+it still need it.
+
+Not in the index: **ScreenGrabCraft**, whose repository is private, so its
+releases can't be downloaded by others (one line in the index's `apps.list`
+once they're public); AniCraft, which has no releases yet; and ArtCraft,
+which has no Linux build (its releases are for macOS and Windows).
 
 The package:
 
