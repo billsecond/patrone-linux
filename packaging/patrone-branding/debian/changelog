@@ -1,3 +1,13 @@
+patrone-branding (0.1.9) resolute; urgency=medium
+
+  * The installer says Patrone Linux: /usr/share/desktop-provision/ has
+    Patrone's name, blue, wordmark and P for Ubuntu's installer
+    (ubuntu-desktop-bootstrap), in place of Ubuntu's name, orange, logo
+    and mascot. The user, 2026-10-27, of the ISO's installer: "IT
+    SHOULDN'T SAY UBUNTU".
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 13:55:00 -0500
+
 patrone-branding (0.1.8) resolute; urgency=medium
 
   * A new boot spinner: three interlinked rings, woven over and under like
