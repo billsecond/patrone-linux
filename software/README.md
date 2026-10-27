@@ -11,7 +11,45 @@ file on the machine, so Patrone's list needs no server.
 
 | File | Installed as | What it does |
 | --- | --- | --- |
-| `org.patrone.Software.Featured.xml` | `/usr/share/swcatalog/xml/` | Patrone's picks: the banners at the top of Explore, Editor's Choice, and each category's picks. **A placeholder for now**: the user is sending the real list |
+| `org.patrone.Software.Featured.xml` | `/usr/share/swcatalog/xml/` | Patrone's picks: the banners at the top of Explore, Editor's Choice, and each category's picks. First the Craft apps (the user's list, 2026-10-27), then well-known apps that fill Explore until the Craft apps can show |
+
+## The Craft apps
+
+The user's list (2026-10-27): storytold's Crafting Apps
+([github.com/storytold](https://github.com/storytold),
+[getartcraft.com](https://getartcraft.com/)), most popular first, then
+ScreenGrabCraft and MailCraft. Each is listed by the ID in its own
+`packaging/linux/*.metainfo.xml.in`:
+
+| App | ID | Banner |
+| --- | --- | --- |
+| PhotoCraft | `ai.storyteller.photocraft` | Yes |
+| PdfCraft | `ai.storyteller.pdfcraft` | Yes |
+| FilmCraft | `ai.storyteller.filmcraft` | Yes |
+| WordCraft | `ai.storyteller.wordcraft` | |
+| LightCraft | `ai.storyteller.lightcraft` | Yes |
+| VectorCraft | `ai.storyteller.vectorcraft` | |
+| EffectCraft | `ai.storyteller.effectcraft` | |
+| CADCraft | `ai.storyteller.cadcraft` | |
+| GridCraft | `ai.storyteller.gridcraft` | |
+| DesignCraft | `ai.storyteller.designcraft` | |
+| DeckCraft | `ai.storyteller.deckcraft` | |
+| SoundCraft | `ai.storyteller.soundcraft` | |
+| FigCraft | `ai.storyteller.figcraft` | |
+| Craft Launcher | `ai.storyteller.artcraft-launcher` | |
+| ScreenGrabCraft | `io.github.billsecond.screengrabcraft` | Yes |
+| MailCraft | `io.github.billsecond.mailcraft` | Yes |
+
+All of them are in Editor's Choice and their categories' picks. **None
+shows yet**: none is in Ubuntu's archive or on Flathub. Each project's
+GitHub releases have `.deb`, `.flatpak` and AppImage files, which GNOME
+Software doesn't read; it reads the catalogs of apt repositories and
+Flatpak remotes. A `.flatpak` file installed by hand gets a remote of its
+own with no catalog (the user's PdfCraft is from `pdfcraft-origin`), so it
+shows under Installed but never on Explore. They'll show once they're in a
+Flatpak repository with a catalog (Flathub, or one of the Craft apps' own)
+that's set up on the machine. ArtCraft has no Linux build (its releases are
+for macOS and Windows), so it isn't listed.
 
 The package:
 

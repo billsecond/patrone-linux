@@ -90,18 +90,18 @@ Waiting on the user:
   Shift (move); hold files from File Manager over the pill to open the
   bubble. 0.3.1 has 0.2.10's fixes too. Checked only in a throwaway shell.
 
-- **Patrone's featured apps for GNOME Software.** The user said on
-  2026-10-27 that they'd send the list shortly, and asked to be reminded.
-  `software/org.patrone.Software.Featured.xml` holds a placeholder (GIMP,
-  Inkscape, Krita, Blender, VLC, Audacity, OBS Studio) until it comes;
-  `software/README.md` says how each app is marked. Install
-  `patrone-software` 0.1.0, `patrone-desktop` 0.1.4 and
-  `patrone-default-apps` 0.1.4: `sudo apt install
-  ~/src/patrone-linux/out/patrone-software_0.1.0_all.deb
-  ~/src/patrone-linux/out/patrone-desktop_0.1.4_all.deb
-  ~/src/patrone-linux/out/patrone-default-apps_0.1.4_all.deb`. App Center
-  (the snap-store snap) is removed on install; GNOME Software is in the
-  Start menu as Software.
+- **Where the Craft apps get published, so GNOME Software can show them.**
+  The user's list (2026-10-27) is in `software/org.patrone.Software.Featured.xml`
+  (`patrone-software` 0.1.1): PhotoCraft, PdfCraft, FilmCraft, WordCraft,
+  LightCraft and the rest of storytold's Crafting Apps, the Craft Launcher,
+  ScreenGrabCraft and MailCraft. None is in a catalog GNOME Software reads
+  (`software/README.md`, "The Craft apps"), so for now the well-known apps
+  fill Explore. Ask the user: Flathub (each project submits), or a Flatpak
+  repository of the Craft apps (built from their release `.flatpak` files,
+  on GitHub Pages) that `patrone-software` sets up for every account. They
+  installed 0.1.0 (App Center removed, the placeholder showing with their
+  Flathub); 0.1.1 is `sudo apt install
+  ~/src/patrone-linux/out/patrone-software_0.1.1_all.deb`.
 
 - **The desktop bubble** (the user's design, 2026-10-26;
   `shell/gnome/README.md`, "The desktop bubble"): in the step above's

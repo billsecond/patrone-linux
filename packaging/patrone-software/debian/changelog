@@ -1,3 +1,16 @@
+patrone-software (0.1.1) resolute; urgency=medium
+
+  * Patrone's picks are the Craft apps, in place of the placeholder:
+    PhotoCraft, PdfCraft, FilmCraft, WordCraft, LightCraft, VectorCraft,
+    EffectCraft, CADCraft, GridCraft, DesignCraft, DeckCraft, SoundCraft,
+    FigCraft, the Craft Launcher, ScreenGrabCraft and MailCraft. They show
+    once they're in a Flatpak repository GNOME Software reads; until then
+    the well-known apps of the placeholder fill Explore.
+  * List Blender and VLC by Ubuntu's archive's IDs too, so Editor's Choice
+    shows without Flathub.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 09:30:00 -0500
+
 patrone-software (0.1.0) resolute; urgency=medium
 
   * First package: GNOME Software, with its plugins for Ubuntu's archive and

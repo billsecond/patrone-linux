@@ -4,19 +4,119 @@
   /usr/share/swcatalog/xml/org.patrone.Software.Featured.xml by
   patrone-software, in place of GNOME's list (see README.md).
 
-  PLACEHOLDER (2026-10-27): the user is sending Patrone's real list. Until
-  then these stand in, enough of them that every section shows.
-
-  Each app is its AppStream ID, as Ubuntu's archive or Flathub knows it,
-  with up to three marks (GNOME's gnome-app-list README):
+  Each app is its AppStream ID, as Ubuntu's archive or a Flatpak remote
+  (Flathub) knows it, with up to three marks (GNOME's gnome-app-list README):
     GnomeSoftware::FeatureTile    the banners at the top of Explore (5 or more)
     kudo GnomeSoftware::popular   Editor's Choice on Explore (6 or more)
     category Featured             the picks on its category's page (3 or more
                                   in a category)
-  An app that neither the archive nor a Flatpak remote has is left out.
+  An app that no catalog GNOME Software reads has is left out, so an app
+  listed here shows as soon as one has it.
 -->
 <components>
-  <!-- Graphics -->
+  <!--
+    The Craft apps (the user's list, 2026-10-27): storytold's Crafting Apps
+    (github.com/storytold, getartcraft.com), most popular first by GitHub
+    stars, then ScreenGrabCraft and MailCraft. None is in Ubuntu's archive
+    or on Flathub yet: they're .deb, .flatpak and AppImage files on their
+    GitHub releases, which GNOME Software doesn't read. They show once
+    they're in a Flatpak repository it does (README.md). ArtCraft itself
+    has no Linux build (macOS, Windows and the web), so it isn't listed.
+  -->
+  <component merge="append">
+    <id>ai.storyteller.photocraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.pdfcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.filmcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.wordcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.lightcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.vectorcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.effectcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.cadcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.gridcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.designcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.deckcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.soundcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.figcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <!-- The Craft Launcher, which installs and opens the Craft apps -->
+  <component merge="append">
+    <id>ai.storyteller.artcraft-launcher</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
+  <component merge="append">
+    <id>io.github.billsecond.screengrabcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>io.github.billsecond.mailcraft</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+
+  <!--
+    Well-known apps that fill Explore until the Craft apps can show (the
+    first placeholder, 2026-10-27). The banners need Flathub's large icons;
+    Editor's Choice also works from Ubuntu's archive, whose IDs differ for
+    Blender and VLC, so both IDs are listed.
+  -->
   <component merge="append">
     <id>org.gimp.GIMP</id>
     <categories><category>Featured</category></categories>
@@ -41,12 +141,21 @@
     <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
     <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
   </component>
-  <!-- Audio and video -->
+  <component merge="append">
+    <id>blender.desktop</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+  </component>
   <component merge="append">
     <id>org.videolan.VLC</id>
     <categories><category>Featured</category></categories>
     <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
     <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
+  <component merge="append">
+    <id>org.videolan.vlc</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
   </component>
   <component merge="append">
     <id>org.audacityteam.Audacity</id>
