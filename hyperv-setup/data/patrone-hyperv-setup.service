@@ -2,7 +2,9 @@
 Description=Offer to set up Hyper-V support
 Documentation=file:///usr/share/doc/patrone-hyperv-setup/README.md
 ConditionVirtualization=microsoft
-# Not in the installer's live session
+# Not in the installer's live session, which has the disc at /cdrom (and
+# boot=casper only when the boot menu says it, which Patrone's doesn't)
+ConditionPathIsMountPoint=!/cdrom
 ConditionKernelCommandLine=!boot=casper
 # "Don't show this again"
 ConditionPathExists=!%E/patrone-hyperv-setup/dont-show-at-login

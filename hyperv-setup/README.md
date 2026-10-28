@@ -23,7 +23,11 @@ manager, starts with the desktop (`graphical-session.target`), only:
 
 - in a Hyper-V VM (`ConditionVirtualization=microsoft`): on any other
   computer, nothing runs;
-- not in the installer's live session (`boot=casper`);
+- not in the installer's live session, which has the disc mounted at
+  `/cdrom` (`ConditionPathIsMountPoint`). Patrone's boot menu doesn't put
+  `boot=casper` on the kernel's command line (casper's initramfs boots the
+  disc without it), so that check alone let 0.1.0 show over the installer;
+  it stays, for a menu that does;
 - unless the account ticked **Don't show this again**: that writes
   `~/.config/patrone-hyperv-setup/dont-show-at-login`, which the unit checks
   for (`ConditionPathExists`), so nothing runs then either.
