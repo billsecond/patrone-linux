@@ -89,6 +89,15 @@ Waiting on the user:
   ~/src/patrone-linux/out/patrone-settings_0.3.6_amd64.deb`. Checked in
   the throwaway shell (shell/gnome/README.md, "The desktop bubble").
 
+- **Remote Desktop first in Settings** (the user, 2026-10-28: "make the
+  Remote Desktop as the main and first option that enables rdp, call it by
+  Remote Desktop, and add explain what the otehers actually do"): System ›
+  Remote Desktop opens on a **Remote Desktop** tab with one **Remote
+  Desktop** switch, then how to connect, then "Other Ways to Connect",
+  which says what Desktop Sharing (now the second tab), Secure Shell and
+  GNOME's Remote Login do. It's in the same `patrone11` packages as the
+  install line above (`gnome-settings/README.md`).
+
 - **Install taskbar 0.4.3: File Manager draws the desktop and the
   bubble** (the user, 2026-10-27: "The desktop and the roll out menu must
   be an extension of the file explorer app, while supporting the desktop
