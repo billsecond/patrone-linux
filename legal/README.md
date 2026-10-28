@@ -15,6 +15,10 @@ everything:
   each download, so change it, and the date in the line under the title,
   with every change to the text. A new version applies only to new
   downloads and new disc images (section 12).
+- Keep every version people have accepted readable. The website serves
+  only the current one, at `/licence/X.Y`; before publishing a new version,
+  copy the old text to `eula-X.Y.md` here and have the website serve it at
+  its own address too.
 - `# ` for the title, `## ` for section headings, `- ` for list items, and
   plain paragraphs, each separated by a blank line. No bold, links, HTML or
   comments: they'd show as typed. Disclaimers are in capitals instead

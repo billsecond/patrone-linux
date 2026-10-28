@@ -955,12 +955,15 @@ liability clauses name negligence and put the carve-outs first; the
 services paragraph matches the ISO without a browser (`8e0f189`); and a
 real contact replaces a missing one.
 
-Still for the builders: the website should link a permanent copy of each
-version beside the checkbox, with a one-line note that sections 5 and 7
-limit warranty and liability; the installer should write the accepted
-version to the installed system and leave the live session ungated; and a
-plain copy of the NVIDIA and Broadcom licences on the disc and the download
-page would settle section 2. **Needs a lawyer before it's relied on**:
+**The website shows it** since `fe1f631` (patrone-web 0.10.0): in full on
+the download page, with "It includes no warranty and limits our liability
+(sections 5 and 7)" and a link to `/licence/1.0` above the checkbox, and on
+that page of its own; the version accepted is recorded as before (checked
+on the running site: `/licence/1.0` answers 200 with the sections as
+headings, and the download page has the line and the link). Still for the
+installer: write the accepted version to the installed system and leave
+the live session ungated. And a plain copy of the NVIDIA and Broadcom
+licences on the disc and the download page would settle section 2. **Needs a lawyer before it's relied on**:
 the nine points in `legal/README.md`.
 
 ## Decisions for the user
