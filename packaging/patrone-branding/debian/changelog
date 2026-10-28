@@ -1,3 +1,14 @@
+patrone-branding (0.1.16) resolute; urgency=medium
+
+  * fastfetch's logo is smoother: each character cell has its own color,
+    dimmed where the logo's edge only partly covers it, so edges are
+    shaded as a smoothed picture's are, with finer 2x4 blocks and a
+    slightly larger mark (32 cells), and the logo's own light and shade
+    (the user: "can you find a way to go smoother?"). It turns off the
+    bold fastfetch gives logos, which streaked its edges.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 09:30:00 -0500
+
 patrone-branding (0.1.15) resolute; urgency=medium
 
   * Flatpak apps get Patrone Sans for sans-serif, system-ui and Segoe UI

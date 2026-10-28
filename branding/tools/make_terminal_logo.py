@@ -1,19 +1,21 @@
 """Traces the Patrone mark into terminal text, for fastfetch.
 
-Each character cell takes whichever block or shape character best matches the
-mark under it: full and partial blocks, sextants (2x3 cells), the diagonal
-"smooth mosaic" wedges and eighth blocks from Unicode's block elements and
-Symbols for Legacy Computing. VTE, Patrone Terminal's engine, draws all of
-them itself as exact shapes, so slopes come out as straight diagonals rather
-than stair steps. The shapes are matched as VTE draws them: terminal-glyphs.png
-is VTE's drawing of terminal-glyphs.txt (render_vte.py, below), so a new VTE
-can be measured again. The mark is traced from the logo's transparency, with
-the grid shifted to where it fits best. Each cell is colored along a diagonal
-gradient through the Patrone blues, light at the top right.
+Each character cell takes whichever block or shape character, in whichever
+color, best reproduces the logo under it: full and partial blocks, sextants
+(2x3 cells), the diagonal "smooth mosaic" wedges and eighth blocks from
+Unicode's block elements and Symbols for Legacy Computing. VTE, Patrone
+Terminal's engine, draws all of them itself as exact shapes, so slopes come
+out as straight diagonals rather than stair steps. Each cell's color is the
+one that makes it look most like the logo over Patrone Terminal's
+background, so cells the edge only partly covers are dimmer: the edges are
+shaded, as smoothed text is, and the logo keeps its own shading.
 
-The output is a fastfetch logo: $1 up select the blues, lightest first, then
-the wordmark's white and the rule blue. The script prints their numbers for
-branding/fastfetch/config.jsonc.
+The shapes are matched as VTE draws them: terminal-glyphs.png is VTE's
+drawing of terminal-glyphs.txt (render_vte.py, below), so a new VTE can be
+measured again. The mark's grid is shifted to where it fits best.
+
+The output is a fastfetch logo with its colors written in (24-bit color
+codes), for a "file-raw" logo in branding/fastfetch/config.jsonc:
 
     python tools/make_terminal_logo.py logos/patrone-logo.png fastfetch/logo.txt --preview logo.png
 
@@ -29,21 +31,26 @@ import itertools
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 TOOLS = Path(__file__).resolve().parent
 
-# The blues measured from the concept (branding/README.md), lightest first
-BLUES = [
-    (0x4D, 0xA0, 0xFC),  # Highlight
-    (0x28, 0x8B, 0xFA),  # Patrone Blue
-    (0x23, 0x72, 0xDD),  # Mid
-    (0x18, 0x51, 0xA8),  # Deep
-    (0x13, 0x43, 0x94),  # Shadow
-]
-# The wordmark is white and its rule blue; their numbers follow the blues.
-WHITE = (0xFF, 0xFF, 0xFF)
-RULE_BLUE = (0x3E, 0x91, 0xDE)
+# Patrone Terminal's background (terminal/src/theme.rs), which the logo is
+# matched against
+BACKGROUND = np.array([0x07, 0x0A, 0x10], dtype=float)
+# The wordmark is bold white, and its rule the rule blue
+WORDMARK = "1;97"
+RULE = "38;2;62;145;222"
+# A cell whose best color is this close to the background is left empty
+FAINT = 14
+# How far a cell's color may be dimmed below the mark's: blocks and other
+# rectangles a long way, which softens edges the way a smoothed picture's
+# edge pixels are, but not so far that they show as faint squares; the
+# diagonal wedges hardly at all (dimmed, their points looked like dark
+# shards)
+DIMMEST_RECTANGLE = 0.45
+DIMMEST_WEDGE = 0.8
+WEDGES = range(0x1FB3C, 0x1FB70)
 
 # The sheet's layout: a row of full blocks to find the grid by, then the
 # characters of terminal-glyphs.txt, 32 to a row
@@ -108,173 +115,190 @@ def load_glyphs(sets: list[str]) -> tuple[list[str], np.ndarray, float]:
     return chars, np.stack(masks), cell_h / cell_w
 
 
+def blur(image: np.ndarray, radius: float) -> np.ndarray:
+    """A Gaussian blur of each channel."""
+    x = np.arange(-int(3 * radius), int(3 * radius) + 1)
+    kernel = np.exp(-x ** 2 / (2 * radius ** 2))
+    kernel /= kernel.sum()
+    for axis in (0, 1):
+        image = np.apply_along_axis(lambda line: np.convolve(line, kernel, mode="same"), axis, image)
+    return image
+
+
 def load_mark(path: str, scale: int = 6) -> np.ndarray:
-    """The mark's coverage (0 to 1), enlarged and cropped to the mark."""
+    """The logo over Patrone Terminal's background (RGB, 0 to 255), enlarged
+    and cropped to the mark, with a margin of the background. The logo's
+    edges are drawn darker; its colors are taken from just inside instead,
+    so the edge cells' shading comes from how much the mark covers them."""
     image = Image.open(path).convert("RGBA")
-    image = image.resize((image.width * scale, image.height * scale), Image.LANCZOS)
-    alpha = np.asarray(image)[..., 3].astype(float) / 255
-    ys, xs = np.nonzero(alpha > 0.5)
-    return alpha[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    rgba = np.asarray(image).astype(float)
+    # The inside: opaque, two pixels in from the edge
+    inside = np.asarray(Image.fromarray(((rgba[..., 3] > 250) * 255).astype(np.uint8))
+                        .filter(ImageFilter.MinFilter(5))).astype(float) / 255
+    weight = blur(inside, 3)[..., None]
+    color = blur(rgba[..., :3] * inside[..., None], 3) / np.maximum(weight, 1e-6)
+    size = (image.width * scale, image.height * scale)
+    color = np.stack([np.asarray(Image.fromarray(color[..., c].astype(np.float32), mode="F")
+                                 .resize(size, Image.BILINEAR)) for c in range(3)], axis=-1)
+    alpha = np.asarray(image.getchannel("A").resize(size, Image.LANCZOS)).astype(float)[..., None] / 255
+    color = np.clip(color, 0, 255)
+    over = color * alpha + BACKGROUND * (1 - alpha)
+    ys, xs = np.nonzero(alpha[..., 0] > 0.5)
+    # The logo as seen, and its colors with how much each pixel is covered
+    mark = np.concatenate([over, color * alpha, alpha], axis=-1)
+    return mark[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
 
 
-def cell_coverage(alpha: np.ndarray, width: int, aspect: float, ox: float, oy: float) -> np.ndarray:
-    """The mark under each cell, MASK pixels a cell, for a grid `width` cells
-    wide shifted by (ox, oy) cells. Shape: (rows, width, MASK[1], MASK[0])."""
-    cell_w = alpha.shape[1] / (width - 1)
+def cells(mark: np.ndarray, width: int, aspect: float, ox: float, oy: float) -> tuple[np.ndarray, np.ndarray]:
+    """The logo under each cell, MASK pixels a cell, for a grid `width` cells
+    wide shifted by (ox, oy) cells, shape (rows, width, pixels, 3); and the
+    mark's own color there, (rows, width, 3)."""
+    cell_w = mark.shape[1] / (width - 1)
     cell_h = cell_w * aspect
-    rows = int(np.ceil(alpha.shape[0] / cell_h + oy))
-    # Pad the mark so every cell lies inside the image, then sample it
+    rows = int(np.ceil(mark.shape[0] / cell_h + oy))
     pad_x, pad_y = int(np.ceil(cell_w)), int(np.ceil(cell_h))
-    image = Image.fromarray(np.pad(alpha, ((pad_y, pad_y), (pad_x, pad_x))).astype(np.float32), mode="F")
-    out = np.zeros((rows, width, MASK[1], MASK[0]))
+    padded = np.zeros((mark.shape[0] + 2 * pad_y, mark.shape[1] + 2 * pad_x, mark.shape[2]))
+    padded[..., :3] = BACKGROUND
+    padded[pad_y:pad_y + mark.shape[0], pad_x:pad_x + mark.shape[1]] = mark
+    channels = [Image.fromarray(padded[..., c].astype(np.float32), mode="F") for c in range(mark.shape[2])]
+    seen = np.zeros((rows, width, MASK[0] * MASK[1], 3))
+    own = np.zeros((rows, width, 3))
     for row, col in itertools.product(range(rows), range(width)):
         x0 = pad_x + (col - ox) * cell_w
         y0 = pad_y + (row - oy) * cell_h
-        cell = image.resize(MASK, Image.BOX, box=(x0, y0, x0 + cell_w, y0 + cell_h))
-        out[row, col] = np.asarray(cell)
-    return out
+        box = (x0, y0, x0 + cell_w, y0 + cell_h)
+        for c in range(3):
+            seen[row, col, :, c] = np.asarray(channels[c].resize(MASK, Image.BOX, box=box)).ravel()
+        means = [np.asarray(channels[c].resize((1, 1), Image.BOX, box=box))[0, 0] for c in range(3, 7)]
+        own[row, col] = np.array(means[:3]) / max(means[3], 1e-6)
+    return seen, own
 
 
-def best_glyphs(coverage: np.ndarray, masks: np.ndarray) -> tuple[np.ndarray, float]:
-    """Each cell's closest shape, and the total squared difference."""
-    flat = coverage.reshape(-1, MASK[0] * MASK[1])
-    shapes = masks.reshape(len(masks), -1)
-    # |a - b|^2 = |a|^2 - 2ab + |b|^2, for every cell and shape at once
-    cost = (flat ** 2).sum(1)[:, None] - 2 * flat @ shapes.T + (shapes ** 2).sum(1)[None, :]
+def fit(target: np.ndarray, own: np.ndarray, masks: np.ndarray, dims: np.ndarray) -> tuple[np.ndarray, np.ndarray, float]:
+    """For every cell, the shape and shade that make it look most like the
+    logo. A cell shows k times the mark's own color there where its shape
+    covers it, and the background elsewhere; for each shape the best k is a
+    least-squares fit, kept between the shape's dimmest (`dims`) and 1, and
+    the shape is the one with the smallest error left."""
+    rows, width, pixels, _ = target.shape
+    d = target.reshape(-1, pixels, 3) - BACKGROUND             # cells, pixels, 3
+    c = own.reshape(-1, 3)                                     # cells, 3
+    m = masks.reshape(len(masks), -1)                          # shapes, pixels
+    mm = (m ** 2).sum(1)                                       # shapes
+    # With u = m c and v = m B, the error is |d + v - k u|^2
+    du = np.einsum("gp,np->ng", m, (d * c[:, None, :]).sum(2)) + mm[None] * (c @ BACKGROUND)[:, None]
+    uu = mm[None] * (c ** 2).sum(1)[:, None]
+    dd = (d ** 2).sum((1, 2))[:, None] + 2 * np.einsum("gp,np->ng", m, d @ BACKGROUND) \
+        + mm[None] * (BACKGROUND ** 2).sum()
+    k = np.clip(du / np.maximum(uu, 1e-9), dims[None], 1)
+    cost = dd - 2 * k * du + k ** 2 * uu
     choice = cost.argmin(1)
-    return choice.reshape(coverage.shape[:2]), float(cost.min(1).sum())
+    picked = np.arange(len(choice))
+    color = k[picked, choice][:, None] * c
+    return choice.reshape(rows, width), color.reshape(rows, width, 3), float(cost[picked, choice].sum())
 
 
-def gradient_colors(steps: int) -> list[tuple[int, int, int]]:
-    """`steps` colors evenly along the Patrone blues, lightest first."""
-    stops = np.array(BLUES, dtype=float)
-    colors = []
-    for i in range(steps):
-        position = i / (steps - 1) * (len(BLUES) - 1)
-        low = min(int(position), len(BLUES) - 2)
-        mix = position - low
-        colors.append(tuple(int(round(c)) for c in stops[low] * (1 - mix) + stops[low + 1] * mix))
-    return colors
-
-
-def trace(path: str, width: int, sets: list[str], steps: int) -> list[str]:
+def trace(path: str, width: int, sets: list[str]) -> list[list[tuple[str, tuple[int, int, int] | None]]]:
+    """The logo's rows of (character, color) cells."""
     chars, masks, aspect = load_glyphs(sets)
-    alpha = load_mark(path)
+    dims = np.array([DIMMEST_WEDGE if ord(char) in WEDGES else DIMMEST_RECTANGLE for char in chars])
+    mark = load_mark(path)
     best = None
     for ox, oy in itertools.product(np.linspace(0, 1, 6, endpoint=False), repeat=2):
-        coverage = cell_coverage(alpha, width, aspect, ox, oy)
-        choice, cost = best_glyphs(coverage, masks)
-        if best is None or cost < best[1]:
-            best = (choice, cost)
-    choice = best[0]
-    rows = choice.shape[0]
-    lines = []
-    for row in range(rows):
-        line, current = "", None
+        choice, color, cost = fit(*cells(mark, width, aspect, ox, oy), masks, dims)
+        if best is None or cost < best[2]:
+            best = (choice, color, cost)
+    choice, color, _ = best
+    grid = []
+    for row in range(choice.shape[0]):
+        line = []
         for col in range(width):
             char = chars[choice[row, col]]
-            if char != " ":
-                # Along the diagonal from the top right to the bottom left
-                t = ((width - 0.5 - col) / width + (row + 0.5) / rows) / 2
-                blue = 1 + min(steps - 1, int(t * steps))
-                if blue != current:
-                    line += f"${blue}"
-                    current = blue
-            line += char
-        lines.append(line.rstrip())
-    while lines and not lines[0].strip():
-        lines.pop(0)
-    while lines and not lines[-1].strip():
-        lines.pop()
-    return lines
-
-
-def strip_colors(line: str) -> str:
-    out, i = "", 0
-    while i < len(line):
-        if line[i] == "$" and line[i + 1:i + 2].isdigit():
-            i += 2
-        else:
-            out += line[i]
-            i += 1
-    return out
+            rgb = tuple(int(round(v)) for v in color[row, col])
+            if char == " " or np.abs(np.array(rgb) - BACKGROUND).max() < FAINT:
+                line.append((" ", None))
+            else:
+                line.append((char, rgb))
+        grid.append(line)
+    # A cell on its own, with nothing beside it, is a stray fleck
+    for row, line in enumerate(grid):
+        for col, (char, rgb) in enumerate(line):
+            neighbors = [grid[r][c] for r in range(row - 1, row + 2) for c in range(col - 1, col + 2)
+                         if (r, c) != (row, col) and 0 <= r < len(grid) and 0 <= c < len(grid[r])]
+            if rgb is not None and all(n[1] is None for n in neighbors):
+                line[col] = (" ", None)
+    for line in grid:
+        while line and line[-1][0] == " ":
+            line.pop()
+    while grid and not grid[0]:
+        grid.pop(0)
+    while grid and not grid[-1]:
+        grid.pop()
+    return grid
 
 
 def centered(text: str, width: int) -> str:
     return " " * max(0, (width - len(text)) // 2) + text
 
 
-def preview(lines: list[str], path: str, colors: list[tuple[int, int, int]]) -> None:
-    """Draws the logo's shapes as VTE does (from terminal-glyphs.png), on
-    Patrone Terminal's background and on a light one. Letters are left as
-    boxes: render_vte.py draws the real thing."""
+def ansi(grid: list, width: int) -> list[str]:
+    lines = []
+    for row in grid:
+        # Not bold, which fastfetch turns on for the logo: VTE draws bold
+        # wedges and sextants thicker, and the edges came out streaked
+        line, current = "\x1b[22m", None
+        for char, rgb in row:
+            if rgb is not None and rgb != current:
+                line += "\x1b[38;2;%d;%d;%dm" % rgb
+                current = rgb
+            line += char
+        lines.append(line + ("\x1b[0m" if current else ""))
+    lines += [
+        "",
+        f"\x1b[{WORDMARK}m" + centered("P A T R O N E", width) + "\x1b[0m",
+        f"\x1b[{RULE}m" + centered("── L I N U X ──", width) + "\x1b[0m",
+    ]
+    return lines
+
+
+def preview(grid: list, path: str) -> None:
+    """Draws the logo's shapes as VTE does (from terminal-glyphs.png) on
+    Patrone Terminal's background; render_vte.py draws the whole thing."""
     chars, masks, aspect = load_glyphs(list(GLYPH_SETS))
     index = {char: i for i, char in enumerate(chars)}
     cell_w, cell_h = 18, int(round(18 * aspect))
-    big = {char: np.asarray(Image.fromarray((masks[i] * 255).astype(np.uint8)).resize(
-        (cell_w, cell_h), Image.BILINEAR)).astype(float) / 255 for char, i in index.items()}
-    columns = max(len(strip_colors(line)) for line in lines) + 2
-    panels = []
-    for background in [(0x07, 0x0A, 0x10), (0xF6, 0xF7, 0xF9)]:
-        canvas = np.ones(((len(lines) + 2) * cell_h, columns * cell_w, 3)) * background
-        for row, line in enumerate(lines, start=1):
-            color, col, i = WHITE, 1, 0
-            while i < len(line):
-                if line[i] == "$" and line[i + 1:i + 2].isdigit():
-                    color = colors[int(line[i + 1]) - 1]
-                    i += 2
-                    continue
-                y, x = row * cell_h, col * cell_w
-                if line[i] in big:
-                    shape = big[line[i]][..., None]
-                elif line[i] != " ":
-                    shape = np.zeros((cell_h, cell_w, 1))
-                    shape[cell_h // 4:-cell_h // 4, 2:-2] = 0.6
-                else:
-                    shape = None
-                if shape is not None:
-                    region = canvas[y:y + cell_h, x:x + cell_w]
-                    region[:] = region * (1 - shape) + np.array(color) * shape
-                col += 1
-                i += 1
-        panels.append(canvas)
-    Image.fromarray(np.concatenate(panels, axis=1).astype(np.uint8)).save(path)
+    canvas = np.ones(((len(grid) + 2) * cell_h, (max(map(len, grid)) + 2) * cell_w, 3)) * BACKGROUND
+    for row, line in enumerate(grid, start=1):
+        for col, (char, rgb) in enumerate(line, start=1):
+            if rgb is None:
+                continue
+            mask = Image.fromarray((masks[index[char]] * 255).astype(np.uint8)).resize((cell_w, cell_h), Image.BILINEAR)
+            shape = np.asarray(mask).astype(float)[..., None] / 255
+            region = canvas[row * cell_h:(row + 1) * cell_h, col * cell_w:(col + 1) * cell_w]
+            region[:] = region * (1 - shape) + np.array(rgb) * shape
+    Image.fromarray(canvas.astype(np.uint8)).save(path)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("logo", nargs="?", help="the mark, on a transparent background")
     parser.add_argument("output", nargs="?")
-    parser.add_argument("--width", type=int, default=26, help="width of the mark in characters")
-    parser.add_argument("--glyphs", default="blocks,smooth",
+    parser.add_argument("--width", type=int, default=32, help="width of the mark in characters")
+    parser.add_argument("--glyphs", default="blocks,smooth,octants",
                         help="the character sets to use, of: " + ", ".join(GLYPH_SETS))
-    parser.add_argument("--steps", type=int, default=7, help="the gradient's number of blues (fastfetch has $1 to $9)")
-    parser.add_argument("--preview", help="also draw the result to this PNG")
+    parser.add_argument("--preview", help="also draw the mark to this PNG")
     parser.add_argument("--sheet", help="write the text to draw with render_vte.py for terminal-glyphs.png, and stop")
     args = parser.parse_args()
 
     if args.sheet:
         write_sheet(args.sheet)
         return
-    blues = gradient_colors(args.steps)
-    lines = trace(args.logo, args.width, args.glyphs.split(","), len(blues))
-    wordmark, rule = len(blues) + 1, len(blues) + 2
-    width = max(len(strip_colors(line)) for line in lines)
-    lines += [
-        "",
-        f"${wordmark}" + centered("P A T R O N E", width),
-        f"${rule}" + centered("── L I N U X ──", width),
-    ]
+    grid = trace(args.logo, args.width, args.glyphs.split(","))
+    lines = ansi(grid, max(map(len, grid)))
     with open(args.output, "w", encoding="utf-8", newline="\n") as out:
         out.write("\n".join(lines) + "\n")
-    print("\n".join(lines))
-    # The colors for branding/fastfetch/config.jsonc
-    colors = blues + [WHITE, RULE_BLUE]
-    for number, (r, g, b) in enumerate(colors, start=1):
-        code = "1;97" if (r, g, b) == WHITE else f"38;2;{r};{g};{b}"
-        print(f'"{number}": "{code}",')
     if args.preview:
-        preview(lines, args.preview, colors)
+        preview(grid, args.preview)
 
 
 if __name__ == "__main__":
