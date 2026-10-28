@@ -126,4 +126,6 @@ installer pins in `.tool-versions`) and `ubuntu_flavor` into
 `~/.cache/patrone-installer` the first time, builds the app with Ubuntu's own
 lock files, and leaves it in `installer/bundle/` (not in git). Ubuntu's
 26.04.2 ISO will bring a new snap: build against its commit then (its
-`snap/manifest.yaml`).
+`snap/manifest.yaml`), and set `snap_revision` in `build.sh`. The dev VM's
+daily `packaging/ubuntu-updates.sh` opens an issue in billsecond/patrone-apt
+when the snap's channel (`snap_channel`) moves past that revision.

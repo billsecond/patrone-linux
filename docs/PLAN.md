@@ -77,8 +77,11 @@ real hardware before a release.
   exist already (see `packaging/README.md`). So does `patrone-desktop`: today
   it's Ubuntu's GNOME desktop with Patrone's packages and without anything
   that reports to Canonical (see `desktop/README.md`).
-- **Apt repository:** a private repo generated with `reprepro`. Launchpad PPAs
-  are always public, so they're out while the project is private.
+- **Apt repository:** [billsecond/patrone-apt](https://github.com/billsecond/patrone-apt),
+  on GitHub Pages, signed with Patrone's own key (kept off GitHub), and
+  published with `packaging/publish.sh` (`packaging/README.md`, "Publishing";
+  `docs/NEXT.md`, section 18). Patrone runs no servers. It replaces the
+  earlier plan of a private `reprepro` repository.
 - **ISO:** remaster the official 26.04.1 desktop ISO. Add our packages, make
   Patrone Desktop the default session, apply branding, and repack with
   `xorriso`. Ubuntu's installer stays in place. A from-scratch image build waits

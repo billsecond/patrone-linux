@@ -17,6 +17,10 @@ set -euo pipefail
 # ubuntu-desktop-bootstrap 26.04.1, snap revision 665, on Ubuntu 26.04.1's
 # ISO: its snap/manifest.yaml names the commit, .tool-versions there the
 # Flutter version, and apps/ubuntu_bootstrap/pubspec.lock ubuntu_flavor's.
+# packaging/ubuntu-updates.sh says when the snap's channel moves past
+# snap_revision (a newer point release's ISO brings the new one).
+snap_channel=26.04/stable
+snap_revision=665
 provision_commit=6623407beba8f4d8cb0f331a232d0a7d271a9f7a
 flutter_version=3.44.1
 flavor_version=0.5.0+1

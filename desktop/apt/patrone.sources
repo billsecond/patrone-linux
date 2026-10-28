@@ -1,0 +1,10 @@
+# Patrone Linux's own updates: its packages, and its builds of the Ubuntu
+# packages it changes (GDM, GNOME Settings, first-login setup). GitHub hosts
+# them (github.com/billsecond/patrone-apt); Patrone runs no servers.
+# preferences.d/patrone.pref puts them before Ubuntu's.
+Types: deb
+URIs: https://billsecond.github.io/patrone-apt
+Suites: resolute
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/patrone-archive-keyring.gpg

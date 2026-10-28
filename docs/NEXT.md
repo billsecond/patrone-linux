@@ -64,6 +64,14 @@ Done:
   `patrone-remote-desktop` 0.5.0, 2026-10-28): VMConnect shows Patrone's
   login screen, then the account's own desktop, resizing with the window.
   Tried on the dev VM by the user with VMConnect; not yet in an ISO.
+- **Patrone's own updates** (section 18, 2026-10-28): an apt repository on
+  GitHub Pages, [billsecond/patrone-apt](https://github.com/billsecond/patrone-apt),
+  signed with a key that's only on the dev VM, published with
+  `packaging/publish.sh`. `patrone-desktop` 0.2.1 installs its source, key
+  and pins (Patrone's builds of GDM, GNOME Settings and first-login setup
+  win over Ubuntu's newer ones), and the dev VM rebuilds those three daily
+  when Ubuntu updates them (`packaging/ubuntu-updates.sh`). Section 18 also
+  has the plan for moving to 28.04.
 - **Patrone taskbar** (section 7, `shell/gnome/README.md`, package
   `patrone-gnome-taskbar`): a compact Windows 11-style taskbar at the bottom
   in place of GNOME's top bar, with the Start menu (type to search), role
@@ -2378,12 +2386,69 @@ The user, 2026-10-28, on the recommendation of a Patrone update channel on
 GitHub, a check that rebuilds Patrone's changed pieces when Ubuntu updates
 them, and no offer of Ubuntu's next release: "Thanks, do it."
 
-**Patrone's apt repository** (billsecond/patrone-apt, on GitHub Pages, signed
-with a key kept only on the dev VM) and the daily rebuilds of Ubuntu's
-updates to GDM, GNOME Settings and first-login setup are built and were
-tried on PatroneDev against a local copy of the repository. They wait for
-the user's OK to make billsecond/patrone-apt public, and come in their own
-change.
+**Patrone's apt repository:**
+[billsecond/patrone-apt](https://github.com/billsecond/patrone-apt), on
+GitHub Pages (`https://billsecond.github.io/patrone-apt`), one suite,
+`resolute`, signed with its own Ed25519 key (fingerprint `8FE6 1B83 753C
+2636 CD74 0259 4FC3 52E3 D384 225F`). The private key is only on the dev
+VM, in `~/.local/share/patrone-apt/gnupg`, backed up beside it as
+`secret-key-backup.asc`: like the app index's, but never on GitHub. The
+index is in git; the debs are files of a release (`pool`), since
+`patrone-branding` alone is about 90 MB, near git's limit for one file. A
+workflow puts both on Pages, checking every deb against the signed index.
+`packaging/publish.sh` publishes (`packaging/README.md`, "Publishing").
+`patrone-desktop` 0.2.1 installs the source, key and pins, so installs get
+Patrone's updates through Patrone Software and the daily automatic updates
+(`desktop/README.md`, "Updates"). Installs from before 0.2.1 don't have the
+source yet: they need 0.2.1 installed once by hand, or a new install.
+
+**Patrone's builds win over Ubuntu's:** `patrone.pref` gives Patrone's
+repository priority 600, over Ubuntu's 500, and Ubuntu's versions of the
+nine packages Patrone builds from Ubuntu's 90, under what's installed. So
+Ubuntu's next update to GDM, GNOME Settings or first-login setup doesn't
+replace Patrone's build, changes and all; Patrone's rebuild of it does. The
+trade: Ubuntu's fixes to those three arrive through Patrone, a day or so
+after Ubuntu's.
+
+**Keeping up with Ubuntu:** `packaging/ubuntu-updates.sh` runs daily on the
+dev VM (a user timer, `scripts/vm/patrone-ubuntu-updates.timer`): when
+Ubuntu has published a newer GDM, GNOME Settings or first-login setup for
+resolute, it builds it again with Patrone's changes from a clean checkout
+of `main` and publishes it; a build that fails becomes an issue in
+billsecond/patrone-apt. The installer front end isn't rebuilt there (it has
+to match the snap on the ISO), but the script opens an issue when the snap's
+`26.04/stable` channel moves past revision 665. A script on the VM rather
+than GitHub Actions because the key stays off GitHub and the VM has the
+build dependencies; a daily GitHub Actions check in billsecond/patrone-apt
+opens an issue for each package Ubuntu has updated, and closes it when the
+rebuild is published, so one that's behind shows even while the VM is off.
+
+**Checked on PatroneDev** (2026-10-28), first with a local copy of the
+repository served on the VM and a stand-in for `gh`: `publish.sh --all`
+published main's 25 packages (the debs uploaded, the index written, signed
+and committed), and `assemble-site.sh` put the site together (119 MB) with
+every deb's sum checked. Root's apt, with the source, key and pins: `apt
+update` took the signed index, `apt-cache policy` showed Patrone's at 600 and
+Ubuntu's GDM, Settings and first-login setup at 90, and `apt-get install
+--only-upgrade` upgraded `patrone-terminal` 0.1.4 to 0.1.5 and first-login
+setup from Ubuntu's build to Patrone's, from the repository.
+`unattended-upgrade --dry-run` would install Patrone's packages too. In a
+separate apt root, a stand-in for a newer Ubuntu GDM (`50.1-0ubuntu0.9`)
+didn't replace Patrone's build with the pins, did without them, and didn't
+with the pins even with Patrone's repository unreachable. `ubuntu-updates.sh`
+found first-login setup behind (the test index said it was built from
+`50.0-0ubuntu7`), built Ubuntu's `50.0-0ubuntu7.1` with Patrone's changes in
+22 seconds and published it.
+
+Then for real, once billsecond/patrone-apt was public: `publish.sh`
+published main's 25 packages (Branding 0.1.20 and Remote Desktop 0.5.0
+built from a clean checkout of `main`), and Pages served the signed index,
+the debs and the key. On PatroneDev, with `patrone-desktop` 0.2.1 installed:
+`apt update` read `https://billsecond.github.io/patrone-apt`, Patrone's
+builds were the candidates at 600, and `gnome-control-center-faces` was
+upgraded from it (GDM `patrone2`, the taskbar and Default Apps were left
+for the user). The daily GitHub check found all three of Patrone's builds
+current with Ubuntu's.
 
 **Ubuntu's release upgrades are off**, as before: `patrone-desktop`'s
 `release-upgrades.d/patrone.cfg` says `Prompt=never`, and Ubuntu's upgrader

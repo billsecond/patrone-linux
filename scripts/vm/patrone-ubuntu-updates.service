@@ -1,0 +1,20 @@
+# Builds Ubuntu's updates to GDM, GNOME Settings and first-login setup again
+# with Patrone's changes, and publishes them (packaging/ubuntu-updates.sh).
+# A user unit for the dev VM's build account, run daily by
+# patrone-ubuntu-updates.timer. Install it, as that account:
+#
+#   install -Dm644 -t ~/.config/systemd/user scripts/vm/patrone-ubuntu-updates.*
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now patrone-ubuntu-updates.timer
+#
+# It runs while the account is signed in (gh and git need its keyring);
+# missed days catch up at the next sign-in. Its output:
+# journalctl --user -u patrone-ubuntu-updates
+[Unit]
+Description=Rebuild Patrone's builds of Ubuntu's updated packages
+
+[Service]
+Type=oneshot
+ExecStart=%h/src/patrone-linux/packaging/ubuntu-updates.sh
+Nice=19
+IOSchedulingClass=idle
