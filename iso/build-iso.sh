@@ -192,17 +192,18 @@ close_layer() {
     find "$root/var/lib/apt/lists" -maxdepth 1 -type f -delete
     rm -f "$root"/var/cache/apt/*.bin
     in_root dpkg-query -W -f '${Package}\t${Version}\n' >"$work/iso/$name.manifest"
-    size=$(du -sbx "$root" | cut -f1)
-    echo "$size" >"$work/iso/$name.size"
     # The seed's snaps set up in the image, as Ubuntu's are, so a new system
-    # (and the live session's installer) doesn't wait for them at first boot.
-    # snap-preseed mounts what it needs itself. If it can't, they're set up
-    # at first boot instead.
-    unmount_to $((layer_mounts + 1))
+    # (and the live session's installer, whose back end is a snap) doesn't
+    # wait for them at first boot. snap-preseed needs the layer's /dev, /proc
+    # and /sys/kernel/security mounted. If it fails, they're set up at first
+    # boot instead.
+    mnt -t securityfs securityfs "$root/sys/kernel/security"
     if ! /usr/lib/snapd/snap-preseed "$root"; then
         echo "build-iso.sh: preseeding $name's snaps failed; they're set up at first boot" >&2
         /usr/lib/snapd/snap-preseed --reset "$root"
     fi
+    size=$(du -sbx "$root" | cut -f1)
+    echo "$size" >"$work/iso/$name.size"
     unmount_to "$layer_mounts"
     # The disc's mount point, made for the build: the installer makes /cdrom
     # in the new system itself, and stops if it's there already.
