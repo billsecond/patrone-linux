@@ -171,11 +171,9 @@ open_layer() {
     # Firefox's snap; the seed has no Firefox, and the hold keeps upgrades
     # from installing it (default-apps/README.md).
     in_root apt-mark hold firefox
-    # Ubuntu Pro's notices and password prompts (update-notifier's "Ubuntu
-    # Pro is available" at login, ubuntu-advantage-desktop-daemon's), and the
-    # settings left by packages Patrone's removed (ubuntu-report's autostart
-    # entry among them). Patrone Software tells of updates.
-    in_root apt-get purge -y update-notifier ubuntu-advantage-desktop-daemon
+    # The settings left by packages Patrone's removed (ubuntu-report's
+    # autostart entry; update-notifier's, which said "Ubuntu Pro is
+    # available" at login)
     leftovers=$(in_root dpkg-query -W -f '${db:Status-Abbrev} ${Package}\n' | awk '$1 == "rc" {print $2}')
     [ -z "$leftovers" ] || in_root apt-get purge -y $leftovers
 

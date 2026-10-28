@@ -9,6 +9,10 @@ patrone-desktop (0.1.6) resolute; urgency=medium
     aside), and the session leaves out Ubuntu's web search (client=ubuntu)
     and App Center's search. From a search of the installed system for
     Ubuntu's name (the user, 2026-10-27).
+  * No "Ubuntu Pro is available" at login: conflicts with update-notifier,
+    whose place in Ubuntu's desktop (ubuntu-desktop-minimal needs one) it
+    takes, so removing it doesn't bring in GNOME's Package Updater, and with
+    ubuntu-advantage-desktop-daemon, Ubuntu Pro's desktop service.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 19:30:00 -0500
 

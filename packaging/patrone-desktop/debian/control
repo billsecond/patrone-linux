@@ -31,7 +31,9 @@ Recommends: apport,
             patrone-software,
             patrone-task-manager,
             patrone-terminal
-Conflicts: apport-gtk, ubuntu-insights, ubuntu-report, whoopsie
+Conflicts: apport-gtk, ubuntu-advantage-desktop-daemon, ubuntu-insights,
+           ubuntu-report, update-notifier, whoopsie
+Provides: update-notifier
 Description: Patrone Linux's desktop
  Ubuntu's desktop with Patrone's branding and apps, and nothing that reports
  to Canonical: no whoopsie (error reports), ubuntu-insights or ubuntu-report
@@ -39,7 +41,10 @@ Description: Patrone Linux's desktop
  them. Crash reports still collect in /var/crash for debugging, and nothing
  sends them. First-login setup skips Ubuntu's page that asks to send reports
  and its Ubuntu Pro page, and Ubuntu Pro's apt news and ESM check run only on
- a machine attached to Ubuntu Pro.
+ a machine attached to Ubuntu Pro. Ubuntu Pro's notice at login
+ (update-notifier, whose place in Ubuntu's desktop this package takes) and
+ its desktop service (ubuntu-advantage-desktop-daemon) are removed; Patrone
+ Software tells of updates.
  .
  The clock is set from NTS servers run by Cloudflare, Netnod, PTB and SIDN
  Labs, NetworkManager checks for Wi-Fi sign-in pages with GNOME's server, and

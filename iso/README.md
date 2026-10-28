@@ -54,9 +54,10 @@ In both:
   is changed and preseeded again when it's closed, or, if that fails, sets
   its snaps up at first boot. The `firefox` package, a stub Ubuntu's
   desktop needs, is held, as `default-apps/README.md` says to.
-- **Ubuntu Pro's notices go**: `update-notifier` ("Ubuntu Pro is available"
-  at login) and `ubuntu-advantage-desktop-daemon` (its password prompts),
-  and the settings packages Patrone removes leave behind (`rc`).
+- **What Patrone's packages remove is purged**, so nothing is left of their
+  settings (`rc`): `ubuntu-report`'s autostart entry, and `update-notifier`'s
+  ("Ubuntu Pro is available" at login), which `patrone-desktop` takes the
+  place of.
 
 **The live session's boot image** (`casper/initrd`) is Ubuntu's own, which
 knows the disc (`conf/uuid.conf`) and how to start the live session, with
