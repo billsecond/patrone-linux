@@ -1,0 +1,105 @@
+What Patrone Linux connects to
+==============================
+
+Patrone Linux runs no servers of its own, and sends nothing to the person
+who makes it. Like Ubuntu, which it's based on, it reaches a few outside
+services to stay up to date and keep its clock right. Each is run by someone
+else, under its own terms and privacy policy. Every connection sends what
+any connection does: the computer's network address, and what it asks for.
+
+This is the list for Patrone Linux 0.1, based on Ubuntu 26.04.1 LTS. The
+website keeps the same list, with what Ubuntu does differently:
+https://patronelinux.com/privacy/patrone-linux
+
+
+Keeping it up to date
+---------------------
+
+- Ubuntu's archive and security updates: archive.ubuntu.com and
+  security.ubuntu.com, or a mirror near you, run by Canonical. Once a day the
+  computer checks for updates and installs security updates by itself.
+  Patrone Software gets Ubuntu's apps and their updates here too.
+- The Snap Store, run by Canonical: a few times a day the computer asks for
+  new versions of the snaps it has, the firmware updater among them.
+- Firmware updates: the Linux Vendor Firmware Service (cdn.fwupd.org), run
+  by the Linux Foundation. About once a day, fwupd fetches the list of
+  firmware updates, so Patrone Software can offer any for your hardware.
+
+
+Apps
+----
+
+- Flathub (flathub.org), run by the Flathub project: lists of apps, and the
+  apps and runtimes you install from Patrone Software. Patrone Linux comes
+  with no web browser: the first time you need one, Patrone Browser Chooser
+  asks which to install, from Flathub. A browser has its own settings for
+  what it sends, under its maker's privacy policy.
+- Patrone's app index (billsecond.github.io), on GitHub Pages, run by
+  GitHub: the list of apps Patrone features. It holds no apps: installing
+  one downloads it from its own project's releases, on GitHub. GitHub
+  records the network address of each computer that fetches the list or an
+  app, under GitHub's own privacy statement.
+- GNOME's reviews service (odrs.gnome.org), hosted for GNOME by Red Hat and
+  CDN77: the ratings and reviews Patrone Software shows, and any you write.
+- "Search the web" in the Start menu: what you typed goes to the search
+  engine set in the taskbar's settings (Google at first), in your browser.
+
+
+The clock and the network
+-------------------------
+
+- The clock: Cloudflare (time.cloudflare.com), Netnod (nts.netnod.se), PTB
+  (ptbtime1.ptb.de) and SIDN Labs (ntppool1.time.nl), over NTS, which proves
+  the time really comes from them.
+- The online check: when a network connects, NetworkManager asks GNOME's
+  nmcheck.gnome.org for a short answer, to tell whether the internet is
+  reachable or a Wi-Fi sign-in page is in the way. Settings, Privacy &
+  Security, Connectivity turns it off.
+
+
+Off unless you turn them on
+---------------------------
+
+- Location services: BeaconDB (api.beacondb.net), run by a volunteer. If you
+  turn them on, the computer sends the Wi-Fi networks it can see to BeaconDB
+  to work out where it is, for apps that ask.
+- Remote Desktop: off until an administrator switches it on. Then the
+  computer accepts connections for the accounts allowed to use it. It sends
+  nothing out by itself.
+
+
+While installing
+----------------
+
+- The installer is Ubuntu's, with Patrone's name and pictures. It guesses
+  your time zone from the computer's network address through Canonical's
+  location service (geoip.ubuntu.com), and downloads language packs (and, if
+  you choose, updates and drivers) from Ubuntu's archive. Its record of the
+  install, including the version of the licence agreement you accepted,
+  stays on the new system, in /var/log/installer/.
+
+
+On your own network
+-------------------
+
+- The computer announces its name on your network, so other devices can
+  find it, and looks for printers the same way. None of it leaves your
+  network.
+
+
+Not sent at all
+---------------
+
+- Crash reports: crashes are written down on the computer, in /var/crash,
+  for debugging, and never sent. Ubuntu's crash reporter (whoopsie) and its
+  dialog aren't installed.
+- System and usage reports: ubuntu-insights and ubuntu-report aren't
+  installed.
+- Ubuntu Pro: its client and services aren't installed, so nothing fetches
+  its news or checks for its extended updates.
+- Hardware-certification reports: Canonical's hwctl isn't installed.
+- Checks for Ubuntu's next release: off. Patrone moves to a new Ubuntu base
+  itself.
+- Patrone's own apps (Terminal, File Manager, Settings, Task Manager and
+  Unpack) don't go online by themselves. Unpack reaches Flathub only when a
+  Flatpak app you're installing needs something from there.
