@@ -1,3 +1,23 @@
+patrone-desktop (0.2.3) resolute; urgency=medium
+
+  * Recommends showtime, GNOME's Video Player, so every install has a
+    video player (the user, 2026-10-28: "add Gnmoe Video Player as a
+    default as part of the install"); patrone-default-apps 0.2.1 makes it
+    the default for videos. Playing H.264, HEVC and the like still needs
+    the media formats the installer offers (Ubuntu's restricted add-ons).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 16:30:00 -0500
+
+patrone-desktop (0.2.2) resolute; urgency=medium
+
+  * Recommends patrone-hyperv-setup: at login in a Hyper-V VM, a dialog
+    that offers to set up what's missing of Hyper-V support (the user,
+    2026-10-28: "When the Patrone Linux starts up, have it check for
+    Hyper-V and if its using Hyper-V as its host, then provide a prompt
+    with an option to install support for Hyper-V").
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 16:00:00 -0500
+
 patrone-desktop (0.2.1) resolute; urgency=medium
 
   * Patrone's own updates: its apt repository, hosted on GitHub Pages

@@ -18,6 +18,7 @@ source. `build.sh` puts the two together and builds the `.deb` on the dev VM:
 ./packaging/build.sh patrone-browser-chooser -d
 ./packaging/build.sh fonts-patrone-sans
 ./packaging/build.sh patrone-guest-tools
+./packaging/build.sh patrone-hyperv-setup -d
 ./gnome-settings/build.sh
 ```
 
@@ -45,6 +46,7 @@ dependencies), and publish them to Patrone's apt repository with
 | `fonts-patrone-sans` | `fonts/` | Patrone Sans, Patrone's interface typeface: Noto Sans 2.015 with a tailed l and a slashed zero, as two variable fonts (upright and italic, weights 100 to 900) in `/usr/share/fonts/truetype/patrone-sans/`, with its FONTLOG and the OFL 1.1. The fonts are built from Noto Sans's sources by `fonts/build.sh` (which needs the network for its tools) and kept in `fonts/ttf/`; the package only installs them. Picked in Patrone Settings (Theme → Font) or GNOME Settings' Patrone page. See `fonts/README.md`. |
 | `patrone-software` | `software/` | GNOME Software as Patrone's app store, in place of Ubuntu's App Center (Canonical's `snap-store` snap, which its postinst removes when it's first installed). It depends on `gnome-software` and its Flatpak plugin, not the snap one, so Canonical's Snap Store isn't browsed. Its Explore page shows Patrone's picks (`/usr/share/swcatalog/xml/org.patrone.Software.Featured.xml`, a placeholder for now) in place of GNOME's, which preinst diverts to `org.gnome.Software.Featured.xml.gnome`. See `software/README.md`. |
 | `patrone-guest-tools` | `guest-tools/` | Hyper-V's integration services and VirtualBox's Guest Additions, each only under its own hypervisor (`ConditionVirtualization`). Hyper-V: Ubuntu's `linux-cloud-tools` daemons for the HWE kernel (key-value exchange, VSS), Patrone's unit for file copy (`Copy-VMFile`; Ubuntu's waits for a device Linux 6.10 dropped), and the host's clock as one of chrony's sources. VirtualBox: recommends Ubuntu's `virtualbox-guest-utils` and `virtualbox-guest-x11` (multiverse), starts VBoxClient in Wayland sessions (user units), and adds every account to `vboxsf` and `vboxdrmipc` so shared folders work. See `guest-tools/README.md`. |
+| `patrone-hyperv-setup` | `hyperv-setup/` | Patrone Hyper-V Setup: at each desktop login in a Hyper-V VM (a user unit, `ConditionVirtualization=microsoft`, not in the installer's live session), a dialog that offers to set up what's missing with one password (a root helper run by `pkexec`, polkit action `org.patrone.hyperv-setup.apply`): `patrone-guest-tools`, and `patrone-remote-desktop`'s service for VMConnect's enhanced session; and the PowerShell command for Windows' side (the Hyper-V socket transport, integration services turned off), with a Copy button. Shows nothing when everything's set up, and "Don't show this again" turns it off for the account. A udev rule notes when Hyper-V opens an enhanced session, which is how it knows the transport is set. Depends on `pkexec`; builds with `libgtk-4-dev`. See `hyperv-setup/README.md`. |
 
 Notes:
 

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Hyper-V Support
+Comment=Set up what Patrone Linux needs in a Hyper-V virtual machine
+Exec=patrone-hyperv-setup
+Icon=org.patrone.HyperVSetup
+Terminal=false
+Type=Application
+# It comes up by itself at login in a Hyper-V VM while something's missing
+# (patrone-hyperv-setup.service); a Start menu entry would show on every
+# computer, Hyper-V or not
+NoDisplay=true
+Categories=GTK;System;Settings;
+StartupNotify=true

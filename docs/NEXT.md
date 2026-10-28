@@ -60,6 +60,12 @@ Done:
   checkpoints, KVP, dynamic memory, shutdown, the host's clock). VirtualBox
   is packaged but untried (the user chose not to install VirtualBox).
   Enhanced Session is `patrone-remote-desktop` 0.5.0's (below).
+- **Hyper-V Setup** (section 17, `hyperv-setup/README.md`, package
+  `patrone-hyperv-setup` 0.1.0, 2026-10-28): at login in a Hyper-V VM, a
+  dialog offers to set up what's missing (the guest tools, the enhanced
+  session) with one password, and shows the PowerShell command for Windows'
+  side; "Don't show this again" per account. Checked on PatroneDev with the
+  missing parts pretended; a fresh install is still to check.
 - **Hyper-V's enhanced session** (`remote-desktop/README.md`, package
   `patrone-remote-desktop` 0.5.0, 2026-10-28): VMConnect shows Patrone's
   login screen, then the account's own desktop, resizing with the window.
@@ -2402,6 +2408,45 @@ checked; in short:
   mounts.
 - Also seen: the installer warns "The computer is not plugged in to a
   power source" in Hyper-V, which shows the guest a battery.
+
+### Patrone Hyper-V Setup: the prompt at login
+
+The user, 2026-10-28: "When the Patrone Linux starts up, have it check for
+Hyper-V and if its using Hyper-V as its host, then provide a prompt with an
+option to install support for Hyper-V, also allow a disable future
+notifications on this dialog box." `hyperv-setup/`, package
+`patrone-hyperv-setup` 0.1.0, recommended by `patrone-desktop` 0.2.2. At
+each desktop login in a Hyper-V VM (not the live session), if something's
+missing, a dialog offers to install it with one password: the guest tools
+and the enhanced session's service (installed, updated from before 0.5.0,
+or turned on). For Windows' side it shows the PowerShell command, with the
+VM's name and a Copy button: `Set-VM ... -EnhancedSessionTransportType
+HvSocket` until Hyper-V has opened an enhanced session with the VM (a udev
+rule sees the Hyper-V socket's channel arrive), and
+`Enable-VMIntegrationService` when an integration service is off for it.
+Nothing shows when everything's set up; "Don't show this again" is per
+account. `hyperv-setup/README.md` has the design and what was checked.
+
+- **Checked on PatroneDev**, with the missing parts pretended
+  (`--pretend-missing`), in a hidden GNOME Shell: every page, light and
+  dark; Set Up as a dry run; GNOME Shell's password dialog for the real
+  one, cancelled; Copy; "Don't show this again" both ways; the wait at
+  login for Hyper-V's first enhanced session. The root helper ran for real,
+  and the login unit ran in the user's session and showed nothing, as
+  everything's set up there.
+- **Not yet checked: a fresh install**, where the prompt really shows. VMs
+  from `scripts/hyperv/new-test-vm.ps1` have the socket transport and Guest
+  services on, so with the next ISO nothing is missing and nothing shows.
+  To see it, make the VM with Hyper-V Manager's defaults (transport VMBus,
+  Guest services off), or, with the VM off,
+  `Set-VM -VMName NAME -EnhancedSessionTransportType VMBus`. Expect the
+  dialog after first-login setup (or 30 seconds after login, while it waits
+  for Hyper-V's first enhanced session), with the Set-VM and
+  Enable-VMIntegrationService lines. Installs from before `patrone-desktop`
+  0.2.1 have no Patrone repository, so Set Up can't install from it there.
+- **Found, not fixed** (section 18, "Found on the way"): the daily
+  automatic updates don't run in Hyper-V VMs, which have a battery. A fix
+  belongs in `patrone-guest-tools`.
 
 ## 18. Updates: Patrone's apt repository, Ubuntu's updates, the next LTS
 
