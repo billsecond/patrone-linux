@@ -779,12 +779,11 @@ override gives the new list in both the `ubuntu` session and plain GNOME.
 Not checked until the user installs it: the snap installing, links opening in
 Chromium. Findings:
 
-- Ubuntu's `firefox` package is a stub that installs the snap, and
-  `ubuntu-desktop-minimal` depends on it, so the package can't simply
-  conflict with Firefox. Its `preinst` runs `snap install firefox` on every
-  install **and upgrade**, so after `snap remove firefox` the stub must be
-  held (`apt-mark hold firefox`). Patrone's ISO needs its own desktop
-  metapackage in place of `ubuntu-desktop-minimal`.
+- Ubuntu's `firefox` package is a stub that installs the snap. Its
+  `preinst` runs `snap install firefox` on every install **and upgrade**.
+  `ubuntu-desktop-minimal` only recommends it, so since 2026-10-28 the ISO
+  purges it instead of holding it (a hold relies on every updater honouring
+  it, and `1:1snap1-0ubuntu9.1` is in `resolute-updates`).
 - Ubuntu's `ubuntu-mimeapps.list` and `gnome-mimeapps.list` in
   `/usr/share/applications` name Firefox first. A list in `/etc/xdg` is read
   before them (the session's `XDG_CONFIG_DIRS` is
@@ -1630,9 +1629,8 @@ Findings:
 - A process started through `bwrap` survives `headless.sh close-apps`,
   which kills only bwrap. Later launches of the same app then just raise
   the old window.
-- `firefox` is only recommended by `ubuntu-desktop-minimal` 1.570.4
-  (section 4 says it depends on it), so a Patrone package could remove it
-  the same way.
+- `firefox` is only recommended by `ubuntu-desktop-minimal` 1.570.4, so the
+  ISO now purges it (2026-10-28).
 - `/var/crash` holds a root-only `patrone-remote-desktop.0.crash` from 10:03
   that day: apport's name for a package that failed to install or
   configure. Read it with sudo.

@@ -13,18 +13,19 @@ installs Canonical's Chromium snap, which snapd keeps up to date (see
 "Default apps" in `docs/PLAN.md`).
 
 It doesn't remove Firefox. Ubuntu's `firefox` package is also a small one
-that installs a snap, and `ubuntu-desktop-minimal` depends on it, so removing
-it would take Ubuntu's desktop metapackage with it. Remove the snap instead,
-and hold the `firefox` package, because each upgrade of it installs the snap
-again:
+that installs a snap, every time it's installed or upgraded.
+`ubuntu-desktop-minimal` only recommends it, so it can go without taking
+Ubuntu's desktop with it. Patrone's ISO removes it (`iso/build-iso.sh`). On
+a system installed some other way, or from an ISO made before 2026-10-28:
 
 ```
 sudo snap remove firefox
-sudo apt-mark hold firefox
+sudo apt purge firefox
 ```
 
-Patrone's ISO will leave Firefox out altogether, with a Patrone desktop
-metapackage in place of `ubuntu-desktop-minimal`.
+A hold (`apt-mark hold firefox`), which this page used to suggest, isn't
+enough: it leaves it to every updater to honour, and Ubuntu has published an
+update to the stub since 26.04's release.
 
 Users' own choices still win: `~/.config/mimeapps.list` (Settings → Apps →
 Default Apps) and their own favorites.

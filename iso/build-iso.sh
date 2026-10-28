@@ -167,10 +167,11 @@ open_layer() {
     # Patrone Terminal is the terminal (the user: "the other terminal
     # shouldn't even show up"). Ubuntu's desktop only recommends Ptyxis.
     in_root apt-get purge -y ptyxis
-    # Ubuntu's desktop needs the firefox package, a stub that installs
-    # Firefox's snap; the seed has no Firefox, and the hold keeps upgrades
-    # from installing it (default-apps/README.md).
-    in_root apt-mark hold firefox
+    # Chromium is the browser. Ubuntu's firefox package is a stub that
+    # installs Firefox's snap whenever it's installed or upgraded, and
+    # Ubuntu's desktop only recommends it. A hold left it to every updater
+    # to honour; an update to the stub is in resolute-updates (1snap1-0ubuntu9.1).
+    in_root apt-get purge -y firefox
     # The settings left by packages Patrone's removed (ubuntu-report's
     # autostart entry; update-notifier's, which said "Ubuntu Pro is
     # available" at login)

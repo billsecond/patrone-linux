@@ -52,8 +52,9 @@ In both:
   ignored the seed's changes (found by a search of the installed system,
   2026-10-27): each layer is reset (`snap-preseed --reset`) before the seed
   is changed and preseeded again when it's closed, or, if that fails, sets
-  its snaps up at first boot. The `firefox` package, a stub Ubuntu's
-  desktop needs, is held, as `default-apps/README.md` says to.
+  its snaps up at first boot. The `firefox` package, a stub that installs
+  Firefox's snap whenever it's installed or upgraded, is removed; Ubuntu's
+  desktop only recommends it.
 - **What Patrone's packages remove is purged**, so nothing is left of their
   settings (`rc`): `ubuntu-report`'s autostart entry, and `update-notifier`'s
   ("Ubuntu Pro is available" at login), which `patrone-desktop` takes the
