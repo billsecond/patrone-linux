@@ -133,7 +133,10 @@ static BOOL fetch_target(proxyPlugin* plugin, proxyData* pdata, void* param)
 	return event->target_address != NULL;
 }
 
-/* The login screen: TLS on its local socket, and no account to sign in with */
+/* The login screen: TLS on its local socket, and no account to sign in with.
+ * The proxy's client starts as a copy of VMConnect's side, VMConnect mode
+ * and all, and that mode would have it negotiate a second time after NLA, as
+ * with Hyper-V's host, which GNOME Remote Desktop doesn't: off. */
 static BOOL client_pre_connect(proxyPlugin* plugin, proxyData* pdata, void* param)
 {
 	rdpContext* context = param;
@@ -142,7 +145,8 @@ static BOOL client_pre_connect(proxyPlugin* plugin, proxyData* pdata, void* para
 
 	if (!session || session->at_desktop)
 		return FALSE;
-	return freerdp_settings_set_bool(settings, FreeRDP_NlaSecurity, FALSE) &&
+	return freerdp_settings_set_bool(settings, FreeRDP_VmConnectMode, FALSE) &&
+	       freerdp_settings_set_bool(settings, FreeRDP_NlaSecurity, FALSE) &&
 	       freerdp_settings_set_bool(settings, FreeRDP_TlsSecurity, TRUE) &&
 	       freerdp_settings_set_bool(settings, FreeRDP_RdpSecurity, FALSE) &&
 	       freerdp_settings_set_bool(settings, FreeRDP_ExtSecurity, FALSE) &&
@@ -237,6 +241,7 @@ static BOOL client_redirect(proxyPlugin* plugin, proxyData* pdata, void* param)
 	     freerdp_settings_set_pointer_len(settings, FreeRDP_RedirectionPassword, NULL, 0) &&
 	     freerdp_settings_set_pointer_len(settings, FreeRDP_LoadBalanceInfo, NULL, 0) &&
 	     freerdp_settings_set_uint32(settings, FreeRDP_RedirectionFlags, 0) &&
+	     freerdp_settings_set_bool(settings, FreeRDP_VmConnectMode, FALSE) &&
 	     freerdp_settings_set_bool(settings, FreeRDP_NlaSecurity, TRUE) &&
 	     freerdp_settings_set_bool(settings, FreeRDP_TlsSecurity, TRUE) &&
 	     freerdp_settings_set_bool(settings, FreeRDP_RdpSecurity, FALSE) &&
