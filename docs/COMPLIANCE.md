@@ -71,6 +71,8 @@ Nothing was published, uploaded, or sent to anyone outside these sessions.
 | [19](#19-privacy-law-for-the-website) | Privacy law for the website: GDPR applicability, an EU/UK representative, CAN-SPAM | Needs a lawyer (applicability); cheap steps either way | The user; website session | Yes: needs a lawyer |
 | [20](#20-what-the-os-contacts-and-whether-users-are-told) | What the OS contacts, and whether users are told | Fine (operators' terms); likely problem (no notice in the OS) | Website session; main session | In part (TimeNL) |
 | [21](#21-the-app-index-otherwise) | The app index otherwise: licences, Flathub, GitHub's terms | Fine, with small fixes | The user | In part (ArtCraft) |
+| [23](#23-the-websites-notices-and-the-javascript-notice) | The website's notices: no cookie banner needed; how the JavaScript notice, the point-of-collection notice and the privacy policy must work | Fine without a banner; requirements sent | Website session | No (research, sources quoted) |
+| [24](#24-the-licence-agreement) | The licence agreement for the download and the installer, `legal/eula.md` 1.0, Texas law | **Written**; needs a lawyer before it's relied on | Website session; main session | Yes: independent review, its must-fixes applied |
 | [22](#22-checked-and-fine) | Checked and fine: "based on Ubuntu", Ubuntu's archive, snaps, Secure Boot, fonts, crate licences and more | Fine | | No (research, two sources each) |
 
 ## 1. No source code is offered for anything on the ISO
@@ -422,9 +424,12 @@ assign the output to the user ("Output may not be unique"), but the US
 Copyright Office's [Part 2 report](https://www.copyright.gov/ai/) (January
 2025) says purely AI-generated material isn't protected, and "prompts do not
 alone provide sufficient control". So the GPL-3+ label may claim more than
-exists, and the logo may be protectable only as a trademark. The
-generated-wallpapers work (`branding/tools/make_generated_wallpapers.py`)
-should record its provenance the same way.
+exists, and the logo may be protectable only as a trademark. The generated
+wallpapers are different: the wallpapers session confirmed that
+`branding/tools/make_generated_wallpapers.py` (`69980ab`) draws every pixel
+from code (seeded gradients, noise and geometry), uses no image model or
+input image, and takes only the palette's hex values and the P's stem angle
+from the concept, so they are Patrone's own work (fine).
 
 **Fix**: record the provenance in `branding/README.md`; give the AI-made
 art its own copyright stanza saying so, with a licence that doesn't
@@ -550,12 +555,10 @@ this review (`67f052b`, revision 12; read, not built); still to do for
   permission for "any Trademark in a domain name or URL". Rename it (for
   example `/foundation`).
 - **No source link** next to the ISO download (item 1).
-- **The licence click-through** (`legal/LICENCE-PLACEHOLDER.md`, "accepting
-  it agrees to nothing") is fine as it stands. The real agreement must not
-  restrict what the GPL allows: GPL-3 §10, "You may not impose any further
-  restrictions on the exercise of the rights granted or affirmed under this
-  License", and GPL-2 §6. A warranty disclaimer, the trademark notices and
-  a summary of the licences are fine; a lawyer should read the final text.
+- **The licence click-through**: the real agreement must not restrict what
+  the GPL allows: GPL-3 §10, "You may not impose any further restrictions on
+  the exercise of the rights granted or affirmed under this License", and
+  GPL-2 §6. It's now written: [24](#24-the-licence-agreement).
 - **Notices**: the footer covers Ubuntu, Linux and Windows. Missing:
   GNOME, Flathub and Flatpak (all GNOME Foundation marks), Debian's
   requested disclaimer ("Include a disclaimer of sponsorship, affiliation,
@@ -835,11 +838,120 @@ telemetry page.
   placeholder, not Google's terms.
 - **Debian** (`ID_LIKE=debian`), **Cloudflare** (words only), **Kali** (only
   in docs and comments), **JetBrains Mono**, **Hyper-V** (docs and a GDM
-  patch only), **VirtualBox** (not shipped: if the guest-tools work adds
-  `virtualbox-guest-*`, they're in Ubuntu's multiverse, so ship them
-  unchanged and never Oracle's Extension Pack).
+  patch only), **VirtualBox**: the new `patrone-guest-tools` depends on
+  Ubuntu's `virtualbox-guest-utils` and `virtualbox-guest-x11` (7.2.6,
+  multiverse). The guest utilities are GPL-3.0 with Oracle's SPDX headers;
+  the package sits in multiverse (Debian's contrib) only because the
+  VirtualBox host's BIOS, built from the same source, needs the non-free
+  Open Watcom compiler. Fine, shipped unchanged under their name; they join
+  the source duty (item 1), and Oracle's Extension Pack must never be
+  shipped.
 - **Microsoft's Segoe UI** alias, **cookies**, **children** (16+ and no
   commercial site).
+
+## 23. The website's notices, and the JavaScript notice
+
+The user, 2026-10-28: "make sure the website follows legal compliance also,
+including the javascript notification." What the law asks of the site as it
+is (no cookies, no analytics, no third-party requests; a download form with
+optional name, email and use, a separate unticked "OK to contact me", and a
+record of each download), sent to the website session:
+
+- **A cookie or consent banner isn't required, and shouldn't be added.**
+  ePrivacy Art. 5(3) (PECR reg. 6 in the UK) needs consent only for storing
+  or reading things on the device that aren't strictly necessary for what
+  the user asked for. Nothing on the site needs consent, so a "we use
+  cookies, accept?" banner would be untrue. Fine without one.
+- **The JavaScript notice** (`website/static/notice.js`) is an information
+  notice, not a consent request: no Accept or Reject, no "by continuing you
+  agree" (continued browsing isn't consent, EDPB Guidelines 05/2020). It
+  must not block or cover the page or the form's own notice; it should be a
+  labelled region with a real Close button that Escape also closes, without
+  stealing focus. The same words must be on the page in plain HTML without
+  JavaScript (GDPR Art. 12, "easily accessible"); the footer does that.
+- **Remembering its dismissal in localStorage is allowed without consent.**
+  localStorage is within Art. 5(3) (EDPB Guidelines 2/2023), but storing
+  only the choice the user made by clicking Close is the user-interface
+  exemption (Article 29 Working Party Opinion 04/2012). Conditions: only a
+  version string, no identifier, never sent to the site, named in the
+  privacy policy, and a new version shown when the policy changes (which is
+  also CalOPPA's "how you're told of changes").
+- **At the point of collection** (GDPR Art. 13, "at the time when personal
+  data are obtained"), in plain HTML above each form's button: who collects
+  it, what is always recorded and why, what is optional and how long each
+  is kept, what the contact box means and how to stop, and links to the
+  policy and the request form. The licence box and the contact box stay
+  separate, and the contact box unticked (Art. 7(2) and 7(4)).
+- **The privacy policy** must have the Art. 13 items (controller and a
+  contact besides the form, purposes and legal bases, recipients, the US
+  location and Microsoft's safeguard, retention per category, every right
+  and how to use it, the right to complain, what's optional, no automated
+  decisions) and CalOPPA's (categories collected, Do Not Track, no
+  third-party tracking, how changes are announced, an effective date, a
+  "Privacy" link on the home page), plus the localStorage key.
+- **The scripts**: no law requires a notice for first-party scripts.
+  `notice.js` is the only one that stores anything (`download.js` and
+  `pin.js` store and send nothing), so only it is named in the policy. Any
+  third-party script later would need a real consent banner, with an equal
+  "Reject", before it loads.
+- **Public download counts**: aggregates only, never the "Other" text.
+- If "the javascript notification" meant **browser push notifications**:
+  they need a click before the browser's permission prompt and create
+  personal data held by the browser maker's push service. Not recommended;
+  the email opt-in covers release news.
+
+The website session's `fe30ef4` already has the plain-HTML notice and the
+versioned dismissal; the rest was sent before its next redeploy.
+
+## 24. The licence agreement
+
+The user asked for "a strong EULA in the website for the software that the
+user must click before downloading, and ... that same one up on the install
+page", and chose Texas law. It's [legal/eula.md](../legal/eula.md), version
+1.0 of 28 October 2026: one file for the website's click-through and the
+installer's page, in the website renderer's Markdown, its version on the
+first line. [legal/README.md](../legal/README.md) has its format, what it
+may and may not say, and the points a lawyer must check.
+
+It is strong where Patrone can set terms, and stops where the free licences
+begin:
+
+- **The free licences come first** (section 1): each program keeps its
+  licence, which wins in any conflict; declining the agreement doesn't
+  affect them; anyone a copy is shared with gets the programs under their
+  licences whether or not they accept; the source is never behind the
+  click-through. That's what GPL-3 §10 and GPL-2 §6 require.
+- **The name and logos** (3): truthful references and unchanged copies are
+  fine; modified versions take their own name and drop the logos (rights
+  the free licences don't grant: Apache-2.0 §6, MPL-2.0 §2.3).
+- **No warranty and limits on liability** (5, 7): in capitals, naming
+  negligence (Texas's fair-notice rule), a US$10 cap, with the liability
+  the law won't let anyone exclude carved out first.
+- **Promises are the sharer's** (8), on GPL-3 §7(f)'s pattern, for
+  Patrone's own programs and marks only; **fair use of the download** (9),
+  which never reaches the source; the **non-free parts** (2) under their
+  makers' licences, with NVIDIA's U.S. Government notice; **privacy**,
+  **services run by others**, **changes**, **ending**, **Texas law** with
+  consumers' own protections kept, and **contact** through the site's
+  request form.
+
+An independent reviewer checked the draft against GPL-2, GPL-3, MPL-2.0 and
+Apache-2.0, the NVIDIA and Broadcom licences, clickwrap case law, and
+Texas, EU and UK consumer law, and ran it through a copy of the site's
+renderer. Its seven must-fixes are in version 1.0: ending the agreement
+can't stop anyone sharing unchanged copies; the indemnity is narrowed to
+§7(f); the drivers' licences are pointed to where they really are; the
+liability clauses name negligence and put the carve-outs first; the
+services paragraph matches the ISO without a browser (`8e0f189`); and a
+real contact replaces a missing one.
+
+Still for the builders: the website should link a permanent copy of each
+version beside the checkbox, with a one-line note that sections 5 and 7
+limit warranty and liability; the installer should write the accepted
+version to the installed system and leave the live session ungated; and a
+plain copy of the NVIDIA and Broadcom licences on the disc and the download
+page would settle section 2. **Needs a lawyer before it's relied on**:
+the nine points in `legal/README.md`.
 
 ## Decisions for the user
 
@@ -859,8 +971,9 @@ telemetry page.
 8. **How close to Windows** (item 15): the menu's name, the copied strings,
    the Royal theme, the File Manager icon.
 9. **GDPR** (item 19): whether to appoint EU and UK representatives.
-10. **The licence agreement** the website and installer will show (item
-    14): have a lawyer read it against the GPL.
+10. **The licence agreement** (item 24): written, with Texas law as you
+    chose; have a lawyer check the nine points in `legal/README.md` before
+    relying on it.
 
 ## Fixes made in this review
 
