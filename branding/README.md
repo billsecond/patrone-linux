@@ -90,6 +90,7 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | Settings | Ubuntu's "Ubuntu Desktop" page is named "Desktop" | `system/settings/gnome-ubuntu-panel.desktop` replaces Ubuntu's (GNOME Settings names each page from its desktop file) |
 | Help | GNOME Help, with GNOME's own front page and pages about the guide and getting help, in GNOME's 45 languages, in place of Ubuntu's "Ubuntu Desktop Guide" with Ubuntu's logo | `help/`, copied from GNOME's release of `gnome-user-docs` 50.0 by `tools/make_help.sh`: the pages Ubuntu's `gnome-user-docs` leaves out for `ubuntu-docs`, which the package replaces (Provides, Conflicts, Replaces), as it does `ubuntu-wallpapers` |
 | The logo icons apps ask for (`start-here`, `distributor-logo`, and their symbolic versions) | Patrone's P, in every color of Yaru's icons and its dark style, in place of Ubuntu's logo | `icons/`, made by `tools/make_logo_icons.sh` (the P at each of Yaru's sizes, and a one-color P traced with potrace); installed over Yaru's, which are moved aside (Yaru's `distributor-logo` icons are links to `start-here`). `os-release`'s `LOGO`, `patrone-logo`, is in the `hicolor` theme too |
+| Cursors | Patrone's cursor theme (below) in place of Yaru's, on the desktop, in apps and on the login screen | Drawn by `tools/make_cursors.py` when the package is built, into `/usr/share/icons/Patrone`; made the default by `cursor-theme` in the override above (for GNOME's session, Ubuntu's and the login screen) and in `95-patrone-settings`, and made the system's default cursor theme (`x-cursor-theme`, priority 200 over Adwaita's 90) for programs that don't read GNOME's settings |
 
 The login-screen theme is built from the Yaru that's installed when the
 package is built, so rebuild the package when Yaru's GNOME Shell theme
@@ -124,6 +125,50 @@ make them again:
 ```
 python tools/make_spinner.py system/plymouth/spinner --preview system/plymouth/previews
 ```
+
+## Cursors
+
+![Every cursor at 24 pixels (twice the size) and 48, on light and dark; the red dot is the hotspot](system/cursors/previews/cursors-sheet.png)
+
+![The busy cursors, "wait" and "progress", at 48 pixels](system/cursors/previews/busy-preview.gif)
+
+Patrone's cursor theme, `Patrone`, in place of Ubuntu's Yaru (the user,
+2026-10-28, of the busy cursor). Each cursor is shaded from Mid at the top
+to Shadow at the bottom, with a white edge, so it shows on light and dark,
+and a soft shadow. Where parts overlap, the fingers of a hand, a thin white
+seam divides them. The badges on the arrow (copy, link, help, menu, no drop)
+are Patrone Blue.
+
+The busy cursors are the boot spinner on a ring of Patrone's near-black:
+"wait" alone, "progress" beside the arrow. The comet has the boot spinner's
+colors and motion, a loop of 1.5 seconds (60 frames of 25 ms; at boot it's
+2 seconds).
+
+`tools/make_cursors.py` draws all 43 shapes from geometry, at 24 pixels
+(GNOME's size) and 30, 32, 36, 48, 64, 72 and 96 for HiDPI screens and
+fractional scales, into Xcursor files. The other 117 names programs ask for
+are links: X11's (`left_ptr`, `xterm`, `watch`), Qt's, Chromium's and
+Mozilla's hashed names, and every name Yaru and Adwaita have. A name the
+theme lacks falls back to Adwaita's (`Inherits=Adwaita`). The package runs
+it when it's built (it needs only NumPy, about 10 seconds), so the files
+aren't in the repository; the previews are. To see the theme or remake the
+previews:
+
+```
+python3 tools/make_cursors.py /tmp/patrone-cursors
+python tools/make_cursors.py --preview system/cursors/previews
+```
+
+GNOME Shell draws the cursor for GTK 4 apps (they name a shape and the
+shell draws it from its theme), so they get Patrone's, Flatpak ones too.
+GTK 3 apps load the images themselves, from fixed folders (`~/.icons`,
+`/usr/share/icons` and the like, or `XCURSOR_PATH`). In a Flatpak sandbox
+those are the runtime's, and Flatpak drops `XCURSOR_PATH` from the host, so
+GTK 3 apps in Flatpak keep the runtime's cursors, as they did when the theme
+was Yaru. A Flatpak override (`flatpak override --env=XCURSOR_PATH=...`,
+pointing at `/run/host/share/icons`, where the sandbox sees the host's
+themes) would give them Patrone's; a system-wide one reaches only apps
+installed system-wide, not those installed per account (Unpack's).
 
 ## Boot splash layout
 

@@ -9,19 +9,26 @@ disabled-extensions=['ubuntu-dock@ubuntu.com']
 
 # Patrone blue in place of Ubuntu's orange: the accent for GNOME Shell and
 # GTK 4 apps, and Yaru's blue theme and icons for GTK 3 apps (Chromium's
-# dialogs among them), which don't follow the accent
+# dialogs among them), which don't follow the accent. Patrone's cursors
+# (tools/make_cursors.py) in place of Yaru's.
 [org.gnome.desktop.interface]
 accent-color='blue'
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
+cursor-theme='Patrone'
 font-name='Patrone Sans 11'
 document-font-name='Patrone Sans 11'
 
 [org.gnome.desktop.interface:ubuntu]
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
+cursor-theme='Patrone'
 font-name='Patrone Sans 11'
 document-font-name='Patrone Sans 11'
+
+# Ubuntu sets the login screen's cursors too ([schema:GNOME-Greeter])
+[org.gnome.desktop.interface:GNOME-Greeter]
+cursor-theme='Patrone'
 
 # Patrone Sans, Patrone's typeface (fonts-patrone-sans: Noto Sans with a
 # tailed l and a slashed zero), for the desktop, apps and window titles,

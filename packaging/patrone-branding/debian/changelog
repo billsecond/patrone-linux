@@ -1,3 +1,16 @@
+patrone-branding (0.1.20) resolute; urgency=medium
+
+  * Patrone's own cursors in place of Ubuntu's (the user saw Ubuntu's busy
+    cursor while something loaded): every cursor in Patrone's blues with a
+    white edge, and the busy cursors with the boot splash's spinner, a
+    comet running round a ring. tools/make_cursors.py draws them at build
+    time, at 24 to 96 pixels for HiDPI screens, with links for the names
+    X11, Qt, Chromium and Yaru use; Adwaita's stand in for any missing.
+    They're the default for the desktop, apps and the login screen, and
+    the system's default cursor theme (x-cursor-theme) for everything else.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 14:30:00 -0500
+
 patrone-branding (0.1.19) resolute; urgency=medium
 
   * Help is GNOME Help: GNOME's own front page and its pages about the
