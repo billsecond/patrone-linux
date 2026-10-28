@@ -2019,9 +2019,30 @@ sans-serif, system-ui and Segoe UI give Patrone Sans, Segoe UI Semibold its
 SemiBold, Japanese Noto Sans CJK JP, all 805 fonts still listed, where
 without it they gave DejaVu Sans; text drawn there with Pango through
 "sans-serif" and "Segoe UI" came out in Patrone Sans; and PdfCraft itself,
-in a private copy of `headless.sh`, looked the same both ways. Not checked
-yet: a real sign-in picking the variable up (the user's session predates
-it), and a fresh install.
+in a private copy of `headless.sh`, looked the same both ways.
+
+Checked in a fresh install (2026-10-28): an ISO built from e95af6f
+(sha256 `29d7c5ab...`, `patrone-branding` 0.1.15 and `fonts-patrone-sans`
+1.0.0 in both layers) in a new Hyper-V VM of its own, `PatroneFontTest`
+(`new-test-vm.ps1`), "Erase disk" and a test account. At the first sign-in
+the session had `FONTCONFIG_PATH=/run/host/fonts/patrone-fontconfig`
+(Patrone Terminal and `systemctl --user show-environment`). PdfCraft
+0.14.0, installed from Patrone's app index for the account, resolved
+sans-serif, system-ui and Segoe UI to Patrone Sans in its sandbox (Segoe UI
+Semibold to its SemiBold), and DejaVu Sans with the variable taken away;
+its own window was in Inter all the same, its log naming the same
+fallbacks. Not checked: a Flatpak browser's pages (the ISO has no browser
+until one is picked), and the user's own session, which predates the
+variable until they sign in again.
+
+- From a terminal in that install, `flatpak install patrone-app-index
+  ai.storyteller.pdfcraft` (the system-wide remote) failed with "Flatpak
+  system operation Deploy not allowed for user" and no password prompt;
+  the same remotes added `--user` (the app index's key from
+  `/var/lib/flatpak/repo/patrone-app-index.trustedkeys.gpg`) worked. Not
+  looked into: whether that refusal is meant.
+- The installer's "Require my password to log in", unticked, still left
+  the login screen at the first boot. Not looked into either.
 
 - A system-wide `flatpak override` (`/var/lib/flatpak/overrides`) applies
   only to apps installed system-wide; per-user installs read only
