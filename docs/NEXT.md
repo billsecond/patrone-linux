@@ -2242,24 +2242,20 @@ window, `apt upgrade`'s output (only the hook's absence), and Help.
 **Left, bigger** (each needs a package of Patrone's or a patch in a
 rebuild; recommendations first):
 
-1. **A Patrone desktop metapackage in place of `ubuntu-desktop-minimal`.**
-   Ubuntu's requires `update-manager`, `yelp`, `language-selector-gnome` and
-   `ubuntu-settings`, and `ubuntu-minimal` requires `ubuntu-pro-client`.
-   `patrone-desktop` already takes `update-notifier`'s place (it provides
-   it); one metapackage of Patrone's, listing the same packages less these,
-   would let most of what follows simply be removed. The biggest
-   structural step left here; recommended first.
-2. **Software Updater** (`update-manager`): groups updates under "Ubuntu
-   base" with Ubuntu's logo, and has Ubuntu Pro rows, an "Enable Ubuntu
-   Pro..." button and a Livepatch tip. Recommended: remove it with item 1;
-   Patrone Software has an updates page, and Settings falls back to it.
-3. **Ubuntu Pro's services** (`ubuntu-pro-client`): "Ubuntu Pro Background
-   Auto Attach" and three more show in Task Manager's services. Removable
-   only with item 1 (`ubuntu-minimal` needs it).
-4. **Help is "Ubuntu Desktop Guide"** with Ubuntu's logo (`ubuntu-docs`,
-   19 pages; 15 more in `gnome-user-docs`, which needs it). Recommended: a
-   Patrone docs package that provides `ubuntu-docs`, as was done for the
-   wallpapers, with GNOME's own pages and a Patrone index page.
+1. **Done** (2026-10-28, compliance review, `docs/COMPLIANCE.md` items 3
+   and 12): `patrone-desktop` 0.2.0 lists Ubuntu's desktop packages itself
+   in place of `ubuntu-desktop-minimal` and `ubuntu-minimal`, less Ubuntu
+   Pro's client, Software Updater, `hwctl` and Ubuntu's Help
+   (`desktop/README.md`). `yelp`, `language-selector-gnome` and
+   `ubuntu-settings` stay: GNOME's Help viewer, the language installer and
+   Ubuntu's GNOME settings, none of them Ubuntu's logo.
+2. **Done** with item 1: Software Updater is gone. Patrone Software has the
+   updates.
+3. **Done** with item 1: Ubuntu Pro's client and services are gone.
+4. **Done**: Help is GNOME Help. `patrone-branding` 0.1.19 replaces
+   `ubuntu-docs` with GNOME's own front page and the seven other pages
+   Ubuntu moves out of `gnome-user-docs`, in GNOME's 45 languages
+   (`branding/tools/make_help.sh`).
 5. **Paths into App Center, now gone**: "App Details" on a snap in the
    shell's app menu and in Settings › Apps (they log "Snap store is not
    installed!" and do nothing), "Find More in App Center" in Open With,
@@ -2281,20 +2277,21 @@ rebuild; recommendations first):
    order after the install of 2026-10-27). Only shim's fallback list
    (`BOOTX64.CSV`, "This is the boot entry for ubuntu") still says ubuntu;
    the firmware uses it only if that entry is lost.
-9. **Icons:** Yaru's `distributor-logo` and `start-here` are Ubuntu's logo
-   (Software Updater shows it), and os-release's `LOGO=patrone-logo` names
-   an icon no theme has. A Patrone icon theme on top of Yaru's blue would
-   fix both.
+9. **Done** (`patrone-branding` 0.1.19): Yaru's `start-here` and
+   `distributor-logo` icons, and their symbolic versions, are Patrone's P,
+   in every color of Yaru's icons and its dark style
+   (`branding/tools/make_logo_icons.sh`; Yaru's moved aside). Not an icon
+   theme of Patrone's: Settings switches between Yaru's themes by name, so
+   one on top would be switched away. `patrone-logo` (os-release's `LOGO`)
+   is in `hicolor` too; GTK already found it in `/usr/share/pixmaps`.
 10. **The taskbar's favorites** name apps the ISO doesn't install:
     Thunderbird, LibreOffice Writer and Rhythmbox (and Chromium, fixed
     above). The user's call: put them in the ISO or drop them.
-11. **The installer** (seen in the install of 2026-10-27's last ISO) still
-    offers "Automated with Landscape", Canonical's management service, on
-    its "Type of installation" page, and finds the time zone through
-    Canonical's location service (`geoip.ubuntu.com`, subiquity's
-    default). Recommended: hide the Landscape choice in Patrone's build of
-    the front end; the lookup is the user's call (it's what fills in the
-    time zone by itself). The last slide, "Almost there", has its text
+11. **The installer** finds the time zone through Canonical's location
+    service (`geoip.ubuntu.com`, subiquity's default): the user's call (it's
+    what fills in the time zone by itself). "Automated with Landscape" is
+    gone (`patrone-installer` 0.1.4, with the Windows logo and Ubuntu's
+    unused slides; `installer/README.md`). The last slide, "Almost there", has its text
     beside its one-line title, not in the right-hand column like the
     others (`branding/system/desktop-provision/slides/`).
 12. **Links to Ubuntu or nowhere:** first-login setup's "View release
