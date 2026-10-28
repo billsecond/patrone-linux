@@ -15,9 +15,9 @@
 set -euo pipefail
 
 # Patrone's revision of the changes: one more with each change to them
-revision=1
+revision=2
 # What changed in it, for the package's changelog
-changes="Patrone's build: Patrone Linux in place of Ubuntu, Patrone Software in place of App Center, and Patrone's pictures, in Patrone's blue."
+changes="Patrone's build: Patrone Linux in place of Ubuntu, Patrone Software in place of App Center, and Patrone's pictures, in Patrone's blue. No password prompts from the crash reporter's settings, which Patrone doesn't have."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)

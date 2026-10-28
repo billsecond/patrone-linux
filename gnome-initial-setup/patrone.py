@@ -13,6 +13,7 @@
 # - Patrone's P in place of Ubuntu's logo and mascot, and every other picture
 #   in Patrone's blue where it's in Ubuntu's orange (the same rule as the
 #   installer's, installer/patch_source.py).
+# - No calls to the crash reporter's settings, which asked for a password.
 import colorsys
 import re
 import sys
@@ -41,6 +42,21 @@ edit(pages / 'apps/gis-apps-page.blp', '_("Open App Center")', '_("Open Patrone 
 edit(pages / 'apps/gis-apps-page.c',
      'storecmd = g_find_program_in_path ("snap-store");',
      'storecmd = g_find_program_in_path ("gnome-software");')
+
+# Ubuntu's page about sending reports (ubuntu_insights), which Patrone skips
+# (patrone-desktop's vendor.conf), is still made, out of sight, and kept
+# calling the crash reporter's settings service (whoopsie-preferences).
+# Without the crash reporter, which patrone-desktop removes, that asked for
+# an administrator's password: five times in one first-login setup
+# (2026-10-27). With no crash reporter there's nothing to set.
+edit(pages / 'ubuntu-insights/gis-ubuntu-insights-page.c',
+     '  g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM, G_DBUS_PROXY_FLAGS_NONE, NULL,\n'
+     '                            "com.ubuntu.WhoopsiePreferences",',
+     '  /* Patrone: no crash reporter (whoopsie), so nothing to set */\n'
+     '  return;\n'
+     '\n'
+     '  g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM, G_DBUS_PROXY_FLAGS_NONE, NULL,\n'
+     '                            "com.ubuntu.WhoopsiePreferences",')
 
 
 def sized_like(svg, original):

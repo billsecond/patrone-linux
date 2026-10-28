@@ -19,7 +19,12 @@ Settings:
   Ubuntu's orange, by the installer's rule (`installer/patch_source.py`).
 
 Ubuntu Pro's and Ubuntu Insights' pages stay out (patrone-desktop's
-`vendor.conf`).
+`vendor.conf`). Setup still makes skipped pages, out of sight, and Ubuntu
+Insights' kept calling the crash reporter's settings service
+(`whoopsie-preferences`, which Ubuntu's GNOME Settings needs, so it stays):
+without the crash reporter, which `patrone-desktop` removes, each call asked
+for an administrator's password, five times in one setup (2026-10-27). In
+revision 2 the page doesn't call it.
 
 ```sh
 gnome-initial-setup/build.sh      # on the dev VM; the package lands in out/
