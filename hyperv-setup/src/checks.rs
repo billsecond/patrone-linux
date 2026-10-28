@@ -163,10 +163,19 @@ fn hyper_v() -> bool {
         .is_ok_and(|output| String::from_utf8_lossy(&output.stdout).trim() == "microsoft")
 }
 
-/// The installer's live session boots with boot=casper
+/// The installer's live session: the disc mounted at /cdrom, where casper
+/// puts it (its casper-bottom/05mountpoints). Patrone's boot menu doesn't
+/// say boot=casper: casper's initramfs boots that way without it. An
+/// installed system's /cdrom is an empty folder.
 fn live() -> bool {
-    fs::read_to_string("/proc/cmdline")
-        .is_ok_and(|line| line.split_whitespace().any(|word| word == "boot=casper"))
+    let cdrom = fs::read_to_string("/proc/self/mountinfo").is_ok_and(|mounts| {
+        mounts
+            .lines()
+            .any(|mount| mount.split(' ').nth(4) == Some("/cdrom"))
+    });
+    cdrom
+        || fs::read_to_string("/proc/cmdline")
+            .is_ok_and(|line| line.split_whitespace().any(|word| word == "boot=casper"))
 }
 
 fn installed(package: &str) -> bool {

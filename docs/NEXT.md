@@ -2435,6 +2435,13 @@ rule sees the Hyper-V socket's channel arrive), and
 Nothing shows when everything's set up; "Don't show this again" is per
 account. `hyperv-setup/README.md` has the design and what was checked.
 
+- **0.1.0 showed over the installer** in the live session of the ISO from
+  main 439e7a9 (the compliance session, 2026-10-28): it skipped the live
+  session by `boot=casper`, which Patrone's boot menu doesn't pass (casper's
+  initramfs boots without it). 0.1.1 also skips it when the disc is
+  mounted at `/cdrom`, where casper puts it. Checked on PatroneDev with a
+  disc faked at `/cdrom` in a private mount namespace; a live boot of the
+  next ISO is still to check.
 - **Checked on PatroneDev**, with the missing parts pretended
   (`--pretend-missing`), in a hidden GNOME Shell: every page, light and
   dark; Set Up as a dry run; GNOME Shell's password dialog for the real
