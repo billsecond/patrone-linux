@@ -2440,6 +2440,16 @@ found first-login setup behind (the test index said it was built from
 `50.0-0ubuntu7`), built Ubuntu's `50.0-0ubuntu7.1` with Patrone's changes in
 22 seconds and published it.
 
+Then for real, once billsecond/patrone-apt was public: `publish.sh`
+published main's 25 packages (Branding 0.1.20 and Remote Desktop 0.5.0
+built from a clean checkout of `main`), and Pages served the signed index,
+the debs and the key. On PatroneDev, with `patrone-desktop` 0.2.1 installed:
+`apt update` read `https://billsecond.github.io/patrone-apt`, Patrone's
+builds were the candidates at 600, and `gnome-control-center-faces` was
+upgraded from it (GDM `patrone2`, the taskbar and Default Apps were left
+for the user). The daily GitHub check found all three of Patrone's builds
+current with Ubuntu's.
+
 **Ubuntu's release upgrades are off**, as before: `patrone-desktop`'s
 `release-upgrades.d/patrone.cfg` says `Prompt=never`, and Ubuntu's upgrader
 reads that folder after `/etc/update-manager/release-upgrades`, so it wins.
