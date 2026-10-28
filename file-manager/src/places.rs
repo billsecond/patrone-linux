@@ -102,6 +102,9 @@ pub fn display_name(file: &gio::File) -> String {
         Some(Special::Root) => return root_name(),
         _ => {}
     }
+    if crate::drives::is_own_drive_folder(file) {
+        return "Drive mounts".into();
+    }
     if let Some(mount) = mount_root_of(file) {
         return mount.name().into();
     }

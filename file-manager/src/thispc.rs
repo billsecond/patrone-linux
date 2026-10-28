@@ -189,27 +189,63 @@ fn drive_tile(drive: &Drive) -> (gtk::FlowBoxChild, gtk::LevelBar, gtk::Label) {
     // Shown once there's something to say (show_usage)
     free.set_visible(!free.label().is_empty());
     text.append(&free);
-    // Where its files are: Linux's drive letter.
-    let place = match (drive, drive.mount_point()) {
-        (Drive::Mapped(uri), _) => Some(uri.clone()),
-        (_, Some(point)) if drive.is_network() => Some(point),
-        (_, Some(point)) => Some(format!("Mounted at {point}")),
-        (_, None) => None,
+    // Where its files are: Linux's drive letter. A network drive's folder
+    // is GVfs's, which any app can open; its address is in the tooltip.
+    let address = match drive {
+        Drive::Mapped(uri) => Some(uri.clone()),
+        Drive::Mount(mount) if drive.is_network() => Some(mount.root().uri().to_string()),
+        _ => None,
+    };
+    let place = match drive.mount_point() {
+        Some(point) if point.starts_with('/') => Some(format!("Mounted at {point}")),
+        Some(point) => Some(point),
+        None => address.clone(),
     };
     if let Some(place) = place {
-        let label = gtk::Label::builder()
-            .label(&place)
-            .xalign(0.0)
-            .ellipsize(gtk::pango::EllipsizeMode::Middle)
-            .tooltip_text(&place)
-            .build();
-        label.add_css_class("item-detail");
-        text.append(&label);
+        let tooltip = match &address {
+            Some(address) if *address != place => format!("{address}\n{place}"),
+            _ => place.clone(),
+        };
+        text.append(&detail_line(&place, &tooltip));
     }
     row.append(&text);
     let child = gtk::FlowBoxChild::builder().child(&row).build();
     child.set_size_request(256, -1);
     (child, bar, free)
+}
+
+fn detail_line(words: &str, tooltip: &str) -> gtk::Label {
+    let label = gtk::Label::builder()
+        .label(words)
+        .xalign(0.0)
+        .ellipsize(gtk::pango::EllipsizeMode::Middle)
+        .tooltip_text(tooltip)
+        .build();
+    label.add_css_class("item-detail");
+    label
+}
+
+/// A mount folder's tile: what it's for and where it is.
+fn folder_tile(folder: &drives::MountFolder) -> gtk::FlowBoxChild {
+    let row = gtk::Box::new(gtk::Orientation::Horizontal, 10);
+    row.add_css_class("drive-tile");
+    row.append(&icons::image(folder.icon, 48));
+    let text = gtk::Box::new(gtk::Orientation::Vertical, 4);
+    text.set_valign(gtk::Align::Center);
+    text.set_hexpand(true);
+    let name = gtk::Label::builder()
+        .label(folder.name)
+        .xalign(0.0)
+        .ellipsize(gtk::pango::EllipsizeMode::End)
+        .build();
+    text.append(&name);
+    text.append(&detail_line(folder.about, folder.about));
+    let path = drives::mount_point(&folder.folder);
+    text.append(&detail_line(&path, &path));
+    row.append(&text);
+    let child = gtk::FlowBoxChild::builder().child(&row).build();
+    child.set_size_request(256, -1);
+    child
 }
 
 /// Fills in a drive's usage bar and "X GB free of Y GB".
@@ -245,8 +281,10 @@ pub struct ThisPcPage {
     drives_box: gtk::FlowBox,
     network_box: gtk::FlowBox,
     network_section: gtk::Box,
+    folders_box: gtk::FlowBox,
     drives: RefCell<Vec<Drive>>,
     network: RefCell<Vec<Drive>>,
+    folders: RefCell<Vec<drives::MountFolder>>,
     events: crate::util::Handler<ViewEvent>,
     me: RefCell<Weak<ThisPcPage>>,
 }
@@ -267,6 +305,7 @@ impl ThisPcPage {
         };
         let drives_box = flow();
         let network_box = flow();
+        let folders_box = flow();
         let content = gtk::Box::new(gtk::Orientation::Vertical, 18);
         content.add_css_class("home-page");
         let (drives_section, heading) = home::section("Devices and drives", &drives_box);
@@ -279,6 +318,12 @@ impl ThisPcPage {
         content.append(&drives_section);
         let (network_section, _) = home::section("Network locations", &network_box);
         content.append(&network_section);
+        let (folders_section, heading) = home::section("Mount folders", &folders_box);
+        heading.set_tooltip_text(Some(
+            "The folders drives are mounted in, to open them as folders. A network \
+             drive has a folder too, under /run/user, shown on its tile.",
+        ));
+        content.append(&folders_section);
         let widget = gtk::ScrolledWindow::builder()
             .child(&content)
             .hscrollbar_policy(gtk::PolicyType::Automatic)
@@ -291,8 +336,10 @@ impl ThisPcPage {
             drives_box,
             network_box,
             network_section,
+            folders_box,
             drives: RefCell::default(),
             network: RefCell::default(),
+            folders: RefCell::default(),
             events: RefCell::default(),
             me: RefCell::default(),
         });
@@ -330,16 +377,37 @@ impl ThisPcPage {
                 page.open_drive(drive);
             }
         });
-        for (flow, other) in [
-            (&self.drives_box, &self.network_box),
-            (&self.network_box, &self.drives_box),
-        ] {
+        let weak = self.me.borrow().clone();
+        self.folders_box.connect_child_activated(move |_, child| {
+            let Some(page) = weak.upgrade() else { return };
+            let folder = page
+                .folders
+                .borrow()
+                .get(child.index() as usize)
+                .map(|folder| folder.folder.clone());
+            if let Some(folder) = folder {
+                page.emit_open(&folder);
+            }
+        });
+        // One selection across the sections, as in one list
+        let flows = [
+            self.drives_box.clone(),
+            self.network_box.clone(),
+            self.folders_box.clone(),
+        ];
+        for flow in &flows {
             let weak = self.me.borrow().clone();
-            let other = other.clone();
+            let others: Vec<gtk::FlowBox> = flows
+                .iter()
+                .filter(|other| *other != flow)
+                .cloned()
+                .collect();
             flow.connect_selected_children_changed(move |flow| {
                 let Some(page) = weak.upgrade() else { return };
                 if !flow.selected_children().is_empty() {
-                    other.unselect_all();
+                    for other in &others {
+                        other.unselect_all();
+                    }
                 }
                 page.emit(ViewEvent::SelectionChanged);
             });
@@ -456,6 +524,13 @@ impl ThisPcPage {
         }
         self.network_section.set_visible(!network.is_empty());
         self.network.replace(network);
+        // The account's drive folder appears with its first drive
+        self.folders_box.remove_all();
+        let folders = drives::mount_folders();
+        for folder in &folders {
+            self.folders_box.append(&folder_tile(folder));
+        }
+        self.folders.replace(folders);
         self.emit(ViewEvent::ItemsChanged);
     }
 
@@ -474,6 +549,14 @@ impl ThisPcPage {
                 && let Some(root) = drive.root()
             {
                 infos.push(drive_info(&root, &drive.name()));
+            }
+        }
+        // Mount folders are folders, with a folder's menu
+        for child in self.folders_box.selected_children() {
+            if let Some(folder) = self.folders.borrow().get(child.index() as usize) {
+                let info = drive_info(&folder.folder, folder.name);
+                info.set_attribute_boolean("pfm::drive", false);
+                infos.push(info);
             }
         }
         infos
@@ -497,7 +580,8 @@ impl ThisPcPage {
     }
 
     pub fn n_items(&self) -> u32 {
-        (self.drives.borrow().len() + self.network.borrow().len()) as u32
+        (self.drives.borrow().len() + self.network.borrow().len() + self.folders.borrow().len())
+            as u32
     }
 
     pub fn select_all(&self) {
@@ -507,6 +591,7 @@ impl ThisPcPage {
     pub fn select_none(&self) {
         self.drives_box.unselect_all();
         self.network_box.unselect_all();
+        self.folders_box.unselect_all();
     }
 
     pub fn focus(&self) {

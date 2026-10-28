@@ -111,8 +111,13 @@ Waiting on the user:
   at each sign-in; right-click an `.iso` or `.img` to Mount it. Since
   0.3.3 the sign-in is Patrone's own, readable in dark mode (the user:
   "Connecting to a network share looks horible"), and the Network page's
-  computers have computer icons. `patrone-file-manager` 0.3.3 is
-  installed on PatroneDev: close every
+  computers have computer icons. Since 0.3.4 This PC shows "Drive mounts"
+  (`/run/media/USER`, where USB drives appear) and "Other mounts" (`/mnt`)
+  (the user: "also show /media too"), and a shared folder on the Network
+  page can be mounted or mapped from its right-click menu (the user:
+  "Allow me to right click on a network folder and mount it"); a network
+  drive then shows under This PC with a folder path every app can open.
+  `patrone-file-manager` 0.3.4 is installed on PatroneDev: close every
   File Manager window to start using it (the desktop's icons switch at
   the next sign-in). `patrone-remote-desktop` 0.5.1 lets Patrone's
   seat-less desktops mount USB drives and disk images with no password

@@ -101,6 +101,71 @@ fn drive_items(window: &Window, menu: &Rc<Menu>) {
     }
 }
 
+/// A network computer's or shared folder's menu, as Windows': open it,
+/// mount or map a shared folder (the user, 2026-10-28: "Allow me to right
+/// click on a network folder and mount it"), copy its address.
+fn network_item_menu(
+    window: &Window,
+    item: &crate::drives::NetworkItem,
+    widget: &gtk::Widget,
+    x: f64,
+    y: f64,
+) {
+    let menu = Menu::new();
+    menu.item(
+        Icon::Glyph("open"),
+        "Open",
+        Some("Enter"),
+        true,
+        act(window, "open"),
+    );
+    if !window.desktop {
+        menu.item(
+            Icon::Glyph("tab-new"),
+            "Open in new tab",
+            None,
+            true,
+            act(window, "open-new-tab"),
+        );
+    }
+    menu.item(
+        Icon::Glyph("window-new"),
+        "Open in new window",
+        None,
+        true,
+        act(window, "open-new-window"),
+    );
+    menu.separator();
+    if enabled(window, "mount") {
+        menu.item(
+            Icon::Glyph("drive"),
+            "Mount",
+            None,
+            true,
+            act(window, "mount"),
+        );
+    }
+    menu.item(
+        Icon::Glyph("network"),
+        "Map network drive…",
+        None,
+        true,
+        act(window, "map-share"),
+    );
+    let uri = match item {
+        crate::drives::NetworkItem::Computer(uri) | crate::drives::NetworkItem::Share(uri) => uri,
+    };
+    let address = crate::drives::windows_address(uri);
+    menu.item(
+        Icon::Glyph("copy-path"),
+        "Copy address",
+        None,
+        true,
+        move || crate::clipboard::set_text(&address),
+    );
+    menu.popup_at(widget, x, y);
+}
+
 /// The item's right-click menu, in Windows 11's form.
 pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
     let tab = window.tab();
@@ -120,6 +185,11 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
             );
             menu.popup_at(widget, x, y);
         }
+        return;
+    }
+    // A computer or shared folder on the Network page: no file commands
+    if let Some(item) = commands::selected_network_item(window) {
+        network_item_menu(window, &item, widget, x, y);
         return;
     }
     let menu = Menu::new();
@@ -211,7 +281,8 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
         true,
         act(window, "open"),
     );
-    // A disk image, as Windows offers for .iso files.
+    // A disk image, as Windows offers for .iso files, or a shared folder on
+    // the Network page
     if !drives && enabled(window, "mount") {
         menu.item(
             Icon::Glyph("drive"),
@@ -219,6 +290,15 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
             None,
             true,
             act(window, "mount"),
+        );
+    }
+    if enabled(window, "map-share") {
+        menu.item(
+            Icon::Glyph("network"),
+            "Map network drive…",
+            None,
+            true,
+            act(window, "map-share"),
         );
     }
     if all_folders {
@@ -1283,6 +1363,13 @@ pub fn nav_menu(
                 });
             });
         }
+        // A mapped drive that isn't connected can be forgotten
+        if drive.is_network() {
+            let (w, drive) = (window.clone(), drive.clone());
+            menu.item(Icon::Glyph("close"), "Disconnect", None, true, move || {
+                commands::disconnect_drive(&w, &drive)
+            });
+        }
         menu.popup_at(widget, x, y);
         return;
     }
@@ -1383,6 +1470,12 @@ pub fn nav_menu(
                     },
                 );
             }
+        }
+        NodeKind::Drive(drive) if drive.is_network() => {
+            let (w, drive) = (window.clone(), drive.clone());
+            menu.item(Icon::Glyph("close"), "Disconnect", None, true, move || {
+                commands::disconnect_drive(&w, &drive)
+            });
         }
         NodeKind::Drive(drive)
             if drive

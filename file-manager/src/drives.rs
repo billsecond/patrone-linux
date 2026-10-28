@@ -41,15 +41,77 @@ pub fn device_size(volume: &gio::Volume) -> Option<u64> {
     (sectors > 0).then_some(sectors * 512)
 }
 
-/// Where a drive's files are: its mount folder, or a network address.
+/// Where a drive's files are: its mount folder, or a network address. A
+/// network drive has a folder too, GVfs's (`/run/user/UID/gvfs/...`),
+/// which every app can open, a terminal included.
 pub fn mount_point(root: &gio::File) -> String {
-    if root.is_native() {
-        root.path()
-            .map(|path| path.to_string_lossy().into_owned())
-            .unwrap_or_default()
-    } else {
-        root.uri().to_string()
+    match root.path() {
+        Some(path) => path.to_string_lossy().into_owned(),
+        None => root.uri().to_string(),
     }
+}
+
+// --- Mount folders -----------------------------------------------------------
+
+/// A folder drives are mounted in, as This PC and the navigation pane show
+/// it (the user, 2026-10-28: "also show /media too, making it easy to
+/// access these things").
+pub struct MountFolder {
+    pub folder: gio::File,
+    pub name: &'static str,
+    pub about: &'static str,
+    pub icon: &'static str,
+}
+
+/// The folder the drives this account mounts appear in: udisks makes
+/// /run/media/USER (Ubuntu 26.04's udisks; /media/USER where it's built
+/// the older way) with the first one. Until then, /media.
+pub fn drive_mounts_folder() -> gio::File {
+    let user = glib::user_name();
+    let found = [
+        std::path::Path::new("/run/media").join(&user),
+        std::path::Path::new("/media").join(&user),
+    ]
+    .into_iter()
+    .find(|path| path.is_dir())
+    .unwrap_or_else(|| "/media".into());
+    gio::File::for_path(found)
+}
+
+/// The mount folders to show: the account's own always, so it's learned
+/// where drives appear, and /mnt when an administrator mounted something
+/// there.
+pub fn mount_folders() -> Vec<MountFolder> {
+    let mut folders = vec![MountFolder {
+        folder: drive_mounts_folder(),
+        name: "Drive mounts",
+        about: "Where USB drives and other drives appear",
+        icon: "pfm-folder-removable",
+    }];
+    let mnt = std::path::Path::new("/mnt");
+    if std::fs::read_dir(mnt).is_ok_and(|mut entries| entries.next().is_some()) {
+        folders.push(MountFolder {
+            folder: gio::File::for_path(mnt),
+            name: "Other mounts",
+            about: "Drives an administrator mounted",
+            icon: "pfm-folder-drive",
+        });
+    }
+    folders
+}
+
+/// Whether this is the account's own drive folder (/run/media/USER), which
+/// goes by "Drive mounts" rather than the account's name.
+pub fn is_own_drive_folder(file: &gio::File) -> bool {
+    let Some(path) = file.path().filter(|_| file.is_native()) else {
+        return false;
+    };
+    let user = glib::user_name();
+    path.file_name() == Some(user.as_os_str())
+        && matches!(
+            path.parent().and_then(|parent| parent.to_str()),
+            Some("/run/media" | "/media")
+        )
 }
 
 /// Mounts a drive (asking for a password if the system wants one) and
@@ -116,7 +178,11 @@ pub fn network_address(typed: &str) -> String {
         return typed.to_owned();
     }
     let path = typed.trim_start_matches(['\\', '/']).replace('\\', "/");
-    format!("smb://{path}")
+    // "\\nas\My Files": an address has no spaces
+    format!(
+        "smb://{}",
+        glib::Uri::escape_string(&path, Some("/:@"), true)
+    )
 }
 
 /// The network drives mapped with "Reconnect at sign-in".
@@ -252,6 +318,64 @@ pub fn reconnect_mapped(app: &gtk::Application) {
         }
         drop(hold);
     });
+}
+
+/// What an item on the Network page (or in a network computer) stands for.
+#[derive(Debug, PartialEq)]
+pub enum NetworkItem {
+    /// A computer: smb://nas2/
+    Computer(String),
+    /// A shared folder: smb://nas2/photos
+    Share(String),
+}
+
+/// The computer or shared folder an item is: GVfs lists them as shortcuts
+/// (or mountables) to their addresses.
+pub fn network_item(info: &gio::FileInfo) -> Option<NetworkItem> {
+    if !matches!(
+        info.file_type(),
+        gio::FileType::Shortcut | gio::FileType::Mountable
+    ) || !info.has_attribute("standard::target-uri")
+    {
+        return None;
+    }
+    classify_network(&info.attribute_string("standard::target-uri")?)
+}
+
+fn classify_network(uri: &str) -> Option<NetworkItem> {
+    let parsed = glib::Uri::parse(uri, glib::UriFlags::NONE).ok()?;
+    let network = matches!(
+        parsed.scheme().as_str(),
+        "smb" | "sftp" | "ssh" | "ftp" | "ftps" | "dav" | "davs" | "nfs" | "afp"
+    );
+    if !network || parsed.host().is_none_or(|host| host.is_empty()) {
+        return None;
+    }
+    Some(if parsed.path().trim_matches('/').is_empty() {
+        NetworkItem::Computer(uri.to_owned())
+    } else {
+        NetworkItem::Share(uri.to_owned())
+    })
+}
+
+/// An address as Map network drive shows it: a Windows share as
+/// \\server\share, as on Windows.
+pub fn windows_address(uri: &str) -> String {
+    let Some(rest) = uri.strip_prefix("smb://") else {
+        return uri.to_owned();
+    };
+    let rest = glib::Uri::unescape_string(rest, None::<&str>)
+        .map_or_else(|| rest.to_owned(), |text| text.to_string());
+    // GVfs names a computer with SMB's own port (nas2.local:445), which
+    // nobody types
+    let (host, path) = rest.split_once('/').unwrap_or((&rest, ""));
+    let host = host.strip_suffix(":445").unwrap_or(host);
+    let path = path.trim_end_matches('/').replace('/', "\\");
+    if path.is_empty() {
+        format!(r"\\{host}")
+    } else {
+        format!(r"\\{host}\{path}")
+    }
 }
 
 // --- Disk images ----------------------------------------------------------------
@@ -423,5 +547,54 @@ mod tests {
     fn addresses_compare_without_a_trailing_slash() {
         assert!(same_address("smb://NAS/photos/", "smb://nas/photos"));
         assert!(!same_address("smb://nas/photos", "smb://nas/music"));
+    }
+
+    #[test]
+    fn network_items_are_computers_or_shares() {
+        assert_eq!(
+            classify_network("smb://nas2/"),
+            Some(NetworkItem::Computer("smb://nas2/".into()))
+        );
+        assert_eq!(
+            classify_network("smb://nas2.local/users"),
+            Some(NetworkItem::Share("smb://nas2.local/users".into()))
+        );
+        assert_eq!(classify_network("network:///nas2"), None);
+        assert_eq!(classify_network("file:///home"), None);
+    }
+
+    #[test]
+    fn shares_listed_by_gvfs_are_network_items() {
+        // As GVfs lists a computer's shares: mountables with a target
+        let info = gio::FileInfo::new();
+        info.set_file_type(gio::FileType::Mountable);
+        info.set_attribute_string("standard::target-uri", "smb://nas2.local:445/users");
+        assert_eq!(
+            network_item(&info),
+            Some(NetworkItem::Share("smb://nas2.local:445/users".into()))
+        );
+        // An ordinary folder isn't one
+        let folder = gio::FileInfo::new();
+        folder.set_file_type(gio::FileType::Directory);
+        assert_eq!(network_item(&folder), None);
+    }
+
+    #[test]
+    fn shares_are_shown_as_windows_addresses() {
+        assert_eq!(windows_address("smb://nas2/photos/"), r"\\nas2\photos");
+        assert_eq!(windows_address("smb://nas2/"), r"\\nas2");
+        assert_eq!(windows_address("smb://NAS2.local:445/"), r"\\NAS2.local");
+        assert_eq!(
+            windows_address("smb://NAS2.local:445/users"),
+            r"\\NAS2.local\users"
+        );
+        assert_eq!(windows_address("smb://nas2/My%20Files"), r"\\nas2\My Files");
+        assert_eq!(windows_address("sftp://me@host/srv"), "sftp://me@host/srv");
+        // And back again, as Map network drive reads it
+        assert_eq!(
+            network_address(&windows_address("smb://nas2/photos")),
+            "smb://nas2/photos"
+        );
+        assert_eq!(network_address(r"\\nas2\My Files"), "smb://nas2/My%20Files");
     }
 }

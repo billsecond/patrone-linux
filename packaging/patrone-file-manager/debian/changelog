@@ -1,3 +1,26 @@
+patrone-file-manager (0.3.4) resolute; urgency=medium
+
+  * Mount folders (the user, 2026-10-28: "also show /media too, making it
+    easy to access these things"): This PC and the navigation pane show
+    "Drive mounts", the folder this account's drives are mounted in
+    (/run/media/USER on Patrone, where USB drives appear), even while it's
+    empty, and "Other mounts" (/mnt) when an administrator mounted
+    something there. Each tile says what the folder is for and where.
+  * Mount a shared folder from the Network page (the user: "Allow me to
+    right click on a network folder and mount it"): a shared folder's
+    right-click menu and the command bar have Mount and Map network drive,
+    and a computer's has Map network drive with its address filled in as
+    \\computer\. A computer or share has its own short menu (Open, Mount,
+    Map network drive, Copy address), not a file's.
+  * A network drive shows under This PC, in the navigation pane too, with
+    the folder GVfs gives it (under /run/user), which every app can open, a
+    terminal included; its address is in the tile's tooltip and
+    Properties. Disconnect is in its menu in the navigation pane as well.
+  * Map network drive puts the cursor after a filled-in address, and an
+    address typed with spaces (\\nas\My Files) works.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 17:00:00 -0500
+
 patrone-file-manager (0.3.3) resolute; urgency=medium
 
   * Patrone's own sign-in when connecting to a network share or opening an

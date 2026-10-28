@@ -24,6 +24,8 @@ pub enum NodeKind {
     Folder(gio::File),
     ThisPc,
     Drive(Drive),
+    /// A folder drives are mounted in, under This PC, by its plain name
+    MountFolder(gio::File, &'static str),
     Network,
     Trash,
     Separator,
@@ -38,6 +40,7 @@ impl NodeKind {
             NodeKind::Folder(file) => Location::Folder(file.clone()),
             NodeKind::ThisPc => Location::ThisPc,
             NodeKind::Drive(drive) => Location::Folder(drive.root()?),
+            NodeKind::MountFolder(file, _) => Location::Folder(file.clone()),
             NodeKind::Network => Location::Folder(places::network()),
             NodeKind::Trash => Location::Folder(places::trash()),
             NodeKind::Separator => return None,
@@ -138,7 +141,9 @@ impl NavPane {
                 return;
             };
             match &node.kind {
-                NodeKind::Drive(drive @ Drive::Volume(volume)) if volume.get_mount().is_none() => {
+                // A drive that isn't mounted, or a mapped drive that isn't
+                // connected
+                NodeKind::Drive(drive) if drive.can_mount() => {
                     pane.emit(NavEvent::OpenVolume(drive.clone()));
                 }
                 kind => {
@@ -212,7 +217,12 @@ impl NavPane {
             let rebuild = rebuild.clone();
             monitor.connect_volume_added(move |_, _| rebuild());
         }
-        monitor.connect_volume_removed(move |_, _| rebuild());
+        {
+            let rebuild = rebuild.clone();
+            monitor.connect_volume_removed(move |_, _| rebuild());
+        }
+        // Mapped network drives show under This PC, connected or not
+        config::settings().connect_changed(Some("mapped-drives"), move |_, _| rebuild());
 
         // The Recycle Bin's icon shows whether it has anything in it.
         if let Ok(monitor) =
@@ -291,6 +301,7 @@ impl NavPane {
             NodeKind::Folder(file) => (places::display_name(file), icons::small_folder_icon(file)),
             NodeKind::ThisPc => ("This PC".to_owned(), "pfm-nav-computer"),
             NodeKind::Drive(drive) => (drive.name(), small_icon_for(drive)),
+            NodeKind::MountFolder(_, name) => (name.to_string(), "pfm-nav-folder"),
             NodeKind::Network => ("Network".to_owned(), "pfm-nav-network"),
             NodeKind::Trash => (
                 "Recycle Bin".to_owned(),
@@ -626,9 +637,16 @@ fn node_matches(kind: &NodeKind, location: &Location) -> bool {
 /// What appears under a node when it expands.
 async fn children_of(kind: &NodeKind) -> Vec<(NodeKind, bool)> {
     match kind {
+        // Drives, network drives, then the folders drives are mounted in
         NodeKind::ThisPc => thispc::drives()
             .into_iter()
+            .chain(thispc::network_drives())
             .map(|drive| (NodeKind::Drive(drive), true))
+            .chain(
+                crate::drives::mount_folders()
+                    .into_iter()
+                    .map(|folder| (NodeKind::MountFolder(folder.folder, folder.name), false)),
+            )
             .collect(),
         NodeKind::Network => list_folders(&places::network(), true).await,
         NodeKind::Folder(file) => list_folders(file, false).await,
