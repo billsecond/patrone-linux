@@ -644,19 +644,18 @@ fn show_drive(window: &Window, info: &gio::FileInfo) {
     row(&grid, &mut line, "Type:", &text(kind));
     let file_system = text("");
     row(&grid, &mut line, "File system:", &file_system);
-    // Its mount: where its files appear (Linux's drive letter).
-    let place = text(&crate::drives::mount_point(&root));
-    place.set_selectable(true);
-    row(
-        &grid,
-        &mut line,
-        if root.is_native() {
-            "Mounted at:"
-        } else {
-            "Address:"
-        },
-        &place,
-    );
+    // A network drive's address, and its mount: where its files appear
+    // (Linux's drive letter; a network drive's is GVfs's folder)
+    if !root.is_native() {
+        let address = text(&root.uri());
+        address.set_selectable(true);
+        row(&grid, &mut line, "Address:", &address);
+    }
+    if let Some(path) = root.path() {
+        let place = text(&path.to_string_lossy());
+        place.set_selectable(true);
+        row(&grid, &mut line, "Mounted at:", &place);
+    }
     rule(&grid, &mut line);
     let used_label = text("");
     let free_label = text("");

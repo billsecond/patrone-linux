@@ -84,6 +84,19 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   opens it; Eject unmounts it, and udisks detaches the image then (it
   sets loop devices to clear themselves). Not done: VHD/VHDX images, and
   mounting internal drives at sign-in.
+  **Mount folders**: This PC and the navigation pane show "Drive mounts",
+  the folder the account's drives are mounted in (`/run/media/USER`, as
+  Ubuntu 26.04's udisks builds it; `/media/USER` where udisks is built the
+  older way; `/media` until the first drive makes it), always, so it's
+  learned where drives appear, and "Other mounts" (`/mnt`) when it has
+  anything in it. **Network shares as drives**: on the Network page a
+  shared folder's menu and the command bar have Mount and Map network
+  drive (a computer's has Map network drive, filled in as `\\computer\`).
+  GIO's mount is enough for every app: GVfs's FUSE folder
+  (`/run/user/UID/gvfs/smb-share:server=...,share=...`) is the drive's
+  "Mounted at" path, which programs that don't use GIO (a terminal, `cat`)
+  read and write; no root mount into /media is needed, and the password,
+  when remembered, is in the keyring.
   Tested as the `claude` account in a private headless GNOME Shell (as in
   Testing without a desktop session below), with a `scsi_debug` disk as
   an internal drive, `.iso` and `.img` files, GVfs's `localtest:` backend

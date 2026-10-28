@@ -1136,13 +1136,32 @@ impl Window {
                     action: "win.set-background",
                 });
             }
-            if crate::drives::is_disk_image(info) && commands::can_mount(self) {
+            let share = crate::drives::network_item(info);
+            if (crate::drives::is_disk_image(info) || share.is_some()) && commands::can_mount(self)
+            {
                 buttons.push(Contextual {
                     glyph: "drive",
                     label: "Mount",
                     action: "win.mount",
                 });
             }
+            if share.is_some() {
+                buttons.push(Contextual {
+                    glyph: "network",
+                    label: "Map network drive",
+                    action: "win.map-share",
+                });
+            }
+        } else if selected.is_empty()
+            && location
+                .folder()
+                .is_some_and(|folder| places::special_of(folder) == Some(places::Special::Network))
+        {
+            buttons.push(Contextual {
+                glyph: "network",
+                label: "Map network drive",
+                action: "win.map-drive",
+            });
         }
         if tab.page() == Page::ThisPc {
             buttons.push(Contextual {
@@ -1263,6 +1282,7 @@ impl Window {
             selected.len() == 1 && util::content_type(&selected[0]).starts_with("image/"),
         );
         set("mount", commands::can_mount(self));
+        set("map-share", commands::selected_network_item(self).is_some());
         set("eject", !commands::unmountable(self).is_empty());
         set("disconnect", commands::can_disconnect(self));
     }
@@ -1487,6 +1507,7 @@ impl Window {
         simple("restore-selected", |w| commands::restore(w, false));
         simple("set-background", commands::set_background);
         simple("map-drive", commands::map_network_drive);
+        simple("map-share", commands::map_share);
         simple("mount", commands::mount);
         simple("eject", commands::eject);
         simple("disconnect", commands::disconnect);

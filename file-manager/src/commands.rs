@@ -1026,6 +1026,31 @@ pub fn set_background(window: &Window) {
 /// the server asks, and "Reconnect at sign-in". Windows shares, SFTP, FTP,
 /// WebDAV and NFS all work.
 pub fn map_network_drive(window: &Window) {
+    map_network_drive_at(window, String::new());
+}
+
+/// Map network drive for the shared folder (or computer) selected on the
+/// Network page, its address filled in.
+pub fn map_share(window: &Window) {
+    let address = match selected_network_item(window) {
+        Some(drives::NetworkItem::Share(uri)) => drives::windows_address(&uri),
+        // A computer: its share is still to be typed
+        Some(drives::NetworkItem::Computer(uri)) => format!("{}\\", drives::windows_address(&uri)),
+        None => String::new(),
+    };
+    map_network_drive_at(window, address);
+}
+
+/// The one computer or shared folder selected on the Network page, or in a
+/// network computer.
+pub fn selected_network_item(window: &Window) -> Option<drives::NetworkItem> {
+    match window.tab().selected_infos().as_slice() {
+        [info] => drives::network_item(info),
+        _ => None,
+    }
+}
+
+fn map_network_drive_at(window: &Window, address: String) {
     let window = window.clone();
     glib::spawn_future_local(async move {
         let dialog = Dialog::new(parent(&window).as_ref(), "Map Network Drive");
@@ -1038,6 +1063,7 @@ pub fn map_network_drive(window: &Window) {
         dialog.body.append(&heading);
         let entry = gtk::Entry::builder()
             .placeholder_text(r"\\server\share")
+            .text(&address)
             .activates_default(true)
             .build();
         dialog.body.append(&entry);
@@ -1064,8 +1090,10 @@ pub fn map_network_drive(window: &Window) {
         dialog.body.append(&sign_in);
         dialog.add_button("_Finish", 0, true);
         dialog.add_button("Cancel", 1, false);
-        // The address can be typed straight away, as on Windows.
-        entry.grab_focus();
+        // The address can be typed straight away, as on Windows, after a
+        // computer's name when one was chosen
+        entry.grab_focus_without_selecting();
+        entry.set_position(-1);
         if dialog.run().await != 0 {
             return;
         }
@@ -1110,6 +1138,11 @@ pub fn can_mount(window: &Window) -> bool {
     if tab.page() == Page::ThisPc {
         return selected_drives(window).iter().any(Drive::can_mount);
     }
+    // A shared folder on the Network page (the user, 2026-10-28: "Allow me
+    // to right click on a network folder and mount it")
+    if let Some(drives::NetworkItem::Share(uri)) = selected_network_item(window) {
+        return !drives::is_connected(&uri);
+    }
     let selected = tab.selected_infos();
     !selected.is_empty()
         && selected.iter().all(drives::is_disk_image)
@@ -1130,6 +1163,10 @@ pub fn mount(window: &Window) {
         }
         return;
     }
+    if let Some(drives::NetworkItem::Share(uri)) = selected_network_item(window) {
+        mount_share(window, uri);
+        return;
+    }
     for file in tab.selected_files() {
         let window = window.clone();
         glib::spawn_future_local(async move {
@@ -1148,6 +1185,26 @@ pub fn mount(window: &Window) {
             }
         });
     }
+}
+
+/// Mounts a shared folder: it shows under This PC as a network drive, with
+/// a folder every app can open (GVfs's), and opens.
+fn mount_share(window: &Window, uri: String) {
+    let window = window.clone();
+    glib::spawn_future_local(async move {
+        match drives::connect(&uri, parent(&window).as_ref()).await {
+            Ok(folder) if window.desktop => crate::desktop::open_in_file_manager(&[folder]),
+            Ok(folder) => window.navigate(Location::Folder(folder)),
+            // Cancelled at the sign-in
+            Err(error) if error.matches(gio::IOErrorEnum::FailedHandled) => {}
+            Err(error) => dialogs::error(
+                parent(&window).as_ref(),
+                "Mount",
+                &format!("Can't mount {}.", drives::windows_address(&uri)),
+                &drives::describe_connect_error(&error),
+            ),
+        }
+    });
 }
 
 /// The mounts Eject (or Unmount) works on: the selected drives on This PC
@@ -1202,28 +1259,33 @@ pub fn can_disconnect(window: &Window) -> bool {
 /// the mapped ones so they don't reconnect at sign-in.
 pub fn disconnect(window: &Window) {
     for drive in selected_drives(window) {
-        let mount = match &drive {
-            Drive::Mapped(uri) => {
-                drives::forget_mapped(uri);
-                drives::mount_of(uri)
-            }
-            Drive::Mount(mount) if drive.is_network() => Some(mount.clone()),
-            _ => None,
-        };
-        let Some(mount) = mount else { continue };
-        let w = window.clone();
-        let name = drive.name();
-        drives::unmount(&mount, parent(window).as_ref(), move |result| {
-            if let Err(error) = result
-                && !error.matches(gio::IOErrorEnum::FailedHandled)
-            {
-                dialogs::error(
-                    parent(&w).as_ref(),
-                    "Disconnect",
-                    &format!("Can't disconnect {name}."),
-                    &dialogs::describe(&error),
-                );
-            }
-        });
+        disconnect_drive(window, &drive);
     }
+}
+
+/// Disconnects one network drive (This PC, or the navigation pane).
+pub fn disconnect_drive(window: &Window, drive: &Drive) {
+    let mount = match drive {
+        Drive::Mapped(uri) => {
+            drives::forget_mapped(uri);
+            drives::mount_of(uri)
+        }
+        Drive::Mount(mount) if drive.is_network() => Some(mount.clone()),
+        _ => None,
+    };
+    let Some(mount) = mount else { return };
+    let w = window.clone();
+    let name = drive.name();
+    drives::unmount(&mount, parent(window).as_ref(), move |result| {
+        if let Err(error) = result
+            && !error.matches(gio::IOErrorEnum::FailedHandled)
+        {
+            dialogs::error(
+                parent(&w).as_ref(),
+                "Disconnect",
+                &format!("Can't disconnect {name}."),
+                &dialogs::describe(&error),
+            );
+        }
+    });
 }
