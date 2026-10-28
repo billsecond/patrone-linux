@@ -1,0 +1,19 @@
+[Unit]
+Description=Offer to set up Hyper-V support
+Documentation=file:///usr/share/doc/patrone-hyperv-setup/README.md
+ConditionVirtualization=microsoft
+# Not in the installer's live session
+ConditionKernelCommandLine=!boot=casper
+# "Don't show this again"
+ConditionPathExists=!%E/patrone-hyperv-setup/dont-show-at-login
+ConditionEnvironment=WAYLAND_DISPLAY
+PartOf=graphical-session.target
+# After first-login setup has started, so the dialog can wait for it to end
+After=graphical-session.target gnome-initial-setup-first-login.service
+
+[Service]
+ExecStart=/usr/bin/patrone-hyperv-setup --at-login
+Slice=app.slice
+
+[Install]
+WantedBy=graphical-session.target
