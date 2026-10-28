@@ -35,7 +35,9 @@ snap revision 665), with these changes, all made by `build.sh`:
   nowhere else. It's an Accept page, not a lock (the free software's own
   licences let anyone run it; `docs/COMPLIANCE.md`, item 24): the live
   session isn't behind it, automated installs show no pages, and without
-  the file the page is skipped.
+  the file the page is skipped. The page is listed in
+  `patrone-branding`'s installer settings (`whitelabel.yaml`), since the
+  installer shows only the pages listed there.
 - **The suggested username** (`patch_source.py`): the first initial and last
   name, "wdaugherty" for "William Daugherty" (Ubuntu's runs the whole name
   together).
