@@ -10,10 +10,21 @@
 # their translations, which then show the English. A translation that says
 # "Ubuntu" where the English doesn't is dropped too. Ubuntu Pro's pages,
 # Canonical's product, keep their text: Patrone's installer doesn't show
-# them.
+# them. A few messages get Patrone's own words (REWORDED), also in English
+# only.
 import json
 import sys
 from pathlib import Path
+
+# The Applications page's choices promised a web browser; Patrone Linux
+# installs none, and each account picks its first one (browser-chooser/).
+# Only the first is offered (iso/build-iso.sh, install-sources.yaml).
+REWORDED = {
+    'minimalInstallationSubtitle':
+        "Patrone's desktop, apps and everyday tools. You choose a web browser the first time you need one.",
+    'fullInstallationSubtitle':
+        'An offline-friendly selection of office tools and utilities.',
+}
 
 
 def is_pro(key, value):
@@ -30,6 +41,10 @@ for directory in map(Path, sys.argv[1:]):
         if 'Ubuntu' in value and not is_pro(key, value):
             english[key] = value.replace('Ubuntu Desktop Installer', 'Patrone Linux Installer') \
                 .replace('Ubuntu', 'Patrone Linux')
+            changed.add(key)
+    for key, value in REWORDED.items():
+        if key in english:
+            english[key] = value
             changed.add(key)
     english_path.write_text(json.dumps(english, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(f'{english_path}: {len(changed)} messages')

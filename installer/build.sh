@@ -68,6 +68,15 @@ flutter build linux --release
 
 rm -rf "$here/bundle"
 cp -r build/linux/x64/release/bundle "$here/bundle"
+# Folders an earlier build's assets left in Flutter's build folder, emptied
+# since (Ubuntu's slides')
+find "$here/bundle" -type d -empty -delete
 # Patrone's licence agreement, beside the installer, for its licence page
 cp "$here/../legal/eula.md" "$here/bundle/data/patrone-eula.md"
+# The licences of Yaru's fonts, beside them: the Ubuntu font family's
+# (whose licence asks that every copy carry it) and Yaru's icon font's
+yaru=$(python3 -I -c 'import json, sys; print(next(p["rootUri"] for p in json.load(open(sys.argv[1]))["packages"] if p["name"] == "yaru").removeprefix("file://"))' .dart_tool/package_config.json)
+yaru_assets=$here/bundle/data/flutter_assets/packages/yaru/assets
+cp "$yaru/assets/fonts/UFL.txt" "$yaru_assets/fonts/"
+cp "$yaru/assets/LICENSE.CCBYSA" "$yaru_assets/"
 echo "Built $here/bundle"
