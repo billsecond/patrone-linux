@@ -1,8 +1,9 @@
 Description: Patrone's desktop switches on the Desktop page
  With Patrone's taskbar installed, File Manager draws the desktop and
- Ubuntu's desktop icons are off, so the page has switches for the desktop
- bubble and the Recycle Bin where Desktop Icons' settings were: those
- would bring Ubuntu's icons back beside Patrone's.
+ Ubuntu's desktop icons and dock are off, so the page has switches for the
+ desktop bubble and the Recycle Bin where Desktop Icons' settings were, and
+ no Dock settings: their switches would bring Ubuntu's icons or dock back
+ beside Patrone's.
 Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Forwarded: not-needed
 ---
@@ -125,7 +126,7 @@ Forwarded: not-needed
      {
        self->ding_settings = g_settings_new_full (schema, NULL, NULL);
  
-@@ -1575,7 +1611,9 @@
+@@ -1575,13 +1611,17 @@
      }
    else
      {
@@ -134,5 +135,26 @@ Forwarded: not-needed
 +        g_warning ("No Ding is installed here. Please fix your installation.");
 +      g_clear_pointer (&schema, g_settings_schema_unref);
        gtk_widget_set_visible (GTK_WIDGET (self->ding_preferences_group), FALSE);
+     }
+ 
+-  /* Only load if we have ubuntu dock or dash to dock installed */
++  /* Only load if we have ubuntu dock or dash to dock installed, and
++   * Patrone's taskbar doesn't take its place: Ubuntu's dock is off then, and
++   * its switch here would bring it back beside the taskbar */
+   schema = g_settings_schema_source_lookup (schema_source, UBUNTU_DOCK_SCHEMA, TRUE);
+-  if (schema)
++  if (schema && self->patrone_taskbar_settings == NULL)
+     {
+       GtkExpression *expression;
+ 
+@@ -1678,7 +1718,9 @@
+     }
+   else
+     {
+-      g_warning ("No Ubuntu Dock is installed here. Panel disabled. Please fix your installation.");
++      if (self->patrone_taskbar_settings == NULL)
++        g_warning ("No Ubuntu Dock is installed here. Panel disabled. Please fix your installation.");
++      g_clear_pointer (&schema, g_settings_schema_unref);
+       gtk_widget_set_visible (GTK_WIDGET (self->dock_preferences_group), FALSE);
      }
  
