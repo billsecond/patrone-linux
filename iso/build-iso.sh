@@ -184,15 +184,22 @@ open_layer() {
     # to honour; an update to the stub is in resolute-updates
     # (1snap1-0ubuntu9.1). chromium-browser is the same for Chromium's snap,
     # which patrone-default-apps depended on before 0.2.0.
-    in_root apt-get purge -y firefox chromium-browser
+    # Thunderbird's package is the same stub for Thunderbird's snap, which is
+    # Canonical's build of Mozilla's app, not Patrone's to pass on
+    # (docs/COMPLIANCE.md, item 11); Ubuntu's full desktop, in the live
+    # session, recommends it. Its language packs go with it.
+    in_root apt-get purge -y firefox chromium-browser thunderbird
     # The settings left by packages Patrone's removed (ubuntu-report's
     # autostart entry; update-notifier's, which said "Ubuntu Pro is
-    # available" at login)
+    # available" at login; Ubuntu Pro's apt hook)
     leftovers=$(in_root dpkg-query -W -f '${db:Status-Abbrev} ${Package}\n' | awk '$1 == "rc" {print $2}')
     [ -z "$leftovers" ] || in_root apt-get purge -y $leftovers
 
-    # Security Center is Ubuntu Pro's and the snaps' settings
-    seed_drop "$root/var/lib/snapd/seed" firefox chromium snap-store desktop-security-center
+    # Security Center is Ubuntu Pro's and the snaps' settings, and hwctl
+    # Canonical's hardware-certification tool (patrone-desktop removes its
+    # package too)
+    seed_drop "$root/var/lib/snapd/seed" firefox chromium snap-store desktop-security-center \
+        thunderbird hwctl
     snap debug validate-seed "$root/var/lib/snapd/seed/seed.yaml"
     check_no_browser "$name"
 }
@@ -251,6 +258,11 @@ step "What the installer installs ($install_layer)"
 # Patrone's installer is for the live session only.
 leave_out=patrone-installer
 open_layer "$install_layer" minimal.en minimal
+# What only Ubuntu's metapackages needed, which patrone-desktop takes the
+# place of (it lists their packages itself, less Ubuntu Pro's, Software
+# Updater and the rest): Ubuntu's release upgrader and Software Updater's
+# libraries among them. The list is in the build's output.
+in_root apt-get autoremove --purge -y
 close_layer "$install_layer"
 install_size=$(cat "$work/iso/$install_layer.size")
 
