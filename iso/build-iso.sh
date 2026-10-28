@@ -125,6 +125,11 @@ open_layer() {
     root=$layer/root
     layer_mounts=${#mounts[@]}
     mnt -t overlay overlay -o "lowerdir=$(IFS=:; echo "${lowers[*]}"),upperdir=$layer/upper,workdir=$layer/ovl,redirect_dir=off,metacopy=off,index=off,xino=off" "$root"
+    # Ubuntu's layers come with their seed's snaps set up already
+    # ("preseeded": App Center, Firefox and Security Center installed, and
+    # the seed's later changes ignored). That's undone here, and done again
+    # with Patrone's seed when the layer is closed.
+    /usr/lib/snapd/snap-preseed --reset "$root"
     mnt -t proc proc "$root/proc"
     mnt -t sysfs sysfs "$root/sys"
     mnt --bind /dev "$root/dev"
@@ -166,8 +171,16 @@ open_layer() {
     # Firefox's snap; the seed has no Firefox, and the hold keeps upgrades
     # from installing it (default-apps/README.md).
     in_root apt-mark hold firefox
+    # Ubuntu Pro's notices and password prompts (update-notifier's "Ubuntu
+    # Pro is available" at login, ubuntu-advantage-desktop-daemon's), and the
+    # settings left by packages Patrone's removed (ubuntu-report's autostart
+    # entry among them). Patrone Software tells of updates.
+    in_root apt-get purge -y update-notifier ubuntu-advantage-desktop-daemon
+    leftovers=$(in_root dpkg-query -W -f '${db:Status-Abbrev} ${Package}\n' | awk '$1 == "rc" {print $2}')
+    [ -z "$leftovers" ] || in_root apt-get purge -y $leftovers
 
-    seed_drop "$root/var/lib/snapd/seed" firefox snap-store
+    # Security Center is Ubuntu Pro's and the snaps' settings
+    seed_drop "$root/var/lib/snapd/seed" firefox snap-store desktop-security-center
     seed_add "$root/var/lib/snapd/seed" chromium
     snap debug validate-seed "$root/var/lib/snapd/seed/seed.yaml"
 }
@@ -183,6 +196,15 @@ close_layer() {
     in_root dpkg-query -W -f '${Package}\t${Version}\n' >"$work/iso/$name.manifest"
     size=$(du -sbx "$root" | cut -f1)
     echo "$size" >"$work/iso/$name.size"
+    # The seed's snaps set up in the image, as Ubuntu's are, so a new system
+    # (and the live session's installer) doesn't wait for them at first boot.
+    # snap-preseed mounts what it needs itself. If it can't, they're set up
+    # at first boot instead.
+    unmount_to $((layer_mounts + 1))
+    if ! /usr/lib/snapd/snap-preseed "$root"; then
+        echo "build-iso.sh: preseeding $name's snaps failed; they're set up at first boot" >&2
+        /usr/lib/snapd/snap-preseed --reset "$root"
+    fi
     unmount_to "$layer_mounts"
     # The disc's mount point, made for the build: the installer makes /cdrom
     # in the new system itself, and stops if it's there already.

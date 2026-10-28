@@ -1,0 +1,11 @@
+// Automatic security updates keep coming from Ubuntu's archive. Ubuntu's
+// 50unattended-upgrades allows "${distro_id}:${distro_codename}-security",
+// and on Patrone ${distro_id} is "Patrone" (os-release's ID), which none of
+// the archive's origins ("Ubuntu") match, so it allowed nothing. These add
+// Ubuntu's own, as Ubuntu's file names them for Ubuntu.
+Unattended-Upgrade::Allowed-Origins {
+        "Ubuntu:${distro_codename}";
+        "Ubuntu:${distro_codename}-security";
+        "UbuntuESMApps:${distro_codename}-apps-security";
+        "UbuntuESM:${distro_codename}-infra-security";
+};

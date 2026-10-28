@@ -1,3 +1,17 @@
+patrone-desktop (0.1.6) resolute; urgency=medium
+
+  * Automatic security updates work again: unattended-upgrades allows
+    Ubuntu's origins by name (52patrone-unattended-upgrades), since its own
+    file names them by the system's ID, now "Patrone".
+  * Software & Updates knows the archive: python-apt's templates for
+    "patrone" are Ubuntu's.
+  * `apt upgrade` no longer advertises Ubuntu Pro (its apt hook is moved
+    aside), and the session leaves out Ubuntu's web search (client=ubuntu)
+    and App Center's search. From a search of the installed system for
+    Ubuntu's name (the user, 2026-10-27).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 19:30:00 -0500
+
 patrone-desktop (0.1.5) resolute; urgency=medium
 
   * Patrone's taskbar is one of the session's own extensions: Ubuntu's

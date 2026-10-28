@@ -1,3 +1,16 @@
+patrone-branding (0.1.11) resolute; urgency=medium
+
+  * /etc/lsb-release names the system Patrone Linux 0.1: the installer
+    took an earlier Patrone install for "Ubuntu 26.04.1 LTS" (the user,
+    2026-10-27). Its codename stays Ubuntu's, which tools need.
+  * /etc/legal, shown at a text console's login, is Patrone's, and says
+    it's based on Ubuntu; the login message leaves out Ubuntu's ESM notes
+    (90-updates-available). From a search of the installed system for
+    Ubuntu's name.
+  * The installer's third slide's title fits: "A terminal that just works".
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 19:00:00 -0500
+
 patrone-branding (0.1.10) resolute; urgency=medium
 
   * The boot spinner is a single ring, its comet running round it, in place

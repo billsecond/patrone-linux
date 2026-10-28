@@ -35,6 +35,8 @@ case "$1" in
     remove | abort-install | disappear)
         rm -f "$mode" "$mode.new"
         dpkg-divert --package patrone-desktop --remove --rename --divert "$mode.ubuntu" "$mode"
+        dpkg-divert --package patrone-desktop --remove --rename \
+            --divert /usr/share/patrone-desktop/20apt-esm-hook.conf.ubuntu /etc/apt/apt.conf.d/20apt-esm-hook.conf
         ;;
 esac
 

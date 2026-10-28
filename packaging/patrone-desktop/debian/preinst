@@ -1,14 +1,20 @@
 #!/bin/sh
 # GNOME Shell's Ubuntu session mode is moved aside (ubuntu.json.ubuntu) so
 # that postinst can put Patrone's in its place: Ubuntu's, with Patrone's
-# taskbar among the session's own extensions (make-session-mode). postrm
-# puts Ubuntu's back.
+# taskbar among the session's own extensions (make-session-mode). Ubuntu
+# Pro's apt hook, which advertises Ubuntu Pro at every `apt upgrade`, is
+# moved out of apt's way. postrm puts both back.
 set -e
 
 mode=/usr/share/gnome-shell/modes/ubuntu.json
+esm_hook=/etc/apt/apt.conf.d/20apt-esm-hook.conf
 
 if [ "$1" = install ] || [ "$1" = upgrade ]; then
     dpkg-divert --package patrone-desktop --add --rename --divert "$mode.ubuntu" "$mode"
+    # Outside apt.conf.d: apt reads every file there, whatever its name
+    mkdir -p /usr/share/patrone-desktop
+    dpkg-divert --package patrone-desktop --add --rename \
+        --divert /usr/share/patrone-desktop/20apt-esm-hook.conf.ubuntu "$esm_hook"
 fi
 
 #DEBHELPER#

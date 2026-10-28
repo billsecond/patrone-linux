@@ -45,9 +45,18 @@ In both:
   shouldn't even show up"); Ubuntu's desktop only recommends it.
 - **The snap seed** (`/var/lib/snapd/seed`, the snaps a new system sets up
   at first boot) has Chromium, and the snaps it needs, in place of Firefox
-  and App Center (the `snap-store` snap); `snap debug validate-seed` checks
-  it. The `firefox` package, a stub Ubuntu's desktop needs, is held, as
-  `default-apps/README.md` says to.
+  and App Center (the `snap-store` snap), and without Security Center (Ubuntu
+  Pro's and the snaps' settings); `snap debug validate-seed` checks it.
+  Ubuntu's layers come with their seed's snaps set up already
+  ("preseeded"), which kept App Center, Firefox and Security Center and
+  ignored the seed's changes (found by a search of the installed system,
+  2026-10-27): each layer is reset (`snap-preseed --reset`) before the seed
+  is changed and preseeded again when it's closed, or, if that fails, sets
+  its snaps up at first boot. The `firefox` package, a stub Ubuntu's
+  desktop needs, is held, as `default-apps/README.md` says to.
+- **Ubuntu Pro's notices go**: `update-notifier` ("Ubuntu Pro is available"
+  at login) and `ubuntu-advantage-desktop-daemon` (its password prompts),
+  and the settings packages Patrone removes leave behind (`rc`).
 
 **The live session's boot image** (`casper/initrd`) is Ubuntu's own, which
 knows the disc (`conf/uuid.conf`) and how to start the live session, with

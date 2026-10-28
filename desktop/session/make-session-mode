@@ -17,6 +17,13 @@ uuid=patrone-taskbar@patrone-linux
 [ -f "$ubuntu" ] || exit 0
 
 sed "s|^\(\s*\"enabledExtensions\": \[\)\$|\1\n        \"$uuid\",|" "$ubuntu" > "$mode.new"
+# Two of Ubuntu's own extensions are left out: its web search (Google with
+# client=ubuntu, DuckDuckGo with t=canonical) and App Center's search, which
+# isn't on Patrone. The list's last item then loses its comma.
+for extension in web-search-provider@ubuntu.com snapd-search-provider@canonical.com; do
+    sed -i "/^\s*\"$extension\",\?\$/d" "$mode.new"
+done
+sed -i -z 's/,\(\n\s*\]\)/\1/' "$mode.new"
 if ! grep -q "\"$uuid\"" "$mode.new"; then
     echo "patrone-desktop: Ubuntu's session mode has a new shape; using it as it is" >&2
     cp "$ubuntu" "$mode.new"

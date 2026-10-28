@@ -23,3 +23,12 @@ override_dh_auto_install:
 	    $(pkg)/etc/update-manager/release-upgrades.d/patrone.cfg
 	install -Dm755 session/make-session-mode \
 	    $(pkg)/usr/libexec/patrone-desktop/make-session-mode
+	install -Dm644 apt/52patrone-unattended-upgrades \
+	    $(pkg)/etc/apt/apt.conf.d/52patrone-unattended-upgrades
+	# Software & Updates reads the archive's suites from python-apt's
+	# template for the system's ID, "patrone": Ubuntu's, which updates with
+	# python-apt
+	install -d $(pkg)/usr/share/python-apt/templates
+	ln -s ubuntu.info $(pkg)/usr/share/python-apt/templates/patrone.info
+	ln -s ubuntu.mirrors $(pkg)/usr/share/python-apt/templates/patrone.mirrors
+	install -d $(pkg)/usr/share/patrone-desktop
