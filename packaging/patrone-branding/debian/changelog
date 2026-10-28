@@ -16,6 +16,13 @@ patrone-branding (0.1.18) resolute; urgency=medium
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 11:40:00 -0500
 
+patrone-branding (0.1.17) resolute; urgency=medium
+
+  * The installer shows Patrone's licence agreement page: it shows only the
+    pages its settings list, and patrone-licence wasn't among them.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 11:30:00 -0500
+
 patrone-branding (0.1.16) resolute; urgency=medium
 
   * fastfetch's logo is smoother: each character cell has its own color,
