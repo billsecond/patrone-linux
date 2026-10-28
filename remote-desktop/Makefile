@@ -59,7 +59,8 @@ tests/test-desktop: tests/test-desktop.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(GREETER_CFLAGS) $(LDFLAGS) -o $@ $< $(GREETER_LIBS)
 
 tests/test-client: tests/test-client.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(PROXY_CFLAGS) $(LDFLAGS) -o $@ $< $(PROXY_LIBS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(PROXY_CFLAGS) $(LDFLAGS) -o $@ $< \
+		$(shell $(PKG_CONFIG) --libs freerdp-client3 freerdp3 winpr3)
 
 check: tests/proxy-patrone-login-plugin-test.so tests/test-plugin patrone-remote-desktop-auth \
 		tests/auth-remember-test tests/test-sam proxy-patrone-vmconnect-plugin.so \

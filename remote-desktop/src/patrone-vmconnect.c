@@ -26,6 +26,7 @@
 #include <string.h>
 #include <sys/socket.h>
 
+#include <freerdp/channels/disp.h>
 #include <freerdp/freerdp.h>
 #include <freerdp/peer.h>
 #include <freerdp/server/proxy/proxy_config.h>
@@ -260,6 +261,74 @@ out:
 	return ok;
 }
 
+/* Each dynamic channel the desktop opens towards VMConnect, in the journal */
+static BOOL dynamic_channel_create(proxyPlugin* plugin, proxyData* pdata, void* param)
+{
+	const proxyChannelDataEventInfo* channel = param;
+	WINPR_UNUSED(plugin);
+	WINPR_UNUSED(pdata);
+	WLog_INFO(TAG, "the desktop opens the channel %s", channel->channel_name);
+	return TRUE;
+}
+
+/* Display control is how VMConnect resizes the desktop with its window: it's
+ * watched, and passed on unchanged */
+static BOOL watch_channel(proxyPlugin* plugin, proxyData* pdata, void* param)
+{
+	proxyChannelToInterceptData* channel = param;
+	WINPR_UNUSED(plugin);
+	WINPR_UNUSED(pdata);
+	if (strcmp(channel->name, DISP_DVC_CHANNEL_NAME) == 0)
+		channel->intercept = TRUE;
+	return TRUE;
+}
+
+/* A display control message, inside a dynamic channel data PDU: its type,
+ * and for a monitor layout, the first monitor's size */
+static void log_display_control(wStream* packet, BOOL from_desktop)
+{
+	const BYTE* data = Stream_Buffer(packet);
+	const size_t length = Stream_Length(packet);
+	static const size_t id_sizes[] = { 1, 2, 4, 4 };
+
+	if (length < 1)
+		return;
+	const BYTE command = data[0] >> 4;
+	size_t offset = 1 + id_sizes[data[0] & 0x03];
+	if (command == 0x02) /* DATA_FIRST: a length field before the data */
+		offset += id_sizes[(data[0] >> 2) & 0x03];
+	else if (command != 0x03) /* not DATA */
+		return;
+	if (offset + 8 > length)
+		return;
+	UINT32 type = 0;
+	memcpy(&type, data + offset, sizeof(type));
+	if (type == DISPLAY_CONTROL_PDU_TYPE_CAPS && from_desktop)
+		WLog_INFO(TAG, "the desktop offers VMConnect display control");
+	else if (type == DISPLAY_CONTROL_PDU_TYPE_MONITOR_LAYOUT && !from_desktop &&
+	         offset + 16 + 20 <= length)
+	{
+		UINT32 monitors = 0, width = 0, height = 0;
+		memcpy(&monitors, data + offset + 12, sizeof(monitors));
+		memcpy(&width, data + offset + 16 + 12, sizeof(width));
+		memcpy(&height, data + offset + 16 + 16, sizeof(height));
+		WLog_INFO(TAG, "VMConnect asks for a desktop of %ux%u (%u monitors)", width, height,
+		          monitors);
+	}
+}
+
+static BOOL channel_data(proxyPlugin* plugin, proxyData* pdata, void* param)
+{
+	proxyDynChannelInterceptData* data = param;
+	WINPR_UNUSED(plugin);
+	WINPR_UNUSED(pdata);
+	if (data->first)
+		log_display_control(data->data, data->isBackData);
+	data->rewritten = TRUE; /* sent on as it came */
+	data->result = PF_CHANNEL_RESULT_PASS;
+	return TRUE;
+}
+
 static BOOL session_end(proxyPlugin* plugin, proxyData* pdata, void* param)
 {
 	WINPR_UNUSED(param);
@@ -290,6 +359,9 @@ FREERDP_ENTRY_POINT(BOOL proxy_module_entry_point(proxyPluginsManager* manager, 
 	plugin.ServerFetchTargetAddr = fetch_target;
 	plugin.ClientPreConnect = client_pre_connect;
 	plugin.ClientRedirect = client_redirect;
+	plugin.DynamicChannelCreate = dynamic_channel_create;
+	plugin.DynChannelToIntercept = watch_channel;
+	plugin.DynChannelIntercept = channel_data;
 	plugin.ServerSessionEnd = session_end;
 	plugin.userdata = userdata;
 	return manager->RegisterPlugin(manager, &plugin);
