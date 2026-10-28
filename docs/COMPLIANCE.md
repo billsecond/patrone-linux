@@ -50,7 +50,7 @@ Nothing was published, uploaded, or sent to anyone outside these sessions.
 
 | # | Finding | Grade | Who acts | Re-checked |
 | --- | --- | --- | --- | --- |
-| [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download; **in hand** (2026-10-28: the repository is public, and `iso/build-source.sh` gathers the disc's source, to run for the next ISO) | Website session (serve it beside the ISO) | Yes: confirmed |
+| [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download; **fixed for 26.04.1** (2026-10-28: the repository is public, and the disc's source is on the website beside it, gathered by `iso/build-source.sh`) | Each new disc: the same again | Yes: confirmed |
 | [2](#2-canonicals-rule-on-redistributing-ubuntus-binaries) | Canonical's policy asks derived distributions to recompile Ubuntu's binaries; Patrone ships Ubuntu's own | Needs a lawyer | The user | Yes: same count, needs a lawyer |
 | [3](#3-ubuntus-logo-is-still-on-screen) | Ubuntu's logo is still on screen: Help, Software Updater, the logo icons | Confirmed problem, **fixed on screen** (2026-10-28); Ubuntu's hidden layers on the disc remain | Main session (the layers) | Yes: confirmed |
 | [4](#4-linux-in-the-name-needs-the-linux-foundations-sublicence) | "Linux" in the name needs the Linux Foundation's (free) sublicence | Confirmed problem, before a public release; **applied for** (2026-10-28), waiting on the Linux Foundation | The user | Yes: confirmed |
@@ -199,9 +199,15 @@ public"):
    the licence agreement's section 1 says the same; the website serves the
    folder there and links it from the download page (the website session).
 
-Still open: running it for the published disc and putting it on the
-website, beside the ISO; and the snaps, listed but not fetched (a lawyer's
-question, above).
+**Done for 26.04.1** (2026-10-28): the disc built from `d0c19ce` (sha256
+`1137635e6f47441b...`) is on the download page with its source folder,
+`/source/patrone-linux-26.04.1-source/` (1,093 of Ubuntu's source packages,
+Patrone's repository at `d0c19ce` and the installer's upstream source: 8.3
+GB, 3,325 files), and the download page links it and the repository.
+Checked on the running site: the folder answers with its README, its
+`SHA256SUMS` lists every file and passes `sha256sum -c` on the server, and
+a file resumes (206). Still open: the snaps, listed but not fetched (a
+lawyer's question, above); and doing the same for every later disc.
 
 ## 2. Canonical's rule on redistributing Ubuntu's binaries
 
@@ -305,9 +311,14 @@ Checked on the dev VM, with both packages installed: GTK's own lookup
 (GTK 4, in the session) gives Patrone's files for `distributor-logo`,
 `start-here` and their symbolic versions (checksums match); Help's front
 page belongs to `patrone-branding` and is GNOME's ("GNOME Help"), and every
-language's parses as XML. Not yet seen on screen, or in a fresh install
-from an ISO: the next ISO is built only once Hyper-V resizing works (the
-user, 2026-10-28), and that install checks this item, 10, 11 and 12.
+language's parses as XML. **Seen in a fresh install** (2026-10-28, twice:
+the discs from `439e7a9` and `d0c19ce`, in throwaway Hyper-V VMs): Help
+opens as "GNOME Help" with no Ubuntu logo; Settings › About shows Patrone's
+logo and "Patrone Linux 0.1"; the logo icons are Patrone's files, diverted
+from Yaru's; none of Ubuntu's removed packages or snaps (Firefox, App
+Center, Security Center, Thunderbird, hwctl, Ubuntu Pro, Software Updater)
+are installed, and nothing is left to autoremove but the install engine's
+`grub-pc-bin`.
 
 Still on the disc: **Ubuntu's own layers**, hidden under Patrone's (the
 last bullet above). Not done here: self-contained layers change how the
@@ -598,8 +609,10 @@ everyday tools. You choose a web browser the first time you need one.",
 `debrand_l10n.py`). Checked in the built app: `libapp.so` has no
 "Automated with Landscape" and has the new wording; `windows.svg` is
 byte-identical to `block-device.svg`; no files under `assets/slides`; both
-licence files present. **Not yet seen running**: the installer runs only
-from an ISO, and the next one waits for Hyper-V resizing (item 3).
+licence files present. **Seen running** in both fresh installs (item 3):
+"Type of installation" offers only the interactive and autoinstall-file
+choices, the Applications page has the new wording, the slides are
+Patrone's, and the licence page keeps Next off until it's ticked.
 
 ## 11. Thunderbird in the live session
 
