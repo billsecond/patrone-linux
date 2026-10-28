@@ -50,7 +50,7 @@ Nothing was published, uploaded, or sent to anyone outside these sessions.
 
 | # | Finding | Grade | Who acts | Re-checked |
 | --- | --- | --- | --- | --- |
-| [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download | The user (where to host); main session (build it); website session (link it) | Yes: confirmed |
+| [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download; **in hand** (2026-10-28: the repository is public, and `iso/build-source.sh` gathers the disc's source, to run for the next ISO) | Website session (serve it beside the ISO) | Yes: confirmed |
 | [2](#2-canonicals-rule-on-redistributing-ubuntus-binaries) | Canonical's policy asks derived distributions to recompile Ubuntu's binaries; Patrone ships Ubuntu's own | Needs a lawyer | The user | Yes: same count, needs a lawyer |
 | [3](#3-ubuntus-logo-is-still-on-screen) | Ubuntu's logo is still on screen: Help, Software Updater, the logo icons | Confirmed problem, **fixed on screen** (2026-10-28); Ubuntu's hidden layers on the disc remain | Main session (the layers) | Yes: confirmed |
 | [4](#4-linux-in-the-name-needs-the-linux-foundations-sublicence) | "Linux" in the name needs the Linux Foundation's (free) sublicence | Confirmed problem, before a public release; **applied for** (2026-10-28), waiting on the Linux Foundation | The user | Yes: confirmed |
@@ -169,6 +169,39 @@ version's source package.
 The user's own GPL-3+ code isn't bound by this (the copyright holder can't
 breach their own licence), but it's in the same packages as others' code,
 and the licence promises recipients the source, so publish it too.
+
+**In hand** (2026-10-28; the user: "You can open up the repo to be
+public"):
+
+1. Patrone's own sources are public: the repository is
+   <https://github.com/billsecond/patrone-linux> (its history rewritten
+   without the website, which has its own private repository).
+2. The rebuilds' source is Ubuntu's source package of the version each is
+   built from, plus the repository's build script and patches at the disc's
+   commit (`gdm/`, `gnome-settings/`, `gnome-initial-setup/`), which
+   `iso/build-source.sh`'s README maps package by package; the installer's
+   is Canonical's `ubuntu-desktop-provision` at its commit, `ubuntu_flavor`,
+   and `installer/`.
+3. The source mirror: `iso/build-iso.sh` now writes `casper/sources.manifest`
+   onto the disc (every source package and version on it: Patrone's layers,
+   Ubuntu's three hidden beneath them, the pool, and the seeds' snaps), and
+   `iso/build-source.sh` fetches all of it from Launchpad, with Patrone's
+   repository at the disc's commit and the installer's upstream source,
+   into one folder with a `README.txt` and `SHA256SUMS` (`iso/README.md`).
+   Tried on a small test disc: it fetched a superseded version
+   (`bind9 1:9.20.24-1ubuntu0.2`) from Launchpad, mapped `gdm3`'s
+   `patrone2` to Ubuntu's `50.1-0ubuntu0.1`, skipped Patrone's own packages,
+   and a second run kept what it had. The two list functions, run on an
+   earlier build's layer and the pool, gave 958 source packages. The full
+   run waits for the next ISO.
+4. Directions: `SOURCE.txt` at the disc's root and `/etc/legal`
+   (`patrone-branding` 0.1.21) say `https://patronelinux.com/source`, and
+   the licence agreement's section 1 says the same; the website serves the
+   folder there and links it from the download page (the website session).
+
+Still open: running it for the published disc and putting it on the
+website, beside the ISO; and the snaps, listed but not fetched (a lawyer's
+question, above).
 
 ## 2. Canonical's rule on redistributing Ubuntu's binaries
 
@@ -1113,9 +1146,10 @@ The user's answers (2026-10-28): open the repository to the public, and
 "what ever you need for the compliance" for the rest, so this review took
 the simplest safe option where no lawyer or the user personally is needed.
 
-1. **Where the source goes** (item 1): the repository goes public (the main
-   session is doing it); the source of Ubuntu's binaries beside the ISO is
-   still to build. Nothing should be downloadable before both.
+1. **Where the source goes** (item 1): the repository is public; the source
+   of everything on the disc, which `iso/build-source.sh` gathers, goes
+   beside the ISO on the website, from the next ISO on. Nothing should be
+   downloadable before both.
 2. **Canonical** (item 2): take advice on the binaries clause, and decide
    whether to write to Canonical.
 3. **The Linux sublicence** (item 4): applied for; waiting on the Linux

@@ -5,7 +5,9 @@ Microsoft or the Linux Foundation.
 Most of the programs included with it are free software; the exact
 distribution terms for each program are described in the individual files
 in /usr/share/doc/*/copyright. Some firmware is not free software, and comes
-under its makers' own terms, in the same files.
+under its makers' own terms, in the same files. The source code of Patrone
+Linux and of the programs on its disc is at https://patronelinux.com/source,
+and Patrone's own code at https://github.com/billsecond/patrone-linux.
 
 Patrone Linux comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
 applicable law.

@@ -11,6 +11,36 @@ sudo iso/build-iso.sh ~/iso/ubuntu-26.04.1-desktop-amd64.iso out /var/tmp/patron
 
 Try it in a new Hyper-V VM with `scripts/hyperv/new-test-vm.ps1`.
 
+Build it from a commit that's pushed, with nothing uncommitted: the disc
+records the commit, and its source is that commit (below).
+
+## Its source code
+
+Whoever passes on the disc image has to offer the source of the free
+software on it, and GPL-2 asks for it from "the same place"
+(`docs/COMPLIANCE.md`, item 1). So each disc image is published with its
+source beside it:
+
+```sh
+iso/build-source.sh /var/tmp/patrone-linux-26.04.1-amd64.iso /var/tmp/patrone-linux-26.04.1-source
+```
+
+`build-iso.sh` writes two files onto the disc for it: `SOURCE.txt` at the
+root, saying where the source is (`https://patronelinux.com/source`, and
+Patrone's own on GitHub, at the disc's commit), and `casper/sources.manifest`,
+every source package of what's on the disc, name and exact version: what
+Patrone's two layers and the three of Ubuntu's they stand on have installed
+(Ubuntu's include what Patrone's layers remove, still on the disc, hidden),
+the package pool's, and the snaps in the seeds. `build-source.sh` (as
+anyone, with a network; about half an hour and 7 GB) fetches each of
+Ubuntu's from Launchpad at its exact version (Ubuntu's mirrors keep only
+the newest), maps Patrone's rebuilds (`...patroneN`) to the Ubuntu version
+they're built from, and adds Patrone's repository at the disc's commit and
+the installer's upstream source, with a `README.txt` and `SHA256SUMS`. Run
+it again if it says something failed; it keeps what it has. Keep each
+published disc's source for at least three years (GPL-2's written offer
+asks that), and as long as the disc is offered.
+
 ## How it's put together
 
 Ubuntu's disc is made of stacked layers in `casper/`: the base

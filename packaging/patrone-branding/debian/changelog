@@ -1,3 +1,11 @@
+patrone-branding (0.1.21) resolute; urgency=medium
+
+  * /etc/legal says where the source code is: the disc's at
+    patronelinux.com/source, and Patrone's own on GitHub, now public
+    (docs/COMPLIANCE.md, item 1).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 15:00:00 -0500
+
 patrone-branding (0.1.20) resolute; urgency=medium
 
   * Patrone's own cursors in place of Ubuntu's (the user saw Ubuntu's busy
