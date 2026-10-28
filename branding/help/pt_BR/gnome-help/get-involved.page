@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="pt-BR">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Como e onde relatar problemas com esses tópicos de ajuda.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Rodolfo Ribeiro Gomes</mal:name>
+      <mal:email>rodolforg@gmail.com</mal:email>
+      <mal:years>2011, 2012.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Enrico Nicoletto</mal:name>
+      <mal:email>liverig@gmail.com</mal:email>
+      <mal:years>2013, 2021.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>João Santana</mal:name>
+      <mal:email>joaosantana@outlook.com</mal:email>
+      <mal:years>2013.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Isaac Ferreira Filho</mal:name>
+      <mal:email>isaacmob@riseup.net</mal:email>
+      <mal:years>2018.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Rafael Fontenelle</mal:name>
+      <mal:email>rafaelff@gnome.org</mal:email>
+      <mal:years>2012-2022.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Leônidas Araújo</mal:name>
+      <mal:email>leorusvellt@hotmail.com</mal:email>
+      <mal:years>2023.</mal:years>
+    </mal:credit>
+  </info>
+  <title>Participando para melhorar este guia</title>
+
+  <section id="submit-issue">
+
+   <title>Enviar um <i>issue</i> (problema)</title>
+
+   <p>Essa documentação de ajuda é criada por uma comunidade voluntária. Você é bem-vindo para participar. Se você perceber um problema com essas páginas de ajuda (como erros de escrita, instruções incorretas ou tópicos que deveriam ser abordados mas não estão), você pode enviar um <em>novo issue</em>. Para enviar um novo issue, acesse o <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">rastreador de problemas</link>.</p>
+
+   <p>Você precisa registrar para que possa enviar em problema e receber atualizações por e-mail sobre seu status. Se você não tem uma conta ainda, clique no botão <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui> para criar uma.</p>
+
+   <p>Depois de criar uma conta, certifique-se de estar conectado e volte para o <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">rastreador de problemas de documentação</link> e clique em <gui>New issue</gui>. Antes de relatar um novo problema, <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">procure</link> o problema para ver se já existe algo semelhante.</p>
+
+   <p>Antes de enviar um problema, escolha o rótulo apropriado no menu <gui>Labels</gui>. Se você está preenchendo um relatório de problema nesta documentação, você deve escolher o rótulo <gui>gnome-help</gui>. Se você não tem certeza qual componente o problema está relacionado, escolha nenhum.</p>
+
+   <p>Se você está pedindo ajuda sobre um tópico que você sente que não está sendo abordado, escolha <gui>Feature</gui> como rótulo. Preencha nas seções de Title e Description e clique em <gui>Submit issue</gui>.</p>
+
+   <p>O seu problema receberá um número de ID e seu status será atualizado como sendo tratado. Obrigado por ajudar a fazer da Ajuda do GNOME melhor!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Nos contate</title>
+
+<p>Conecte-se com outros editores de documentação do GNOME na <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> sala do Matrix. Consulte a página <link xref="help-matrix">Obtenha ajuda com o Matrix</link> para obter mais informações. Se preferir, há também um canal de IRC, #gnome-docs, no <link xref="help-irc">servidor GNOME IRC</link>. Como as pessoas nestas salas estão localizadas em todo o mundo, pode demorar um pouco para obter uma resposta.</p>
+<p>Alternativamente, você pode entrar em contato com a Equipe de Documentação usando o <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.</p>
+
+   <p>Nossa <link href="https://wiki.gnome.org/DocumentationProject">página wiki</link> contém informações úteis sobre como você pode participar e contribuir.</p>
+
+
+   </section>
+</page>

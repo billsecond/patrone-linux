@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="eu">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Mahaigainaren laguntza-gida erabiltzeko aholku batzuk.</desc>
+    <credit type="author">
+      <name>GNOMEren dokumentazio-proiektua</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Asier Saratsua Garmendia</mal:name>
+      <mal:email>asiersarasua@ni.eus</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Gida honi buruz</title>
+<p>Gida honen bidez, zure mahaigainaren eginbideen ikuspegi orokorra izango duzu, ordenagailuari lotutako galderetarako erantzunak izango dituzu eta ordenagailua modu eraginkorragoan erabiltzeko argibideak izango dituzu. Laguntza honi buruzko ohar batzuk:</p>
+
+<list>
+  <item><p>Gida zereginak azaltzeko gai laburretan ordenatuta dago, ez kapituluetan. Horrek esan nahi du ez duzula eskuliburu osoa aztertu behar zure galderei erantzuteko.</p></item>
+  <item><p>Elkarri lotutako gaiak elkarrekin ageri dira. “Ikus halaber" aukerak ageri dira orri batzuetako beheko aldean, gaiari lotutako beste gai batzuk ikusteko. Horrela, errazagoa da zeregin jakin bat egiteko laguntza eman dezaketen antzeko gaiak aurkitzea.</p></item>
+  <item><p>Bilaketak egiteko sistema integratua du. Laguntza-arakatzailearen goiko barran <em>bilaketa-barra</em> bat dago, eta zerbait idazten hasi eta berehala hasiko dira hari lotutako emaitzak agertzen.</p></item>
+  <item><p>Gida etengabe hobetzen ari da. Laguntza-informazio osatua ematen saiatzen gara, baina badakigu ezin ditugula erantzun guztiak eman hemen. Laguntza gehiago behar baduzu, begiratu zure sistemaren laguntza-taldean.</p></item>
+</list>
+
+</page>

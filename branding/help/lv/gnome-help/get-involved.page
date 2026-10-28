@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="lv">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Kā un kur ziņot par problēmām ar šīm palīdzības tēmām.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+  <title>Piedalieties šīs rokasgrāmatas uzlabošanā</title>
+
+  <section id="submit-issue">
+
+   <title>Ziņot par kļūdu</title>
+
+   <p>Šo palīdzības dokumentāciju ir veidojusi brīvprātīgo kopiena. Jūs arī esat aicināts piedalīties. Ja jūs pamanat problēmu ar šīm palīdzības lapām (kā piemēram pārrakstīšanās vai gramatikas kļūdas, nepareizas instrukcijas vai arī tematus, kurus vajadzētu aplūkot papildus), jūs varat iesniegt <em>kļūdu ziņojumu</em>. Lai iesniegtu šo ziņojumu, dodieties uz <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">kļūdu izsekotāju</link>.</p>
+
+   <p>Jums ir jāreģistrējas, lai jūs varētu iesniegt kļūdas ziņojumu un saņemt atjauninājumus e-pastā par tā statusu. Ja jums jau nav konta, spiediet uz <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui> saites, lai izveidotu jaunu.</p>
+
+   <p>Once you have an account, make sure you are logged in, then go back to the
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">documentation
+   issue tracker</link> and click <gui>New issue</gui>. Before reporting a new issue, please
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">browse</link>
+   for the issue to see if something similar already exists.</p>
+
+   <p>Pirms ziņot par kļūdu izvēlaties atbilstošu etiķeti izvēlnē <gui>Labels</gui>. Ja jūs pieteiksiet kļūdu par šo dokumentu, jums vajadzēs izmantot <gui>gnome-help</gui> etiķeti. Ja neesat pārliecināti uz kuru komponenti jūsu kļūda attiecas, neizvēlieties nevienu.</p>
+
+   <p>Ja jūs lūdzat palīdzību par tēmu, kas jums liekas, ka nav ietverta, izvēlieties etiķeti <gui>Feature</gui>. Aizpildiet virsraksta un apraksta nodaļas un spiediet <gui>Submit issue</gui>.</p>
+
+   <p>Jūsu kļūdas ziņojumam tiks piešķirts ID numurs, un tā statuss tiks atjaunināts, kad tas tiks izskatīts. Paldies par palīdzību padarīt GNOME palīdzību labāku!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Sazinieties ar mums</title>
+
+<p>
+    Connect with other GNOME documentation editors in the <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix room. See the <link xref="help-matrix">Get help with Matrix</link> page for more information. If you prefer, there is also an IRC channel, #gnome-docs, on the <link xref="help-irc">GNOME IRC server</link>. As the people in these rooms are located across the world, it may take a moment to get a response.
+</p>
+<p>
+  Alternatively, you can contact the Documentation Team using
+  <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.
+</p>
+
+   <p>Our <link href="https://wiki.gnome.org/DocumentationProject">wiki page</link>
+   contains useful information how you can join and contribute.</p>
+
+
+   </section>
+</page>

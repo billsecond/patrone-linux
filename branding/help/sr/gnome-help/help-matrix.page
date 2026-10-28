@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="sr">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Зариа</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Матична страница Матрикса</title></link>
+
+
+    <desc>Ћаскајте уживо са Гномовим доприносиоцима.</desc>
+
+    <keywords>матрикс, ћаскање, подршка, уживо, заједница, помоћ, matrix, chat, support, live, community, help</keywords>
+  </info>
+
+  <title>Набавите помоћ за Матрикс</title>
+
+  <p><link href="https://matrix.org/">Матрикс</link> је савремена, отвореног кода платформа за ћаскање. Као за е-пошту, можете да направите налог на једном од многих сервера и да користите колико год желите клијената да се повежете, укључујући и оне засноване на вебу.</p>
+  <steps>
+    <item><p>Изаберите клијента. Матрикс садржи <link href="https://matrix.org/docs/projects/try-matrix-now/">списак популарних клијената</link>, укључујући популаран клијент <link href="https://app.element.io">Елемент</link> и Гномову личну апликацију <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Фрактал</link>.</p></item>
+    <item><p>Направите налог. Већина клијената ће вас водити кроз поступак, а налог ће радити на било ком Матрикс клијенту.</p></item>
+    <item><p>Приступите причаоници <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> и упитајте.</p></item>
+  </steps>
+  <p>Још информација, укључујући и то како разгледати остале Гномове причаонице, можете пронаћи на <link href="https://wiki.gnome.org/GettingInTouch/Matrix">Гномовом викију</link>.</p>
+  <note>
+  <p>Знајте да се примењује <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">Гномов кодекс понашања</link> када ћаскате на ИРЦ-у.</p>
+    </note>
+
+</page>

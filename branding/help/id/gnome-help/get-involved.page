@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="id">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Bagaimana dan ke mana melaporkan masalah dengan topik-topik bantuan ini.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Andika Triwidada</mal:name>
+      <mal:email>andika@gmail.com</mal:email>
+      <mal:years>2011-2014, 2017, 2020-2025.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Ahmad Haris</mal:name>
+      <mal:email>ahmadharis1982@gmail.com</mal:email>
+      <mal:years>2017.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Rofiquzzaki</mal:name>
+      <mal:email>babisayabundar@gmail.com</mal:email>
+      <mal:years>2022.</mal:years>
+    </mal:credit>
+  </info>
+  <title>Terlibat untuk memperbaiki panduan ini</title>
+
+  <section id="submit-issue">
+
+   <title>Mengajukan satu masalah</title>
+
+   <p>DokumentasibBantuan ini dibuat oleh komunitas sukarelawan. Anda dipersilakan untuk berpartisipasi. Jika Anda melihat masalah dengan halaman bantuan ini (seperti kesalahan ketik, petunjuk atau topik yang tidak benar yang harus dibahas tetapi tidak), Anda dapat mengirimkan <em>masalah baru</em>. Untuk mengirimkan masalah baru, buka <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">pelacak masalah</link>.</p>
+
+   <p>Anda perlu mendaftar, sehingga Anda dapat mengirimkan masalah dan menerima pembaruan melalui surel tentang statusnya. Jika Anda belum memiliki akun, klik tombol <gui><link href="https://gitlab.gnome.org/users/sign_in">Masuk / Mendaftar</link></gui> untuk membuatnya.</p>
+
+   <p>Setelah Anda memiliki akun, pastikan Anda log masuk, lalu kembali ke <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">pelacak masalah dokumentasi</link> dan klik <gui><link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues/new">Masalah baru</link></gui>. Sebelum melaporkan masalah baru, harap <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">jelajahi</link> masalah ini untuk melihat apakah sesuatu yang serupa sudah ada.</p>
+
+   <p>Sebelum mengirimkan masalah, pilih label yang sesuai di menu <gui>Label</gui>. Jika Anda mengajukan masalah terhadap dokumentasi ini, Anda harus memilih label <gui>gnome-help</gui>. Jika Anda tidak yakin masalah Anda berkaitan dengan komponen mana, jangan memilih.</p>
+
+   <p>Jika Anda meminta bantuan tentang topik yang Anda rasa tidak tercakup, pilih <gui>Fitur</gui> sebagai label. Isi bagian judul dan deskripsi, lalu klik <gui>Kirim masalah</gui>.</p>
+
+   <p>Laporan Anda akan diberi suatu nomor ID, dan statusnya akan dimutakhirkan ketika sedang ditangani. Terima kasih telah membantu membuat Bantuan GNOME lebih baik!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Hubungi kami</title>
+
+<p>Terhubung dengan penerjemah GNOME lainnya di ruang Matriks <link href="https://matrix.to/#/#i18n:gnome.org">#docs:gnome.org</link>. <link xref="help-matrix">Lihat halaman Dapatkan bantuan dengan Matrix</link> untuk informasi selengkapnya. Jika Anda mau, ada juga saluran IRC, #gnome-docs, di <link xref="help-irc">server IRC GNOME</link>. Karena orang-orang di ruangan ini berada di seluruh dunia, mungkin perlu beberapa saat untuk mendapatkan tanggapan.</p>
+<p>Sebagai alternatif, Anda dapat menghubungi Tim Dokumentasi memakai <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.</p>
+
+   <p><link href="https://wiki.gnome.org/DocumentationProject">Halaman wiki</link> kami memuat informasi yang berguna tentang bagaimana Anda dapat bergabung dan berkontribusi.</p>
+
+
+   </section>
+</page>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="fr">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>Comment et où aider à la traduction de ces rubriques.</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Michael Hill</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Zaria</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Luc Pionchon</mal:name>
+      <mal:email>pionchon.luc@gmail.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Claude Paroz</mal:name>
+      <mal:email>claude@2xlibre.net</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alain Lojewski</mal:name>
+      <mal:email>allomervan@gmail.com</mal:email>
+      <mal:years>2011-2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Julien Hardelin</mal:name>
+      <mal:email>jhardlin@orange.fr</mal:email>
+      <mal:years>2011, 2013</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Bruno Brouard</mal:name>
+      <mal:email>annoa.b@gmail.com</mal:email>
+      <mal:years>2011-12</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>yanngnome</mal:name>
+      <mal:email>yannubuntu@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nicolas Delvaux</mal:name>
+      <mal:email>contact@nicolas-delvaux.org</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Mickael Albertus</mal:name>
+      <mal:email>mickael.albertus@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alexandre Franke</mal:name>
+      <mal:email>alexandre.franke@gmail.com</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hydroxyp</mal:name>
+      <mal:email>hydroxyp@gmail.com</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Charles Monzat</mal:name>
+      <mal:email>charles.monzat@free.fr</mal:email>
+      <mal:years>2020-2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Guillaume Bernard</mal:name>
+      <mal:email>associations@guillaume-bernard.fr</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Irénée Thirion</mal:name>
+      <mal:email>irenee.thirion@e.email</mal:email>
+      <mal:years>2024</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Participation à l’amélioration des traductions</title>
+
+<p>L’aide de GNOME est traduite par une communauté mondiale de volontaires et il y a de <link href="https://l10n.gnome.org/module/gnome-user-docs/">nombreuses langues</link> pour lesquelles nous avons encore besoin de traductions.</p>
+<p>Pour commencer à traduire, <link href="https://l10n.gnome.org/register/">créez-vous un compte</link> et rejoignez <link href="https://l10n.gnome.org/teams/">l’équipe de traduction</link> de votre langue. Ce compte va vous permettre de téléverser de nouvelles traductions.</p>
+<p>Connectez-vous avec d’autres traducteurs de GNOME dans le salon Matrix <link href="htps://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link>. Consultez la page <link xref="help-matrix">Obtenir de l’aide avec Matrix</link> pour obtenir plus d’informations. Si vous préférez, il existe également un canal IRC, #gnome-i18n, sur le <link xref="help-irc">serveur IRC de GNOME</link>. Les participants de salon de discussion résidant parfois à l’autre bout du monde, il faut parfois attendre un certain temps avant d’obtenir une réponse.</p>
+<p>Vous pouvez aussi contacter l’équipe d’internationalisation en utilisant <link href="https://discourse.gnome.org/tag/i18n">Discourse de GNOME</link>.</p>
+
+</page>

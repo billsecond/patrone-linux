@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="id">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Beranda Matrix</title></link>
+
+
+    <desc>Mengobrol langsung dengan para kontributor GNOME.</desc>
+
+    <keywords>matrix, obrolan, dukungan, langsung, komunitas, bantuan</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Andika Triwidada</mal:name>
+      <mal:email>andika@gmail.com</mal:email>
+      <mal:years>2011-2014, 2017, 2020-2025.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Ahmad Haris</mal:name>
+      <mal:email>ahmadharis1982@gmail.com</mal:email>
+      <mal:years>2017.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Rofiquzzaki</mal:name>
+      <mal:email>babisayabundar@gmail.com</mal:email>
+      <mal:years>2022.</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Dapatkan bantuan dengan Matrix</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> adalah platform obrolan sumber terbuka modern. Seperti surel, Anda dapat membuat akun di salah satu dari banyak server dan menggunakan sejumlah klien untuk terhubung, termasuk yang berbasis web.</p>
+  <steps>
+    <item><p>Pilih suatu klien. Matrix menyimpan <link href="https://matrix.org/docs/projects/try-matrix-now/">daftar klien populer</link>, termasuk klien populer <link href="https://app.element.io">Element</link> dan aplikasi <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link> milik GNOME sendiri.</p></item>
+    <item><p>Buat suatu akun. Sebagian besar klien akan memandu Anda melalui proses ini, dan akun akan bekerja pada klien Matrix mana pun.</p></item>
+    <item><p>Bergabunglah dengan ruang <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> dan bertanyalah.</p></item>
+  </steps>
+  <p>Informasi lebih lanjut, termasuk cara menelusuri ruang-ruang GNOME lainnya, dapat ditemukan di <link href="https://wiki.gnome.org/GettingInTouch/Matrix">wiki GNOME</link>.</p>
+  <note>
+  <p>Pastikan untuk mengikuti <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">kode etik GNOME</link> saat mengobrol di Matrix dan platform GNOME lainnya.</p>
+    </note>
+
+</page>

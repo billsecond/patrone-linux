@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="el">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Λίγες συμβουλές για τη χρήση του οδηγού βοήθειας της επιφάνειας εργασίας.</desc>
+    <credit type="author">
+      <name>Έργο Τεκμηρίωσης GNOME</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Ελληνική μεταφραστική ομάδα GNOME</mal:name>
+      <mal:email>team@gnome.gr</mal:email>
+      <mal:years>2009-2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Δημήτρης Σπίγγος</mal:name>
+      <mal:email>dmtrs32@gmail.com</mal:email>
+      <mal:years>2012-2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Φώτης Τσάμης</mal:name>
+      <mal:email>ftsamis@gmail.com</mal:email>
+      <mal:years>2009</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Μάριος Ζηντίλης</mal:name>
+      <mal:email>m.zindilis@dmajor.org</mal:email>
+      <mal:years>2009, 2010</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Θάνος Τρυφωνίδης</mal:name>
+      <mal:email>tomtryf@gnome.org</mal:email>
+      <mal:years>2012-2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Μαρία Μαυρίδου</mal:name>
+      <mal:email>mavridou@gmail.com</mal:email>
+      <mal:years>2014</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Σχετικά με αυτόν τον οδηγό</title>
+<p>This guide is designed to give you a tour of the features of your desktop,
+answer your computer-related questions, and provide tips on using your
+computer more effectively. Here are a few notes regarding the help guide:</p>
+
+<list>
+  <item><p>The guide is sorted into small, task-oriented topics — not
+  chapters. This means that you don’t need to skim through an entire manual
+  to find the answer to your questions.</p></item>
+  <item><p>Related items are linked together. “See Also” links at the bottom
+  of some pages will direct you to related topics. This makes it easy to find
+  similar topics that might help you perform a certain task.</p></item>
+  <item><p>Περιλαμβάνει ενσωματωμένη αναζήτηση. Η γραμμή στην κορυφή του περιηγητή βοήθειας είναι μια <em>γραμμή αναζήτησης</em> και τα σχετικά αποτελέσματα θα αρχίσουν να εμφανίζονται μόλις αρχίσετε να πληκτρολογείτε.</p></item>
+  <item><p>The guide is constantly being improved. Although we attempt to
+  provide you with a comprehensive set of helpful information, we know we can’t
+  answer all of your questions here. If you need more assistance, you can check
+  with your distribution’s support team.</p></item>
+</list>
+
+</page>

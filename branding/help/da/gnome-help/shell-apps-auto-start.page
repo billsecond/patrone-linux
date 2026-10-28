@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="da">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>Brug <app>Tilpasninger</app> til at starte programmer automatisk, når der logges ind.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>scootergrisen</mal:name>
+      <mal:email/>
+      <mal:years>2015-2016, 2019-2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alan Mortensen</mal:name>
+      <mal:email/>
+      <mal:years>2023</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Få programmer til at starte automatisk, når der logges ind</title>
+
+  <p>Når du logger ind, så starter din computer automatisk nogle programmer og kører dem i baggrunden. Det er gerne vigtige programmer der hjælper din skrivebordssession med at køre godt.</p>
+
+  <p>Du kan bruge programmet <app>Tilpasninger</app> til at tilføje andre programmer som du ofte bruger såsom webbrowsere eller redigeringsprogrammer, til listen over programmer som starter automatisk når der logges ind.</p>
+
+  <note style="important">
+    <p>Du skal have installeret <app>Tilpasninger</app> på din computer for at ændre denne indstilling.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweaks">Installér <app>Tilpasninger</app></link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>Start automatisk et program, når der logges ind:</title>
+    <item>
+      <p>Åbn <gui xref="shell-introduction#activities">Aktivitetsoversigten</gui> og begynd at skrive <gui>Tilpasninger</gui>.</p>
+    </item>
+    <item>
+      <p>Klik på <gui>Tilpasninger</gui> for at åbne programmet.</p>
+    </item>
+    <item>
+      <p>Klik på fanebladet <gui>Opstartsprogrammer</gui>.</p>
+    </item>
+    <item>
+      <p>Klik på knappen <gui style="button">+</gui> for at få en liste over tilgængelige programmer.</p>
+    </item>
+    <item>
+      <p>Klik på <gui style="button">Tilføj</gui> for at tilføje et program efter eget valg til listen.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>Du kan fjerne et program fra listen ved at klikke på knappen <gui style="button">Fjern</gui> ved siden af programmet.</p>
+  </note>
+
+</page>

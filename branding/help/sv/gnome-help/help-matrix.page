@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="sv">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Webbsida för Matrix</title></link>
+
+
+    <desc>Chatta direkt med GNOME-bidragsgivare.</desc>
+
+    <keywords>matrix, chatt, support, stöd, live, direkt, community, gemenskap, hjälp</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Daniel Nylander</mal:name>
+      <mal:email>po@danielnylander.se</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Sebastian Rasmussen</mal:name>
+      <mal:email>sebras@gmail.com</mal:email>
+      <mal:years>2014, 2015, 2016, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Anders Jonsson</mal:name>
+      <mal:email>anders.jonsson@norsjovallen.se</mal:email>
+      <mal:years>2016, 2017</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Få hjälp med Matrix</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> är en modern chattplattform som är öppen källkod. Som för e-post så kan du skapa ett konto på en av många servrar och använda ett stort antal klienter för att ansluta, inklusive webbaserade sådana.</p>
+  <steps>
+    <item><p>Välj en klient. Matrix har en <link href="https://matrix.org/docs/projects/try-matrix-now/">lista över populära klienter</link>, inklusive den populära klienten <link href="https://app.element.io">Element</link> och GNOMEs eget program <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>.</p></item>
+    <item><p>Skapa ett konto. De flesta klienter hjälper dig genom denna process, och kontot kommer fungera på alla Matrix-klienter.</p></item>
+    <item><p>Gå in i rummet <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> och fråga på.</p></item>
+  </steps>
+  <p>Mer information, inklusive hur du kan se andra GNOME-rum kan hittas på <link href="https://wiki.gnome.org/GettingInTouch/Matrix">GNOME-wikin</link>.</p>
+  <note>
+  <p>Se till att följa <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOMEs uppförandekod</link> när du chattar på Matrix och andra GNOME-plattformar.</p>
+    </note>
+
+</page>

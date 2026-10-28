@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="ru">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Петр Ковар (Petr Kovar)</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>Используйте <app>Доп. настройки</app> для настройки автоматического запуска приложений при входе в систему.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Александр Прокудин</mal:name>
+      <mal:email>alexandre.prokoudine@gmail.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Алексей Кабанов</mal:name>
+      <mal:email>ak099@mail.ru</mal:email>
+      <mal:years>2011-2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Станислав Соловей</mal:name>
+      <mal:email>whats_up@tut.by</mal:email>
+      <mal:years>2013-2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юлия Дронова</mal:name>
+      <mal:email>juliette.tux@gmail.com</mal:email>
+      <mal:years>2013-2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юрий Мясоедов</mal:name>
+      <mal:email>ymyasoedov@yandex.ru</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Ser82-png</mal:name>
+      <mal:email>asvmail.as@gmail.com</mal:email>
+      <mal:years>2022-2025</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Вячеслав Гурин</mal:name>
+      <mal:email>slavkaplay6@gmail.com</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Автоматический запуск приложений при входе в систему</title>
+
+  <p>Когда вы входите в систему, ваш компьютер автоматически запускает некоторые приложения и работает в фоновом режиме. Обычно это важные программы, которые помогают вашему рабочему столу работать без сбоев.</p>
+
+  <p>Вы можете использовать приложение <app>Доп. настройки</app>, чтобы добавить часто используемые приложения, такие как веб-браузеры или редакторы, в список программ, которые будут автоматически запускаться при входе в систему.</p>
+
+  <note style="important">
+    <p>Чтобы изменить этот параметр, на вашем компьютере должно быть установлено приложение <app>Доп.настройки</app>.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweaks">Установите приложение <app>Доп. настройки</app></link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>Для того, чтобы приложения автоматически запускались при входе в систему:</title>
+    <item>
+      <p>Откройте <gui xref="shell-introduction#activities">Обзор</gui> и начните вводить: <gui>Доп. настройки</gui>.</p>
+    </item>
+    <item>
+      <p>Нажмите <gui>Доп. настройки</gui>, чтобы открыть приложение.</p>
+    </item>
+    <item>
+      <p>Щёлкните вкладку <gui>Автозапуск</gui>.</p>
+    </item>
+    <item>
+      <p>Щёлкните кнопку <gui style="button">+</gui>, чтобы открыть список доступных приложений.</p>
+    </item>
+    <item>
+      <p>Нажмите кнопку <gui style="button">Добавить</gui>, чтобы добавить выбранное вами приложение из списка.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>Вы можете удалить приложение из списка, нажав кнопку <gui style="button">Удалить</gui> рядом с приложением.</p>
+  </note>
+
+</page>

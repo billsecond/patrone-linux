@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="uk">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>Використання програми <app>Налаштування</app> для налаштовування автоматичного запуску програми при вході до системи.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юрій Чорноіван</mal:name>
+      <mal:email>yurchor@ukr.net</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Налаштовування програм на автоматичний запуск при вході до системи</title>
+
+  <p>Коли ви входите до системи, ваш комп'ютер автоматично запускає деякі програми і лишає їх працювати у фоновому режимі. Це, зазвичай, важливі програми, які допомагають злагодженій роботі вашого сеансу стільничного середовища.</p>
+
+  <p>Ви можете скористатися програмою <app>Налаштування</app> для додавання інших програм, якими ви часто користуєтеся, зокрема браузерів або редакторів, до списку програм, які запускатимуться автоматично під час входу до системи.</p>
+
+  <note style="important">
+    <p>Для внесення змін до цього параметра вам слід встановити у вашій системі програму <app>Налаштування</app>.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweaks">Встановити <app>Налаштування</app></link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>Щоб наказати системі автоматично запускати програму після вашого входу до системи, виконайте такі дії:</title>
+    <item>
+      <p>Відкрийте огляд <gui xref="shell-introduction#activities">Діяльності</gui> і почніть введення слова <gui>Налаштування</gui></p>
+    </item>
+    <item>
+      <p>Натисніть пункт <gui>Налаштування</gui>, щоб відкрити програму.</p>
+    </item>
+    <item>
+      <p>Натисніть заголовок вкладки <gui>Програми у автозапуску</gui>.</p>
+    </item>
+    <item>
+      <p>Натисніть кнопку <gui style="button">+</gui>, щоб відкрити список доступних програм.</p>
+    </item>
+    <item>
+      <p>Натисніть кнопку <gui style="button">Додати</gui>, щоб додати вибрану вами програму до списку.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>Ви можете вилучити пункт програми зі списку натисканням кнопки <gui style="button">Вилучити</gui>, яку розташовано поряд із пунктом програми.</p>
+  </note>
+
+</page>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="ru">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Как и куда сообщать об ошибках в этом руководстве.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Петр Ковар (Petr Kovar)</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Александр Прокудин</mal:name>
+      <mal:email>alexandre.prokoudine@gmail.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Алексей Кабанов</mal:name>
+      <mal:email>ak099@mail.ru</mal:email>
+      <mal:years>2011-2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Станислав Соловей</mal:name>
+      <mal:email>whats_up@tut.by</mal:email>
+      <mal:years>2013-2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юлия Дронова</mal:name>
+      <mal:email>juliette.tux@gmail.com</mal:email>
+      <mal:years>2013-2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юрий Мясоедов</mal:name>
+      <mal:email>ymyasoedov@yandex.ru</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Ser82-png</mal:name>
+      <mal:email>asvmail.as@gmail.com</mal:email>
+      <mal:years>2022-2025</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Вячеслав Гурин</mal:name>
+      <mal:email>slavkaplay6@gmail.com</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+  <title>Участвуйте в улучшении этого руководства</title>
+
+  <section id="submit-issue">
+
+   <title>Сообщение об ошибках</title>
+
+   <p>Эта справочная документация создана сообществом добровольцев. Вы тоже можете принять в этом участие. Если вы заметите ошибку на этих справочных страницах (опечатку, неправильную инструкцию или отсутствие тем, которые должны быть в руководстве), можете сообщить о <em>новой проблеме</em>. Чтобы сообщить об этом, перейдите в <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">систему отслеживания ошибок</link>.</p>
+
+   <p>Чтобы сообщить об ошибке и получать по электронной почте уведомления об её состоянии, нужно зарегистрироваться. Если у вас ещё нет учётной записи, нажмите <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui>, чтобы создать её.</p>
+
+   <p>После создания учётной записи войдите в неё, и перейдите к <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">системе отслеживания ошибок в документации</link> и нажмите <gui>New issue</gui>. Прежде чем сообщать о новой проблеме, <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">просмотрите</link>, не сообщал ли уже кто-нибудь о подобном.</p>
+
+   <p>Перед отправкой сообщения выберите соответствующую метку в меню <gui>Labels</gui>. Если вы сообщаете о проблеме с данной документацией, вам следует выбрать метку <gui>gnome-help</gui>. Если вы не уверены, к какому компоненту относится ваша проблема, не выбирайте ничего.</p>
+
+   <p>Если вы сообщаете о недостающей, по вашему мнению, теме справки, в качестве метки выберите <gui>Feature</gui>. Заполните разделы «Заголовок» и «Описание» и нажмите <gui>Submit issue</gui>.</p>
+
+   <p>Вашему сообщению будет присвоен идентификационный номер, и его статус будет обновляться по мере обработки отчёта. Спасибо за то, что помогаете сделать справку GNOME лучше!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Свяжитесь с нами</title>
+
+<p>Общайтесь с другими редакторами документации GNOME в комнате Matrix <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link>. Дополнительную информацию смотрите на странице <link xref="help-matrix">Get help with Matrix</link>. Если хотите, то на <link xref="help-irc">IRC-сервере GNOME</link> есть IRC-канал #gnome-docs. Поскольку участники комнат живут в разных частях мира, для получения ответа на ваши вопросы может потребоваться время.</p>
+<p>Кроме того, вы можете связаться с командой документирования, используя <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.</p>
+
+   <p>Наша <link href="https://wiki.gnome.org/DocumentationProject">страница wiki</link> содержит полезную информацию о том, как вы можете присоединиться и внести свой вклад.</p>
+
+
+   </section>
+</page>

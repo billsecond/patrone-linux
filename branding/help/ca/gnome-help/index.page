@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:e="http://projectmallard.org/experimental/" xmlns:its="http://www.w3.org/2005/11/its" type="guide" id="index" xml:lang="ca">
+
+<info>
+    <desc>Una guia per als usuaris de l'escriptori GNOME.</desc>
+
+    <title type="link">Ajuda del GNOME</title>
+    <title type="text">Ajuda del GNOME</title>
+    <title role="trail" type="link">Ajuda</title>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jaume Jorba</mal:name>
+      <mal:email>jaume.jorba@gmail.com</mal:email>
+      <mal:years>2018, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jordi Mas i Hernàndez</mal:name>
+      <mal:email>jmas@softcatala.org</mal:email>
+      <mal:years>2018, 2020-2023</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Miquel-Àngel Burgos i Fradeja</mal:name>
+      <mal:email>miquel.angel.burgos@gmail.com</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Maite Guix i Ribé</mal:name>
+      <mal:email>maite.guix@me.com</mal:email>
+      <mal:years>2022</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Ajuda del GNOME</title>
+
+<links type="topic" groups="gs"/>
+
+<links type="topic" style="experimental-gnome-top" groups="intro #first"/>
+
+<links type="topic" style="experimental-gnome-tiles 2column" groups="        shell-overview        net media files        prefs hardware        a11y tips more-help"/>
+</page>

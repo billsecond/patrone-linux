@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="zh-CN">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Matrix 主页</title></link>
+
+
+    <desc>与 GNOME 贡献者实时聊天。</desc>
+
+    <keywords>matrix，聊天，支持，实时，社区，帮助</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>TeliuTe</mal:name>
+      <mal:email>teliute@163.com</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>tuberry</mal:name>
+      <mal:email>orzun@foxmail.com</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Victor_Trista</mal:name>
+      <mal:email>ljlzjzm@hotmail.com</mal:email>
+      <mal:years>2023</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>获取有关 Matrix 的帮助</title>
+
+  <p><link href="https://matrix.org/">Matrix</link>是一个现代化的开源聊天平台。与电子邮件一样，您可以在许多服务器之一上创建一个账号，并使用任意数量的客户端进行连接，包括基于 Web 的客户端。</p>
+  <steps>
+    <item><p>选择一个客户端。Matrix 维护着一个<link href="https://matrix.org/docs/projects/try-matrix-now/">流行的客户端列表</link>，包括流行的<link href="https://app.element.io">Element</link>客户端和 GNOME 自己的<link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>应用。</p></item>
+    <item><p>创建一个账号。大多数客户端将指导您完成此过程，并且该账号可以在任何 Matrix 客户端上运行。</p></item>
+    <item><p>加入<link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link>房间并询问。</p></item>
+  </steps>
+  <p>更多信息，包括如何浏览其他 GNOME 房间，可以在<link href="https://wiki.gnome.org/GettingInTouch/Matrix">GNOME wiki</link>上找到。</p>
+  <note>
+  <p>在 Matrix 和其他 GNOME 平台上聊天时，请务必遵循<link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME 行为准则</link>。</p>
+    </note>
+
+</page>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="ja">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>IRC でリアルタイムに助言をもらえます。</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>松澤 二郎</mal:name>
+      <mal:email>jmatsuzawa@gnome.org</mal:email>
+      <mal:years>2011, 2012, 2013, 2014, 2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>赤星 柔充</mal:name>
+      <mal:email>yasumichi@vinelinux.org</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kentaro KAZUHAMA</mal:name>
+      <mal:email>kazken3@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Shushi Kurose</mal:name>
+      <mal:email>md81bird@hitaki.net</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Noriko Mizumoto</mal:name>
+      <mal:email>noriko@fedoraproject.org</mal:email>
+      <mal:years>2013, 2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>坂本 貴史</mal:name>
+      <mal:email>o-takashi@sakamocchi.jp</mal:email>
+      <mal:years>2013, 2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>日本GNOMEユーザー会</mal:name>
+      <mal:email>http://www.gnome.gr.jp/</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC とは、インターネットリレーチャット (Internet Relay Chat) の略称です。IRC は、リアルタイムかつマルチユーザーのメッセージングシステムです。GNOME IRC サーバー上では、他の GNOME ユーザーや開発者とコミュニケーションを取り、助言をもらうことができます。</p>
+   <p>
+      To connect to the GNOME IRC server, use <app>Polari</app> or <app>HexChat</app>.
+   </p>
+   <p>
+      To create an IRC account in Polari, see the
+      <link href="help:polari/">Polari documentation</link>.
+   </p>
+   <p>
+      The GNOME IRC server is <sys>irc.libera.chat</sys>.
+      If your computer is properly configured you can click on the link
+      <link href="irc://irc.libera.chat/gnome"/> to access the <sys>gnome</sys> channel.
+   </p>
+   <p>
+      While IRC is a real-time discussion medium, people tend to not reply immediately, so be patient.
+   </p>
+
+  <note>
+    <p>Please note the
+    <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME code of
+    conduct</link> applies when you chat on IRC.</p>
+  </note>
+
+</page>

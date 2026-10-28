@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="kk">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Заря</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Matrix үй парағы</title></link>
+
+
+    <desc>GNOME үлес қосушыларымен тікелей сөйлесу.</desc>
+
+    <keywords>matrix, чат, қолдау, тікелей, қауымдастық, көмек</keywords>
+  </info>
+
+  <title>Matrix бойынша көмек алу</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> — бұл заманауи, ашық бастапқы коды бар чат платформасы. Электрондық пошта сияқты, сіз көптеген серверлердің бірінде тіркелгі жасап, қосылу үшін кез келген клиенттерді, соның ішінде веб-негізделген клиенттерді пайдалана аласыз.</p>
+  <steps>
+    <item><p>Клиентті таңдаңыз. Matrix <link href="https://matrix.org/docs/projects/try-matrix-now/">танымал клиенттер тізімін</link> жүргізеді, оның ішінде танымал <link href="https://app.element.io">Element</link> клиенті және GNOME-ның жеке <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link> қолданбасы бар.</p></item>
+    <item><p>Тіркелгі жасаңыз. Көптеген клиенттер сізге осы процесс арқылы бағыт-бағдар береді және тіркелгі кез келген Matrix клиентінде жұмыс істейді.</p></item>
+    <item><p><link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> бөлмесіне қосылып, сұрағыңызды қойыңыз.</p></item>
+  </steps>
+  <p>Қосымша ақпаратты, соның ішінде басқа GNOME бөлмелерін қалай шолуға болатынын <link href="https://wiki.gnome.org/GettingInTouch/Matrix">GNOME wiki</link> бетінен табуға болады.</p>
+  <note>
+  <p>Matrix және басқа GNOME платформаларында сөйлескен кезде <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME әдеп кодексін</link> сақтауды ұмытпаңыз.</p>
+    </note>
+
+</page>

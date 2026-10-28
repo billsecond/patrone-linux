@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="de">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Hier erfahren Sie, wo und wie Sie Probleme mit dieser Hilfe melden können.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hendrik Knackstedt</mal:name>
+      <mal:email>hendrik.knackstedt@t-online.de</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Gabor Karsay</mal:name>
+      <mal:email>gabor.karsay@gmx.at</mal:email>
+      <mal:years>2011-2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Benjamin Steinwender</mal:name>
+      <mal:email>b@stbe.at</mal:email>
+      <mal:years>2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Wolfgang Stöggl</mal:name>
+      <mal:email>c72578@yahoo.de</mal:email>
+      <mal:years>2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Mario Blättermann</mal:name>
+      <mal:email>mario.blaettermann@gmail.com</mal:email>
+      <mal:years>2011-2013, 2017-2018</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Tim Sabsch</mal:name>
+      <mal:email>tim@sabsch.com</mal:email>
+      <mal:years>2018-2024</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Christian Kirbach</mal:name>
+      <mal:email>christian.kirbach@gmail.com</mal:email>
+      <mal:years>2011-2026</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Philipp Kiemle</mal:name>
+      <mal:email>l10n@prly.mozmail.com</mal:email>
+      <mal:years>2021, 2023, 2025</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jürgen Benvenuti</mal:name>
+      <mal:email>gastornis@posteo.org</mal:email>
+      <mal:years>2022-2024.</mal:years>
+    </mal:credit>
+  </info>
+  <title>Mithelfen, dieses Handbuch zu verbessern</title>
+
+  <section id="submit-issue">
+
+   <title>Ein Problem melden</title>
+
+   <p>Dieses Hilfesystem wird von einer Gemeinschaft aus Freiwilligen erstellt. Sie sind herzlich eingeladen, sich daran zu beteiligen. Wenn Sie ein Problem mit diesen Hilfeseiten feststellen (wie Tippfehler, falsche Anweisungen oder Themen, die behandelt werden sollten, aber fehlen), so können Sie einen <em>Fehlerbericht</em> einreichen. Um einen Fehler zu melden, öffnen Sie bitte die <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">Fehlerdatenbank</link>.</p>
+
+   <p>Sie müssen sich anmelden, damit Sie Fehler melden und Aktualisierungen über Ihren Status per E-Mail erhalten können. Wenn Sie noch keinen Zugang haben, so klicken Sie auf den Knopf <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui>, um ein Konto einrichten.</p>
+
+   <p>Sobald Sie ein Konto haben, melden Sie sich in der <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">Fehlerdatenbank der Dokumentation</link> an und klicken Sie auf <gui>New issue</gui>. <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">Durchsuchen</link> Sie bitte vor dem Berichten eines neuen Fehlers die Datenbank, ob nicht ein ähnlicher Fehler bereits gemeldet worden ist.</p>
+
+   <p>Zum Melden des Fehlers wählen Sie bitte die entsprechende Komponente im Menü <gui>Labels</gui>. Wenn Sie einen Fehler in der Dokumentation melden, sollten Sie die Komponente <gui>gnome-help</gui> wählen. Wenn Sie unsicher sind, wählen Sie einfach keine.</p>
+
+   <p>Wenn Sie Hilfe zu einem Thema anfordern, das Ihrer Meinung nach nicht abgedeckt ist, wählen Sie <gui>Feature</gui> als Komponente. Geben Sie die Abschnitte Titel (Title) und Beschreibung (Description) ein und klicken Sie auf <gui>Submit issue</gui>.</p>
+
+   <p>Ihr Bericht bekommt eine Kennung (ID) zugewiesen und der Status wird mit laufender Bearbeitung stets aktualisiert. Danke für Ihre Mithilfe bei der Verbesserung der GNOME-Hilfe!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Mit uns in Kontakt treten</title>
+
+<p>Treten Sie mit anderen GNOME Übersetzern im Matrix-Raum <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> in Kontakt. Weitere Informationen dazu finden Sie auf der Seite <link xref="help-matrix">Hilfe zu Matrix</link>. Es gibt auf dem <link xref="help-irc">GNOME IRC-Server</link> auch einen IRC-Kanal »#gnome-docs«. Weil die Teilnehmer in den Räumen weltweit verteilt sind, kann es eine Weile dauern, bis Sie eine Antwort erhalten.</p>
+<p>Alternativ können Sie das Dokumentationsteam über <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link> kontaktieren.</p>
+
+   <p>Unsere <link href="https://wiki.gnome.org/DocumentationProject">Wiki-Seite</link> enthält nützliche Informationen, wie Sie beitreten und mitmachen können.</p>
+
+
+   </section>
+</page>

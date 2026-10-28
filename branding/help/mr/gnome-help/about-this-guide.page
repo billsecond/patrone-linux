@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="mr">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>डेस्कटॉप मदत मार्गदर्शिका वापरण्याबद्दल काही टीपा.</desc>
+    <credit type="author">
+      <name>GNOME डॉक्युमेंटेशन प्रकल्प</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Aniket Deshpande &lt;djaniketster@gmail.com&gt;, 2013; संदिप शेडमाके</mal:name>
+      <mal:email>sshedmak@redhat.com</mal:email>
+      <mal:years>२०१३.</mal:years>
+    </mal:credit>
+  </info>
+
+<title>या मार्गदर्शिकेबद्दल</title>
+<p>This guide is designed to give you a tour of the features of your desktop,
+answer your computer-related questions, and provide tips on using your
+computer more effectively. Here are a few notes regarding the help guide:</p>
+
+<list>
+  <item><p>The guide is sorted into small, task-oriented topics — not
+  chapters. This means that you don’t need to skim through an entire manual
+  to find the answer to your questions.</p></item>
+  <item><p>Related items are linked together. “See Also” links at the bottom
+  of some pages will direct you to related topics. This makes it easy to find
+  similar topics that might help you perform a certain task.</p></item>
+  <item><p>त्यामध्ये बिल्टइन शोध समाविष्टीत आहे. मदत ब्राउजरच्या शीर्षककडे <em>पट्टी शोध</em> पट्टी आहे, आणि संबंधीत परिणाम टाइपिंग केल्यानंतर लगेच आढळेल.</p></item>
+  <item><p>The guide is constantly being improved. Although we attempt to
+  provide you with a comprehensive set of helpful information, we know we can’t
+  answer all of your questions here. If you need more assistance, you can check
+  with your distribution’s support team.</p></item>
+</list>
+
+</page>

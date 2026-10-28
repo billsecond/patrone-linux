@@ -7,7 +7,10 @@
 # The pictures are the installer's own (assets/...), which Patrone's build
 # of it makes Patrone's: the wordmark and P in place of Ubuntu's logo and
 # mascot, the rest in Patrone's blue (installer/patch_source.py). The list is
-# the installer's own whitelabel.yml's, so every page keeps its picture.
+# the installer's own whitelabel.yml's, so every page keeps its picture, less
+# Landscape's pages. Some pages here belong to Ubuntu's first-boot setup
+# (ubuntu_init: telemetry, Ubuntu Pro's), which Patrone doesn't use; the
+# installer has none of them.
 # Patrone's name comes from that build too: here, "flavor" can only be one of
 # Ubuntu's flavors' names.
 theme:
@@ -43,11 +46,8 @@ pages:
     image: "assets/images/disk.svg"
   autoinstall-direct:
     image: "assets/images/disk.svg"
-  autoinstall-landscape-domain:
-    image: "assets/images/landscape.svg"
-  autoinstall-landscape-qr:
-  autoinstall-landscape-error:
-    image: "assets/images/error.svg"
+  # Not the pages for "Automated with Landscape", Canonical's management
+  # service, whose choice Patrone's build takes out
   source-selection:
     image: "assets/images/applications.svg"
   codecs-and-drivers:

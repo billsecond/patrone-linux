@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="nl">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Enkele tips bij het gebruik van de bureaublad-handleiding.</desc>
+    <credit type="author">
+      <name>Gnome-documentatieproject</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Justin van Steijn</mal:name>
+      <mal:email>jvs@fsfe.org</mal:email>
+      <mal:years>2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hannie Dumoleyn</mal:name>
+      <mal:email>hannie@ubuntu-nl.org</mal:email>
+      <mal:years>2017</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nathan Follens</mal:name>
+      <mal:email>nfollens@gnome.org</mal:email>
+      <mal:years>2022</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Over deze handleiding</title>
+<p>This guide is designed to give you a tour of the features of your desktop,
+answer your computer-related questions, and provide tips on using your
+computer more effectively. Here are a few notes regarding the help guide:</p>
+
+<list>
+  <item><p>Deze handleiding is verdeeld in kleine taakgerichte onderwerpen — niet in hoofdstukken. Dit betekent dat u niet de hele handleiding hoeft door te spitten om antwoorden op uw vragen te krijgen.</p></item>
+  <item><p>Verwante onderwerpen zijn aan elkaar gekoppeld. ‘Zie ook’-koppelingen onderaan sommige pagina's leiden u naar verwante onderwerpen. Dit maakt het gemakkelijk om soortelijke onderwerpen te vinden die u kunnen helpen om een bepaalde taak uit te voeren.</p></item>
+  <item><p>Het bevat een ingebouwde zoekfunctie. Het invoervak bovenaan deze handleiding fungeert als <em>zoekbalk</em>, en er zullen relevante resultaten verschijnen zodra u begint te typen.</p></item>
+  <item><p>Deze handleiding wordt continu verbeterd. Ook al hebben we geprobeerd om u een volledige verzameling nuttige informatie te bieden, we weten dat we hier nooit al uw vragen kunnen beantwoorden. Als u verdere hulp nodig hebt kunt u contact opnemen met het ondersteuningsteam van uw distributie.</p></item>
+</list>
+
+</page>

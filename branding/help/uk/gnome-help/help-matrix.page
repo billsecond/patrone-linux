@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="uk">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Домашня сторінка Matrix</title></link>
+
+
+    <desc>Спілкуйтеся з учасниками розробки GNOME у режимі реального часу.</desc>
+
+    <keywords>matrix, чат, спілкування, підтримка, інтерактивна, спільнота, допомога</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юрій Чорноіван</mal:name>
+      <mal:email>yurchor@ukr.net</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Отримання допомоги у Matrix</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> — сучасна платформа для спілкування з відкритим кодом. Подібно до електронної пошти, ви можете створити обліковий запис на одному з багатьох серверів і скористатися будь-якою кількістю клієнтів для з'єднання, зокрема заснованими на інтернет-технологіях.</p>
+  <steps>
+    <item><p>Виберіть клієнт. На сайті Matrix розміщено <link href="https://matrix.org/docs/projects/try-matrix-now/">список популярних клієнтів</link>, де є популярний клієнт <link href="https://app.element.io">Element</link> і власний клієнт GNOME, <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>.</p></item>
+    <item><p>Створіть обліковий запис. Більшість клієнтів можуть допомогти у цьому процесі. Створений обліковий запис працюватиме у будь-якому клієнті Matrix.</p></item>
+    <item><p>Долучайтеся до кімнати <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> і ставте питання.</p></item>
+  </steps>
+  <p>Більше відомостей, зокрема щодо навігації іншими кімнатами GNOME, можна знайти у <link href="https://wiki.gnome.org/GettingInTouch/Matrix">вікі GNOME</link>.</p>
+  <note>
+  <p>Дотримуйтеся <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">кодексу поведінки GNOME</link> при спілкуванні у Matrix та на інших платформах GNOME.</p>
+    </note>
+
+</page>

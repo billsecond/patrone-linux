@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="fr">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Signaler des problèmes concernant ce manuel.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Luc Pionchon</mal:name>
+      <mal:email>pionchon.luc@gmail.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Claude Paroz</mal:name>
+      <mal:email>claude@2xlibre.net</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alain Lojewski</mal:name>
+      <mal:email>allomervan@gmail.com</mal:email>
+      <mal:years>2011-2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Julien Hardelin</mal:name>
+      <mal:email>jhardlin@orange.fr</mal:email>
+      <mal:years>2011, 2013</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Bruno Brouard</mal:name>
+      <mal:email>annoa.b@gmail.com</mal:email>
+      <mal:years>2011-12</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>yanngnome</mal:name>
+      <mal:email>yannubuntu@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nicolas Delvaux</mal:name>
+      <mal:email>contact@nicolas-delvaux.org</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Mickael Albertus</mal:name>
+      <mal:email>mickael.albertus@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alexandre Franke</mal:name>
+      <mal:email>alexandre.franke@gmail.com</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hydroxyp</mal:name>
+      <mal:email>hydroxyp@gmail.com</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Charles Monzat</mal:name>
+      <mal:email>charles.monzat@free.fr</mal:email>
+      <mal:years>2020-2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Guillaume Bernard</mal:name>
+      <mal:email>associations@guillaume-bernard.fr</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Irénée Thirion</mal:name>
+      <mal:email>irenee.thirion@e.email</mal:email>
+      <mal:years>2024</mal:years>
+    </mal:credit>
+  </info>
+  <title>Participation à l’amélioration de ce guide</title>
+
+  <section id="submit-issue">
+
+   <title>Signaler un problème</title>
+
+   <p>Ce manuel est créé par une communauté de volontaires. Votre participation est la bienvenue. Si vous avez noté un problème dans les pages de ce manuel (comme des fautes de frappe, des instructions incorrectes, ou des sujets non traités qui devraient l’être), vous pouvez signaler une <em>nouvelle anomalie</em>. Pour ce faire, il suffit de vous rendre sur <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">l’outil de suivi d’anomalie</link>.</p>
+
+   <p>Vous devez vous enregistrer avant de pouvoir remplir un rapport d’anomalie et recevoir par courriel un suivi de sa situation. Si vous ne disposez pas d’un compte, cliquez sur le bouton <gui><link href="https://gitlab.gnome.org/users/sign_in">Se connecter / S’inscrire</link></gui> pour en créer un.</p>
+
+   <p>Once you have an account, make sure you are logged in, then go back to the
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">documentation
+   issue tracker</link> and click <gui>New issue</gui>. Before reporting a new issue, please
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">browse</link>
+   for the issue to see if something similar already exists.</p>
+
+   <p>Pour remplir votre signalement d’anomalie, choisissez l’étiquette adéquate dans le menu <gui>Étiquettes</gui>. S’il s’agit d’une anomalie au sujet de cette documentation, choisissez l’étiquette <gui>gnome-help</gui>. Si vous hésitez sur l’étiquette concernant votre anomalie, n’en choisissez aucune.</p>
+
+   <p>Si vous demandez qu’une documentation soit créée à propos d’un sujet que vous pensez non traité, choisissez l’étiquette <gui>Feature</gui>. Remplissez les rubriques « Titre » et « Description » puis cliquez sur <gui>Soumettre le ticket</gui>.</p>
+
+   <p>Votre signalement recevra un numéro d’identification, et son statut sera mis à jour quand il sera traité. Grâce à votre coopération, le manuel GNOME sera meilleur !</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Nous contacter</title>
+
+<p>Connectez-vous avec d’autres éditeurs de documentation de GNOME dans le salon de discussion Matrix <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link>. Consultez la page <link xref="help-matrix">Obtenir de l’aide avec Matrix</link> pour plus d’informations. Si vous préférez cette option, il existe aussi un canal IRC, #gnome-docs, sur le <link xref="help-irc">Serveur IRC de GNOME</link>. Les participants de salon de discussion résidant parfois à l’autre bout du monde, il faut parfois attendre un certain temps avant d’obtenir une réponse.</p>
+<p>Vous pouvez aussi joindre l’équipe de documentation en utilisant <link href="https://discourse.gnome.org/tag/documentation">Discourse de GNOME</link>.</p>
+
+   <p>Notre <link href="https://wiki.gnome.org/DocumentationProject">page de wiki</link> contient des informations utiles pour rejoindre le projet et y contribuer.</p>
+
+
+   </section>
+</page>

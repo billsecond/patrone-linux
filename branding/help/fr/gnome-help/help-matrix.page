@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="fr">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Page d’accueil Matrix</title></link>
+
+
+    <desc>Discutez en direct avec les contributeurs de GNOME</desc>
+
+    <keywords>matrix, discussion, support, direct, communauté, aide</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Luc Pionchon</mal:name>
+      <mal:email>pionchon.luc@gmail.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Claude Paroz</mal:name>
+      <mal:email>claude@2xlibre.net</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alain Lojewski</mal:name>
+      <mal:email>allomervan@gmail.com</mal:email>
+      <mal:years>2011-2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Julien Hardelin</mal:name>
+      <mal:email>jhardlin@orange.fr</mal:email>
+      <mal:years>2011, 2013</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Bruno Brouard</mal:name>
+      <mal:email>annoa.b@gmail.com</mal:email>
+      <mal:years>2011-12</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>yanngnome</mal:name>
+      <mal:email>yannubuntu@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nicolas Delvaux</mal:name>
+      <mal:email>contact@nicolas-delvaux.org</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Mickael Albertus</mal:name>
+      <mal:email>mickael.albertus@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alexandre Franke</mal:name>
+      <mal:email>alexandre.franke@gmail.com</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hydroxyp</mal:name>
+      <mal:email>hydroxyp@gmail.com</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Charles Monzat</mal:name>
+      <mal:email>charles.monzat@free.fr</mal:email>
+      <mal:years>2020-2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Guillaume Bernard</mal:name>
+      <mal:email>associations@guillaume-bernard.fr</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Irénée Thirion</mal:name>
+      <mal:email>irenee.thirion@e.email</mal:email>
+      <mal:years>2024</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Obtenir de l’aide avec Matrix</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> est une plateforme de discussion moderne et à code ouvert. Comme pour le courriel, vous pouvez vous créer un compte sur l’un des nombreux serveurs et utiliser n’importe quel nombre de clients, notamment les clients web, pour vous connecter.</p>
+  <steps>
+    <item><p>Choisissez un client. Matrix maintient une <link href="https://matrix.org/docs/projects/try-matrix-now/">liste de clients populaires</link>, comprenant le client répandu <link href="https://app.element.io">Element</link> et l’application de GNOME <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>.</p></item>
+    <item><p>Créez un compte. La plupart des clients vous guideront le long du processus, et votre compte fonctionnera sur n’importe quel client Matrix.</p></item>
+    <item><p>Rejoignez le salon de discussion <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> et posez vos questions.</p></item>
+  </steps>
+  <p>Plus d’informations, expliquant notamment comment parcourir les salons de discussion de GNOME, peuvent être trouvés sur le <link href="https://wiki.gnome.org/GettingInTouch/Matrix">wiki de GNOME</link>.</p>
+  <note>
+  <p>Veuillez suivre le <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">code de conduite de GNOME</link> lorsque vous discutez sur Matrix et les autres plateformes de GNOME.</p>
+    </note>
+
+</page>

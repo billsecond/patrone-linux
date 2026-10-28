@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="sv">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Hur och var du kan rapportera problem med dessa hjälptexter.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Daniel Nylander</mal:name>
+      <mal:email>po@danielnylander.se</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Sebastian Rasmussen</mal:name>
+      <mal:email>sebras@gmail.com</mal:email>
+      <mal:years>2014, 2015, 2016, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Anders Jonsson</mal:name>
+      <mal:email>anders.jonsson@norsjovallen.se</mal:email>
+      <mal:years>2016, 2017</mal:years>
+    </mal:credit>
+  </info>
+  <title>Medverka till att förbättra den här handboken</title>
+
+  <section id="submit-issue">
+
+   <title>Skicka in ett problem</title>
+
+   <p>Denna hjälpdokumentation skapas av en frivilliggemenskap. Du är välkommen att delta. Om du noterar ett problem med dessa hjälpsidor (såsom stavfel, felaktiga instruktioner eller ämnen som borde inkluderas men saknas nu) kan du skicka in ett <em>nytt ärende</em>. För att skicka in ett nytt ärende, gå till <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">ärendehanteringssystemet</link>.</p>
+
+   <p>Du måste registrera dig så att du kan skicka in ett problem och få uppdateringar via e-post om dess status. Om du inte redan har ett konto, klicka på knappen <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui> för att skapa ett.</p>
+
+   <p>När du har ett konto, se till att du är inloggad, gå sedan tillbaka till <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">ärendehanteringssystemet för dokumentation</link> och klicka på <gui>New issue</gui>. Innan du rapporterar ett fel, <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">leta</link> efter problemet för att se om något liknande redan existerar.</p>
+
+   <p>För att skicka in ditt problem, välj en lämplig etikett i menyn <gui>Labels</gui>. Om du rapporterar ett problem i denna dokumentation bör du välja etiketten <gui>gnome-help</gui>. Om du inte är säker på vilken komponent ditt problem hör till, välj ingenting.</p>
+
+   <p>Om du begär hjälp om ett visst ämne som du inte tycker är beskrivet, välj <gui>Feature</gui> som etikett. Fyll i avsnitten Title och Description och klicka på <gui>Submit issue</gui>.</p>
+
+   <p>Ditt problem kommer att ges ett ID-nummer och dess status kommer att uppdateras efter hand som det hanteras. Tack för att du hjälper till att få GNOME-hjälpen bättre!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Kontakta oss</title>
+
+<p>Anslut till andra GNOME-dokumentationsskribenter i Matrix-rummet <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link>. Se sidan <link xref="help-matrix">Få hjälp med Matrix</link> för mer information. Om du så föredrar så finns det även en IRC-kanal, #gnome-docs, på <link xref="help-irc">GNOMEs IRC-server</link>. Då folket i dessa rum finns över hela världen så kan det ta ett tag att få ett svar.</p>
+<p>Alternativt kan du kontakta dokumentationsgruppen genom <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.</p>
+
+   <p>Vår <link href="https://wiki.gnome.org/DocumentationProject">wikisida</link> innehåller användbar information om hur du kan gå med och bidra.</p>
+
+
+   </section>
+</page>

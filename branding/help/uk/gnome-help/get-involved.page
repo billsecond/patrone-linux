@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="uk">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Як і де повідомити про проблеми із цими темами довідки.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юрій Чорноіван</mal:name>
+      <mal:email>yurchor@ukr.net</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  </info>
+  <title>Участь в удосконаленні цього підручника</title>
+
+  <section id="submit-issue">
+
+   <title>Повідомлення про вади</title>
+
+   <p>Цю довідкову документацію створено спільнотою на безкоштовній основі. Ми будемо раді вашій допомозі. Якщо ви виявили проблему із цими сторінками довідки (друкарську помилку, помилкові настанови або теми, які не висвітлено), ви можете повідомити про <em>ваду</em>. Надіслати повідомлення про ваду можна за допомогою <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">системи стеження за вадами</link>.</p>
+
+   <p>Для доступу до надсилання повідомлень про вади і отримання оновлень щодо стану вади електронною поштою вам слід зареєструватися. Якщо у вас ще немає облікового запису, натисніть кнопку <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui>, щоб створити обліковий запис.</p>
+
+   <p>Щойно у вас буде обліковий запис, увійдіть до системи, потім поверніться до <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">сторінки стеження за вадами у документації</link> і натисніть кнопку <gui>New issue</gui>. Перш ніж повідомляти про нову ваду, будь ласка, <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">ознайомтеся зі списком вад</link> — можливо у системі вже зареєстровано подібне повідомлення про ваду.</p>
+
+   <p>Перш ніж надсилати повідомлення про ваду, виберіть відповідну мітку з меню <gui>Labels</gui>. Якщо ви повідомляєте про ваду у документації, вам слід вибрати мітку <gui>gnome-help</gui>. Якщо ви не певні щодо компонента, якого стосується ваше повідомлення, не вибирайте жодної мітки.</p>
+
+   <p>Якщо ви просите про написання довідки щодо теми, яку вважаєте невисвітленою, виберіть мітку <gui>Feature</gui>. Заповніть поля заголовка і опису і натисніть кнопку <gui>Submit issue</gui>.</p>
+
+   <p>Вашому звіту буде надано ідентифікаційного номера, його стан буде оновлено, щойно над ним попрацює хтось із розробників. Дякуємо за те, що допомагаєте зробити «Довідку із GNOME» кращою!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Зв'язок з нами</title>
+
+<p>Зв'яжіться із іншими авторами документації GNOME за допомогою кімнати <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix. Щоб дізнатися більше, зверніться до сторінки <link xref="help-matrix">Довідка щодо Matrix</link>. Якщо хочете, є канал IRC, #gnome-docs, на <link xref="help-irc">сервері IRC GNOME</link>. Оскільки учасники кімнат мешкають у різних частинах світу, відповідь на ваші питання може надійти не одразу.</p>
+<p>Крім того, ви можете зв'язатися із командою з документування за допомогою <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.</p>
+
+   <p>На нашій <link href="https://wiki.gnome.org/DocumentationProject">сторінці у вікі</link> наведено корисні відомості щодо того, як долучитися до команди і взяти участь у роботі.</p>
+
+
+   </section>
+</page>

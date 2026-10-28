@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="sr">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>Како и где да помогнем у превођењу ових тема.</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Тифани Антополоски</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Мајкл Хил</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Петр Ковар</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Зариа</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+
+<title>Учествујте у побољшавању превода</title>
+
+<p>Гномову помоћ добровољно преводе чланови заједнице широм света, и постоје <link href="https://l10n.gnome.org/module/gnome-user-docs/">многи језици</link> за које су преводи још увек потребни.</p>
+<p>Да почнете са превођењем, <link href="https://l10n.gnome.org/register/">отворите налог</link> и придружите се <link href="https://l10n.gnome.org/teams/">преводилачком тиму</link> за српски језик. Ово ће вам дати могућност да шаљете нове преводе.</p>
+<p>Повежите се са другим преводиоцима Гнома у <link href="https://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link> Matrix причаоници. Видите страницу <link xref="help-matrix">Нађите помоћ са Matrix-ом</link> за више информација. Ако вам више одговара, постоји такође и IRC канал, #gnome-i18n, на <link xref="help-irc">Гномовом IRC серверу</link>. Како се људи у тим причаоницама налазе свуда по свету, требаће неки тренутак за добијање одговора.</p>
+<p>Другачије, можете да ступите у везу са екипом интернационализације користећи <link href="https://discourse.gnome.org/tag/i18n">Гномова расправа</link>.</p>
+
+</page>

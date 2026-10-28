@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="fr">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>Utiliser <app>Ajustements</app> pour démarrer les applications automatiquement lors de la connexion.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Luc Pionchon</mal:name>
+      <mal:email>pionchon.luc@gmail.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Claude Paroz</mal:name>
+      <mal:email>claude@2xlibre.net</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alain Lojewski</mal:name>
+      <mal:email>allomervan@gmail.com</mal:email>
+      <mal:years>2011-2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Julien Hardelin</mal:name>
+      <mal:email>jhardlin@orange.fr</mal:email>
+      <mal:years>2011, 2013</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Bruno Brouard</mal:name>
+      <mal:email>annoa.b@gmail.com</mal:email>
+      <mal:years>2011-12</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>yanngnome</mal:name>
+      <mal:email>yannubuntu@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nicolas Delvaux</mal:name>
+      <mal:email>contact@nicolas-delvaux.org</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Mickael Albertus</mal:name>
+      <mal:email>mickael.albertus@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alexandre Franke</mal:name>
+      <mal:email>alexandre.franke@gmail.com</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hydroxyp</mal:name>
+      <mal:email>hydroxyp@gmail.com</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Charles Monzat</mal:name>
+      <mal:email>charles.monzat@free.fr</mal:email>
+      <mal:years>2020-2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Guillaume Bernard</mal:name>
+      <mal:email>associations@guillaume-bernard.fr</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Irénée Thirion</mal:name>
+      <mal:email>irenee.thirion@e.email</mal:email>
+      <mal:years>2024</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Démarrage automatique des applications lors de la connexion</title>
+
+  <p>Lorsque vous vous connectez, votre ordinateur démarre automatiquement certaines applications et les exécute en arrière-plan. Ce sont généralement des programmes importants qui aident votre session de bureau à fonctionner correctement.</p>
+
+  <p>Vous pouvez utiliser l’application <app>Ajustements</app> pour ajouter d’autres applications que vous utilisez fréquemment, telles que des navigateurs web ou des éditeurs, à la liste des programmes qui démarrent automatiquement lors de la connexion.</p>
+
+  <note style="important">
+    <p>L’application <app>Ajustements</app> doit être installée sur votre ordinateur pour modifier ce paramètre.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweaks">Installer <app>Ajustements</app></link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>Pour démarrer une application automatiquement lors de la connexion :</title>
+    <item>
+      <p>Ouvrez la vue d’ensemble des <gui xref="shell-introduction#activities">Activités</gui> et commencez à saisir <gui>Ajustements</gui>.</p>
+    </item>
+    <item>
+      <p>Cliquez sur <gui>Ajustements</gui> pour ouvrir l’application.</p>
+    </item>
+    <item>
+      <p>Cliquez sur l’onglet <gui>Applications au démarrage</gui>.</p>
+    </item>
+    <item>
+      <p>Cliquez sur le bouton <gui style="button">+</gui> pour obtenir une liste des applications disponibles.</p>
+    </item>
+    <item>
+      <p>Cliquez sur <gui style="button">Ajouter</gui> pour ajouter une application de votre choix à la liste.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>Vous pouvez supprimer une application de la liste en cliquant sur le bouton <gui style="button">Supprimer</gui> situé à côté de celle-ci.</p>
+  </note>
+
+</page>

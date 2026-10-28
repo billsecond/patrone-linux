@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="ca">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Obtén suport en viu a l'IRC.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jaume Jorba</mal:name>
+      <mal:email>jaume.jorba@gmail.com</mal:email>
+      <mal:years>2018, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jordi Mas i Hernàndez</mal:name>
+      <mal:email>jmas@softcatala.org</mal:email>
+      <mal:years>2018, 2020-2023</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Miquel-Àngel Burgos i Fradeja</mal:name>
+      <mal:email>miquel.angel.burgos@gmail.com</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Maite Guix i Ribé</mal:name>
+      <mal:email>maite.guix@me.com</mal:email>
+      <mal:years>2022</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC significa Internet Relay Chat. És un sistema de missatgeria multiusuari en temps real. Podeu obtenir ajuda i consell al servidor IRC del GNOME d'altres usuaris i desenvolupadors de GNOME.</p>
+   <p>Per a connectar-vos al servidor IRC del GNOME, utilitzeu el <app>Polari</app> o l'<app>HexChat</app>.</p>
+   <p>Per a crear un compte d'IRC al Polari, consulteu la <link href="help:polari/">documentació del Polari</link>.</p>
+   <p>
+      The GNOME IRC server is <sys>irc.libera.chat</sys>.
+      If your computer is properly configured you can click on the link
+      <link href="irc://irc.libera.chat/gnome"/> to access the <sys>gnome</sys> channel.
+   </p>
+   <p>Tot i que l'IRC és un mitjà de debat en temps real, la gent tendeix a no respondre de manera immediata, així que tingueu paciència.</p>
+
+  <note>
+    <p>Si us plau, tingueu en compte que <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">el codi de conducta de GNOME</link> s'aplica quan es xateja a IRC.</p>
+  </note>
+
+</page>

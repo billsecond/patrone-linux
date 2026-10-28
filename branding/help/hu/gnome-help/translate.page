@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="hu">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>Hogyan és hol segíthetek lefordítani a jelen súgótémákat?</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Michael Hill</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Zaria</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Bojtos Péter</mal:name>
+      <mal:email>ptr at ulx dot hu</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Griechisch Erika</mal:name>
+      <mal:email>griechisch.erika at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kelemen Gábor</mal:name>
+      <mal:email>kelemeng at gnome dot hu</mal:email>
+      <mal:years>2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kucsebár Dávid</mal:name>
+      <mal:email>kucsdavid at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Lakatos 'Whisperity' Richárd</mal:name>
+      <mal:email>whisperity at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Lukács Bence</mal:name>
+      <mal:email>lukacs.bence1 at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Meskó Balázs</mal:name>
+      <mal:email>mesko dot balazs at fsf dot hu</mal:email>
+      <mal:years>2021, 2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nagy Zoltán</mal:name>
+      <mal:email>dzodzie at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Úr Balázs</mal:name>
+      <mal:email>ur dot balazs at fsf dot hu</mal:email>
+      <mal:years>2016, 2019, 2021, 2022, 2023, 2024, 2025</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Vegyen részt a fordítások tökéletesítésében</title>
+
+<p>A GNOME súgóját egy világméretű önkéntes közösség fordítja, és <link href="https://l10n.gnome.org/module/gnome-user-docs/">számos olyan nyelv van</link>, amelyhez még szükség van fordításokra.</p>
+<p>A fordítás elkezdéséhez <link href="https://l10n.gnome.org/register/">hozzon létre egy fiókot</link>, és csatlakozzon a nyelvének megfelelő <link href="https://l10n.gnome.org/teams/">fordítócsapathoz</link>. Ez lehetővé teszi Önnek az új fordítások feltöltését.</p>
+<p>Csatlakozzon más GNOME-fordítókhoz a <link href="https://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link> Matrix-szobában. További információkért nézze meg a <link xref="help-matrix">Segítség a Matrix használatához</link> oldalt. Ha úgy tetszik, van egy #gnome-i18n IRC-csatorna is a <link xref="help-irc">GNOME IRC-kiszolgálón</link>. Mivel ezekben a szobákban az emberek a világ különböző pontjain tartózkodnak, a válaszadás nem tart sokáig.</p>
+<p>Ennek alternatívájaként megkeresheti a nemzetközi fordítócsapatot a <link href="https://discourse.gnome.org/tag/i18n">GNOME Discourse</link> fórumon. A magyar csapat <link href="http://l10n.gnome.org/languages/hu/">kezdőoldalán</link> megtalálja a magyar levelezőlista címét és a fordítások megkezdéséhez szükséges információkat.</p>
+
+</page>

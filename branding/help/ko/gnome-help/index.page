@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:e="http://projectmallard.org/experimental/" xmlns:its="http://www.w3.org/2005/11/its" type="guide" id="index" xml:lang="ko">
+
+<info>
+    <desc>그놈 데스크톱 사용자 안내서압니다.</desc>
+
+    <title type="link">그놈 도움말</title>
+    <title type="text">그놈 도움말</title>
+    <title role="trail" type="link">도움말</title>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>조성호</mal:name>
+      <mal:email>shcho@gnome.org</mal:email>
+      <mal:years>2021, 2022, 2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>그놈 도움말</title>
+
+<links type="topic" groups="gs"/>
+
+<links type="topic" style="experimental-gnome-top" groups="intro #first"/>
+
+<links type="topic" style="experimental-gnome-tiles 2column" groups="        shell-overview        net media files        prefs hardware        a11y tips more-help"/>
+</page>

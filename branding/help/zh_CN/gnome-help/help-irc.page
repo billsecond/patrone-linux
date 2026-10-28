@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="zh-CN">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>在 IRC 上获得在线支持。</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>TeliuTe</mal:name>
+      <mal:email>teliute@163.com</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>tuberry</mal:name>
+      <mal:email>orzun@foxmail.com</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Victor_Trista</mal:name>
+      <mal:email>ljlzjzm@hotmail.com</mal:email>
+      <mal:years>2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC 是基于互联网的聊天室，它是实时多用户信息系统，您可以在 GNOME IRC 服务器上获得其他 GNOME 用户和开发者的帮助和建议。</p>
+   <p>要连接到 GNOME IRC 服务器，请使用 <app>Polari</app> 或 <app>HexChat</app>。</p>
+   <p>要在 Polari 中创建 IRC 账号，请参阅 <link href="help:polari/">Polari 文档</link>。</p>
+   <p>GNOME IRC 服务器地址是 <sys>irc.libera.chat</sys>。如果您的计算机配置正确，可以点击 <link href="irc://irc.libera.chat/gnome"/> 来访问 <sys>gnome</sys> 频道。</p>
+   <p>虽然IRC是实时讨论媒体，但人们往往不能立即回复，所以请耐心等待。</p>
+
+  <note>
+    <p>在使用 IRC 聊天时，请注意遵循 <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME 行为准则</link>。</p>
+  </note>
+
+</page>

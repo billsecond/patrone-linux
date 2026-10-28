@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="vi">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Một số mẹo về cách dùng tài liệu này.</desc>
+    <credit type="author">
+      <name>Dự án tài liệu GNOME</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nguyễn Thái Ngọc Duy</mal:name>
+      <mal:email>pclouds@gmail.com</mal:email>
+      <mal:years>2011-2012.</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Về hướng dẫn sử dụng này</title>
+<p>This guide is designed to give you a tour of the features of your desktop,
+answer your computer-related questions, and provide tips on using your
+computer more effectively. Here are a few notes regarding the help guide:</p>
+
+<list>
+  <item><p>The guide is sorted into small, task-oriented topics — not
+  chapters. This means that you don’t need to skim through an entire manual
+  to find the answer to your questions.</p></item>
+  <item><p>Related items are linked together. “See Also” links at the bottom
+  of some pages will direct you to related topics. This makes it easy to find
+  similar topics that might help you perform a certain task.</p></item>
+  <item><p>Nó có hỗ trợ tìm kiểm. Thanh trên đỉnh trình duyệt trợ giúp là <em>thanh tìm kiếm</em>, các kết quả liên quan sẽ được hiển thị ngay khi bạn gõ.</p></item>
+  <item><p>The guide is constantly being improved. Although we attempt to
+  provide you with a comprehensive set of helpful information, we know we can’t
+  answer all of your questions here. If you need more assistance, you can check
+  with your distribution’s support team.</p></item>
+</list>
+
+</page>

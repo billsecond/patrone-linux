@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="fi">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Tukea reaaliajassa IRC:n kautta.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Timo Jyrinki</mal:name>
+      <mal:email>timo.jyrinki@iki.fi</mal:email>
+      <mal:years>2012.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jiri Grönroos</mal:name>
+      <mal:email>jiri.gronroos+l10n@iki.fi</mal:email>
+      <mal:years>2012-2026.</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC on lyhenne sanoista Internet Relay Chat. Se on reaaliaikainen, useiden käyttäjien viestintäjärjestelmä. Saat apua ja ohjeita muilta Gnomen IRC-palvelimella olevilta Gnome-käyttäjiltä sekä -kehittäjiltä.</p>
+   <p>Yhdistääksesi Gnomen IRC-palvelimeen, käytä haluamaasi sovellusta, kuten <app>Polari</app> tai <app>HexChat</app>.</p>
+   <p>Luo IRC-tili Polariin seuraamalla <link href="help:polari/">Polarin ohjeistusta</link>.</p>
+   <p>Gnomen IRC-palvelimen osoite on <sys>irc.libera.chat</sys>. Jos tietokoneesi on määritetty oikein, voit napsauttaa linkkiä <link href="irc://irc.libera.chat/gnome"/> liittyäksesi <sys>gnome</sys>-kanavalle.</p>
+   <p>Vaikka IRC onkin reaaliaikainen keskustelu, muut käyttäjät eivät välttämättä vastaa sinulle välittömästi, joten ole kärsivällinen.</p>
+
+  <note>
+    <p>Huomioi, että <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">Gnomen käytössäännöstö</link> pätee käymiisi IRC-keskusteluihin.</p>
+  </note>
+
+</page>

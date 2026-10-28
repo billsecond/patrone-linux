@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="fi">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Miten ja missä voi ilmoittaa näihin ohjeisiin liittyvistä ongelmista.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Timo Jyrinki</mal:name>
+      <mal:email>timo.jyrinki@iki.fi</mal:email>
+      <mal:years>2012.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jiri Grönroos</mal:name>
+      <mal:email>jiri.gronroos+l10n@iki.fi</mal:email>
+      <mal:years>2012-2026.</mal:years>
+    </mal:credit>
+  </info>
+  <title>Osallistu tämän ohjeen kehittämiseen</title>
+
+  <section id="submit-issue">
+
+   <title>Ilmoita ongelma</title>
+
+   <p>Tämän ohjeen on tehnyt vapaaehtoinen yhteisö. Voit auttaa parantamaan sitä. Jos huomaat jonkin ongelmakohdan ohjesivuilla (kuten kirjoitus- ja käännösvirheet, virheelliset ohjeet tai puuttuvat osa-alueet), <em>ilmoita ongelmasta</em>. Ongelmista ilmoitetaan <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">seurantajärjestelmään</link>.</p>
+
+   <p>Sinun tulee rekisteröityä, jotta voit ilmoittaa ongelmasta ja vastaanottaa sen tilatietopäivitykset sähköpostitse. Jos sinulla ei jo ole tiliä, napsauta <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui> -painiketta luodaksesi tilin.</p>
+
+   <p>Kun sinulla on tili ja olet kirjautunut sisään, siirry <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">dokumentaation ongelmien seurantajärjestelmään</link> ja napsauta <gui>New issue</gui>. Ennen kuin ilmoitat ongelmasta, <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">selaa</link> jo aiemmin ilmoitettuja ongelmia. Kenties kohtaamastasi ongelmasta on jo ilmoitettu.</p>
+
+   <p>Ennen kuin ilmoitat ongelmasta, valitse soveltuva tunniste <gui>Labels</gui>-valikosta. Jos ilmoitat tähän ohjeeseen liittyvästä ongelmasta, valitse tunnisteeksi <gui>gnome-help</gui>. Jos et ole varma mitä komponenttia ongelmasi koskee, älä valitse mitään.</p>
+
+   <p>Jos haluat pyytää ohjeesta puuttuvaa osa-aluetta käsiteltäväksi, valitse <gui>Feature</gui>. Täytä Title- ja Description-osiot ja napsauta <gui>Submit issue</gui>.</p>
+
+   <p>Ilmoittamallesi ongelmalle annetaan oma ID-tunnistenumero, ja sen tilatietoa päivitetään kun ongelmaa käsitellään. Kiitos kun autoit tekemään Gnomen ohjeesta aiempaa paremman!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Ota yhteyttä</title>
+
+<p>Ole yhteydessä muihin Gnomen dokumentoijiin Matrix-huoneessa <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link>. Lisätietoja <link xref="help-matrix">Matrix-tuen sivulla</link>. Jos suosit mieluummin IRC:tä, tarjolla on kanava #gnome-docs <link xref="help-irc">Gnomen IRC-palvelimella</link>. Näissä huoneissa ja kanavilla olevat ihmiset ovat ympäri maailmaa eri aikavyöhykkeiltä, joten vastauksen saamisessa voi kestää hetken.</p>
+<p>Vaihtoehtoisesti voit olla yhteydessä dokumentaatiotiimiin <link href="https://discourse.gnome.org/tag/documentation">Gnomen Discoursen</link> kautta.</p>
+
+   <p><link href="https://wiki.gnome.org/DocumentationProject">Wiki-sivumme</link> sisältää hyödyllistä tietoa, miten voit liittyä ja osallistua.</p>
+
+
+   </section>
+</page>

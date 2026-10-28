@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="id">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Dapatkan dukungan langsung pada IRC.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Andika Triwidada</mal:name>
+      <mal:email>andika@gmail.com</mal:email>
+      <mal:years>2011-2014, 2017, 2020-2025.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Ahmad Haris</mal:name>
+      <mal:email>ahmadharis1982@gmail.com</mal:email>
+      <mal:years>2017.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Rofiquzzaki</mal:name>
+      <mal:email>babisayabundar@gmail.com</mal:email>
+      <mal:years>2022.</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC adalah singkatan dari Internet Relay Chat. Ini adalah sistem pesan multi-user real-time. Anda bisa mendapatkan bantuan dan saran pada server IRC GNOME dari para pengguna dan pengembang GNOME lainnya.</p>
+   <p>Untuk terhubung ke server IRC GNOME, gunakan <app>Polari</app> atau <app>HexChat</app>.</p>
+   <p>Untuk membuat akun IRC dalam Polari, lihat <link href="help:polari/">Dokumentasi Polari</link>.</p>
+   <p>Server IRC GNOME adalah <sys>irc.libera.chat</sys>. Jika komputer Anda dikonfigurasi dengan benar Anda dapat mengklik tautan <link href="irc://irc.libera.chat/gnome"/> untuk mengakses kanal <sys>gnome</sys>.</p>
+   <p>Walaupun IRC adalah diskusi real-time, orang cenderung tak menjawab seketika, jadi bersabarlah.</p>
+
+  <note>
+    <p>Harap perhatikan bahwa <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">kode etik GNOME</link> berlaku saat Anda mengobrol di IRC.</p>
+  </note>
+
+</page>

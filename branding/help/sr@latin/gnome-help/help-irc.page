@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="sr-Latn">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Dobijte podršku uživo na IRC-u.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Batista Mij-Matias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+
+<title>IRC</title>
+   <p>IRC je skraćenica za Internetom prenošeno ćaskanje (engl. Internet Relay Chat — IRC). To je sistem dopisivanja više korisnika u stvarnom vremenu. Možete da dobijete pomoć i savet na Gnomovom IRC serveru od drugih Gnomovih korisnika i programera.</p>
+   <p>
+      To connect to the GNOME IRC server, use <app>Polari</app> or <app>HexChat</app>.
+   </p>
+   <p>
+      To create an IRC account in Polari, see the
+      <link href="help:polari/">Polari documentation</link>.
+   </p>
+   <p>
+      The GNOME IRC server is <sys>irc.libera.chat</sys>.
+      If your computer is properly configured you can click on the link
+      <link href="irc://irc.libera.chat/gnome"/> to access the <sys>gnome</sys> channel.
+   </p>
+   <p>Iako je IRC rasprava u stvarnom vremenu, ljudi imaju naviku da ne odgovore odmah, zato budite strpljivi.</p>
+
+  <note>
+    <p>Znajte da se primenjuje <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">Gnomov kodeks ponašanja</link> kada ćaskate na IRC-u.</p>
+  </note>
+
+</page>

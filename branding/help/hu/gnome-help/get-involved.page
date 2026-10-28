@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="hu">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Hogyan és hol jelenthetem a jelen súgótémákkal kapcsolatos problémákat?</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Bojtos Péter</mal:name>
+      <mal:email>ptr at ulx dot hu</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Griechisch Erika</mal:name>
+      <mal:email>griechisch.erika at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kelemen Gábor</mal:name>
+      <mal:email>kelemeng at gnome dot hu</mal:email>
+      <mal:years>2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kucsebár Dávid</mal:name>
+      <mal:email>kucsdavid at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Lakatos 'Whisperity' Richárd</mal:name>
+      <mal:email>whisperity at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Lukács Bence</mal:name>
+      <mal:email>lukacs.bence1 at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Meskó Balázs</mal:name>
+      <mal:email>mesko dot balazs at fsf dot hu</mal:email>
+      <mal:years>2021, 2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nagy Zoltán</mal:name>
+      <mal:email>dzodzie at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Úr Balázs</mal:name>
+      <mal:email>ur dot balazs at fsf dot hu</mal:email>
+      <mal:years>2016, 2019, 2021, 2022, 2023, 2024, 2025</mal:years>
+    </mal:credit>
+  </info>
+  <title>Vegyen részt ezen útmutató tökéletesítésében</title>
+
+  <section id="submit-issue">
+
+   <title>Hibajegy beküldése</title>
+
+   <p>Ezt a súgódokumentációt egy önkéntes közösség készítette. Közreműködését szívesen fogadjuk. Ha hibákat talál ezeken a súgóoldalakon (például elírásokat, helytelen utasításokat vagy hiányzó témákat), akkor küldjön <em>hibajelentést</em>. Ehhez keresse fel a <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">hibakövető oldaltt</link>.</p>
+
+   <p>A hibák jelentéséhez regisztrálnia kell, így azok állapotának változásáról e-mailben értesülhet. Ha még nincs fiókja, a <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui> gombra kattintva létrehozhat egyet.</p>
+
+   <p>Ha létrehozta fiókját, jelentkezzen be, majd lépjen vissza a <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">dokumentációs hibakövetőre</link> és kattintson a <gui>New issue</gui> gombra. Új hiba bejelentése előtt érdemes <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">ellenőrizni</link>, hogy nincs-e már a hiba bejelentve.</p>
+
+   <p>A hiba bejelentéséhez válassza ki a megfelelő címkét a <gui>Labels</gui> menüben. Ha ebben a dokumentációban talált hibát, akkor a <gui>gnome-help</gui> címkét válassza. Ha nem biztos benne, hogy melyik összetevőt érinti a hiba, akkor ne válasszon ki semmit.</p>
+
+   <p>Ha egy olyan témát szeretne bejelenteni, amely nincs dokumentálva, válassza a <gui>Feature</gui> címkét. Töltse ki (angolul) a Title és Description mezőket, és nyomja meg a <gui>Submit issue</gui> gombot.</p>
+
+   <p>A hibajelentés kapni fog egy azonosítószámot, az állapota pedig a feldolgozása során frissülni fog. Köszönjük, hogy segít jobbá tenni a GNOME súgóját!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Lépjen velünk kapcsolatba</title>
+
+<p>Csatlakozzon más GNOME-dokumentációírókhoz a <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix-szobában. További információkért nézze meg a <link xref="help-matrix">Segítség a Matrix használatához</link> oldalt. Ha úgy tetszik, van egy #gnome-docs IRC-csatorna is a <link xref="help-irc">GNOME IRC-kiszolgálón</link>. Mivel ezekben a szobákban az emberek a világ különböző pontjain tartózkodnak, a válaszadás nem tart sokáig.</p>
+<p>Ennek alternatívájaként megkeresheti a dokumentációs csapatot a <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link> fórumon.</p>
+
+   <p>A <link href="https://wiki.gnome.org/DocumentationProject">wiki oldalunk</link> hasznos információkat tartalmaz arról, hogy hogyan csatlakozhatsz és hogyan járulhatsz hozzá.</p>
+
+
+   </section>
+</page>

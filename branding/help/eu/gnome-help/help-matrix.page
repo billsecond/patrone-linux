@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="eu">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Matrixeko orri nagusia</title></link>
+
+
+    <desc>Hitz egin zuzenean GNOMEren garatzaileekin.</desc>
+
+    <keywords>matrix, berriketa, euskarria, bizia, komunitatea, laguntza</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Asier Saratsua Garmendia</mal:name>
+      <mal:email>asiersarasua@ni.eus</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Laguntza Matrix bidez</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> berriketetarako plataforma moderno eta irekia da. Posta elektronikoaren antzera, kontu bat sortu dezakezu bere zerbitzari anitzetako batean eta bezero desberdinak erabili ditzakezu konektatzeko, edo web bidez konektatu zaitezke.</p>
+  <steps>
+    <item><p>Hautatu bezero bat. Matrixek <link href="https://matrix.org/docs/projects/try-matrix-now/">bezero ezagunen zerrenda bat du</link>, besteak beste <link href="https://app.element.io">Element</link> bezero ezaguna eta GNOMEren <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link> aplikazio propioa.</p></item>
+    <item><p>Sortu kontu bat. Bezero gehienek prozesu horretan zehar gidatuko zaituzte, eta kontuak edozein Matrix bezerotan funtzionatuko du.</p></item>
+    <item><p>Elkartu <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> gelarekin eta bota galderak.</p></item>
+  </steps>
+  <p>Informazio gehiago nahi baduzu, adibidez GNOMEren beste gela batzuk nola arakatu jakin nahi baduzu, begiratu <link href="https://wiki.gnome.org/GettingInTouch/Matrix">GNOMEren wikia</link>.</p>
+  <note>
+  <p>Ziurtatu <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOMEren jokabide-kodea</link> jarraitzen duzula Matrixen eta GNOMEren beste plataforma batzuetan aritzen zarenean.</p>
+    </note>
+
+</page>

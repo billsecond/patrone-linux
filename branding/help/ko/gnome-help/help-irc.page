@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="ko">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>IRC에서 실시간 지원을 받습니다.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>조성호</mal:name>
+      <mal:email>shcho@gnome.org</mal:email>
+      <mal:years>2021, 2022, 2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC는 인터넷 릴레이 대화를 의미합니다. 실시간 다중 사용자 메시징 시스템입니다. 그놈 사용자 및 개발자에게서 그놈 IRC 서버에서 여러 도움과 조언을 구할 수 있습니다.</p>
+   <p>그놈 IRC 서버에 연결하려면, <app>폴라리</app> 또는 <app>핵스채트</app>를 사용합니다.</p>
+   <p>폴라리에서 IRC 계정을 만들려면 <link href="help:polari/">폴라리 문서</link>를 살펴봅니다.</p>
+   <p>그놈 IRC 서버 주소는 <sys>irc.libera.chat</sys>입니다. 컴퓨터를 제대로 설정했다면 <link href="irc://irc.libera.chat/gnome"/> 링크를 눌러 <sys>gnome</sys> 채널에 입장할 수 있습니다.</p>
+   <p>IRC는 실시간 소통수단이나, 여러 사람이 바로 답변을 해주지 않으므로, 기다려주십시오.</p>
+
+  <note>
+    <p>IRC로 대화하는 동안에는 <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">그놈 규정</link>을 따름을 참고합니다.</p>
+  </note>
+
+</page>

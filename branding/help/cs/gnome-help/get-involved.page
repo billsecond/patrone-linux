@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="cs">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Jak a kde hlásit problémy s těmito nápovědami.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovář</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Adam Matoušek</mal:name>
+      <mal:email>adamatousek@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Marek Černocký</mal:name>
+      <mal:email>marek@manet.cz</mal:email>
+      <mal:years>2014, 2015</mal:years>
+    </mal:credit>
+  </info>
+  <title>Účast na vylepšení této příručky</title>
+
+  <section id="submit-issue">
+
+   <title>Hlášení záležitostí</title>
+
+   <p>Tato dokumentace s nápovědou byla vytvořena komunitou dobrovolníků. Pokud byste se chtěli přidat, budete vítáni. V případě, že jste v těchto stránkách s nápovědou narazili na nějaký problém (překlep, nesprávné instrukce nebo téma, o kterém není žádná zmínka), můžete nahlásit <em>novou záležitost</em>. To se dělá na <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">v systému pro sledování záležitostí</link>.</p>
+
+   <p>Abyste mohli hlásit zálažitosti a dostávat e-mailem informace o jejich řešení, musíte se nejdříve zaregistrovat. Pokud ještě účet nemáte, kliknutím na <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register</link></gui> si jej vytvořte.</p>
+
+   <p>Once you have an account, make sure you are logged in, then go back to the
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">documentation
+   issue tracker</link> and click <gui>New issue</gui>. Before reporting a new issue, please
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">browse</link>
+   for the issue to see if something similar already exists.</p>
+
+   <p>Než záležitost odešlete, zvolte v nabídce <gui>Labels</gui> vhodný štítek. Pokud hlásíte chybu v této dokumentaci, vyberte štítek <gui>gnome-help</gui>. Pokud si nejste jisti, co přesně vybrat, ponechte pole nevyplněné.</p>
+
+   <p>Jestliže budete žádat o nápovědu k nějakému tématu, u kterého máte pocit, že není pokryté, vyberte v nabídce štítek <gui>Feature</gui>. Vyplňte název <gui>Title</gui> a popis <gui>Description</gui> a klikněte na <gui>Submit issue</gui>.</p>
+
+   <p>Vaše záležitost dostane přiděleno identifikační číslo a její stav se bude postupně měnit podle toho, jak bude postupovat její řešení. Děkujeme, že pomáháte GNOME vylepšovat!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Jak nás kontaktovat</title>
+
+<p>
+    Connect with other GNOME documentation editors in the <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix room. See the <link xref="help-matrix">Get help with Matrix</link> page for more information. If you prefer, there is also an IRC channel, #gnome-docs, on the <link xref="help-irc">GNOME IRC server</link>. As the people in these rooms are located across the world, it may take a moment to get a response.
+</p>
+<p>
+  Alternatively, you can contact the Documentation Team using
+  <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.
+</p>
+
+   <p>Our <link href="https://wiki.gnome.org/DocumentationProject">wiki page</link>
+   contains useful information how you can join and contribute.</p>
+
+
+   </section>
+</page>

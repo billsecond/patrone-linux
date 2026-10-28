@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="hr">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Kako i gdje prijaviti problem s ovim temama pomoći.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+  <title>Sudjelujte u poboljšanju ovog vodiča</title>
+
+  <section id="submit-issue">
+
+   <title>Prijavite problem</title>
+
+   <p>Ovu dokumentaciju priručnika izradila je zajednica dobrovoljaca. Dobrodošli ste sudjelovati. Ako primijetite problem s ovim stranicama priručnika (poput greška pri upisu, netočnih uputa ili tema koje bi trebale biti obuhvaćene, ali nisu), možete prijaviti <em>novi problem</em>. Za prijavu novog problema, idite na <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">pratitelja problema</link>.</p>
+
+   <p>Morate se registrirati, kako bi mogli prijaviti problem i primati novosti e-poštom o njegovom stanju. Ako još nemate račun, kliknite na tipku <gui><link href="https://gitlab.gnome.org/users/sign_in">Sign in / Register now</link></gui> kako bi ga stvorili .</p>
+
+   <p>Once you have an account, make sure you are logged in, then go back to the
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">documentation
+   issue tracker</link> and click <gui>New issue</gui>. Before reporting a new issue, please
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">browse</link>
+   for the issue to see if something similar already exists.</p>
+
+   <p>Prije prijave problema odaberite odgovarajuću oznaku u izborniku <gui>Labels</gui>. Ako prijavljujete problem za ovu dokumentaciju, trebali bi odabrati oznaku <gui>gnome-help</gui>. Ako niste sigurni na koju se komponentu odnosi vaš problem, nemojte odabrati nijednu.</p>
+
+   <p>Ako tražite pomoć o temi za koju smatrate da nije obuhvaćena, odaberite <gui>Feature</gui> kao oznaku. Ispunite odjeljke Title i Description i kliknite <gui>Submit issue</gui>.</p>
+
+   <p>Vaš će problem dobiti ID broj, a njegovo stanje će se nadopunjavati kako se rješava. Hvala vam što pomažete poboljšati GNOME priručnik!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Kontaktirajte nas</title>
+
+<p>
+    Connect with other GNOME documentation editors in the <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix room. See the <link xref="help-matrix">Get help with Matrix</link> page for more information. If you prefer, there is also an IRC channel, #gnome-docs, on the <link xref="help-irc">GNOME IRC server</link>. As the people in these rooms are located across the world, it may take a moment to get a response.
+</p>
+<p>
+  Alternatively, you can contact the Documentation Team using
+  <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.
+</p>
+
+   <p>Our <link href="https://wiki.gnome.org/DocumentationProject">wiki page</link>
+   contains useful information how you can join and contribute.</p>
+
+
+   </section>
+</page>

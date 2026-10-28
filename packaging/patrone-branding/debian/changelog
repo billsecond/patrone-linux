@@ -1,3 +1,22 @@
+patrone-branding (0.1.19) resolute; urgency=medium
+
+  * Help is GNOME Help: GNOME's own front page and its pages about the
+    guide and getting help (tools/make_help.sh, from GNOME's gnome-user-docs
+    50.0, in GNOME's 45 languages) in place of Ubuntu's "Ubuntu Desktop
+    Guide", which had Ubuntu's logo in its title. Replaces ubuntu-docs, as
+    it does ubuntu-wallpapers (docs/COMPLIANCE.md, item 3).
+  * Yaru's start-here and distributor-logo icons, Ubuntu's logo, are
+    Patrone's P (tools/make_logo_icons.sh; Yaru's are moved aside), in every
+    color of Yaru's icons and its dark style. os-release's LOGO,
+    patrone-logo, is in the hicolor theme too, for programs that look only
+    in icon themes.
+  * /etc/legal says where the list of what the system connects to is.
+  * The installer's settings no longer list the pages of "Automated with
+    Landscape", Canonical's management service, whose choice
+    patrone-installer 0.1.4 takes out.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 14:00:00 -0500
+
 patrone-branding (0.1.18) resolute; urgency=medium
 
   * The boot splash's update screens no longer write over the logo: their

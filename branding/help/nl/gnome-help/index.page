@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:e="http://projectmallard.org/experimental/" xmlns:its="http://www.w3.org/2005/11/its" type="guide" id="index" xml:lang="nl">
+
+<info>
+    <desc>Een gids voor Gnome-bureaubladgebruikers.</desc>
+
+    <title type="link">Gnome Hulp</title>
+    <title type="text">Gnome Hulp</title>
+    <title role="trail" type="link">Hulp</title>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Justin van Steijn</mal:name>
+      <mal:email>jvs@fsfe.org</mal:email>
+      <mal:years>2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hannie Dumoleyn</mal:name>
+      <mal:email>hannie@ubuntu-nl.org</mal:email>
+      <mal:years>2017</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nathan Follens</mal:name>
+      <mal:email>nfollens@gnome.org</mal:email>
+      <mal:years>2022</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Gnome Hulp</title>
+
+<links type="topic" groups="gs"/>
+
+<links type="topic" style="experimental-gnome-top" groups="intro #first"/>
+
+<links type="topic" style="experimental-gnome-tiles 2column" groups="        shell-overview        net media files        prefs hardware        a11y tips more-help"/>
+</page>

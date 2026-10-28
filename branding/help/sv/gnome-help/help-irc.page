@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="sv">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Få live-support via IRC.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Daniel Nylander</mal:name>
+      <mal:email>po@danielnylander.se</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Sebastian Rasmussen</mal:name>
+      <mal:email>sebras@gmail.com</mal:email>
+      <mal:years>2014, 2015, 2016, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Anders Jonsson</mal:name>
+      <mal:email>anders.jonsson@norsjovallen.se</mal:email>
+      <mal:years>2016, 2017</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC står för Internet Relay Chat. Det är ett realtids meddelandesystem för flera användare. Du kan få hjälp och råd på GNOMEs IRC-server från andra GNOME-användare och utvecklare.</p>
+   <p>För att koppla upp mot GNOMEs IRC-server, använd <app>Polari</app> eller <app>HexChat</app>.</p>
+   <p>För att skapa ett IRC-konto i Polari, se <link href="help:polari/">Polari-dokumentationen</link>.</p>
+   <p>GNOMEs IRC-server heter <sys>irc.libera.chat</sys>. Om din dator är korrekt konfigurerad kan du klicka på länken <link href="irc://irc.libera.chat/gnome"/> för att komma till <sys>gnome</sys>-kanalen.</p>
+   <p>Även om IRC är en realtidsdiskussion så brukar folk inte svara omedelbart, så var tålmodig.</p>
+
+  <note>
+    <p>Vänligen observera att <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOMEs uppförandekod</link> gäller när du chattar på IRC.</p>
+  </note>
+
+</page>

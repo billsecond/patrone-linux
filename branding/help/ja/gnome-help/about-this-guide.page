@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="ja">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>このデスクトップヘルプを利用する上でのいくつかのヒント</desc>
+    <credit type="author">
+      <name>GNOME ドキュメンテーションプロジェクト</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>松澤 二郎</mal:name>
+      <mal:email>jmatsuzawa@gnome.org</mal:email>
+      <mal:years>2011, 2012, 2013, 2014, 2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>赤星 柔充</mal:name>
+      <mal:email>yasumichi@vinelinux.org</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kentaro KAZUHAMA</mal:name>
+      <mal:email>kazken3@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Shushi Kurose</mal:name>
+      <mal:email>md81bird@hitaki.net</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Noriko Mizumoto</mal:name>
+      <mal:email>noriko@fedoraproject.org</mal:email>
+      <mal:years>2013, 2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>坂本 貴史</mal:name>
+      <mal:email>o-takashi@sakamocchi.jp</mal:email>
+      <mal:years>2013, 2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>日本GNOMEユーザー会</mal:name>
+      <mal:email>http://www.gnome.gr.jp/</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  </info>
+
+<title>このガイドについて</title>
+<p>This guide is designed to give you a tour of the features of your desktop,
+answer your computer-related questions, and provide tips on using your
+computer more effectively. Here are a few notes regarding the help guide:</p>
+
+<list>
+  <item><p>The guide is sorted into small, task-oriented topics — not
+  chapters. This means that you don’t need to skim through an entire manual
+  to find the answer to your questions.</p></item>
+  <item><p>Related items are linked together. “See Also” links at the bottom
+  of some pages will direct you to related topics. This makes it easy to find
+  similar topics that might help you perform a certain task.</p></item>
+  <item><p>組み込みの検索機能を備えています。ヘルプブラウザーの上部にあるバーは、検索バーとなっており、タイピングするとすぐに関連の検索結果が表示されます。</p></item>
+  <item><p>The guide is constantly being improved. Although we attempt to
+  provide you with a comprehensive set of helpful information, we know we can’t
+  answer all of your questions here. If you need more assistance, you can check
+  with your distribution’s support team.</p></item>
+</list>
+
+</page>
