@@ -1,3 +1,33 @@
+patrone-file-manager (0.3.2) resolute; urgency=medium
+
+  * Drives and their mounts (the user, 2026-10-28: "add under computer
+    Mounts where the drives are ... and add the ability to mount other
+    drives/resources"). This PC lists every drive, mounted or not: each
+    tile says where the drive is mounted ("Mounted at /run/media/..."),
+    Linux's drive letter, and a drive that isn't mounted shows its size and
+    "Not mounted". Opening it mounts it; so does Mount, in its right-click
+    menu, the command bar and the navigation pane. Mounted drives have
+    Eject (USB drives, discs, disk images) or Unmount (internal drives).
+    Properties shows where a drive is mounted.
+  * This PC and the navigation pane follow drives being mounted, plugged
+    in and removed: they let go of GIO's volume monitor, and GIO freed it
+    with the signals they had connected. The navigation pane no longer
+    lists a drive twice when two of them change at once.
+  * Map network drive, as on Windows, in place of Connect to server: a
+    network folder's address (\\server\share, or sftp://, ftp://, dav://,
+    nfs://), a sign-in if the server asks for one (the password can be
+    remembered), and "Reconnect at sign-in". The address can be typed as
+    soon as the dialog opens. Mapped drives stay in This PC's Network
+    locations, by their own name and address, while disconnected, and
+    connect again when opened and at each sign-in. Disconnect unmounts a
+    network drive and forgets the mapping.
+  * Disk images: right-click an .iso or .img file and choose Mount (also in
+    the command bar). It's mounted read-only, as Windows does, and opens;
+    a mounted .iso shows as a disc. Eject puts it away.
+  * The package's preinst and postrm are executable.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 16:30:00 -0500
+
 patrone-file-manager (0.3.1) resolute; urgency=medium
 
   * Icons in the desktop bubble can be dragged to another place in it, as

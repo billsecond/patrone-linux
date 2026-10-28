@@ -10,12 +10,14 @@ use crate::archive;
 use crate::clipboard;
 use crate::config;
 use crate::dialogs::{self, Dialog};
+use crate::drives;
 use crate::filecell;
 use crate::icons;
 use crate::location::Location;
 use crate::ops;
 use crate::places::{self, Special};
 use crate::tab::Page;
+use crate::thispc::Drive;
 use crate::util;
 use crate::window::Window;
 
@@ -1020,83 +1022,208 @@ pub fn set_background(window: &Window) {
     let _ = settings.set_string("picture-uri-dark", &uri);
 }
 
-/// "Map network drive" becomes "Connect to server": type an address.
-pub fn connect_to_server(window: &Window) {
+/// Windows' "Map network drive": a network folder's address, signing in if
+/// the server asks, and "Reconnect at sign-in". Windows shares, SFTP, FTP,
+/// WebDAV and NFS all work.
+pub fn map_network_drive(window: &Window) {
     let window = window.clone();
     glib::spawn_future_local(async move {
-        let dialog = Dialog::new(parent(&window).as_ref(), "Connect to Server");
+        let dialog = Dialog::new(parent(&window).as_ref(), "Map Network Drive");
         dialog.window.set_default_size(480, -1);
         let heading = gtk::Label::builder()
-            .label("What network folder would you like to open?")
+            .label("What network folder would you like to map?")
             .xalign(0.0)
             .build();
         heading.add_css_class("dialog-heading");
         dialog.body.append(&heading);
         let entry = gtk::Entry::builder()
-            .placeholder_text("smb://server/share")
+            .placeholder_text(r"\\server\share")
             .activates_default(true)
             .build();
         dialog.body.append(&entry);
         let examples = gtk::Label::builder()
-            .label("Examples: smb://server/share, sftp://user@host/folder, ftp://ftp.example.com, dav://server/path")
+            .label(
+                r"Examples: \\server\share, sftp://user@server/folder, ftp://server, dav://server/folder, nfs://server/export",
+            )
             .xalign(0.0)
             .wrap(true)
             .width_chars(40)
             .build();
         examples.add_css_class("dialog-detail");
         dialog.body.append(&examples);
-        dialog.add_button("_Connect", 0, true);
+        let reconnect = gtk::CheckButton::with_label("Reconnect at sign-in");
+        reconnect.set_active(true);
+        dialog.body.append(&reconnect);
+        let sign_in = gtk::Label::builder()
+            .label("If the folder needs a user name and password, you'll be asked for them, and can have them remembered.")
+            .xalign(0.0)
+            .wrap(true)
+            .width_chars(40)
+            .build();
+        sign_in.add_css_class("dialog-detail");
+        dialog.body.append(&sign_in);
+        dialog.add_button("_Finish", 0, true);
         dialog.add_button("Cancel", 1, false);
-        if dialog.run().await == 0 {
-            let address = entry.text().trim().to_owned();
-            if !address.is_empty() {
-                window.navigate(Location::Folder(gio::File::for_uri(&address)));
+        // The address can be typed straight away, as on Windows.
+        entry.grab_focus();
+        if dialog.run().await != 0 {
+            return;
+        }
+        let typed = entry.text();
+        if typed.trim().is_empty() {
+            return;
+        }
+        let uri = drives::network_address(&typed);
+        match drives::connect(&uri, parent(&window).as_ref()).await {
+            Ok(folder) => {
+                if reconnect.is_active() {
+                    drives::remember_mapped(&uri);
+                }
+                window.navigate(Location::Folder(folder));
             }
+            // Cancelled at the sign-in.
+            Err(error) if error.matches(gio::IOErrorEnum::FailedHandled) => {}
+            Err(error) => dialogs::error(
+                parent(&window).as_ref(),
+                "Map Network Drive",
+                &format!("Can't connect to {}.", typed.trim()),
+                &dialogs::describe(&error),
+            ),
         }
     });
 }
 
-/// Ejects or unmounts the selected drive (or the one this folder is on).
-pub fn eject(window: &Window) {
+/// The drives selected on This PC.
+fn selected_drives(window: &Window) -> Vec<Drive> {
     let tab = window.tab();
-    let mut mounts: Vec<gio::Mount> = Vec::new();
     if tab.page() == Page::ThisPc {
-        for drive in tab.this_pc().selected_drives() {
-            if let crate::thispc::Drive::Mount(mount) = drive {
-                mounts.push(mount);
+        tab.this_pc().selected_drives()
+    } else {
+        Vec::new()
+    }
+}
+
+/// Whether Mount applies: drives that aren't mounted (or mapped network
+/// drives not connected), or a disk image in a folder.
+pub fn can_mount(window: &Window) -> bool {
+    let tab = window.tab();
+    if tab.page() == Page::ThisPc {
+        return selected_drives(window).iter().any(Drive::can_mount);
+    }
+    let selected = tab.selected_infos();
+    !selected.is_empty()
+        && selected.iter().all(drives::is_disk_image)
+        && selected
+            .iter()
+            .all(|info| util::file_of(info).is_some_and(|file| file.is_native()))
+}
+
+/// Mount: the selected drives, or the selected disk images, which then
+/// open as Windows does.
+pub fn mount(window: &Window) {
+    let tab = window.tab();
+    if tab.page() == Page::ThisPc {
+        for drive in selected_drives(window) {
+            if drive.can_mount() {
+                crate::thispc::mount_drive(&drive, parent(window), |_| {});
             }
         }
-    } else if let Some(folder) = tab.location().folder() {
-        mounts.extend(places::mount_containing(folder));
+        return;
     }
-    for mount in mounts {
-        let operation = gtk::MountOperation::new(Some(&window.gtk_window()));
+    for file in tab.selected_files() {
         let window = window.clone();
+        glib::spawn_future_local(async move {
+            match drives::mount_image(&file, parent(&window)).await {
+                Ok(root) if window.desktop => crate::desktop::open_in_file_manager(&[root]),
+                Ok(root) => window.navigate(Location::Folder(root)),
+                Err(reason) => dialogs::error(
+                    parent(&window).as_ref(),
+                    "Mount",
+                    &format!(
+                        "Can't mount \"{}\".",
+                        file.basename().unwrap_or_default().to_string_lossy()
+                    ),
+                    &reason,
+                ),
+            }
+        });
+    }
+}
+
+/// The mounts Eject (or Unmount) works on: the selected drives on This PC
+/// (not network drives, which disconnect), or the drive this folder is on.
+pub fn unmountable(window: &Window) -> Vec<gio::Mount> {
+    let tab = window.tab();
+    if tab.page() == Page::ThisPc {
+        selected_drives(window)
+            .iter()
+            .filter(|drive| !drive.is_network())
+            .filter_map(Drive::mount)
+            .filter(|mount| mount.can_eject() || mount.can_unmount())
+            .collect()
+    } else if let Some(folder) = tab.location().folder() {
+        places::mount_containing(folder)
+            .into_iter()
+            .filter(|mount| mount.can_eject() || mount.can_unmount())
+            .collect()
+    } else {
+        Vec::new()
+    }
+}
+
+/// Ejects the selected drives, or unmounts them when they can't be
+/// ejected (or the drive this folder is on).
+pub fn eject(window: &Window) {
+    for mount in unmountable(window) {
+        let w = window.clone();
         let name = mount.name().to_string();
-        let done = move |result: Result<(), glib::Error>| {
-            if let Err(error) = result {
+        let what = crate::thispc::unmount_label(std::slice::from_ref(&mount));
+        drives::unmount(&mount, parent(window).as_ref(), move |result| {
+            if let Err(error) = result
+                && !error.matches(gio::IOErrorEnum::FailedHandled)
+            {
                 dialogs::error(
-                    Some(&window.gtk_window()),
-                    "Eject",
-                    &format!("Can't eject {name}."),
+                    parent(&w).as_ref(),
+                    what,
+                    &format!("Can't {} {name}.", what.to_lowercase()),
                     &dialogs::describe(&error),
                 );
             }
+        });
+    }
+}
+
+/// Whether Disconnect applies: a network drive is selected on This PC.
+pub fn can_disconnect(window: &Window) -> bool {
+    selected_drives(window).iter().any(Drive::is_network)
+}
+
+/// Windows' "Disconnect" for network drives: unmounts them, and forgets
+/// the mapped ones so they don't reconnect at sign-in.
+pub fn disconnect(window: &Window) {
+    for drive in selected_drives(window) {
+        let mount = match &drive {
+            Drive::Mapped(uri) => {
+                drives::forget_mapped(uri);
+                drives::mount_of(uri)
+            }
+            Drive::Mount(mount) if drive.is_network() => Some(mount.clone()),
+            _ => None,
         };
-        if mount.can_eject() {
-            mount.eject_with_operation(
-                gio::MountUnmountFlags::NONE,
-                Some(&operation),
-                gio::Cancellable::NONE,
-                done,
-            );
-        } else {
-            mount.unmount_with_operation(
-                gio::MountUnmountFlags::NONE,
-                Some(&operation),
-                gio::Cancellable::NONE,
-                done,
-            );
-        }
+        let Some(mount) = mount else { continue };
+        let w = window.clone();
+        let name = drive.name();
+        drives::unmount(&mount, parent(window).as_ref(), move |result| {
+            if let Err(error) = result
+                && !error.matches(gio::IOErrorEnum::FailedHandled)
+            {
+                dialogs::error(
+                    parent(&w).as_ref(),
+                    "Disconnect",
+                    &format!("Can't disconnect {name}."),
+                    &dialogs::describe(&error),
+                );
+            }
+        });
     }
 }

@@ -343,7 +343,20 @@ fn drive_kind(mount: &gio::Mount) -> DriveKind {
         .map(|icon| icon.names().iter().map(|name| name.to_string()).collect())
         .unwrap_or_default();
     let has = |part: &str| names.iter().any(|name| name.contains(part));
-    if has("optical") || has("cdrom") || has("dvd") {
+    // A disc image mounted from a file (Mount, for an .iso) is a disc too,
+    // as on Windows; GIO calls it removable media.
+    let disc_image = || {
+        mount
+            .volume()
+            .and_then(|volume| volume.identifier("unix-device"))
+            .is_some_and(|device| device.starts_with("/dev/loop"))
+            && root
+                .query_filesystem_info("filesystem::type", gio::Cancellable::NONE)
+                .ok()
+                .and_then(|info| info.attribute_string("filesystem::type"))
+                .is_some_and(|kind| matches!(kind.as_str(), "isofs" | "iso9660" | "udf"))
+    };
+    if has("optical") || has("cdrom") || has("dvd") || disc_image() {
         DriveKind::Optical
     } else if has("removable") || has("usb") || has("media-flash") || mount.can_eject() {
         DriveKind::Removable

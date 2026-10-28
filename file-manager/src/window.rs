@@ -1136,26 +1136,40 @@ impl Window {
                     action: "win.set-background",
                 });
             }
+            if crate::drives::is_disk_image(info) && commands::can_mount(self) {
+                buttons.push(Contextual {
+                    glyph: "drive",
+                    label: "Mount",
+                    action: "win.mount",
+                });
+            }
         }
         if tab.page() == Page::ThisPc {
             buttons.push(Contextual {
                 glyph: "network",
-                label: "Connect to server",
-                action: "win.connect-server",
+                label: "Map network drive",
+                action: "win.map-drive",
             });
-            let removable = tab
-                .this_pc()
-                .selected_drives()
-                .iter()
-                .any(|drive| match drive {
-                    crate::thispc::Drive::Mount(mount) => mount.can_eject() || mount.can_unmount(),
-                    _ => false,
+            if commands::can_mount(self) {
+                buttons.push(Contextual {
+                    glyph: "drive",
+                    label: "Mount",
+                    action: "win.mount",
                 });
-            if removable {
+            }
+            let mounts = commands::unmountable(self);
+            if !mounts.is_empty() {
                 buttons.push(Contextual {
                     glyph: "eject",
-                    label: "Eject",
+                    label: crate::thispc::unmount_label(&mounts),
                     action: "win.eject",
+                });
+            }
+            if commands::can_disconnect(self) {
+                buttons.push(Contextual {
+                    glyph: "close",
+                    label: "Disconnect",
+                    action: "win.disconnect",
                 });
             }
         }
@@ -1248,6 +1262,9 @@ impl Window {
             "set-background",
             selected.len() == 1 && util::content_type(&selected[0]).starts_with("image/"),
         );
+        set("mount", commands::can_mount(self));
+        set("eject", !commands::unmountable(self).is_empty());
+        set("disconnect", commands::can_disconnect(self));
     }
 
     /// Puts the view, sort and pane states into their actions.
@@ -1469,8 +1486,10 @@ impl Window {
         simple("restore-all", |w| commands::restore(w, true));
         simple("restore-selected", |w| commands::restore(w, false));
         simple("set-background", commands::set_background);
-        simple("connect-server", commands::connect_to_server);
+        simple("map-drive", commands::map_network_drive);
+        simple("mount", commands::mount);
         simple("eject", commands::eject);
+        simple("disconnect", commands::disconnect);
         simple("options", crate::options::show);
         simple("context-menu", |w| {
             let tab = w.tab();

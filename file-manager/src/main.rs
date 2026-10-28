@@ -14,6 +14,7 @@ mod desktop;
 mod desktopgrid;
 mod dialogs;
 mod dnd;
+mod drives;
 mod filecell;
 mod folderview;
 mod gallery;
@@ -59,8 +60,9 @@ Opens a File Manager window for each folder. A file opens in its app.
 
   -w, --new-window   Open a new window (the default with no locations)
   -s, --select       Show each location in its folder, selected
-      --restore      Reopen the folders open at the last sign-out, if
-                     Folder Options says to
+      --restore      Reconnect the mapped network drives, and reopen the
+                     folders open at the last sign-out if Folder Options
+                     says to
       --quit         Close every File Manager window
       --desktop      Draw the desktop and the desktop bubble (the
                      taskbar starts it, and hosts its windows)
@@ -177,6 +179,7 @@ fn command_line(
     }
 
     if restore {
+        drives::reconnect_mapped(app);
         if config::flag("restore-windows") {
             for uri in config::settings().strv("open-windows") {
                 Window::new(app, Location::Folder(gio::File::for_uri(&uri))).present();

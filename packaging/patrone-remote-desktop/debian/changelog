@@ -1,3 +1,15 @@
+patrone-remote-desktop (0.5.1) resolute; urgency=medium
+
+  * Patrone's desktops mount drives as a desktop at the screen does
+    (45-patrone-desktops.rules): USB drives, discs and disk images with no
+    password, the computer's own internal drives with one. udisks asks for
+    its "-other-seat" actions when the drive's seat isn't the account's,
+    and these desktops have no seat, so a USB drive asked for an
+    administrator's password; mounting a disk image (loop-setup) asked
+    every time.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 16:30:00 -0500
+
 patrone-remote-desktop (0.5.0) resolute; urgency=medium
 
   * Hyper-V's enhanced session (VMConnect): a login screen in VMConnect's
