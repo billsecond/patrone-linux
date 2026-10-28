@@ -4,14 +4,16 @@
 # disk-unlock password and a question (with typing), shutdown and restart
 # with a message, and the four update modes at 31%.
 #
-#   sudo branding/tools/preview_splash.sh THEME OUT SIZE...
-#   sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.17_all.deb /tmp/splash 1920x1080 1024x768
+#   sudo branding/tools/preview_splash.sh THEME OUT TTY SIZE...
+#   sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.18_all.deb /tmp/splash $(tty) 1920x1080 1024x768
 #
-# THEME is a theme folder or a patrone-branding .deb. Run it from a
-# terminal (Plymouth needs one; it gets this one, not a VT). Each SIZE is an
-# invisible X screen (Xvfb) for Plymouth's X11 renderer, the only renderer
-# it can see: the theme and renderers are bind-mounted in a private mount
-# namespace, so the real screen and the installed theme are untouched.
+# THEME is a theme folder or a patrone-branding .deb. TTY is your terminal,
+# which Plymouth uses in place of a VT: $(tty), expanded before sudo runs.
+# (The script's own, inside sudo, is sudo's, and sudo suspended Plymouth on
+# it.) Each SIZE is an invisible X screen (Xvfb) for Plymouth's X11
+# renderer, the only renderer it can see: the theme and renderers are
+# bind-mounted in a private mount namespace, so the real screen and the
+# installed theme are untouched.
 # Xvfb, the X11 renderer and xdotool are downloaded with apt-get download
 # into /tmp/preview-splash-tools on first use, not installed. Then make
 # contact sheets with preview_splash_sheets.py (Pillow and NumPy).
@@ -19,9 +21,8 @@ set -eu
 if [ -z "${PREVIEW_SPLASH_NAMESPACE:-}" ]; then
     PREVIEW_SPLASH_NAMESPACE=1 exec unshare --mount --propagation private sh "$0" "$@"
 fi
-theme=$1 out=$2
-shift 2
-tty=$(tty)
+theme=$1 out=$2 tty=$3
+shift 3
 tools=/tmp/preview-splash-tools
 renderers=/usr/lib/x86_64-linux-gnu/plymouth/renderers
 export LD_LIBRARY_PATH=$tools/root/usr/lib/x86_64-linux-gnu

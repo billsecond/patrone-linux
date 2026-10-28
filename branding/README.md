@@ -140,7 +140,7 @@ built, as root from a terminal (it draws in an invisible screen, so the
 real one is untouched):
 
 ```
-sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.18_all.deb /tmp/splash 1920x1080 1024x768
+sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.18_all.deb /tmp/splash $(tty) 1920x1080 1024x768
 python branding/tools/preview_splash_sheets.py /tmp/splash
 ```
 
