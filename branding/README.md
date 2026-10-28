@@ -64,7 +64,7 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
 | Welcome message at login (SSH, console) | `system/motd/00-header`: "Welcome to Patrone Linux 0.1 (...)" | Replaces Ubuntu's header; Ubuntu's help links, news and Ubuntu Pro ads are moved aside |
 | Desktop | The Patrone wallpaper (its light version in the light style, the dark one in the dark style), blue accent color, Yaru's blue GTK theme and icons (GTK 3 apps don't follow the accent color), Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
-| Wallpapers to choose from | Wallpaper 01's family (below) in Settings → Appearance, and none of Ubuntu's | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties`. GNOME Shell depends on `ubuntu-wallpapers`, so the package provides it and replaces `ubuntu-wallpapers` and `ubuntu-wallpapers-resolute` (63 MB), which apt then removes |
+| Wallpapers to choose from | Wallpaper 01's family and the generated wallpapers (below) in Settings → Appearance, and none of Ubuntu's | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties`. GNOME Shell depends on `ubuntu-wallpapers`, so the package provides it and replaces `ubuntu-wallpapers` and `ubuntu-wallpapers-resolute` (63 MB), which apt then removes |
 | Typeface | Patrone Sans (`fonts-patrone-sans`, built in `fonts/`: Noto Sans with a tailed l and a slashed zero, every weight in one variable font), also the stand-in for Microsoft's Segoe UI, which can't be redistributed: for the desktop, apps, window titles (semibold) and the login screen; web pages and documents that ask for sans-serif, system-ui or Segoe UI get it too, in Chromium as well, with Noto Sans (from `fonts-noto-core`) behind it for scripts it doesn't cover. Patrone Settings' Theme page switches between Patrone Sans and Noto Sans, which was the typeface until 2026-10-26. Monospace stays Ubuntu Sans Mono | GNOME's font settings in the override above and `95-patrone-settings`; `system/fontconfig/05-patrone-fonts.conf` in `/etc/fonts/conf.d` and, for snaps (which don't read `conf.d`), `/etc/fonts/snap-override` |
 | Settings | Ubuntu's "Ubuntu Desktop" page is named "Desktop" | `system/settings/gnome-ubuntu-panel.desktop` replaces Ubuntu's (GNOME Settings names each page from its desktop file) |
 
@@ -174,6 +174,55 @@ python tools/make_wallpapers.py wallpapers/patrone-back-01.png wallpapers --prev
 Add variant names after the folder to make only those. Each is defined in
 `VARIANTS` in the script: its color scheme, whether it keeps the corner
 details, and its logo.
+
+## Generated wallpapers
+
+![Every generated wallpaper, light and dark](wallpapers/generated/contact-sheet.jpg)
+
+Eleven abstract designs, each a light and dark pair that follows the light or
+dark style, listed in Settings → Appearance after wallpaper 01's family.
+`tools/make_generated_wallpapers.py` draws every pixel from Patrone's colors
+and shapes, with no photos, downloaded art or image models, so Patrone owns
+them outright; they're GPL-3+ like the rest of the branding.
+
+| In Settings | Design |
+| --- | --- |
+| Patrone Focus | Calm, for working: an almost flat field with a low, soft band of light |
+| Patrone Aurora | Curtains of light across the sky |
+| Patrone Bloom | Bold: a flowing gradient of blues with a touch of violet |
+| Patrone Ring | The boot spinner's ring, large, with its comet of light |
+| Patrone Waves | Bold: layered waves of blue across the lower screen |
+| Patrone Horizon | Ridges fading into a lit horizon, under stars in the dark |
+| Patrone Slant | Bold: panes of blue glass at the slant of the P's stem (62°) |
+| Patrone Facets | Bold: low-poly facets of blue, lit from the top left |
+| Patrone Contours | Calm: contour lines of an imaginary landscape |
+| Patrone Halftone | Dots that swell towards one corner |
+| Patrone Orbs | Overlapping discs of tinted glass |
+
+They're `wallpapers/generated/patrone-NAME.png` (dark) and
+`patrone-NAME-light.png`, 3840×2160 PNGs of 0.7 to 2.5 MB, with the same
+ordered dither as the family. Lossless WebP was only 10 to 25% smaller, not
+enough to be worth a format that needs its own loader. To make them again
+(about 4 minutes; on Windows, as the VM has no NumPy or OpenCV):
+
+```
+python tools/make_generated_wallpapers.py wallpapers/generated --sheet wallpapers/generated/contact-sheet.jpg
+```
+
+Add design names to make only those, `--size W H` for another size, and
+`--crops FILE` for a sheet of the dark ones as GNOME's "zoom" crops them on
+16:10, 4:3 and 21:9 screens. Never edit the images by hand: change the
+script and run it again.
+
+- **Deterministic.** Every "random" choice is a hash of the design's seed and
+  integer coordinates, not a random-number generator, whose streams can
+  change between NumPy versions.
+- **Any screen.** Sizes are in units of the screen's height from its middle,
+  and what matters stays inside what a 16:10 screen (the middle 90% of the
+  width) and a 21:9 ultrawide (the middle 74% of the height) show.
+- **Adding one.** Write a function with `@design("Patrone Name")` that takes
+  the canvas and `"dark"` or `"light"` and returns the picture, then add the
+  pair to `system/backgrounds/patrone-wallpapers.xml`.
 
 ## fastfetch
 

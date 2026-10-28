@@ -60,4 +60,83 @@
     <filename>/usr/share/backgrounds/patrone/patrone-back-01-watermark.png</filename>
     <options>zoom</options>
   </wallpaper>
+
+  <!-- Generated designs, drawn by tools/make_generated_wallpapers.py: each a
+       light and dark pair -->
+  <wallpaper deleted="false">
+    <name>Patrone Focus</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-focus-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-focus.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Aurora</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-aurora-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-aurora.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Bloom</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-bloom-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-bloom.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Ring</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-ring-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-ring.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Waves</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-waves-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-waves.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Horizon</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-horizon-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-horizon.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Slant</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-slant-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-slant.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Facets</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-facets-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-facets.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Contours</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-contours-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-contours.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Halftone</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-halftone-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-halftone.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Orbs</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-orbs-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-orbs.png</filename-dark>
+    <options>zoom</options>
+  </wallpaper>
 </wallpapers>

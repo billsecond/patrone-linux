@@ -1,3 +1,15 @@
+patrone-branding (0.1.13) resolute; urgency=medium
+
+  * Eleven new wallpapers in Settings > Appearance, each a light and dark
+    pair that follows the style: Focus, Aurora, Bloom, Ring, Waves,
+    Horizon, Slant, Facets, Contours, Halftone and Orbs. All drawn by
+    tools/make_generated_wallpapers.py from Patrone's colours, the boot
+    spinner's ring and the P's slant, with no photos or downloaded art
+    (the user, 2026-10-28: "more wallpapers that are all generated").
+    The default stays Patrone.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 08:30:00 -0500
+
 patrone-branding (0.1.12) resolute; urgency=medium
 
   * fastfetch's logo is traced again, from the logo's own outline instead

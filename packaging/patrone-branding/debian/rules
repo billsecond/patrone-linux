@@ -68,8 +68,10 @@ override_dh_auto_install:
 	install -d $(pkg)/usr/share/desktop-provision
 	cp -r system/desktop-provision/. $(pkg)/usr/share/desktop-provision/
 	install -Dm644 logos/patrone-logo-text-dark.png $(pkg)/usr/share/desktop-provision/slides/patrone-logo.png
-	# Wallpaper 01 and its variants, listed in Settings > Appearance
+	# Wallpaper 01 and its variants, and the generated designs
+	# (tools/make_generated_wallpapers.py), listed in Settings > Appearance
 	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/patrone-back-01-*.png
+	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/generated/patrone-*.png
 	install -Dm644 system/backgrounds/patrone-wallpapers.xml \
 	    $(pkg)/usr/share/gnome-background-properties/patrone-wallpapers.xml
 	install -Dm644 fastfetch/config.jsonc $(pkg)/etc/xdg/fastfetch/config.jsonc
