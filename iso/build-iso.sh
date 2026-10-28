@@ -224,6 +224,36 @@ check_no_browser() {
     fi
 }
 
+# sources_of ROOT: the source package (name and version) of each package
+# installed in ROOT, and the snaps in its seed, one "KIND NAME VERSION" a
+# line, for the disc's list of its sources (sources.manifest).
+sources_of() {
+    local snap
+    dpkg-query --admindir="$1/var/lib/dpkg" -W -f '${db:Status-Abbrev}\t${source:Package}\t${source:Version}\n' |
+        awk -F'\t' '$1 ~ /^ii/ {print "deb\t" $2 "\t" $3}'
+    for snap in "$1"/var/lib/snapd/seed/snaps/*.snap; do
+        [ -e "$snap" ] || continue
+        snap=${snap##*/}
+        snap=${snap%.snap}
+        printf 'snap\t%s\t%s\n' "${snap%_*}" "${snap##*_}"
+    done
+}
+
+# pool_sources: the same for the disc's package pool (pool/, which the
+# installer installs drivers and language packs from), from its indexes
+pool_sources() {
+    awk '
+        function flush() {
+            if (pkg != "") print "deb\t" (src != "" ? src : pkg) "\t" (srcver != "" ? srcver : ver)
+            pkg = ver = src = srcver = ""
+        }
+        /^Package: / { pkg = $2 }
+        /^Version: / { ver = $2 }
+        /^Source: / { src = $2; if ($3 ~ /^\(/) { srcver = $3; gsub(/[()]/, "", srcver) } }
+        /^$/ { flush() }
+        END { flush() }' "$work"/cd/dists/*/*/binary-*/Packages
+}
+
 # close_layer NAME: tidies the open layer, closes it and compresses it.
 close_layer() {
     local name=$1 size
@@ -233,6 +263,7 @@ close_layer() {
     find "$root/var/lib/apt/lists" -maxdepth 1 -type f -delete
     rm -f "$root"/var/cache/apt/*.bin
     in_root dpkg-query -W -f '${Package}\t${Version}\n' >"$work/iso/$name.manifest"
+    sources_of "$root" >"$work/$name.sources"
     # The seed's snaps set up in the image, as Ubuntu's are, so a new system
     # (and the live session's installer, whose back end is a snap) doesn't
     # wait for them at first boot. snap-preseed needs the layer's /dev, /proc
@@ -352,9 +383,53 @@ boot_menu 'iso-scan/filename=${iso_path}' >"$work/iso/loopback.cfg"
 # system's name.
 echo "Patrone Linux 26.04.1 \"Patrone Linux\" - Release amd64 ($(date -u +%Y%m%d))" >"$work/iso/info"
 
+# Where the source code is (docs/COMPLIANCE.md, item 1): SOURCE.txt at the
+# disc's root, and casper/sources.manifest, every source package (name and
+# exact version) of what's on the disc: Patrone's two layers, the three of
+# Ubuntu's they stand on (whose removed files are still on the disc, hidden),
+# the package pool, and the snaps in the seeds. iso/build-source.sh fetches
+# them all, to publish beside the disc image.
+commit=$(git -c safe.directory='*' -C "$(dirname "$(realpath "$0")")" rev-parse HEAD 2>/dev/null || echo unknown)
+if [ "$commit" != unknown ] &&
+    [ -n "$(git -c safe.directory='*' -C "$(dirname "$(realpath "$0")")" status --porcelain --untracked-files=no)" ]; then
+    commit="$commit, with changes not committed"
+fi
+{
+    echo "# The source of everything on Patrone Linux 26.04.1's disc: KIND NAME VERSION"
+    echo "# (deb: a source package; snap: a snap and its revision). Built from"
+    echo "# https://github.com/billsecond/patrone-linux at $commit"
+    {
+        cat "$work/$install_layer.sources" "$work/$live_layer.sources"
+        for l in minimal minimal.standard minimal.standard.live; do
+            sources_of "$work/layers/$l"
+        done
+        pool_sources
+    } | sort -u
+} >"$work/iso/sources.manifest"
+cat >"$work/iso/SOURCE.txt" <<EOF
+Patrone Linux 26.04.1: where the source code is
+
+Patrone Linux is free software, and almost every program on this disc is
+too. Their source code is published beside this disc image:
+
+    https://patronelinux.com/source
+
+Patrone's own code, its changes to Ubuntu's programs and the scripts that
+make this disc are also at
+
+    https://github.com/billsecond/patrone-linux
+
+at $commit.
+
+casper/sources.manifest on this disc lists the source package, with its
+exact version, of every program on it. Each program's licence is in
+/usr/share/doc/PACKAGE/copyright once installed (or in the live session).
+EOF
+
 # What's new on the disc
 declare -A put=([/casper/initrd]=initrd [/casper/install-sources.yaml]=install-sources.yaml
-    [/boot/grub/grub.cfg]=grub.cfg [/boot/grub/loopback.cfg]=loopback.cfg [/.disk/info]=info)
+    [/boot/grub/grub.cfg]=grub.cfg [/boot/grub/loopback.cfg]=loopback.cfg [/.disk/info]=info
+    [/SOURCE.txt]=SOURCE.txt [/casper/sources.manifest]=sources.manifest)
 for l in "$install_layer" "$live_layer"; do
     for ext in squashfs manifest size; do
         put[/casper/$l.$ext]=$l.$ext
