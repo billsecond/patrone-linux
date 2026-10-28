@@ -48,9 +48,9 @@ Apps
 The clock and the network
 -------------------------
 
-- The clock: Cloudflare (time.cloudflare.com), Netnod (nts.netnod.se), PTB
-  (ptbtime1.ptb.de) and SIDN Labs (ntppool1.time.nl), over NTS, which proves
-  the time really comes from them.
+- The clock: Cloudflare (time.cloudflare.com), Netnod (nts.netnod.se) and
+  PTB (ptbtime1.ptb.de), over NTS, which proves the time really comes from
+  them.
 - The online check: when a network connects, NetworkManager asks GNOME's
   nmcheck.gnome.org for a short answer, to tell whether the internet is
   reachable or a Wi-Fi sign-in page is in the way. Settings, Privacy &

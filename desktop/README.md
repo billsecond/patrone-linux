@@ -14,7 +14,7 @@ Center.
 | File | Installed as | What it does |
 | --- | --- | --- |
 | `gnome-initial-setup/vendor.conf` | `/etc/gnome-initial-setup/vendor.conf` | First-login setup skips Ubuntu's "Help improve Ubuntu" page (`ubuntu_insights`), which asks to send system and error reports to Canonical, and its Ubuntu Pro page (`ubuntu_pro`) |
-| `chrony/patrone-nts.sources` | `/etc/chrony/sources.d/` | The clock's servers: Cloudflare (`time.cloudflare.com`), Netnod (`nts.netnod.se`), PTB (`ptbtime1.ptb.de`) and SIDN Labs (`ntppool1.time.nl`), each authenticated with NTS, in place of Ubuntu's `ntp.ubuntu.com` pools |
+| `chrony/patrone-nts.sources` | `/etc/chrony/sources.d/` | The clock's servers: Cloudflare (`time.cloudflare.com`), Netnod (`nts.netnod.se`), and PTB (`ptbtime1.ptb.de`), each authenticated with NTS, in place of Ubuntu's `ntp.ubuntu.com` pools. Not TimeNL (SIDN Labs), whose terms ask vendors to ask first (`docs/COMPLIANCE.md`, item 7) |
 | `chrony/patrone-nts.conf` | `/etc/chrony/conf.d/` | `nocerttimecheck 1`: a computer whose clock starts far off can still use NTS (below) |
 | `networkmanager/30-patrone-connectivity.conf` | `/usr/lib/NetworkManager/conf.d/` | NetworkManager's check for Wi-Fi sign-in pages asks GNOME's server (`nmcheck.gnome.org`) in place of `connectivity-check.ubuntu.com`. It comes after Ubuntu's `20-connectivity-ubuntu.conf`, so it wins |
 | `update-manager/patrone.cfg` | `/etc/update-manager/release-upgrades.d/` | `Prompt=never`: nothing offers to upgrade to Ubuntu's next release, or asks `changelogs.ubuntu.com` whether there is one. Patrone moves to a new Ubuntu base itself |
