@@ -1,7 +1,8 @@
 # Patrone Linux's licence agreement
 
 `eula.md` is Patrone Linux's End User Licence Agreement: the one text the
-website shows before a download (`website/src/licence.rs`) and the installer
+website shows before a download (`src/licence.rs` in the website's private
+repo, `billsecond/patrone-website`, whose build reads this folder) and the installer
 shows on its licence page. The user asked for it on 2026-10-28 ("a strong
 EULA in the website for the software that the user must click before
 downloading, and ... that same one up on the install page"), with Texas law.

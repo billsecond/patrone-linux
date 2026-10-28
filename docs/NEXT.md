@@ -2303,10 +2303,10 @@ rebuild; recommendations first):
     notes" opens Ubuntu's release notes for version 0.1
     (`https://www.ubuntu.com/getubuntu/releasenotes?os=ubuntu&ver=0.1`,
     `pages/welcome/gis-welcome-page.c`), and os-release's home, support and
-    bug links (Settings › About) are this private repository, which users
-    can't open. Recommended: hide the release notes link until Patrone has
-    release notes, and point os-release at Patrone's website once it's
-    public.
+    bug links (Settings › About) are this repository, which users couldn't
+    open while it was private (it's public since 2026-10-28). Recommended:
+    hide the release notes link until Patrone has release notes, and point
+    os-release at Patrone's website once it's public.
 13. **First-login setup runs under the taskbar:** its last page's "Open
     Patrone Software" button, and "You can change this later in the
     Settings app" on the others, are hidden behind the taskbar at the
