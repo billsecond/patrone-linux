@@ -21,6 +21,15 @@
 set -euo pipefail
 
 [ "$(id -u)" = 0 ] || { echo "build-iso.sh: run it as root" >&2; exit 1; }
+# The build mounts this machine's /dev and /dev/pts into each layer. It runs
+# in a mount namespace of its own, sharing nothing back, so unmounting them
+# there can't take this machine's away: with mounts shared, as systemd sets
+# them up, three builds at once left the dev VM without /dev/pts, and new
+# terminals and SSH logins failed (2026-10-28). The build's mounts also go
+# when it ends, however it ends.
+if [ -z "${PATRONE_ISO_NAMESPACE:-}" ]; then
+    exec env PATRONE_ISO_NAMESPACE=1 unshare --mount --propagation private -- "$BASH" "$0" "$@"
+fi
 [ $# = 3 ] || { sed -n '4p' "$0" >&2; exit 2; }
 ubuntu_iso=$(realpath "$1")
 debs=$(realpath "$2")
