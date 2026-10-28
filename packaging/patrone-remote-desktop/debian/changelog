@@ -1,3 +1,25 @@
+patrone-remote-desktop (0.5.0) resolute; urgency=medium
+
+  * Hyper-V's enhanced session (VMConnect): a login screen in VMConnect's
+    window, then the account's own desktop, with the clipboard, sound and a
+    screen that follows the window (the user, 2026-10-28). A second proxy
+    listens on vsock port 3389, which only the Hyper-V host can reach
+    (patrone-remote-desktop-vmconnect.service, on Hyper-V only). Its plugin
+    (patrone-vmconnect) shows each connection Patrone's login screen first
+    (libexec/greeter, one per connection), which has the password checked
+    with PAM (auth --vmconnect: any account that may sign in at the
+    computer) and then hands the proxy to the account's GNOME Remote
+    Desktop, while VMConnect stays connected. Network Remote Desktop is
+    unchanged, and whether it's on doesn't matter to this.
+  * Tells VMConnect when the account has signed in, as Windows does: until
+    then VMConnect keeps its window one size, though the desktop offers it
+    display control. The plugin logs display control and the sizes
+    VMConnect asks for, and the service logs to syslog, so its lines reach
+    the journal as they happen.
+  * Builds against cairo, Pango and xkbcommon for the login screen.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 13:40:00 -0500
+
 patrone-remote-desktop (0.4.8) resolute; urgency=medium
 
   * Credit GNOME Shell for the login-screen extension's conflict check,

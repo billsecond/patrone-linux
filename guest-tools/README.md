@@ -153,8 +153,8 @@ with this package (`iso/build-iso.sh`, sha256 `63eff97a...`):
 Found and fixed on the way, in an earlier install of the same VM: file copy
 not starting at boot (the `Conflicts=` above), production checkpoints
 failing while someone was signed in (the FUSE mounts above), and
-`hv-fcopy-bind` for the disc's kernel. Not checked: Enhanced Session (not
-built), a backup by real backup software (the checkpoint uses the same
+`hv-fcopy-bind` for the disc's kernel. Not checked: Enhanced Session
+(`patrone-remote-desktop`'s), a backup by real backup software (the checkpoint uses the same
 freeze), dynamic memory giving memory back (the guest's demand stayed near
 the maximum), and bare metal (nothing there should start; the conditions
 were read, not run).
@@ -166,17 +166,13 @@ doesn't follow the window, for Windows guests too. Settings → Displays offers
 the synthetic display's modes, up to 1920×1080 by default (`Set-VMVideo` on
 the host changes the list).
 
-Enhanced Session (clipboard, audio, drives, a screen that follows the
-window) is Remote Desktop over a Hyper-V socket: VMConnect connects to
-vsock port 3389 in the guest. **It doesn't work yet.** Nothing in Patrone
-listens on vsock: Patrone Remote Desktop (`remote-desktop/`) listens on TCP
-3389 and requires NLA, and VMConnect probably doesn't do NLA (with Windows
-guests it shows the guest's own sign-in screen; Microsoft's xrdp recipe for
-Linux guests turns NLA off). How VMConnect should sign in is still to be
-decided, in Patrone Remote Desktop rather than here; the first step is to
-see what VMConnect offers (the protocols in its first RDP packet, readable
-with a vsock listener). The installer's live session has no Remote Desktop
-at all. The host also needs, with the VM off:
+Enhanced Session (clipboard, audio, a screen that follows the window) is
+Remote Desktop over a Hyper-V socket: VMConnect connects to vsock port 3389
+in the guest. `patrone-remote-desktop` 0.5.0 listens there: VMConnect shows
+Patrone's login screen, then the account's own desktop
+(`remote-desktop/README.md`, "Hyper-V's enhanced session"). Drives can't be
+shared. The installer's live session has no Remote Desktop at all. The host
+also needs, with the VM off:
 
 ```powershell
 Set-VM -VMName NAME -EnhancedSessionTransportType HvSocket
