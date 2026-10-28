@@ -19,6 +19,13 @@ Copyright: 2006-2008 Red Hat, Inc.
 Comment: Copied at build time from Plymouth's spinner theme
  (plymouth-theme-spinner).
 License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
 Files: usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
 Copyright: 2017-2018 Canonical Ltd.
@@ -33,13 +40,6 @@ Comment: The login screen's theme: Yaru's GNOME Shell theme
  Shell's _common.scss, compiled into them, which is LGPL-2.1
  (/usr/share/doc/yaru-theme-gnome-shell/copyright).
 License: GPL-3+ and LGPL-2.1
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- .
- On Debian systems, the complete text of the GNU General Public License
- version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify

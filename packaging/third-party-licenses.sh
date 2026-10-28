@@ -67,3 +67,23 @@ for dir in "$vendor"/*/; do
         cat "$file"
     done
 done
+
+# Rust's standard library is compiled into the program as well. rustup's
+# toolchains carry its notices as HTML; Ubuntu's in libstd-rust's copyright.
+echo
+echo "================================================================"
+echo "The Rust standard library"
+echo "================================================================"
+echo
+sysroot=$(rustc --print sysroot 2>/dev/null || true)
+std_html=$sysroot/share/doc/rust/COPYRIGHT-library.html
+std_debian=$(ls /usr/share/doc/libstd-rust-*/copyright 2>/dev/null | head -1 || true)
+if [[ -n $sysroot && -f $std_html ]]; then
+    sed -e 's/<[^>]*>//g' -e 's/&quot;/"/g' -e "s/&#39;/'/g" -e 's/&lt;/</g' \
+        -e 's/&gt;/>/g' -e 's/&amp;/\&/g' -e 's/^[[:space:]]*//' "$std_html" | cat -s
+elif [[ -n $std_debian ]]; then
+    cat "$std_debian"
+else
+    echo "third-party-licenses.sh: no notices found for Rust's standard library" >&2
+    exit 1
+fi
