@@ -195,7 +195,7 @@ public"):
    earlier build's layer and the pool, gave 958 source packages. The full
    run waits for the next ISO.
 4. Directions: `SOURCE.txt` at the disc's root and `/etc/legal`
-   (`patrone-branding` 0.1.22) say `https://patronelinux.com/source`, and
+   (`patrone-branding` 0.1.21) say `https://patronelinux.com/source`, and
    the licence agreement's section 1 says the same; the website serves the
    folder there and links it from the download page (the website session).
 

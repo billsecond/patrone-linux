@@ -1,4 +1,4 @@
-patrone-branding (0.1.22) resolute; urgency=medium
+patrone-branding (0.1.21) resolute; urgency=medium
 
   * /etc/legal says where the source code is: the disc's at
     patronelinux.com/source, and Patrone's own on GitHub, now public
