@@ -16,9 +16,9 @@ set -euo pipefail
 
 # Patrone's revision of the patches: one more with each change to them, so a
 # new build of the same Ubuntu version installs as an upgrade
-revision=1
+revision=2
 # What changed in it, for the package's changelog
-changes="Patrone's build: Hyper-V's synthetic video counts as the boot display, so on a generation 2 VM the login screen no longer waits 10 seconds for a primary GPU."
+changes="Patrone's build: Hyper-V's synthetic video counts as the boot display, so on a generation 2 VM the login screen no longer waits 10 seconds for a primary GPU. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's patch."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -35,6 +35,33 @@ cd gdm3-*/
 cp "$here"/patches/*.patch debian/patches/
 printf '%s\n' patrone-hyperv-boot-display.patch >> debian/patches/series
 QUILT_PATCHES=debian/patches quilt push -a
+
+# Patrone maintains this build, so Patrone is its maintainer and Ubuntu the
+# original one, as Debian's guidelines for derivatives have it, and the
+# copyright file names Patrone's patch (docs/COMPLIANCE.md, item 13), as
+# gnome-settings/build.sh does for Settings
+maintainer="William Daugherty <31995458+billsecond@users.noreply.github.com>"
+sed -i \
+    -e "s|^Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>$|Maintainer: $maintainer|" \
+    -e 's|^XSBC-Original-Maintainer: .*$|XSBC-Original-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>|' \
+    debian/control
+if ! grep -qxF "Maintainer: $maintainer" debian/control ||
+    ! grep -qx 'XSBC-Original-Maintainer: Ubuntu Developers <.*>' debian/control; then
+    echo "debian/control's maintainers aren't as this expects: update gdm/build.sh" >&2
+    exit 1
+fi
+# GDM's copyright file is plain text, not machine-readable
+cat >> debian/copyright << 'EOF'
+
+Patrone Linux's build of GDM (gdm/ in
+https://github.com/billsecond/patrone-linux) adds
+debian/patches/patrone-hyperv-boot-display.patch:
+
+    Copyright © 2026  William Daugherty
+
+under GDM's licence, the GNU General Public License, version 2 or (at your
+option) any later version.
+EOF
 
 DEBFULLNAME="William Daugherty" \
 DEBEMAIL="31995458+billsecond@users.noreply.github.com" \

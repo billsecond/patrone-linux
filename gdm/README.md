@@ -29,7 +29,7 @@ the full 10 seconds.
 | File | |
 | --- | --- |
 | `patches/patrone-hyperv-boot-display.patch` | Counts a display on the VMBus as the boot display: `hyperv_drm` takes over the framebuffer the VM's firmware booted on. Other computers are checked as before |
-| `build.sh` | Fetches Ubuntu's source, adds the patch, versions it Ubuntu's version plus `patrone` and the revision, and builds |
+| `build.sh` | Fetches Ubuntu's source, adds the patch, versions it Ubuntu's version plus `patrone` and the revision, and builds. From revision 2 it names Patrone as the packages' maintainer and Ubuntu Developers as the original one, as Debian's guidelines for derivatives have it, and adds Patrone's patch to the copyright file (`docs/COMPLIANCE.md`, item 13) |
 
 GDM still deactivates the splash as it starts: Plymouth has to let go of the
 screen before GNOME Shell can take it. Without the wait, the splash stands
