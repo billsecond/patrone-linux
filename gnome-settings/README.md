@@ -42,6 +42,14 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
   Patrone Remote Desktop turns off (both use port 3389). Without the
   package (the ISO's live session), the page is GNOME's as it was.
   `remote-desktop/README.md` has how the switch's helper works.
+- **Patrone as the maintainer** (revision 12; `docs/COMPLIANCE.md`, item
+  13). `build.sh` makes the package's `Maintainer` Patrone's and
+  `XSBC-Original-Maintainer` Ubuntu Developers, as Debian's guidelines for
+  derivatives have it, so Ubuntu isn't credited with Patrone's changes or
+  sent its bug reports, and adds a `Files:` stanza for Patrone's pages
+  (`panels/patrone/`, `cc-patrone-remote-login.*`, GPL-2.0-or-later) to
+  `debian/copyright`. It stops if Ubuntu's fields or license texts change
+  shape.
 
 | File | |
 | --- | --- |
@@ -77,7 +85,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone11_amd64.deb ./out/gnome-control-center-data_*patrone11_all.deb
+sudo apt install ./out/gnome-control-center_*patrone12_amd64.deb ./out/gnome-control-center-data_*patrone12_all.deb
 ```
 
 ## How it was checked

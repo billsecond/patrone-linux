@@ -17,9 +17,9 @@ set -euo pipefail
 
 # Patrone's revision of the page and patches: one more with each change to
 # them, so a new build of the same Ubuntu version installs as an upgrade
-revision=11
+revision=12
 # What changed in it, for the package's changelog
-changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do."
+changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pages."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -76,6 +76,34 @@ if ! grep -q 'patrone-logo-text\.svg$' debian/rules || ! grep -q 'patrone-logo-t
     echo "debian/rules no longer names Ubuntu's logo as this expects: update gnome-settings/build.sh" >&2
     exit 1
 fi
+
+# Patrone maintains this build, so Patrone is its maintainer and Ubuntu the
+# original one, as Debian's guidelines for derivatives have it, and the
+# copyright file names Patrone's own files (docs/COMPLIANCE.md, item 13).
+maintainer="William Daugherty <31995458+billsecond@users.noreply.github.com>"
+sed -i \
+    -e "s|^Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>$|Maintainer: $maintainer|" \
+    -e 's|^XSBC-Original-Maintainer: .*$|XSBC-Original-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>|' \
+    debian/control
+if ! grep -qxF "Maintainer: $maintainer" debian/control ||
+    ! grep -qx 'XSBC-Original-Maintainer: Ubuntu Developers <.*>' debian/control; then
+    echo "debian/control's maintainers aren't as this expects: update gnome-settings/build.sh" >&2
+    exit 1
+fi
+# The stanza goes with the other Files paragraphs, before the license texts
+stanza="Files: panels/patrone/*
+ panels/system/remote-desktop/cc-patrone-remote-login.*
+Copyright: 2026 William Daugherty
+License: GPL-2+
+Comment: Patrone Linux's own pages, added by Patrone's build (gnome-settings/
+ in https://github.com/billsecond/patrone-linux)."
+if ! stanza=$stanza awk '!done && previous == "" && /^License:/ { print ENVIRON["stanza"]; print ""; done = 1 }
+        { print; previous = $0 }
+        END { exit !done }' debian/copyright > debian/copyright.patrone; then
+    echo "debian/copyright has no license texts where this expects: update gnome-settings/build.sh" >&2
+    exit 1
+fi
+mv debian/copyright.patrone debian/copyright
 
 DEBFULLNAME="William Daugherty" \
 DEBEMAIL="31995458+billsecond@users.noreply.github.com" \

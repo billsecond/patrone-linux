@@ -6,6 +6,13 @@ Files: *
 Copyright: 2026 William Daugherty
 License: GPL-3+
 
+Files: login-screen/patrone-login@patrone-linux/extension.js
+Copyright: 2026 William Daugherty
+           The GNOME Shell authors
+License: GPL-3+
+Comment: findConflictingSession is adapted from GNOME Shell's
+ js/gdm/loginDialog.js (_findConflictingSession), which is GPL-2.0-or-later.
+
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

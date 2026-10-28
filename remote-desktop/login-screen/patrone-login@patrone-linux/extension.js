@@ -8,12 +8,17 @@
 //
 // Copyright 2026 William Daugherty
 // SPDX-License-Identifier: GPL-3.0-or-later
+//
+// findConflictingSession is adapted from GNOME Shell's js/gdm/loginDialog.js
+// (_findConflictingSession), copyright the GNOME Shell authors,
+// GPL-2.0-or-later.
 
 import {Extension, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {LoginDialog} from 'resource:///org/gnome/shell/gdm/loginDialog.js';
 import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js';
 
-// GNOME's _findConflictingSession, without sessions that have no seat
+// GNOME's _findConflictingSession, adapted from GNOME Shell's
+// js/gdm/loginDialog.js, without sessions that have no seat
 async function findConflictingSession(startingSessionId) {
     const loginManager = LoginManager.getLoginManager();
     const sessions = await loginManager.listSessions();

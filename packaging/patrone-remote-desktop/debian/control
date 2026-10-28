@@ -30,17 +30,17 @@ Depends: ${shlibs:Depends},
          pkexec,
          python3,
          util-linux
-Description: Windows-style desktops, on the screen and over Remote Desktop
- Each account has one desktop, which runs whether or not anyone is looking at
- it, as on Windows. The machine's own screen (the "Patrone Desktop" login
- session) and Remote Desktop clients are both views of it, and whoever
- connects last has it: a Remote Desktop sign-in takes the screen back to the
- login screen, and signing in on the screen disconnects the Remote Desktop
- client.
+Description: Patrone's desktops: one per account, on the screen and remotely
+ Each account has one desktop, which keeps running whether or not anyone is
+ looking at it. The machine's own screen (the "Patrone Desktop" login
+ session) and remote desktop clients are both views of it, and whoever
+ connects last has it: a remote sign-in takes the screen back to the login
+ screen, and signing in on the screen disconnects the remote client. It
+ works the way users of Windows' Remote Desktop expect.
  .
- Windows' Remote Desktop Connection and other RDP clients sign in with the
- account's own username and password, which PAM checks on every connection;
- nothing keeps a copy of them. Only accounts in the remote-desktop group may,
- and only after an administrator turns it on: with "Enable Remote Desktop" in
- Settings' System > Remote Desktop > Remote Login (Patrone's build of GNOME
- Settings), or "patrone-remote-desktop enable".
+ RDP clients, such as Windows' Remote Desktop Connection, sign in with the
+ account's own username and password, which PAM checks on every connection.
+ Only accounts in the remote-desktop group may, and only after an
+ administrator turns it on: with the Remote Desktop switch in Settings'
+ System > Remote Desktop (Patrone's build of GNOME Settings), or
+ "patrone-remote-desktop enable".

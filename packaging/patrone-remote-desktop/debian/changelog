@@ -1,3 +1,15 @@
+patrone-remote-desktop (0.4.8) resolute; urgency=medium
+
+  * Credit GNOME Shell for the login-screen extension's conflict check,
+    adapted from js/gdm/loginDialog.js (GPL-2.0-or-later), in the
+    extension and the copyright file.
+  * The description leads with Patrone's own words, keeps Windows as a
+    comparison, and names Settings' Remote Desktop switch where it is now.
+    It no longer says nothing keeps a copy of the password: the SAM file
+    keeps its NT hash for NLA.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 09:00:00 -0500
+
 patrone-remote-desktop (0.4.7) resolute; urgency=medium
 
   * Installing, removing and updating software on Patrone's desktops asks
