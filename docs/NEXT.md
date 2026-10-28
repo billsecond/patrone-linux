@@ -53,6 +53,13 @@ Done:
   account in the `remote-desktop` group signs in once, with its own Linux
   password checked by PAM; nothing stores the password. Built, unit-tested,
   not installed or tried with a real client yet.
+- **Hyper-V and VirtualBox guest support** (section 17,
+  `guest-tools/README.md`, package `patrone-guest-tools` 0.1.0, 2026-10-28):
+  in a fresh install from an ISO with it, all six Hyper-V integration
+  services were OK and checked from the host (file copy, production
+  checkpoints, KVP, dynamic memory, shutdown, the host's clock). VirtualBox
+  is packaged but untried (the user chose not to install VirtualBox), and
+  Enhanced Session isn't built.
 - **Patrone taskbar** (section 7, `shell/gnome/README.md`, package
   `patrone-gnome-taskbar`): a compact Windows 11-style taskbar at the bottom
   in place of GNOME's top bar, with the Start menu (type to search), role
@@ -538,7 +545,8 @@ Findings:
   after boot, after udev had created the devices their units wait for. The
   bootstrap script re-triggers udev. `hv-fcopy-daemon` stays off: its unit
   waits for `/dev/vmbus/hv_fcopy`, which the 7.0 kernel's UIO-based fcopy
-  doesn't create (it's only for `Copy-VMFile`).
+  doesn't create (it's only for `Copy-VMFile`). `patrone-guest-tools`
+  starts it on the UIO device (section 17).
 - **Host:** `EnableEnhancedSessionMode` is True, but `PatroneDev` uses the
   `VMBus` transport. Linux guests need `HvSocket`.
 - `freerdp-proxy` (FreeRDP 3.32) runs headless and could sit between VMConnect
@@ -803,8 +811,10 @@ Plan:
    `Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket`, start
    it, and connect with VMConnect. Its main value is learning whether
    VMConnect does NLA, which decides how Patrone's own RDP server must work.
-2. **Patrone ISO:** ship `linux-cloud-tools-virtual` (its units only run on
-   Hyper-V) and the RDP setup.
+2. **Patrone ISO:** done for the integration services by
+   `patrone-guest-tools` (section 17), with the HWE kernel's cloud tools
+   rather than `linux-cloud-tools-virtual`. Enhanced Session (RDP over
+   vsock) is still to do.
 3. **Patrone Desktop:** GNOME Remote Desktop only works with Mutter, so
    Patrone needs its own RDP path: implement the screen-cast and
    remote-desktop D-Bus APIs GNOME Remote Desktop uses, or write
@@ -2310,6 +2320,55 @@ Also still open from the ISO work: Remote Desktop breaks automatic login
 (section 3), `patrone-branding` asks about `/etc/issue` when installed with
 apt on a running system, and the version: the ISO says 26.04.1 and the
 installed system 0.1. The user's call which one Patrone shows.
+
+## 17. Hyper-V and VirtualBox guest support (patrone-guest-tools)
+
+The user, 2026-10-28: "hyper-v and virtualbox support just like a windows
+guest os would have". `guest-tools/README.md` has the design and what was
+checked; in short:
+
+- **Hyper-V, checked from the host** in a fresh install (`PatroneGuestTools`,
+  a new VM; its live session too): shutdown, heartbeat, time sync, KVP
+  (the host sees "Patrone Linux" and the IP addresses), VSS (a
+  `ProductionOnly` checkpoint with someone signed in), the Guest Service
+  Interface (`Copy-VMFile`; on Linux the destination is a folder) and
+  dynamic memory. The daemons are Ubuntu's (`linux-cloud-tools-generic-hwe-26.04`,
+  main), run from any installed kernel's tools.
+- **Three things Ubuntu 26.04 gets wrong on Hyper-V**, fixed in the
+  package: file copy never starts (Ubuntu's unit waits for a device Linux
+  6.10 dropped, and the disc's 7.0.0-30 kernel doesn't even give the
+  channel to `uio_hv_generic`); the daemons fail in the live session (they
+  need the running kernel's own tools); and production checkpoints fail
+  whenever someone is signed in, because `hv_vss_daemon` tries to freeze
+  the FUSE clipboard mounts of FreeRDP and GNOME Remote Desktop, both part
+  of Patrone Remote Desktop, and gives up.
+- **The host's clock** is one of chrony's sources (`PHC0`). The user's
+  Windows host had Windows Time stopped and its clock 6 s behind; after a
+  checkpoint the guest followed it for a while. Worth starting Windows Time
+  on the host (`Start-Service W32Time`; the user's call).
+- **Enhanced Session isn't built.** It's RDP over vsock 3389; Patrone Remote
+  Desktop listens on TCP and requires NLA, which VMConnect probably doesn't
+  do. The Remote Desktop session declined it as a design decision for the
+  user. First step: read what VMConnect offers in its first RDP packet with
+  a vsock listener on a test VM.
+- **VirtualBox is packaged, not tried** (the user, 2026-10-28: don't install
+  VirtualBox anywhere for this). Ubuntu's guest utilities (7.2.6,
+  **multiverse**: Debian's `contrib`, only because the host's BIOS needs a
+  non-free compiler; the guest tools are GPL-3.0), VBoxClient started in
+  Wayland sessions (Ubuntu's packages only start it from `Xsession.d`), and
+  every account in `vboxsf`. Expect the clipboard not to work from a
+  Windows host until Ubuntu has 7.2.8, and no drag and drop on Wayland.
+- **For the ISO build:** apt 3.2 upgrades by source package, so the HWE
+  cloud tools brought the archive's kernel (7.0.0-42) into the image next
+  to the disc's; the ISO grew by about 560 MB. And apt left recommended
+  packages that need an installed one upgraded out (`vim` isn't in the
+  ISO). `iso/build-iso.sh`'s chroot mounts share propagation with the dev
+  VM: two builds at once took the dev VM's own `/dev/pts` away
+  (2026-10-28, remounted by hand); run builds one at a time, or in
+  `unshare --mount --propagation private`, until the script isolates its
+  mounts.
+- Also seen: the installer warns "The computer is not plugged in to a
+  power source" in Hyper-V, which shows the guest a battery.
 
 ## Suggested order
 

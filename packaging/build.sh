@@ -15,6 +15,7 @@
 #   ./packaging/build.sh patrone-browser-chooser -d
 #   ./packaging/build.sh fonts-patrone-sans
 #   ./packaging/build.sh patrone-software
+#   ./packaging/build.sh patrone-guest-tools
 #   ./packaging/build.sh patrone-installer   (after installer/build.sh)
 #
 # The packages land in out/. For a Rust package the crates are vendored into
@@ -42,6 +43,7 @@ case $package in
     patrone-browser-chooser) source_dir=browser-chooser ;;
     fonts-patrone-sans) source_dir=fonts ;;
     patrone-software) source_dir=software ;;
+    patrone-guest-tools) source_dir=guest-tools ;;
     patrone-installer) source_dir=installer ;;
     *)
         echo "Unknown package: $package" >&2
