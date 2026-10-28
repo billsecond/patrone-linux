@@ -76,8 +76,10 @@ Done:
   `packaging/publish.sh`. `patrone-desktop` 0.2.1 installs its source, key
   and pins (Patrone's builds of GDM, GNOME Settings and first-login setup
   win over Ubuntu's newer ones), and the dev VM rebuilds those three daily
-  when Ubuntu updates them (`packaging/ubuntu-updates.sh`). Section 18 also
-  has the plan for moving to 28.04.
+  when Ubuntu updates them (`packaging/ubuntu-updates.sh`). Merges aren't
+  published by themselves: publish each one right after merging (section
+  18, `packaging/README.md`, "Publishing"). Section 18 also has the plan for
+  moving to 28.04.
 - **Patrone taskbar** (section 7, `shell/gnome/README.md`, package
   `patrone-gnome-taskbar`): a compact Windows 11-style taskbar at the bottom
   in place of GNOME's top bar, with the Start menu (type to search), role
@@ -2500,6 +2502,19 @@ than GitHub Actions because the key stays off GitHub and the VM has the
 build dependencies; a daily GitHub Actions check in billsecond/patrone-apt
 opens an issue for each package Ubuntu has updated, and closes it when the
 rebuild is published, so one that's behind shows even while the VM is off.
+
+**Merges aren't published by themselves.** Nothing builds `main` and
+publishes it: the daily job covers only Ubuntu's updates to those three
+packages. So after each merge that bumps a package's version, build that
+package from `main` on the VM and publish it by name (`packaging/README.md`,
+"Publishing"; `CLAUDE.md` says so too). By the evening of 2026-10-28 the
+repository had fallen behind `main` this way, `patrone-desktop` 0.2.1
+against main's 0.2.3 and five packages more, and a fresh install found it.
+They're published since, built from a clean checkout of `main` at
+`d0c19ce`: Desktop 0.2.3, Default Apps 0.2.1, File Manager 0.3.3, Hyper-V
+Setup 0.1.1 (new), Remote Desktop 0.5.1 and Branding 0.1.21. PatroneDev's
+apt read them from the live repository as the candidates and downloaded
+them with their sums checked.
 
 **Checked on PatroneDev** (2026-10-28), first with a local copy of the
 repository served on the VM and a stand-in for `gh`: `publish.sh --all`

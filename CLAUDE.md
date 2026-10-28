@@ -23,6 +23,12 @@ Read these before starting work:
   in the website's private repo and folder.
 - The stack is decided: Rust + Smithay for the compositor, GTK4 (gtk4-rs,
   gtk4-layer-shell) for the shell and apps. Don't revisit it without asking.
+- **Publish what you merge.** Installs get only what's in Patrone's apt
+  repository (`billsecond/patrone-apt`), and nothing publishes `main` there
+  by itself. After merging a PR that bumps a package's version, build that
+  package from `main` on the VM and publish it by name:
+  `./packaging/build.sh PACKAGE`, then `./packaging/publish.sh PACKAGE`
+  (`packaging/README.md`, "Publishing"). Never publish a build from a branch.
 - Never type passwords or approve sign-ins for the user. Root work on the VM
   goes through the `claude` account (`ssh patronedev-claude`), which has
   passwordless sudo: the user's choice, 2026-10-27
