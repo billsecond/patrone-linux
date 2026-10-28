@@ -9,6 +9,14 @@ under its own hypervisor (systemd's `ConditionVirtualization=microsoft` or
 
 Build it on the dev VM with `./packaging/build.sh patrone-guest-tools`.
 
+**Source and licences.** The package's own files (units, drop-ins, udev
+rule and scripts) are GPL-3.0-or-later, and their source is this folder
+and `packaging/patrone-guest-tools/` in Patrone's repository, which isn't
+public yet (the ISO's source offer is still to do, `docs/COMPLIANCE.md`).
+What it depends on is Ubuntu's, unchanged, with source in Ubuntu's archive:
+the Hyper-V daemons from the kernel's source package, `linux` (GPL-2.0), and
+VirtualBox's guest utilities from `virtualbox` (GPL-3.0, in multiverse).
+
 ## Hyper-V (Generation 2)
 
 | Integration service | What does it | Notes |
@@ -255,6 +263,11 @@ when it was only recommended, since it needs an installed package
 (`xserver-common`) upgraded, and without it there's no resizing or
 clipboard. `patrone-desktop` only recommends `patrone-guest-tools`, so a
 system without multiverse still installs the desktop.
+
+**Ubuntu's, unchanged.** Patrone uses Ubuntu's VirtualBox packages as they
+are: never rebuilt or renamed (Oracle's FAQ: custom builds may not carry
+the VirtualBox name), and never Oracle's Extension Pack, which can't be
+redistributed.
 
 **Cost elsewhere.** `virtualbox-guest-x11` depends on Xorg's server
 (`xserver-xorg-core`, about 4 MB), which a Wayland-only desktop doesn't
