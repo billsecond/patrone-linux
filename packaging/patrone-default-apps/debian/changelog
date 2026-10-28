@@ -1,3 +1,11 @@
+patrone-default-apps (0.2.1) resolute; urgency=medium
+
+  * Videos open in GNOME's Video Player (Showtime, which patrone-desktop
+    0.2.3 recommends): every type it opens names it first, so it stays the
+    default when another player is installed.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 16:30:00 -0500
+
 patrone-default-apps (0.2.0) resolute; urgency=medium
 
   * No web browser comes with Patrone Linux: drop the dependency on
