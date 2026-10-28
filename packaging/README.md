@@ -23,7 +23,8 @@ source. `build.sh` puts the two together and builds the `.deb` on the dev VM:
 
 The packages land in `out/`. Install them with
 `sudo apt install ./out/patrone-terminal_0.1.1_amd64.deb` (apt pulls in the
-dependencies).
+dependencies), and publish them to Patrone's apt repository with
+`./packaging/publish.sh` (below, "Publishing").
 
 | Package | Source | What it installs |
 | --- | --- | --- |
@@ -71,5 +72,63 @@ Notes:
   session (`[schema:ubuntu]` in `10_ubuntu-settings.gschema.override`).
   The session-specific value beats any plain default, so Patrone's overrides
   set both.
-- Later these builds move into a clean `sbuild` chroot, and the packages into
-  the private `reprepro` repository (see `docs/PLAN.md`).
+- Later these builds move into a clean `sbuild` chroot (see `docs/PLAN.md`).
+
+## Publishing
+
+Installs get Patrone's updates from its apt repository,
+[billsecond/patrone-apt](https://github.com/billsecond/patrone-apt), on
+GitHub Pages (`https://billsecond.github.io/patrone-apt`): `patrone-desktop`
+installs its source, key and pins (`desktop/README.md`, "Updates").
+`publish.sh` puts builds there, on the dev VM, where the signing key is:
+
+```
+./packaging/publish.sh patrone-terminal       # its newest build in out/
+./packaging/publish.sh gdm3                    # with libgdm1 and the rest of that build
+./packaging/publish.sh out/patrone-desktop_0.2.1_all.deb
+./packaging/publish.sh --all                   # the newest build of every package in out/
+./packaging/publish.sh --dry-run --all         # what would change
+```
+
+It uploads the new debs to the repository's `pool` release, writes the
+index (`dists/resolute`) and signs it, commits and pushes it to
+`~/src/patrone-apt`, and GitHub Pages has it a minute or two later. A
+package already published at that version or newer is skipped. Publish
+what's on `main`: every install takes it, by itself, within a day.
+
+The key is on the dev VM only, in `~/.local/share/patrone-apt/gnupg`
+(Ed25519, fingerprint `8FE6 1B83 753C 2636 CD74 0259 4FC3 52E3 D384 225F`),
+backed up as `~/.local/share/patrone-apt/secret-key-backup.asc`. Its public
+half is `desktop/apt/patrone-archive-keyring.gpg`.
+
+### Ubuntu's updates to the packages Patrone rebuilds
+
+GDM, GNOME Settings and first-login setup are Ubuntu's packages with
+Patrone's changes, versioned Ubuntu's plus `patroneN`, and installs keep
+Patrone's build even when Ubuntu has a newer one (`desktop/apt/patrone.pref`).
+So each of Ubuntu's updates to them has to be built again with Patrone's
+changes. `ubuntu-updates.sh` does that: it compares Patrone's builds with
+what Ubuntu has published for resolute (Launchpad), builds what's behind
+with `gdm/build.sh`, `gnome-settings/build.sh` or
+`gnome-initial-setup/build.sh` at Ubuntu's new version, from a clean
+checkout of `main`, and publishes it. It also says when the installer
+snap's channel moves past the revision `installer/build.sh` follows (that
+one waits for the next ISO: `installer/README.md`). What it can't do, a
+build whose patches no longer apply for one, becomes an issue in
+billsecond/patrone-apt.
+
+```
+./packaging/ubuntu-updates.sh --check    # only say what's behind
+./packaging/ubuntu-updates.sh            # build and publish it
+```
+
+It runs daily on the dev VM as a user timer
+(`scripts/vm/patrone-ubuntu-updates.timer`, whose service file says how to
+install it), while the account is signed in. Separately, a daily GitHub
+Actions check in billsecond/patrone-apt opens an issue for each package
+Ubuntu has updated and closes it when Patrone's rebuild is published, so a
+build that's behind shows up even while the VM is off.
+
+A script on the VM rather than a GitHub Actions build, because the signing
+key stays off GitHub, and the VM already has Ubuntu 26.04 with every build
+dependency these three need.

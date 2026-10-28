@@ -196,6 +196,8 @@ if ! gpgv --keyring "$repo/patrone-archive-keyring.gpg" "$repo/$dists/InRelease"
     exit 1
 fi
 
+mapfile -t new < <(printf '%s\n' "${new[@]}" | sort)
+mapfile -t summary < <(printf '%s\n' "${summary[@]}" | sort)
 git -C "$repo" add "$dists"
 git -C "$repo" commit -qm "Publish $(IFS=,; echo "${new[*]}" | sed 's/,/, /g')" \
     -m "$(printf '%s\n' "${summary[@]}")"
