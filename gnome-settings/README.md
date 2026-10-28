@@ -41,6 +41,7 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 | `patches/patrone-hide-telemetry.patch` | Hides the Telemetry row |
 | `remote-login/cc-patrone-remote-login.c`, `.h` | Remote Login's Patrone Remote Desktop page, added to `panels/system/remote-desktop/`. It runs `/usr/libexec/patrone-remote-desktop/settings` through `pkexec` for the switch's state (`status`), turning it on or off, and the password; the connection file comes from `patrone-remote-desktop rdp-file` |
 | `patches/patrone-remote-login.patch` | Builds that page, and shows it in Remote Login's place where the helper is installed |
+| `patches/patrone-desktop-switches.patch` | Ubuntu's Desktop page (`panels/ubuntu`): where Patrone's taskbar is installed, switches for the desktop bubble and the Recycle Bin on the desktop come first, in place of Ubuntu's Desktop Icons settings. File Manager draws Patrone's desktop and Ubuntu's icons are off then, and their switch there would bring them back beside it |
 | `build.sh` | Fetches Ubuntu's source, adds the page and the Remote Login page (each as a patch of its own) and the patches, versions it Ubuntu's version plus `patrone` and the revision, and builds |
 
 The page hides itself where neither Patrone's taskbar nor Patrone Settings
@@ -66,7 +67,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone9_amd64.deb ./out/gnome-control-center-data_*patrone9_all.deb
+sudo apt install ./out/gnome-control-center_*patrone10_amd64.deb ./out/gnome-control-center-data_*patrone10_all.deb
 ```
 
 ## How it was checked

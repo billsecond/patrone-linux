@@ -83,8 +83,8 @@ const PIN_ICONS: [(&str, &str, &str); 2] = [
 /// Where the desktop's files show (the taskbar's desktop-bubble setting,
 /// on for the first).
 const DESKTOP_FILES: [(&str, &str, &str); 2] = [
-    ("bubble", "In a bubble", "A pill at the screen's left edge opens them, over any window"),
-    ("desktop", "On the desktop", "Across the desktop, under your windows"),
+    ("bubble", "On", "The desktop's files in a bubble, opened from a pill at the screen's left edge"),
+    ("desktop", "Off", "The desktop's files across the desktop, under your windows"),
 ];
 
 /// Whether the Recycle Bin is on the desktop (its show-recycle-bin setting,
@@ -667,11 +667,12 @@ fn desktop_page() -> gtk::ScrolledWindow {
     // would end the app)
     let has_key = |key: &str| taskbar.settings_schema().is_some_and(|schema| schema.has_key(key));
     if has_key("desktop-bubble") {
-        section_title(&content, "Desktop files");
+        section_title(&content, "Desktop bubble");
         note(
             &content,
-            "In a bubble, they're kept off the desktop: a small pill at the screen's left \
-             edge, shown whenever no window covers it, opens them. Click it, or drag it out.",
+            "On, the desktop's files are kept off the desktop: a small pill at the screen's \
+             left edge, shown whenever no window covers it, opens them. Click it, or drag it \
+             out. It changes at once.",
         );
         let items = DESKTOP_FILES
             .iter()

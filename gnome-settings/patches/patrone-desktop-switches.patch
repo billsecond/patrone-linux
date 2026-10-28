@@ -1,0 +1,138 @@
+Description: Patrone's desktop switches on the Desktop page
+ With Patrone's taskbar installed, File Manager draws the desktop and
+ Ubuntu's desktop icons are off, so the page has switches for the desktop
+ bubble and the Recycle Bin where Desktop Icons' settings were: those
+ would bring Ubuntu's icons back beside Patrone's.
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: not-needed
+---
+--- a/panels/ubuntu/cc-ubuntu-panel.blp
++++ b/panels/ubuntu/cc-ubuntu-panel.blp
+@@ -47,6 +47,24 @@
+ 
+       Adw.PreferencesPage {
+ 
++        /* Patrone's desktop (its taskbar and File Manager), in place of
++         * Ubuntu's desktop icons */
++        Adw.PreferencesGroup patrone_desktop_group {
++          visible: false;
++
++          Adw.SwitchRow patrone_bubble_switch {
++            title: _("Desktop _Bubble");
++            subtitle: _("The desktop's files in a bubble, opened from the pill at the screen's left edge. Off, they show across the desktop.");
++            use-underline: true;
++          }
++
++          Adw.SwitchRow patrone_bin_switch {
++            title: _("_Recycle Bin on the Desktop");
++            subtitle: _("Off, it's still in File Manager and on the bubble's edge, and right-clicking the desktop brings it back.");
++            use-underline: true;
++          }
++        }
++
+         Adw.PreferencesGroup ding_preferences_group {
+           /* Translators: Desktop icons settings. */
+           title: _("Desktop Icons");
+--- a/panels/ubuntu/cc-ubuntu-panel.c
++++ b/panels/ubuntu/cc-ubuntu-panel.c
+@@ -47,6 +47,10 @@
+ #define TILING_ASSISTANT_SCHEMA "org.gnome.shell.extensions.tiling-assistant"
+ #define TILING_ASSISTANT_UUID "tiling-assistant@ubuntu.com"
+ 
++/* Patrone's taskbar, which with File Manager draws the desktop in place of
++ * Ubuntu's desktop icons (and turns them off) */
++#define PATRONE_TASKBAR_SCHEMA "org.gnome.shell.extensions.patrone-taskbar"
++
+ #define GNOME_SHELL_SCHEMA "org.gnome.shell"
+ #define GNOME_SHELL_ENABLED_EXTENSIONS "enabled-extensions"
+ #define GNOME_SHELL_DISABLED_EXTENSIONS "disabled-extensions"
+@@ -61,6 +65,9 @@
+ struct _CcUbuntuPanel {
+   CcPanel                 parent_instance;
+ 
++  AdwPreferencesGroup    *patrone_desktop_group;
++  AdwSwitchRow           *patrone_bubble_switch;
++  AdwSwitchRow           *patrone_bin_switch;
+   AdwPreferencesGroup    *ding_preferences_group;
+   GtkSwitch              *ding_switch;
+   GtkCenterBox           *no_settings_view;
+@@ -81,6 +88,7 @@
+   AdwSwitchRow           *tiling_assistant_popup_switch;
+   AdwSwitchRow           *tiling_assistant_tiling_group;
+ 
++  GSettings              *patrone_taskbar_settings;
+   GSettings              *ding_settings;
+   GSettings              *dock_settings;
+   GSettings              *interface_settings;
+@@ -109,6 +117,7 @@
+ 
+   g_clear_object (&self->gnome_shell_settings);
+   g_clear_object (&self->tiling_assistant_settings);
++  g_clear_object (&self->patrone_taskbar_settings);
+   g_clear_object (&self->ding_settings);
+   g_clear_object (&self->dock_settings);
+   g_clear_object (&self->dock_monitors_list);
+@@ -127,6 +136,7 @@
+ {
+   gboolean enabled = FALSE;
+ 
++  enabled |= gtk_widget_is_visible (GTK_WIDGET (self->patrone_desktop_group));
+   enabled |= gtk_widget_is_visible (GTK_WIDGET (self->dock_preferences_group));
+   enabled |= gtk_widget_is_visible (GTK_WIDGET (self->ding_preferences_group));
+   enabled |= gtk_widget_is_visible (GTK_WIDGET (self->tiling_assistant_preferences_group));
+@@ -996,6 +1006,9 @@
+   gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/control-center/ubuntu/cc-ubuntu-panel.ui");
+ 
+   gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, no_settings_view);
++  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_desktop_group);
++  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_bubble_switch);
++  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_bin_switch);
+   gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, ding_preferences_group);
+   gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, ding_switch);
+   gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, ding_icon_size_row);
+@@ -1529,9 +1542,32 @@
+       g_warning ("No GNOME Shell is installed here. Please fix your installation.");
+     }
+ 
+-  /* Only load if we ding installed */
++  /* Patrone's desktop settings, where its taskbar is installed: the
++   * desktop bubble and the Recycle Bin. They change the desktop at once. */
++  schema = g_settings_schema_source_lookup (schema_source, PATRONE_TASKBAR_SCHEMA, TRUE);
++  if (schema && g_settings_schema_has_key (schema, "desktop-bubble"))
++    {
++      self->patrone_taskbar_settings = g_settings_new_full (schema, NULL, NULL);
++
++      g_settings_bind (self->patrone_taskbar_settings, "desktop-bubble",
++                       self->patrone_bubble_switch, "active",
++                       G_SETTINGS_BIND_DEFAULT);
++      if (g_settings_schema_has_key (schema, "show-recycle-bin"))
++        g_settings_bind (self->patrone_taskbar_settings, "show-recycle-bin",
++                         self->patrone_bin_switch, "active",
++                         G_SETTINGS_BIND_DEFAULT);
++      else
++        gtk_widget_set_visible (GTK_WIDGET (self->patrone_bin_switch), FALSE);
++
++      gtk_widget_set_visible (GTK_WIDGET (self->patrone_desktop_group), TRUE);
++    }
++  g_clear_pointer (&schema, g_settings_schema_unref);
++
++  /* Only load if we ding installed, and Patrone's desktop doesn't take its
++   * place: Ubuntu's desktop icons are off then, and their switch here would
++   * bring them back beside Patrone's */
+   schema = g_settings_schema_source_lookup (schema_source, DING_SCHEMA, TRUE);
+-  if (schema)
++  if (schema && self->patrone_taskbar_settings == NULL)
+     {
+       self->ding_settings = g_settings_new_full (schema, NULL, NULL);
+ 
+@@ -1575,7 +1611,9 @@
+     }
+   else
+     {
+-      g_warning ("No Ding is installed here. Please fix your installation.");
++      if (self->patrone_taskbar_settings == NULL)
++        g_warning ("No Ding is installed here. Please fix your installation.");
++      g_clear_pointer (&schema, g_settings_schema_unref);
+       gtk_widget_set_visible (GTK_WIDGET (self->ding_preferences_group), FALSE);
+     }
+ 

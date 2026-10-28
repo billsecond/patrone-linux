@@ -90,8 +90,8 @@ static const Choice pin_icons[] = {
 
 /* Yes-or-no settings: the first choice turns them on */
 static const Choice desktop_files[] = {
-  { "bubble", N_("In a Bubble"), N_("A pill at the screen's left edge opens them, over any window") },
-  { "desktop", N_("On the Desktop"), N_("Across the desktop, under your windows") },
+  { "bubble", N_("On"), N_("The desktop's files in a bubble, opened from a pill at the screen's left edge") },
+  { "desktop", N_("Off"), N_("The desktop's files across the desktop, under your windows") },
 };
 
 static const Choice recycle_bin[] = {
@@ -666,10 +666,10 @@ cc_patrone_panel_init (CcPatronePanel *self)
 
       if (has_key (self->taskbar, "desktop-bubble"))
         {
-          group = add_group (page, _("Desktop Files"),
-                             _("In a bubble, they're kept off the desktop: a small pill at the "
-                               "screen's left edge, shown whenever no window covers it, opens "
-                               "them. Click it, or drag it out."));
+          group = add_group (page, _("Desktop Bubble"),
+                             _("On, the desktop's files are kept off the desktop: a small pill at "
+                               "the screen's left edge, shown whenever no window covers it, opens "
+                               "them. Click it, or drag it out. It changes at once."));
           add_choices (self, group, self->taskbar, "desktop-bubble", read_boolean, write_boolean,
                        desktop_files, G_N_ELEMENTS (desktop_files), "files", 2);
         }

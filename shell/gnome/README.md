@@ -214,8 +214,21 @@ would; the reserved strip moves that file over one column.
 
 The user's design (2026-10-26): the desktop's files kept off the desktop,
 in a bubble that comes out of the screen's left edge (`desktopBubble.js`).
-On for every account; Patrone Settings → Desktop → Desktop files, or the
-`desktop-bubble` setting, turns it off.
+On for every account. **To turn it off** (the user asked for a switch,
+2026-10-28): Settings → Desktop → Desktop Bubble, the first switch on
+GNOME Settings' own Desktop page, where the desktop's settings are looked
+for (`gnome-settings/patches/patrone-desktop-switches.patch`; with
+Patrone's taskbar it takes the place of Ubuntu's Desktop Icons settings,
+whose switch would bring Ubuntu's icons back beside Patrone's). Patrone
+Settings → Desktop → Desktop bubble and GNOME Settings → Patrone have it
+too, and they're all the `desktop-bubble` setting, which the desktop
+follows at once: off, the pill goes and File Manager puts the files across
+the desktop; on, they go back into the bubble. Signing out isn't needed.
+The Recycle Bin stays reachable either way: with the bubble off it sits
+docked in its corner (bottom right unless moved), and when it's hidden too
+(the switch under Desktop Bubble, or "Remove from desktop"), the empty
+desktop's right-click menu has **Show Recycle Bin**, and File Manager's
+navigation pane lists it.
 
 - **The pill**: a small Patrone-blue tab at the middle of the primary
   screen's left edge, shown whenever no window covers its spot (a window
