@@ -599,6 +599,7 @@ fn small_icon_for(drive: &Drive) -> &'static str {
                 "pfm-nav-drive"
             }
         }
+        Drive::Mapped(_) => "pfm-nav-drive-network",
     }
 }
 

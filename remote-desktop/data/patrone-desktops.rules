@@ -32,6 +32,15 @@ var patroneDesktopActions = [
     "org.freedesktop.udisks2.encrypted-unlock",
     "org.freedesktop.udisks2.eject-media",
     "org.freedesktop.udisks2.power-off-drive",
+    // udisks asks for the "-other-seat" action when the drive's seat isn't
+    // the account's, and these desktops have no seat: USB drives and discs
+    // asked for an administrator's password (2026-10-28)
+    "org.freedesktop.udisks2.filesystem-mount-other-seat",
+    "org.freedesktop.udisks2.encrypted-unlock-other-seat",
+    "org.freedesktop.udisks2.eject-media-other-seat",
+    "org.freedesktop.udisks2.power-off-drive-other-seat",
+    // Mounting a disk image (File Manager's Mount, for .iso and .img)
+    "org.freedesktop.udisks2.loop-setup",
     // Patrone Software (GNOME Software) refreshing and updating Flatpak
     // apps and apt's lists: at first login it asked for a password to
     // "update information about software" (2026-10-27)
@@ -75,7 +84,12 @@ var patroneDesktopOnceActions = [
     "org.freedesktop.packagekit.system-update",
     "org.freedesktop.packagekit.system-sources-configure",
     "org.freedesktop.packagekit.trigger-offline-upgrade",
-    "io.snapcraft.snapd.manage"
+    "io.snapcraft.snapd.manage",
+    // Mounting the computer's own internal drives, and unlocking encrypted
+    // ones, in File Manager's This PC (2026-10-28): at the screen, too,
+    // these ask once
+    "org.freedesktop.udisks2.filesystem-mount-system",
+    "org.freedesktop.udisks2.encrypted-unlock-system"
 ];
 
 // A graphical session (Wayland or X11) with no seat, active: one of

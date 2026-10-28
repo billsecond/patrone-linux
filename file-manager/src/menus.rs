@@ -68,11 +68,58 @@ fn state_bool(window: &Window, name: &str) -> bool {
         .unwrap_or(false)
 }
 
+/// A drive's own commands: Mount (or connect a mapped network drive),
+/// Eject or Unmount, and Disconnect for network drives.
+fn drive_items(window: &Window, menu: &Rc<Menu>) {
+    if enabled(window, "mount") {
+        menu.item(
+            Icon::Glyph("drive"),
+            "Mount",
+            None,
+            true,
+            act(window, "mount"),
+        );
+    }
+    if enabled(window, "eject") {
+        let mounts = commands::unmountable(window);
+        menu.item(
+            Icon::Glyph("eject"),
+            crate::thispc::unmount_label(&mounts),
+            None,
+            true,
+            act(window, "eject"),
+        );
+    }
+    if enabled(window, "disconnect") {
+        menu.item(
+            Icon::Glyph("close"),
+            "Disconnect",
+            None,
+            true,
+            act(window, "disconnect"),
+        );
+    }
+}
+
 /// The item's right-click menu, in Windows 11's form.
 pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
     let tab = window.tab();
     let selected = tab.selected_infos();
     if selected.is_empty() {
+        // Drives on This PC that aren't mounted have no files yet.
+        if tab.page() == Page::ThisPc && !tab.this_pc().selected_drives().is_empty() {
+            let menu = Menu::new();
+            drive_items(window, &menu);
+            menu.separator();
+            menu.item(
+                Icon::Glyph("network"),
+                "Map network drive…",
+                None,
+                true,
+                act(window, "map-drive"),
+            );
+            menu.popup_at(widget, x, y);
+        }
         return;
     }
     let menu = Menu::new();
@@ -164,6 +211,16 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
         true,
         act(window, "open"),
     );
+    // A disk image, as Windows offers for .iso files.
+    if !drives && enabled(window, "mount") {
+        menu.item(
+            Icon::Glyph("drive"),
+            "Mount",
+            None,
+            true,
+            act(window, "mount"),
+        );
+    }
     if all_folders {
         if !window.desktop {
             menu.item(
@@ -288,14 +345,8 @@ pub fn item_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
             act(window, "set-background"),
         );
     }
-    if drives && enabled(window, "eject") {
-        menu.item(
-            Icon::Glyph("eject"),
-            "Eject",
-            None,
-            true,
-            act(window, "eject"),
-        );
+    if drives {
+        drive_items(window, &menu);
     }
     menu.item(
         Icon::Glyph("properties"),
@@ -630,10 +681,10 @@ pub fn background_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
     if page == Page::ThisPc {
         menu.item(
             Icon::Glyph("network"),
-            "Connect to server",
+            "Map network drive…",
             None,
             true,
-            act(window, "connect-server"),
+            act(window, "map-drive"),
         );
     }
     menu.item(
@@ -1152,10 +1203,10 @@ fn more_items(window: &Window, menu: &Rc<Menu>) {
     if window.tab().page() == Page::ThisPc {
         menu.item(
             Icon::Glyph("network"),
-            "Connect to server",
+            "Map network drive…",
             None,
             true,
-            act(window, "connect-server"),
+            act(window, "map-drive"),
         );
     }
     menu.item(
@@ -1217,6 +1268,24 @@ pub fn nav_menu(
     y: f64,
 ) {
     let menu = Menu::new();
+    // A drive that isn't mounted: Open mounts it first.
+    if let NodeKind::Drive(drive) = &kind
+        && drive.can_mount()
+    {
+        for (glyph, label, open) in [("open", "Open", true), ("drive", "Mount", false)] {
+            let (w, drive) = (window.clone(), drive.clone());
+            menu.item(Icon::Glyph(glyph), label, None, true, move || {
+                let opened = w.clone();
+                crate::thispc::mount_drive(&drive, w.dialog_parent(), move |root| {
+                    if open {
+                        opened.navigate(Location::Folder(root));
+                    }
+                });
+            });
+        }
+        menu.popup_at(widget, x, y);
+        return;
+    }
     let Some(location) = kind.location() else {
         return;
     };
@@ -1315,29 +1384,29 @@ pub fn nav_menu(
                 );
             }
         }
-        NodeKind::Drive(crate::thispc::Drive::Mount(mount))
-            if mount.can_eject() || mount.can_unmount() =>
+        NodeKind::Drive(drive)
+            if drive
+                .mount()
+                .is_some_and(|mount| mount.can_eject() || mount.can_unmount()) =>
         {
-            let mount = mount.clone();
+            let Some(mount) = drive.mount() else { return };
+            let label = crate::thispc::unmount_label(std::slice::from_ref(&mount));
             let w = window.clone();
-            menu.item(Icon::Glyph("eject"), "Eject", None, true, move || {
-                let operation = gtk::MountOperation::new(Some(&w.gtk_window()));
-                let done = |_: Result<(), glib::Error>| {};
-                if mount.can_eject() {
-                    mount.eject_with_operation(
-                        gio::MountUnmountFlags::NONE,
-                        Some(&operation),
-                        gio::Cancellable::NONE,
-                        done,
-                    );
-                } else {
-                    mount.unmount_with_operation(
-                        gio::MountUnmountFlags::NONE,
-                        Some(&operation),
-                        gio::Cancellable::NONE,
-                        done,
-                    );
-                }
+            menu.item(Icon::Glyph("eject"), label, None, true, move || {
+                let shown = w.clone();
+                let name = mount.name().to_string();
+                crate::drives::unmount(&mount, w.dialog_parent().as_ref(), move |result| {
+                    if let Err(error) = result
+                        && !error.matches(gio::IOErrorEnum::FailedHandled)
+                    {
+                        crate::dialogs::error(
+                            shown.dialog_parent().as_ref(),
+                            label,
+                            &format!("Can't {} {name}.", label.to_lowercase()),
+                            &crate::dialogs::describe(&error),
+                        );
+                    }
+                });
             });
         }
         _ => {}

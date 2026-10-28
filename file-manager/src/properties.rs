@@ -644,6 +644,19 @@ fn show_drive(window: &Window, info: &gio::FileInfo) {
     row(&grid, &mut line, "Type:", &text(kind));
     let file_system = text("");
     row(&grid, &mut line, "File system:", &file_system);
+    // Its mount: where its files appear (Linux's drive letter).
+    let place = text(&crate::drives::mount_point(&root));
+    place.set_selectable(true);
+    row(
+        &grid,
+        &mut line,
+        if root.is_native() {
+            "Mounted at:"
+        } else {
+            "Address:"
+        },
+        &place,
+    );
     rule(&grid, &mut line);
     let used_label = text("");
     let free_label = text("");

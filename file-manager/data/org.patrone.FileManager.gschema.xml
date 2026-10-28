@@ -269,5 +269,9 @@
       <default>[]</default>
       <summary>The desktop bubble's order, by name, once icons are moved in it</summary>
     </key>
+    <key name="mapped-drives" type="as">
+      <default>[]</default>
+      <summary>Network drives mapped with "Reconnect at sign-in", by address</summary>
+    </key>
   </schema>
 </schemalist>

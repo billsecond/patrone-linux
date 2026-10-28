@@ -1,5 +1,6 @@
-//! This PC: every drive as a tile with a bar showing how full it is, and
-//! network locations. Drives that aren't mounted yet mount when opened.
+//! This PC: every drive as a tile with a bar showing how full it is and
+//! where it's mounted, and network locations. Drives that aren't mounted
+//! yet mount when opened; mapped network drives connect.
 
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
@@ -7,18 +8,21 @@ use std::rc::{Rc, Weak};
 use gtk::{gdk, gio, glib, prelude::*};
 
 use crate::config;
+use crate::drives;
 use crate::folderview::ViewEvent;
 use crate::home;
 use crate::icons;
 use crate::places;
 use crate::util;
 
-/// One tile: a mounted drive, or a volume that can be mounted.
+/// One tile: a mounted drive, a volume that can be mounted, or a mapped
+/// network drive that isn't connected.
 #[derive(Clone)]
 pub enum Drive {
     Root,
     Mount(gio::Mount),
     Volume(gio::Volume),
+    Mapped(String),
 }
 
 impl Drive {
@@ -27,6 +31,7 @@ impl Drive {
             Drive::Root => places::root_name(),
             Drive::Mount(mount) => mount.name().into(),
             Drive::Volume(volume) => volume.name().into(),
+            Drive::Mapped(uri) => drives::network_name(uri),
         }
     }
 
@@ -41,6 +46,7 @@ impl Drive {
                     "pfm-drive"
                 }
             }
+            Drive::Mapped(_) => "pfm-drive-network",
         }
     }
 
@@ -49,7 +55,54 @@ impl Drive {
             Drive::Root => Some(places::root()),
             Drive::Mount(mount) => Some(mount.root()),
             Drive::Volume(volume) => volume.get_mount().map(|mount| mount.root()),
+            Drive::Mapped(_) => None,
         }
+    }
+
+    /// The drive's mount: the folder its files are in, or its network
+    /// address. None when it isn't mounted.
+    pub fn mount_point(&self) -> Option<String> {
+        match self {
+            Drive::Mapped(_) => None,
+            drive => drive.root().map(|root| drives::mount_point(&root)),
+        }
+    }
+
+    /// A drive that can be mounted (or a mapped drive connected) now.
+    pub fn can_mount(&self) -> bool {
+        match self {
+            Drive::Volume(volume) => volume.get_mount().is_none() && volume.can_mount(),
+            Drive::Mapped(uri) => !drives::is_connected(uri),
+            _ => false,
+        }
+    }
+
+    /// A mounted drive that can be ejected or unmounted (not the system
+    /// drive, and not a network drive: those disconnect).
+    pub fn mount(&self) -> Option<gio::Mount> {
+        match self {
+            Drive::Mount(mount) => Some(mount.clone()),
+            Drive::Volume(volume) => volume.get_mount(),
+            _ => None,
+        }
+    }
+
+    pub fn is_network(&self) -> bool {
+        match self {
+            Drive::Mapped(_) => true,
+            Drive::Mount(mount) => !mount.root().is_native(),
+            _ => false,
+        }
+    }
+}
+
+/// What the unmount command is called for these mounts: "Eject" when they
+/// can be removed (USB drives, discs, disk images), else "Unmount".
+pub fn unmount_label(mounts: &[gio::Mount]) -> &'static str {
+    if !mounts.is_empty() && mounts.iter().all(|mount| mount.can_eject()) {
+        "Eject"
+    } else {
+        "Unmount"
     }
 }
 
@@ -79,12 +132,25 @@ pub fn drives() -> Vec<Drive> {
     drives
 }
 
-/// Network shares that are mounted.
-pub fn network_mounts() -> Vec<gio::Mount> {
-    places::mounts()
+/// Network shares that are mounted, then mapped network drives that
+/// aren't connected now.
+pub fn network_drives() -> Vec<Drive> {
+    let mounts: Vec<gio::Mount> = places::mounts()
         .into_iter()
         .filter(|mount| !mount.root().is_native())
-        .collect()
+        .collect();
+    let mut drives: Vec<Drive> = mounts.iter().cloned().map(Drive::Mount).collect();
+    for uri in drives::mapped_drives() {
+        let file = gio::File::for_uri(&uri);
+        let connected = mounts.iter().any(|mount| {
+            let root = mount.root();
+            root.equal(&file) || file.has_prefix(&root)
+        });
+        if !connected {
+            drives.push(Drive::Mapped(uri));
+        }
+    }
+    drives
 }
 
 fn drive_tile(drive: &Drive) -> (gtk::FlowBoxChild, gtk::LevelBar, gtk::Label) {
@@ -110,10 +176,32 @@ fn drive_tile(drive: &Drive) -> (gtk::FlowBoxChild, gtk::LevelBar, gtk::Label) {
     text.append(&bar);
     let free = gtk::Label::builder().xalign(0.0).build();
     free.add_css_class("item-detail");
-    if matches!(drive, Drive::Volume(_)) {
-        free.set_label("Not mounted");
+    match drive {
+        Drive::Volume(volume) => free.set_label(&match drives::device_size(volume) {
+            Some(size) => format!("{} · Not mounted", util::size(size)),
+            None => "Not mounted".to_owned(),
+        }),
+        Drive::Mapped(_) => free.set_label("Disconnected"),
+        _ => {}
     }
     text.append(&free);
+    // Where its files are: Linux's drive letter.
+    let place = match (drive, drive.mount_point()) {
+        (Drive::Mapped(uri), _) => Some(uri.clone()),
+        (_, Some(point)) if drive.is_network() => Some(point),
+        (_, Some(point)) => Some(format!("Mounted at {point}")),
+        (_, None) => None,
+    };
+    if let Some(place) = place {
+        let label = gtk::Label::builder()
+            .label(&place)
+            .xalign(0.0)
+            .ellipsize(gtk::pango::EllipsizeMode::Middle)
+            .tooltip_text(&place)
+            .build();
+        label.add_css_class("item-detail");
+        text.append(&label);
+    }
     row.append(&text);
     let child = gtk::FlowBoxChild::builder().child(&row).build();
     child.set_size_request(256, -1);
@@ -153,7 +241,7 @@ pub struct ThisPcPage {
     network_box: gtk::FlowBox,
     network_section: gtk::Box,
     drives: RefCell<Vec<Drive>>,
-    network: RefCell<Vec<gio::Mount>>,
+    network: RefCell<Vec<Drive>>,
     events: crate::util::Handler<ViewEvent>,
     me: RefCell<Weak<ThisPcPage>>,
 }
@@ -176,7 +264,13 @@ impl ThisPcPage {
         let network_box = flow();
         let content = gtk::Box::new(gtk::Orientation::Vertical, 18);
         content.add_css_class("home-page");
-        let (drives_section, _) = home::section("Devices and drives", &drives_box);
+        let (drives_section, heading) = home::section("Devices and drives", &drives_box);
+        heading.set_tooltip_text(Some(
+            "Every drive and where it's mounted. Linux has no drive letters: \
+             each drive's files appear in a folder, its mount. The system drive \
+             is mounted at /, others under /media. Open a drive that isn't \
+             mounted to mount it.",
+        ));
         content.append(&drives_section);
         let (network_section, _) = home::section("Network locations", &network_box);
         content.append(&network_section);
@@ -226,9 +320,9 @@ impl ThisPcPage {
         let weak = self.me.borrow().clone();
         self.network_box.connect_child_activated(move |_, child| {
             let Some(page) = weak.upgrade() else { return };
-            let mount = page.network.borrow().get(child.index() as usize).cloned();
-            if let Some(mount) = mount {
-                page.emit_open(&mount.root());
+            let drive = page.network.borrow().get(child.index() as usize).cloned();
+            if let Some(drive) = drive {
+                page.open_drive(drive);
             }
         });
         for (flow, other) in [
@@ -285,7 +379,11 @@ impl ThisPcPage {
             let reload = reload.clone();
             monitor.connect_volume_added(move |_, _| reload());
         }
-        monitor.connect_volume_removed(move |_, _| reload());
+        {
+            let reload = reload.clone();
+            monitor.connect_volume_removed(move |_, _| reload());
+        }
+        config::settings().connect_changed(Some("mapped-drives"), move |_, _| reload());
     }
 
     fn select_at(&self, widget: &gtk::Widget, x: f64, y: f64) -> bool {
@@ -316,41 +414,18 @@ impl ThisPcPage {
         });
     }
 
-    /// Opens a drive, mounting it first if it isn't.
+    /// Opens a drive, mounting (or connecting) it first if it isn't.
     pub fn open_drive(&self, drive: Drive) {
-        match &drive {
-            Drive::Volume(volume) if volume.get_mount().is_none() => {
-                let weak = self.me.borrow().clone();
-                let window = self.widget.root().and_downcast::<gtk::Window>();
-                let operation = gtk::MountOperation::new(window.as_ref());
-                let volume = volume.clone();
-                volume.clone().mount(
-                    gio::MountMountFlags::NONE,
-                    Some(&operation),
-                    gio::Cancellable::NONE,
-                    move |result| {
-                        let Some(page) = weak.upgrade() else { return };
-                        match result {
-                            Ok(()) => {
-                                if let Some(root) = volume.get_mount().map(|mount| mount.root()) {
-                                    page.emit_open(&root);
-                                }
-                            }
-                            Err(error) => crate::dialogs::error(
-                                page.widget.root().and_downcast::<gtk::Window>().as_ref(),
-                                "Open Drive",
-                                &format!("Can't open {}.", volume.name()),
-                                &crate::dialogs::describe(&error),
-                            ),
-                        }
-                    },
-                );
-            }
-            _ => {
-                if let Some(root) = drive.root() {
-                    self.emit_open(&root);
+        if drive.can_mount() {
+            let weak = self.me.borrow().clone();
+            let window = self.widget.root().and_downcast::<gtk::Window>();
+            mount_drive(&drive, window, move |root| {
+                if let Some(page) = weak.upgrade() {
+                    page.emit_open(&root);
                 }
-            }
+            });
+        } else if let Some(root) = drive.root() {
+            self.emit_open(&root);
         }
     }
 
@@ -366,11 +441,13 @@ impl ThisPcPage {
         }
         self.drives.replace(drives);
         self.network_box.remove_all();
-        let network = network_mounts();
-        for mount in &network {
-            let (tile, bar, free) = drive_tile(&Drive::Mount(mount.clone()));
+        let network = network_drives();
+        for drive in &network {
+            let (tile, bar, free) = drive_tile(drive);
             self.network_box.append(&tile);
-            show_usage(mount.root(), bar, free);
+            if let Some(root) = drive.root() {
+                show_usage(root, bar, free);
+            }
         }
         self.network_section.set_visible(!network.is_empty());
         self.network.replace(network);
@@ -388,14 +465,17 @@ impl ThisPcPage {
             }
         }
         for child in self.network_box.selected_children() {
-            if let Some(mount) = self.network.borrow().get(child.index() as usize) {
-                infos.push(drive_info(&mount.root(), &mount.name()));
+            if let Some(drive) = self.network.borrow().get(child.index() as usize)
+                && let Some(root) = drive.root()
+            {
+                infos.push(drive_info(&root, &drive.name()));
             }
         }
         infos
     }
 
-    /// The selected drive tiles themselves, for Eject and Properties.
+    /// The selected drive tiles themselves, for Mount, Eject and
+    /// Properties.
     pub fn selected_drives(&self) -> Vec<Drive> {
         let mut drives = Vec::new();
         for child in self.drives_box.selected_children() {
@@ -404,8 +484,8 @@ impl ThisPcPage {
             }
         }
         for child in self.network_box.selected_children() {
-            if let Some(mount) = self.network.borrow().get(child.index() as usize) {
-                drives.push(Drive::Mount(mount.clone()));
+            if let Some(drive) = self.network.borrow().get(child.index() as usize) {
+                drives.push(drive.clone());
             }
         }
         drives
@@ -426,6 +506,52 @@ impl ThisPcPage {
 
     pub fn focus(&self) {
         self.drives_box.grab_focus();
+    }
+}
+
+/// Mounts a drive, or connects a mapped network drive, then gives its root
+/// folder. A failure is shown to the user.
+pub fn mount_drive(
+    drive: &Drive,
+    parent: Option<gtk::Window>,
+    done: impl FnOnce(gio::File) + 'static,
+) {
+    let name = drive.name();
+    let failed = {
+        let parent = parent.clone();
+        move |detail: String| {
+            crate::dialogs::error(
+                parent.as_ref(),
+                "Mount",
+                &format!("Can't mount {name}."),
+                &detail,
+            );
+        }
+    };
+    match drive {
+        Drive::Volume(volume) => {
+            drives::mount_volume(volume, parent.as_ref(), move |result| match result {
+                Ok(root) => done(root),
+                // Cancelled at the password prompt.
+                Err(error) if error.matches(gio::IOErrorEnum::FailedHandled) => {}
+                Err(error) => failed(crate::dialogs::describe(&error)),
+            });
+        }
+        Drive::Mapped(uri) => {
+            let uri = uri.clone();
+            glib::spawn_future_local(async move {
+                match drives::connect(&uri, parent.as_ref()).await {
+                    Ok(root) => done(root),
+                    Err(error) if error.matches(gio::IOErrorEnum::FailedHandled) => {}
+                    Err(error) => failed(crate::dialogs::describe(&error)),
+                }
+            });
+        }
+        drive => {
+            if let Some(root) = drive.root() {
+                done(root);
+            }
+        }
     }
 }
 
