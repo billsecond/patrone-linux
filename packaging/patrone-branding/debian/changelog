@@ -1,3 +1,11 @@
+patrone-branding (0.1.12) resolute; urgency=medium
+
+  * fastfetch's logo is traced again, from the logo's own outline instead
+    of the concept picture, with clean straight edges, no stray blocks and
+    a smoother gradient of seven blues (the user: "a bit nicer/cleaner").
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 08:00:00 -0500
+
 patrone-branding (0.1.11) resolute; urgency=medium
 
   * /etc/lsb-release names the system Patrone Linux 0.1: the installer

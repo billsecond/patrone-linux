@@ -193,20 +193,24 @@ or preview it from the repo:
 fastfetch -c branding/fastfetch/config.jsonc --logo branding/fastfetch/logo.txt
 ```
 
-`logo.txt` is traced from the primary mark in `concepts/logo-concept-01.webp`
+`logo.txt` is traced from the mark's own outline in `logos/patrone-logo.png`
 by `tools/make_terminal_logo.py`: quadrant block characters (▟ ▛ and so on)
-give each character cell four "pixels", and a diagonal gradient through the
-five Patrone blues runs from the top right to the bottom left. Below the
-mark are the wordmark and the ruled "LINUX". To regenerate it:
+give each character cell four "pixels", which terminals draw as exact
+rectangles. The grid is shifted to where the mark's straight edges land on
+quadrant edges, and stray quadrants are cleared, so the edges are clean. A
+diagonal gradient of seven blues, from Highlight to Shadow, runs from the
+top right to the bottom left. Below the mark are the wordmark and the ruled
+"LINUX". To regenerate it, with a preview drawn as the terminal draws it:
 
 ```
-python tools/make_terminal_logo.py concepts/logo-concept-01.webp fastfetch/logo.txt
+python tools/make_terminal_logo.py logos/patrone-logo.png fastfetch/logo.txt --preview logo.png
 ```
 
-`$1` to `$5` in the file are the blues (Highlight to Shadow), `$6` the
-wordmark's white and `$7` the rule blue, as set in `config.jsonc`. The
-dashed-outline terminal logo in the concept could replace it later, but
-block characters read better at this size.
+`$1` to `$7` in the file are the blues, lightest first, `$8` the wordmark's
+white and `$9` the rule blue, as set in `config.jsonc` (the script prints
+them). The first trace (2026-10-25) came from the concept picture, whose
+soft edges left notches and stray blocks; it was redone from the logo for
+2026-10-28 (the user: "a bit nicer/cleaner").
 
 ## Colors measured from the concept
 
