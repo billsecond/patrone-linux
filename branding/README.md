@@ -125,11 +125,15 @@ the gaps between them, measured in screenshots of the real `plymouthd`:
 
 | Screen | Wordmark to title | Subtitle to bar |
 | --- | --- | --- |
-| 800×600 | 16 px | 24 px |
+| 800×600 (`previews/modes-800x600.png`, the tightest) | 16 px | 24 px |
 | 1280×720 | 55 px | 34 px |
-| 1024×768 | 71 px | 38 px |
+| 1024×768, 1366×768 | 71 px | 38 px |
 | 1920×1080 | 174 px | 63 px |
 | 2560×1440 | 293 px | 92 px |
+| 3840×2160 (Plymouth draws at twice the size there, so 1920×1080's layout) | 349 px | 126 px |
+
+The other modes never come closer to the wordmark than 20 px (a message
+under the spinner at 800×600).
 
 The password field (`system/plymouth/prompt/lock.png` and `entry.png`) is
 Plymouth's spinner theme's with its orange border made Patrone Blue by

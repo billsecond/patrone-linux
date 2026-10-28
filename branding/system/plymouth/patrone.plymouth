@@ -17,7 +17,7 @@ DialogHorizontalAlignment=.5
 DialogVerticalAlignment=.72
 # The update modes' title and subtitle go under the wordmark and over the
 # progress bar, which is lower than the spinner to make room: on screens
-# from 800x600 to 2560x1440 nothing touches (branding/README.md, "Boot
+# from 800x600 to 3840x2160 nothing touches (branding/README.md, "Boot
 # splash layout"). Only the update modes have titles or the bar.
 TitleHorizontalAlignment=.5
 TitleVerticalAlignment=.75

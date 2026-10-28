@@ -6,7 +6,7 @@ patrone-branding (0.1.18) resolute; urgency=medium
     with its logo at the bottom, and landed on the P (the user saw it while
     updates installed). They now sit under the wordmark, the title larger,
     with the progress bar a little lower to make room, apart on screens
-    from 800x600 to 2560x1440. The other modes were checked too: boot,
+    from 800x600 to 3840x2160. The other modes were checked too: boot,
     file-system check messages, the disk-unlock password and questions,
     shutdown and restart.
   * The password field's border is Patrone Blue, not Ubuntu's orange
