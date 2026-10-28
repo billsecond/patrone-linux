@@ -126,6 +126,28 @@ empty file bind-mounted over it in that one Settings process's own mount
 namespace, as on the live session, which hasn't the package), the page was
 GNOME's: Desktop Sharing, then Remote Login.
 
+Then the way a user meets it, in a fresh install (2026-10-28): the newest
+ISO (sha256 `0576b0fd...`, which has revision 9 and
+`patrone-remote-desktop` 0.4.6) in a new Hyper-V VM, `PatroneRdTest`, made
+by `scripts/hyperv/new-test-vm.ps1`, with a test account made in the
+installer. Revision 11, built from this commit's sources, went in from a
+disc image with `sudo apt-get install`. Settings, opened from the Start
+menu's "System" result, showed the rows and the tab as above, the switch
+off, and Secure Shell's row saying openssh-server isn't installed. Turning
+the switch on brought up GNOME Shell's dialog ("Authentication is required
+to turn on Remote Desktop"); after the account's password there, the
+"Confirm Your Password" dialog opened by itself, and after the password
+again, "Remote Desktop is ready", with How to Connect showing
+`patrone-rdtest.local`, its address and the username. From the dev VM,
+`sdl-freerdp` to `patrone-rdtest.local` with that username and password
+signed in with NLA (the proxy logged "signed in rdtester"), got the
+account's desktop for the 25 seconds it was left connected, and the VM's
+own screen went to the login screen meanwhile, as Patrone Remote Desktop
+does. So revision 9's two untried steps, a real administrator's password
+and connecting with the hash Settings records, are tried now. Not tried:
+Windows' own Remote Desktop Connection, and turning the switch off with a
+real password.
+
 ## Keeping up with Ubuntu
 
 The version is Ubuntu's with `patrone` and a revision added
