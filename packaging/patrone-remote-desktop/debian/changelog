@@ -1,3 +1,17 @@
+patrone-remote-desktop (0.4.6) resolute; urgency=medium
+
+  * Patrone Software works on Patrone's desktops without a password where
+    a desktop at the screen needs none: the polkit rules cover refreshing
+    and updating Flatpak apps and apt's lists, and, for administrators,
+    installing and removing Flatpak apps and installing updates, as
+    Flatpak's and Ubuntu's own rules allow at the screen. They count the
+    account's apps (its app.slice, where Patrone Software's background
+    service runs) as well as its desktop services. A new account's first
+    login asked for a password to "update information about software"
+    (2026-10-27).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 20:10:00 -0500
+
 patrone-remote-desktop (0.4.5) resolute; urgency=medium
 
   * Settings can turn Remote Desktop on: Patrone's build of GNOME Settings

@@ -8,7 +8,8 @@
 //
 // This gives a graphical session with no seat what a desktop at the
 // machine's own screen gets without a password (allow_active "yes" in each
-// action's defaults), for the actions below only. SSH logins and other text
+// action's defaults, or what Ubuntu's and Flatpak's own rules give
+// administrators there), for the actions below only. SSH logins and other text
 // sessions, and every other action, are left to the defaults.
 
 var patroneDesktopActions = [
@@ -29,13 +30,39 @@ var patroneDesktopActions = [
     "org.freedesktop.udisks2.filesystem-mount",
     "org.freedesktop.udisks2.encrypted-unlock",
     "org.freedesktop.udisks2.eject-media",
-    "org.freedesktop.udisks2.power-off-drive"
+    "org.freedesktop.udisks2.power-off-drive",
+    // Patrone Software (GNOME Software) refreshing and updating Flatpak
+    // apps and apt's lists: at first login it asked for a password to
+    // "update information about software" (2026-10-27)
+    "org.freedesktop.Flatpak.app-update",
+    "org.freedesktop.Flatpak.runtime-update",
+    "org.freedesktop.Flatpak.update-remote",
+    "org.freedesktop.Flatpak.modify-repo",
+    "org.freedesktop.Flatpak.appstream-update",
+    "org.freedesktop.Flatpak.metadata-update",
+    "org.freedesktop.Flatpak.override-parental-controls-update",
+    "org.freedesktop.packagekit.system-sources-refresh",
+    "org.freedesktop.packagekit.system-network-proxy-configure",
+    "org.freedesktop.packagekit.trigger-offline-update",
+    "org.freedesktop.packagekit.clear-offline-update"
 ];
 
 // Ubuntu also lets administrators at the screen change system-wide
 // connections (org.freedesktop.NetworkManager.rules)
 var patroneDesktopAdminActions = [
     "org.freedesktop.NetworkManager.settings.modify.system"
+];
+
+// And administrators (the sudo group) at the screen install and remove
+// Flatpak apps (org.freedesktop.Flatpak.rules) and install updates
+// (org.freedesktop.packagekit.rules)
+var patroneDesktopSudoActions = [
+    "org.freedesktop.Flatpak.app-install",
+    "org.freedesktop.Flatpak.runtime-install",
+    "org.freedesktop.Flatpak.app-uninstall",
+    "org.freedesktop.Flatpak.runtime-uninstall",
+    "org.freedesktop.packagekit.system-update",
+    "org.freedesktop.packagekit.trigger-offline-upgrade"
 ];
 
 // A graphical session (Wayland or X11) with no seat, active: one of
@@ -69,11 +96,14 @@ function patroneIsDesktop(subject) {
     // session at all and the rule above never matched: the quick settings'
     // Wired menu still wouldn't open (2026-10-26). For a process with no
     // session, one of the account's desktop services, in its session.slice,
-    // counts when the account's display session is a desktop as above.
+    // counts when the account's display session is a desktop as above. So
+    // does one of its apps, in its app.slice: apps opened from the desktop,
+    // and Patrone Software's background service (gnome-software.service).
     try {
         var cgroup = polkit.spawn(["/usr/bin/cat", "/proc/" + subject.pid + "/cgroup"]);
         var uid = polkit.spawn(["/usr/bin/id", "-u", subject.user]).trim();
-        if (cgroup.indexOf("/user@" + uid + ".service/session.slice/") < 0)
+        if (cgroup.indexOf("/user@" + uid + ".service/session.slice/") < 0 &&
+            cgroup.indexOf("/user@" + uid + ".service/app.slice/") < 0)
             return false;
         var display = polkit.spawn(["/usr/bin/loginctl", "show-user", subject.user,
             "--property=Display", "--value"]).trim();
@@ -86,7 +116,8 @@ function patroneIsDesktop(subject) {
 polkit.addRule(function (action, subject) {
     var wanted = patroneDesktopActions.indexOf(action.id) >= 0 ||
         (patroneDesktopAdminActions.indexOf(action.id) >= 0 &&
-         (subject.isInGroup("sudo") || subject.isInGroup("netdev")));
+         (subject.isInGroup("sudo") || subject.isInGroup("netdev"))) ||
+        (patroneDesktopSudoActions.indexOf(action.id) >= 0 && subject.isInGroup("sudo"));
     if (wanted && patroneIsDesktop(subject))
         return polkit.Result.YES;
     return polkit.Result.NOT_HANDLED;

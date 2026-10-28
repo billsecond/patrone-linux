@@ -166,7 +166,15 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    menu still wouldn't open. A process with no session now counts when its
    cgroup is in the account's own `session.slice` and the account's display
    session is a desktop as above. (Another of the account's processes could
-   move itself there, but only one the same account already runs.)
+   move itself there, but only one the same account already runs.) Since
+   0.4.6 so does one in its `app.slice`, where apps opened from the desktop
+   and Patrone Software's background service (`gnome-software.service`)
+   run, and the rules cover what Patrone Software does: refreshing and
+   updating Flatpak apps and apt's lists, and, for administrators (as
+   Flatpak's and Ubuntu's own rules allow at the screen), installing and
+   removing Flatpak apps and installing updates. Without them a new
+   account's first login asked for a password to "update information about
+   software" (2026-10-27).
 
 8. **Settings' switch**: Patrone's GNOME Settings shows its own Remote Login
    page (`gnome-settings/remote-login/`) wherever
