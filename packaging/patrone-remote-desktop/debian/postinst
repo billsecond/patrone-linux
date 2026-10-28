@@ -11,6 +11,12 @@ if [ "$1" = configure ]; then
         adduser --system --quiet --group --no-create-home \
             --home /var/lib/patrone-remote-desktop/proxy patrone-rdp
     fi
+    # Hyper-V's enhanced session: its proxy and login screen run as this
+    # account, which can ask the sign-in helper for that, nothing more.
+    if ! getent passwd patrone-vmconnect > /dev/null; then
+        adduser --system --quiet --group --no-create-home \
+            --home /var/lib/patrone-remote-desktop/vmconnect patrone-vmconnect
+    fi
     # The PAM hook that keeps the password hash NLA checks current
     pam-auth-update --package
 fi

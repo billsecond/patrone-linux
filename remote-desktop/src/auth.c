@@ -9,6 +9,14 @@
  * which gets the account's desktop ready and answers "ok PORT SECRET";
  * otherwise it answers "denied".
  *
+ * With --vmconnect it serves /run/patrone-remote-desktop/vmconnect-auth.sock,
+ * which only the login screen of Hyper-V's enhanced session (the greeter, as
+ * patrone-vmconnect) can open, the same way but with PAM's
+ * patrone-remote-desktop-vmconnect: any account that may sign in at the
+ * computer, in the remote-desktop group or not, and whether or not Remote
+ * Desktop is on. Only the Hyper-V host can reach that login screen, as only
+ * someone at the computer can reach its own.
+ *
  * With --console it serves /run/patrone-remote-desktop/console.sock instead,
  * which any account may open: the account that signed in on the machine's own
  * screen, asking for its own desktop. The account comes from the connection
@@ -66,6 +74,7 @@
 #endif
 #define SAM_DIRECTORY "/var/lib/patrone-remote-desktop"
 #define SERVICE_NAME "patrone-remote-desktop"
+#define VMCONNECT_SERVICE_NAME "patrone-remote-desktop-vmconnect"
 #define REMOTE_GROUP "remote-desktop"
 #define PROXY_GROUP "patrone-rdp"
 #define FIELD_MAX 512
@@ -167,13 +176,14 @@ static int conversation(int count, const struct pam_message** messages,
 	return PAM_SUCCESS;
 }
 
-static int check(const Request* request)
+/* Hyper-V's console has no remote host for PAM: it's at the computer. */
+static int check(const Request* request, const char* service)
 {
 	struct pam_conv conv = { conversation, (void*)request };
 	pam_handle_t* pam = NULL;
 
-	int status = pam_start(SERVICE_NAME, request->user, &conv, &pam);
-	if (status == PAM_SUCCESS)
+	int status = pam_start(service, request->user, &conv, &pam);
+	if (status == PAM_SUCCESS && strcmp(service, VMCONNECT_SERVICE_NAME) != 0)
 		status = pam_set_item(pam, PAM_RHOST, request->client);
 	if (status == PAM_SUCCESS)
 		status = pam_authenticate(pam, PAM_DISALLOW_NULL_AUTHTOK);
@@ -453,7 +463,7 @@ static int confirm(const char* user)
 		length = 0;
 	request.password[length] = '\0';
 
-	if (request.password[0] && check(&request))
+	if (request.password[0] && check(&request, SERVICE_NAME))
 	{
 		ok = 1;
 		if (winpr_InitializeSSL(WINPR_SSL_INIT_DEFAULT) && nt_hash_hex(request.password, hex))
@@ -469,8 +479,11 @@ static int confirm(const char* user)
 int main(int argc, char** argv)
 {
 	static Request request;
+	const char* service = SERVICE_NAME;
 
-	if (argc > 1 && strcmp(argv[1], "--console") == 0)
+	if (argc > 1 && strcmp(argv[1], "--vmconnect") == 0)
+		service = VMCONNECT_SERVICE_NAME;
+	else if (argc > 1 && strcmp(argv[1], "--console") == 0)
 		return console();
 	if (argc > 1 && strcmp(argv[1], "--remember") == 0)
 		return remember();
@@ -496,7 +509,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	int ok = check(&request);
+	int ok = check(&request, service);
 	explicit_bzero(request.password, sizeof(request.password));
 	if (!ok)
 	{
@@ -504,7 +517,10 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	fprintf(stderr, "signed in %s from %s\n", request.user, request.client);
+	if (strcmp(service, VMCONNECT_SERVICE_NAME) == 0)
+		fprintf(stderr, "signed in %s at Hyper-V's console\n", request.user);
+	else
+		fprintf(stderr, "signed in %s from %s\n", request.user, request.client);
 	prepare_session(request.user);
 	return 1;
 }

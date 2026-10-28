@@ -16,6 +16,9 @@ on Windows:
 - **Remote Desktop asks once, for the account's own password**, in Remote
   Desktop Connection's own dialog (NLA, as on Windows), and PAM checks it on
   every connection. Remote sessions never lock or blank the screen.
+- **Hyper-V's enhanced session** (VMConnect) shows a login screen in its
+  window, and then the account's own desktop, the same one, with the
+  clipboard, sound and a screen that follows the window.
 
 ## Turning on Remote Desktop
 
@@ -60,6 +63,30 @@ patrone-remote-desktop rdp-file > Patrone.rdp     # copy it to Windows, double-c
 ```
 `patrone-remote-desktop status` shows whether it's on and who's in the group;
 `patrone-remote-desktop disable` turns it off.
+
+## Hyper-V's enhanced session
+
+When Patrone runs in a Hyper-V VM, VMConnect (Hyper-V's own window onto
+the VM) can open an enhanced session: Remote Desktop over a Hyper-V
+socket, with the clipboard, sound, and a screen that resizes with the
+window. Only the Hyper-V host can open one. Click Connect in VMConnect's
+dialog (or "Enhanced session" on its View menu), and the window shows a
+login screen in Patrone's style: the computer's name, a username and a
+password. Any account that may sign in at the computer signs in there with
+its own password, and gets its own desktop, the same one the computer's
+screen and Remote Desktop show (so the computer's own screen goes back to
+the login screen). It works whether or not Remote Desktop is turned on, and
+needs nothing from the remote-desktop group: like the computer's own
+screen, it's only for whoever is at the Hyper-V host.
+
+The host has to use the Hyper-V socket transport, which Linux guests need.
+With the VM off, in an administrator's PowerShell on the host:
+
+```powershell
+Set-VM -VMName NAME -EnhancedSessionTransportType HvSocket
+```
+
+`scripts/hyperv/new-test-vm.ps1` does that for new test VMs.
 
 ## How it works
 
@@ -205,6 +232,56 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    dialog can't do it: polkit checks it before `enable` adds the account to
    the group, and the PAM hook keeps hashes for members only.
 
+9. **Hyper-V's enhanced session** (0.5.0):
+
+   ```
+   VMConnect ─▶ Hyper-V host ─▶ vsock :3389 ─▶ freerdp-proxy (vmconnect.ini,
+                                               user patrone-vmconnect)
+       1. ─▶ greeter.sock ─▶ greeter: the login screen ─▶ vmconnect-auth.sock
+                                      ─▶ auth --vmconnect (root): PAM, then
+                                         prepare-session ─▶ "ok PORT SECRET"
+       2. ◀─ redirection (account, port, secret), to the proxy's client only
+       3. ─▶ the account's GNOME Remote Desktop on 127.0.0.1:PORT, NLA with
+             the secret
+   ```
+
+   A second FreeRDP proxy (`patrone-remote-desktop-vmconnect.service`, on
+   Hyper-V only, enabled at install) listens on vsock port 3389, where
+   VMConnect connects. Its plugin (`src/patrone-vmconnect.c`) refuses
+   anything that doesn't come from the host (vsock CID 2). Hyper-V's host
+   does TLS (and NLA with the host's own account) with VMConnect itself and
+   relays the rest, so that side runs in FreeRDP's VMConnect mode, without
+   them. VMConnect brings no username or password, so the plugin connects
+   each new connection to the login screen: `libexec/greeter`
+   (`src/greeter.c`), one per connection on
+   `/run/patrone-remote-desktop/greeter.sock`, which only the proxy's user
+   can open. It draws the screen with cairo and Pango in the style of
+   Patrone's login screen (the colors of `patrone-gdm.css`, Patrone Sans,
+   the logo) and sends it as planar-compressed bitmap tiles. Keys come as
+   positions, so it reads them with the layout the computer's own screen
+   uses (`/etc/default/keyboard`, through xkbcommon). It hands the username
+   and password to `auth --vmconnect` over
+   `/run/patrone-remote-desktop/vmconnect-auth.sock`, which only that user
+   can open, and forgets the password. PAM checks them with
+   `/etc/pam.d/patrone-remote-desktop-vmconnect`: an account with UID 1000
+   or above, its own password, not locked or expired, and no `/etc/nologin`;
+   no remote-desktop group, as at the computer's own screen. Then
+   `prepare-session` gets the desktop ready, as for Remote Desktop.
+
+   On "ok", the login screen sends the proxy a Server Redirection PDU with
+   the account, the desktop's port and its secret. The proxy's own client
+   takes it, so VMConnect never sees it, and the plugin points that client
+   at the account's GNOME Remote Desktop on localhost, with NLA and the
+   secret, instead. VMConnect's connection stays up throughout. When the
+   desktop is up, the plugin hands VMConnect's side the desktop's settings,
+   as the proxy does after its first connection, and from then on the proxy
+   passes the session through as for Remote Desktop: graphics, input,
+   clipboard, sound and resizing.
+
+   Network Remote Desktop is untouched: its proxy, plugin, PAM service and
+   socket are separate, and run as another user (`patrone-rdp`). Neither
+   proxy's user can ask the other's sign-in check.
+
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's
 screen lock and blanking, after saving the account's own settings, and puts
@@ -244,19 +321,27 @@ them back at the next login in a plain GNOME session on the screen.
 - **Each account's GNOME Remote Desktop listens on all interfaces**, on its
   own port, because it has no setting to listen on localhost only. It only
   accepts the account's random secret.
+- **The enhanced session's login screen is Patrone's own**, drawn to look
+  like the login screen (GDM's), not GDM itself: GDM's own remote login
+  would start a second desktop for the account. It has a username and a
+  password, no list of accounts, and types with the computer's keyboard
+  layout, not the host's.
 - **Logs:** `journalctl -u patrone-remote-desktop` (the proxy and plugin),
   `journalctl -t patrone-remote-desktop-auth` (Remote Desktop sign-ins and
   `prepare-session`), `journalctl -t patrone-remote-desktop-console` (the
-  screen's requests).
+  screen's requests), `journalctl -u patrone-remote-desktop-vmconnect` (the
+  enhanced session's proxy) and `journalctl -t
+  patrone-remote-desktop-greeter` (its login screen).
 
 ## Building and testing
 
 ```
-make           # the plugin and the helper
+make           # the plugins, the helper and the enhanced session's login screen
 make check     # tests that need no root and no real password
 ```
 
-They need `freerdp3-dev`, `libpam0g-dev`, `pkgconf` and `python3`, and
+They need `freerdp3-dev`, `libpam0g-dev`, `libcairo2-dev`,
+`libpango1.0-dev`, `libxkbcommon-dev`, `pkgconf` and `python3`, and
 `freerdp-proxy` for the config check. `make check` loads the plugin and
 plays the proxy's part against a stand-in helper (`tests/fake-auth.py`): no
 credentials, a wrong password, a correct one, an account signed in
@@ -267,6 +352,20 @@ action names it and one of its commands, runs the real proxy on the
 shipped config, and runs the polkit rule under gjs with polkit stood in
 for (`tests/polkit-rule-test.js`). Signing in for real, on the screen or
 through a client, needs the package installed.
+
+The enhanced session is tested end to end without Hyper-V or a real
+account: FreeRDP's proxy, through its library with the plugin from the
+build (`tests/test-proxy`), the real login screen
+(`systemd-socket-activate` runs one per connection, as systemd does), the
+stand-in helper, and a stand-in desktop that lets one username and secret in
+with NLA, as GNOME Remote Desktop does (`tests/test-desktop`). A client that
+connects with no username or password, as VMConnect does
+(`tests/test-client`), types a username and a wrong password, then the right
+one; the test checks that the login screen signed it in, that the desktop
+let in that account with the secret, and that the client stayed connected
+throughout and was activated three times (by the proxy, for the login
+screen, for the desktop). With `TEST_CLIENT_SHOTS=PREFIX` the client saves
+what it shows.
 
 0.4.5's Settings helper was tried on the dev VM (2026-10-27), installed, as
 root the way pkexec runs it, for a throwaway account with a random
