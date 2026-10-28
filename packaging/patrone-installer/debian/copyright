@@ -13,6 +13,14 @@ License: GPL-3+
 
 Files: usr/lib/patrone-installer/*
 Copyright: Canonical Ltd and the ubuntu-desktop-provision contributors
+           2026 William Daugherty
+Comment: Built by installer/build.sh from ubuntu-desktop-provision at the
+ commit installer/README.md names, changed by installer/patch_source.py
+ (Patrone's pictures in place of Ubuntu's logo, mascot and disk icon, the
+ other pictures recolored from Ubuntu's orange to Patrone's blue, the
+ spinner, the suggested username) and installer/debrand_l10n.py (its
+ messages). ubuntu_flavor (MPL-2.0, its notice in NOTICES.Z) has its Ubuntu
+ flavor's name changed to Patrone Linux.
 License: GPL-3
 
 License: GPL-3+

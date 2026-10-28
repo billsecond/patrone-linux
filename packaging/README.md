@@ -46,7 +46,10 @@ Notes:
 - Both are native packages (`3.0 (native)`): Patrone is its own upstream.
 - Rust packages build with Ubuntu's `cargo` and `rustc` (1.93), so the crates
   declare `rust-version = "1.93"`. `build.sh` vendors the crates so the build
-  needs no network. On the dev VM Rust comes from rustup, so pass `-d` to skip
+  needs no network, and `third-party-licenses.sh` copies every vendored
+  crate's licence and copyright notices into
+  `/usr/share/doc/PACKAGE/third-party-licenses.txt.gz`, as their licences
+  ask for copies of the program (`docs/COMPLIANCE.md`). On the dev VM Rust comes from rustup, so pass `-d` to skip
   the Build-Depends check, or install Ubuntu's `cargo` and `rustc`.
 - `patrone-shell-config` touches no other package's files: Ubuntu's
   `/etc/skel/.bashrc` already loads `~/.bash_aliases`, which no package owns,

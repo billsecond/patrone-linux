@@ -9,8 +9,10 @@ License: GPL-3+
 Files: vendor/*
 Copyright: The authors of each crate
 License: various
- Each vendored Rust crate carries its own license files in its directory.
- Most are MIT or Apache-2.0.
+ The Rust crates in vendor/, which packaging/build.sh adds, are compiled
+ into the program. Most are MIT or Apache-2.0. Each crate's licence and
+ copyright notices are in
+ /usr/share/doc/patrone-terminal/third-party-licenses.txt.gz.
 
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify

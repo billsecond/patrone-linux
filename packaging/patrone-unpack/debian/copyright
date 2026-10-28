@@ -6,6 +6,14 @@ Files: *
 Copyright: 2026 William Daugherty
 License: GPL-3+
 
+Files: vendor/*
+Copyright: The authors of each crate
+License: various
+ The Rust crates in vendor/, which packaging/build.sh adds, are compiled
+ into the program. Most are MIT or Apache-2.0. Each crate's licence and
+ copyright notices are in
+ /usr/share/doc/patrone-unpack/third-party-licenses.txt.gz.
+
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

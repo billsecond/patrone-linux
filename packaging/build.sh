@@ -77,6 +77,10 @@ replace-with = "vendored-sources"
 [source.vendored-sources]
 directory = "vendor"
 EOF
+    # The crates' licences and notices go with the program, as their
+    # licences ask: /usr/share/doc/$package/third-party-licenses.txt.gz
+    bash "$root/packaging/third-party-licenses.sh" "$work/vendor" > "$work/third-party-licenses.txt"
+    echo third-party-licenses.txt >> "$work/debian/docs"
 fi
 
 (cd "$work" && dpkg-buildpackage -us -uc -b "$@")
