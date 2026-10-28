@@ -51,7 +51,7 @@ override_dh_auto_install:
 	    $(pkg)/usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
 	install -Dm644 system/schemas/90_patrone.gschema.override \
 	    $(pkg)/usr/share/glib-2.0/schemas/90_patrone.gschema.override
-	# Noto Sans for sans-serif and Segoe UI: for the system (conf.d) and for
+	# Patrone Sans for sans-serif and Segoe UI: for the system (conf.d) and for
 	# snaps such as Chromium, which read /etc/fonts/snap-override instead
 	install -Dm644 system/fontconfig/05-patrone-fonts.conf \
 	    $(pkg)/usr/share/fontconfig/conf.avail/05-patrone-fonts.conf
@@ -60,6 +60,16 @@ override_dh_auto_install:
 	    $(pkg)/etc/fonts/conf.d/05-patrone-fonts.conf
 	install -Dm644 system/fontconfig/05-patrone-fonts.conf \
 	    $(pkg)/etc/fonts/snap-override/05-patrone-fonts.conf
+	# And for Flatpak apps: under /usr/share/fonts, the one place every
+	# sandbox sees (as /run/host/fonts), with the fonts.conf the session's
+	# FONTCONFIG_PATH leads their fontconfig to (copies, not links: a link
+	# to /usr/share/fontconfig would lead nowhere in a sandbox)
+	install -Dm644 system/fontconfig/05-patrone-fonts.conf \
+	    $(pkg)/usr/share/fonts/patrone-fontconfig/05-patrone-fonts.conf
+	install -Dm644 system/fontconfig/flatpak-fonts.conf \
+	    $(pkg)/usr/share/fonts/patrone-fontconfig/fonts.conf
+	install -Dm644 system/environment.d/60-patrone-fontconfig.conf \
+	    $(pkg)/etc/environment.d/60-patrone-fontconfig.conf
 	install -Dm644 -t $(pkg)/usr/share/pixmaps \
 	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png \
 	    logos/patrone-logo-login.png \

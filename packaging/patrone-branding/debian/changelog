@@ -1,3 +1,17 @@
+patrone-branding (0.1.15) resolute; urgency=medium
+
+  * Flatpak apps get Patrone Sans for sans-serif, system-ui and Segoe UI
+    too. Their fontconfig is their runtime's, which never sees /etc/fonts,
+    so they got the runtime's DejaVu Sans. The aliases are now also in
+    /usr/share/fonts/patrone-fontconfig, which every sandbox sees, with a
+    fonts.conf that loads them before the runtime's own configuration, and
+    /etc/environment.d/60-patrone-fontconfig.conf sets FONTCONFIG_PATH so
+    fontconfig in a sandbox finds that file. The folder exists only in a
+    sandbox, so fontconfig on the system itself is unchanged. Takes effect
+    at the next sign-in.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 09:30:00 -0500
+
 patrone-branding (0.1.14) resolute; urgency=medium
 
   * fastfetch's logo has smooth edges: each character cell takes the block

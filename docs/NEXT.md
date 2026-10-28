@@ -347,6 +347,14 @@ Waiting on the user:
   are in Patrone Sans (unless the account picked a font itself), and
   Patrone Settings → Theme → Font (or GNOME Settings → Patrone → Font)
   switches between it and Noto Sans at once.
+- **Sign out and back in for Flatpak apps' fonts** (section 14, "Flatpak
+  apps"): `patrone-branding` 0.1.15 was installed on PatroneDev on
+  2026-10-28 (by the claude account); the session gets the variable that
+  gives Flatpak apps Patrone Sans only at its next start (a reboot if
+  sign-out leaves the user's systemd running, as SSH sessions do). On
+  PatroneTest, install `~/src/patrone-linux/out/patrone-branding_0.1.15_all.deb`
+  or the next ISO. PdfCraft looks the same afterwards: it draws its own
+  font, and the fix for that is in the app (same section).
 
 ## 1. Patrone Terminal
 
@@ -1863,6 +1871,76 @@ Findings:
   apps the fonts without touching the account.
 - libadwaita draws buttons' text in bold, so text inside a card button
   needs its weight set to show a font's regular weight.
+
+### Flatpak apps, and the Craft apps (patrone-branding 0.1.15)
+
+Asked for 2026-10-28: "Can you force applications to try to use the
+patrone font, for example, I installed the PdfCraft app and it uses an
+odd font that doesn't look correct."
+
+- **PdfCraft draws its interface in its own Inter** and never asks the
+  system: it's egui 0.36 with fifteen fonts compiled into its binary
+  (Inter Regular, Medium and SemiBold, egui's Ubuntu Light and Hack,
+  JetBrains Mono, Noto Sans Arabic and Thai, BIZ UD, Shippori Mincho,
+  Dancing Script, emoji). Its `system_fonts` module loads only fallbacks
+  from the system (Noto Sans Devanagari, Telugu, Sinhala and Tamil by
+  file, then DejaVu Sans), the same before and after this change. Nothing
+  done in the OS changes it; the screenshots before and after are
+  identical. MailCraft's `crates/ui-egui/src/theme.rs` reads a system font
+  only on Windows (`SystemFont::read`: Segoe UI) and uses the bundled Inter
+  elsewhere; ScreenGrabCraft's `crates/ui/src/lib.rs` always uses Inter.
+- **What the Craft apps need** (their own repositories; not changed): a
+  Linux `SystemFont::read` that asks for the desktop's font (the settings
+  portal's `org.gnome.desktop.interface font-name`, "Patrone Sans 11",
+  which answers inside Flatpak too; else fontconfig's match for system-ui),
+  finds its file through fontconfig (the host's fonts are in every sandbox,
+  under `/run/host/fonts`), and puts it in front of Inter. Patrone Sans is
+  one variable font, so each weight is the same file with egui 0.36's
+  `FontTweak { coords: VariationCoords::new([("wght", 600.0)]) }` and the
+  like. MailCraft's `SYSTEM_FONT_RAISE` was measured for Segoe UI and needs
+  checking for the new face. Inter stays for systems that have no such
+  font, and the web.
+- **Other Flatpak apps**: GTK and Qt apps already get "Patrone Sans 11" for
+  their own text through the settings portal. But fontconfig in a sandbox
+  is the runtime's, which never sees `/etc/fonts`, so sans-serif,
+  system-ui and Segoe UI gave the runtime's DejaVu Sans, for web pages,
+  Electron, WebKit and anything that asks fontconfig. Patrone Sans itself
+  was there (the host's `/usr/share/fonts` is in every sandbox as
+  `/run/host/fonts`).
+- **The fix** (`patrone-branding` 0.1.15): `05-patrone-fonts.conf` also in
+  `/usr/share/fonts/patrone-fontconfig/`, with a `fonts.conf` there that
+  loads it before the runtime's own configuration
+  (`branding/system/fontconfig/flatpak-fonts.conf`), and
+  `/etc/environment.d/60-patrone-fontconfig.conf` setting
+  `FONTCONFIG_PATH=/run/host/fonts/patrone-fontconfig`. fontconfig looks for
+  its fonts.conf there first; the folder exists only in a sandbox, so on
+  the host fontconfig carries on to `/etc/fonts`. A Flatpak override was
+  the other way, but overrides in `/var/lib/flatpak` don't reach per-user
+  installs, which is what Patrone Unpack makes (tried: a variable set
+  there never reached PdfCraft).
+
+Checked on PatroneDev, with 0.1.15 installed: systemd's
+`30-systemd-environment-d-generator` gives the variable; on the host,
+sans-serif, system-ui, Segoe UI and Segoe UI Semibold give Patrone Sans
+(Regular, SemiBold), Japanese Noto Sans CJK JP, with and without the
+variable; `fc-cache` finds no fonts in the new folder and no errors; in
+PdfCraft's sandbox with the variable (as a new session runs it),
+sans-serif, system-ui and Segoe UI give Patrone Sans, Segoe UI Semibold its
+SemiBold, Japanese Noto Sans CJK JP, all 805 fonts still listed, where
+without it they gave DejaVu Sans; text drawn there with Pango through
+"sans-serif" and "Segoe UI" came out in Patrone Sans; and PdfCraft itself,
+in a private copy of `headless.sh`, looked the same both ways. Not checked
+yet: a real sign-in picking the variable up (the user's session predates
+it), and a fresh install.
+
+- A system-wide `flatpak override` (`/var/lib/flatpak/overrides`) applies
+  only to apps installed system-wide; per-user installs read only
+  `~/.local/share/flatpak/overrides`.
+- `flatpak run` over SSH talks to the user's compositor (`wayland-0`) and
+  waited on it once; for command-line checks pass
+  `--nosocket=wayland --nosocket=fallback-x11 --nosocket=x11`. In a copy of
+  `headless.sh`, `flatpak run` needs `XDG_DATA_HOME=$HOME/.local/share` to
+  find per-user apps.
 
 ## 15. Patrone Task Manager (patrone-task-manager)
 
