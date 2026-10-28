@@ -104,4 +104,16 @@
     <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
     <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
   </component>
+  <!--
+    Teams for Linux, the unofficial Microsoft Teams app (the user, 2026-10-28:
+    "sudo snap install teams-for-linux"). Patrone Software shows no snaps,
+    so it's the same project's Flathub build, which Flathub calls "Portal
+    for Teams".
+  -->
+  <component merge="append">
+    <id>com.github.IsmaelMartinez.teams_for_linux</id>
+    <categories><category>Featured</category></categories>
+    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
+    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+  </component>
 </components>

@@ -1,3 +1,11 @@
+patrone-software (0.1.6) resolute; urgency=medium
+
+  * Teams for Linux, the unofficial Microsoft Teams app, is among Patrone's
+    picks: Flathub's build of it ("Portal for Teams"), since Patrone
+    Software shows no snaps.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 15:30:00 -0500
+
 patrone-software (0.1.5) resolute; urgency=medium
 
   * The Craft Launcher is no longer featured: its icon is the ArtCraft
