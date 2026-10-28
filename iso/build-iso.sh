@@ -360,6 +360,11 @@ for f in $casper_files; do
         *) remove+=("/casper/$f") ;;
     esac
 done
+# Ubuntu's disc has a link at its root, "ubuntu", back to the disc itself (a
+# Debian-era convention). Nothing on Patrone's uses that path (apt's disc
+# source and the installer use file:///cdrom, and no checksum goes through
+# it), and Windows shows it as a file named UBUNTU (the user, 2026-10-28).
+remove+=(/ubuntu)
 
 # The disc's checksums, which the live session checks
 {

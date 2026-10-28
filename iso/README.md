@@ -79,7 +79,11 @@ desktop (`installer/README.md`, "Installing with nothing else"); the disc's
 name is "Patrone Linux 26.04.1 amd64", `.disk/info` says
 Patrone Linux (the live session's user and computer are named `patrone`
 after it), and `md5sum.txt` (which the live session checks) is brought up to
-date. Booting is Ubuntu's, untouched: shim and GRUB signed for Secure Boot,
+date. Ubuntu's `ubuntu` link at the disc's root, back to the disc itself,
+goes: nothing uses it (apt and the installer read `file:///cdrom`), and
+Windows showed it as a file named UBUNTU. The package archive on the disc
+(`dists/`, `pool/`) stays Ubuntu's, signed by Ubuntu, so its files carry
+Ubuntu's names and versions. Booting is Ubuntu's, untouched: shim and GRUB signed for Secure Boot,
 replayed onto the new disc by `xorriso` with the original disc's date, which
 GRUB uses as its ID.
 
