@@ -12,6 +12,9 @@ Conflicts=patrone-hyperv-rdp-bridge.service
 User=patrone-vmconnect
 Group=patrone-vmconnect
 Environment=HOME=/var/lib/patrone-remote-desktop/vmconnect
+# FreeRDP logs to stdout, which the journal gets in late blocks; syslog's
+# lines arrive as they happen
+Environment=WLOG_APPENDER=SYSLOG
 # Hyper-V's transport for vsock (the first listener would load it anyway)
 ExecStartPre=-+/usr/sbin/modprobe hv_sock
 ExecStartPre=/usr/libexec/patrone-remote-desktop/vmconnect-certificate

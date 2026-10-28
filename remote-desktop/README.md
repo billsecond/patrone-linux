@@ -278,6 +278,23 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    passes the session through as for Remote Desktop: graphics, input,
    clipboard, sound and resizing.
 
+   Then the plugin tells VMConnect that the account has signed in (a Save
+   Session Info PDU, "logon", version 2), as Windows does after its own
+   sign-in. GNOME Remote Desktop never sends one, and without it VMConnect
+   keeps its window one size even though the desktop offers it display
+   control (the channel resizing goes through). With it, the window resizes
+   and the desktop follows. The plugin follows dynamic channels one by one
+   (`Intercept=drdynvc`) and logs whether the desktop offers display control
+   and each size VMConnect asks for.
+
+   Two things about Hyper-V's side, found on the dev VM: the host connects
+   from vsock address 2, and FreeRDP has handed the socket to its transport
+   before plugins see it, so the plugin finds it through the transport's
+   event; and the host handles TLS and NLA with VMConnect, so the proxy runs
+   VMConnect's side in FreeRDP's VMConnect mode, which its own client must
+   not copy (it would negotiate twice with GNOME Remote Desktop, and the
+   sign-in would loop back to the login screen).
+
    Network Remote Desktop is untouched: its proxy, plugin, PAM service and
    socket are separate, and run as another user (`patrone-rdp`). Neither
    proxy's user can ask the other's sign-in check.
@@ -326,6 +343,9 @@ them back at the next login in a plain GNOME session on the screen.
   would start a second desktop for the account. It has a username and a
   password, no list of accounts, and types with the computer's keyboard
   layout, not the host's.
+- **The enhanced session can't share the host's drives.** VMConnect offers
+  them, but GNOME Remote Desktop has no drive redirection. Copying files
+  through the clipboard is the way across.
 - **Logs:** `journalctl -u patrone-remote-desktop` (the proxy and plugin),
   `journalctl -t patrone-remote-desktop-auth` (Remote Desktop sign-ins and
   `prepare-session`), `journalctl -t patrone-remote-desktop-console` (the
@@ -363,9 +383,27 @@ connects with no username or password, as VMConnect does
 (`tests/test-client`), types a username and a wrong password, then the right
 one; the test checks that the login screen signed it in, that the desktop
 let in that account with the secret, and that the client stayed connected
-throughout and was activated three times (by the proxy, for the login
-screen, for the desktop). With `TEST_CLIENT_SHOTS=PREFIX` the client saves
-what it shows.
+throughout, was activated three times (by the proxy, for the login screen,
+for the desktop) and was told the account signed in. A second proxy, as
+shipped, must refuse a client that isn't on a Hyper-V socket. With
+`TEST_CLIENT_SHOTS=PREFIX` the client saves what it shows, and with
+`TEST_CLIENT_RESIZE=WxH` it takes the graphics pipeline and display control
+and asks for that size, as VMConnect does when its window is resized.
+
+How 0.5.0 was checked (2026-10-28): the tests above. In a Hyper-V VM with
+the package installed, a probe from the host over a Hyper-V socket got the
+proxy's answer (TLS chosen). With the test client through the proxy and the
+login screen to a real account's GNOME Remote Desktop (the password check
+stood in for), display control was offered and asking for 1280x800 resized
+the desktop from 1024x768. Then on the dev VM, with the host switched to
+the Hyper-V socket transport, the user opened VMConnect's enhanced session:
+Patrone's login screen, their own password, their own desktop, and, once
+the plugin told VMConnect they had signed in, a window that resizes with
+the desktop following (VMConnect asked for 1562x885). Clipboard and sound
+channels were set up in those sessions (GNOME Remote Desktop's log: file
+clipboard, PCM sound); whether they work both ways is still the user's to
+confirm. Not checked: a fresh install from an ISO with this package (the
+next ISO), and Windows hosts other than the user's.
 
 0.4.5's Settings helper was tried on the dev VM (2026-10-27), installed, as
 root the way pkexec runs it, for a throwaway account with a random
