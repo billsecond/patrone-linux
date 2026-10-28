@@ -1,3 +1,18 @@
+patrone-file-manager (0.3.3) resolute; urgency=medium
+
+  * Patrone's own sign-in when connecting to a network share or opening an
+    encrypted drive, in place of GTK's, which was unreadable in dark mode
+    with its buttons in a strip of their own (the user, 2026-10-28:
+    "Connecting to a network share looks horible"). As on Windows: "Enter
+    network credentials", the computer it's for, User name, Password with
+    a show button, "Remember my credentials", and Domain and guest sign-in
+    under More choices. Connect and Cancel are in the dialog itself.
+  * Computers on the Network page show as computers, not blank files.
+  * A network folder that doesn't connect says to check the name and that
+    the computer is on, under GVfs's own words.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 16:45:00 -0500
+
 patrone-file-manager (0.3.2) resolute; urgency=medium
 
   * Drives and their mounts (the user, 2026-10-28: "add under computer

@@ -1087,7 +1087,7 @@ pub fn map_network_drive(window: &Window) {
                 parent(&window).as_ref(),
                 "Map Network Drive",
                 &format!("Can't connect to {}.", typed.trim()),
-                &dialogs::describe(&error),
+                &drives::describe_connect_error(&error),
             ),
         }
     });

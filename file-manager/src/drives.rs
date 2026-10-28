@@ -59,7 +59,8 @@ pub fn mount_volume(
     parent: Option<&gtk::Window>,
     done: impl FnOnce(Result<gio::File, glib::Error>) + 'static,
 ) {
-    let operation = gtk::MountOperation::new(parent);
+    let operation =
+        crate::signin::operation(parent, crate::signin::Target::Drive(volume.name().into()));
     let mounted = volume.clone();
     volume.mount(
         gio::MountMountFlags::NONE,
@@ -180,11 +181,31 @@ pub fn network_name(uri: &str) -> String {
     }
 }
 
+/// Why a network folder didn't connect, with Windows' advice: GVfs's own
+/// words can be as bare as "Invalid argument" for a computer that isn't
+/// there.
+pub fn describe_connect_error(error: &glib::Error) -> String {
+    format!(
+        "{}\n\nCheck the spelling of the name, and that the computer is on and sharing.",
+        crate::dialogs::describe(error)
+    )
+}
+
+/// What a sign-in for this folder says it's for: a network folder's share
+/// and computer, or the folder.
+pub fn target_of(file: &gio::File) -> crate::signin::Target {
+    if file.is_native() {
+        crate::signin::Target::Drive(file.parse_name().into())
+    } else {
+        crate::signin::Target::Network(network_name(&file.uri()))
+    }
+}
+
 /// Connects to a network folder, asking for a sign-in if the server wants
-/// one (GTK's dialog can remember the password for later sign-ins).
+/// one (it can be remembered in the keyring for later sign-ins).
 pub async fn connect(uri: &str, parent: Option<&gtk::Window>) -> Result<gio::File, glib::Error> {
     let file = gio::File::for_uri(uri);
-    let operation = gtk::MountOperation::new(parent);
+    let operation = crate::signin::operation(parent, target_of(&file));
     match file
         .mount_enclosing_volume_future(gio::MountMountFlags::NONE, Some(&operation))
         .await

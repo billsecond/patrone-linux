@@ -108,8 +108,11 @@ Waiting on the user:
   size; opening one mounts it, and Mount, Eject and Unmount are in the
   menus, the command bar and the navigation pane. Map network drive
   (`\\server\share`, `sftp://`...) signs in when asked and can reconnect
-  at each sign-in; right-click an `.iso` or `.img` to Mount it.
-  `patrone-file-manager` 0.3.2 is installed on PatroneDev: close every
+  at each sign-in; right-click an `.iso` or `.img` to Mount it. Since
+  0.3.3 the sign-in is Patrone's own, readable in dark mode (the user:
+  "Connecting to a network share looks horible"), and the Network page's
+  computers have computer icons. `patrone-file-manager` 0.3.3 is
+  installed on PatroneDev: close every
   File Manager window to start using it (the desktop's icons switch at
   the next sign-in). `patrone-remote-desktop` 0.5.1 lets Patrone's
   seat-less desktops mount USB drives and disk images with no password

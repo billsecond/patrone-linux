@@ -252,7 +252,8 @@ impl Tab {
             match result {
                 Err(error) if error.matches(gio::IOErrorEnum::NotMounted) => {
                     let window = tab.content.root().and_downcast::<gtk::Window>();
-                    let operation = gtk::MountOperation::new(window.as_ref());
+                    let operation =
+                        crate::signin::operation(window.as_ref(), crate::drives::target_of(&file));
                     let weak = Rc::downgrade(&tab);
                     let target = file.clone();
                     file.mount_enclosing_volume(
@@ -275,7 +276,7 @@ impl Tab {
                                         window.as_ref(),
                                         "Network Error",
                                         &format!("Can't open {}.", target.parse_name()),
-                                        &dialogs::describe(&error),
+                                        &crate::drives::describe_connect_error(&error),
                                     );
                                     tab.cancel_navigation();
                                 }
