@@ -860,6 +860,18 @@ it):
   fetch for a catalog that's missing (`flatpak update --system --appstream
   flathub`) wasn't needed; run by hand in the desktop it finished with no
   password prompt.
+- **Nothing brings Firefox back** (the user worried it would): after
+  first-login setup, `snap list` had no browser (bare, core24,
+  firmware-updater, gnome-46-2404, gtk-common-themes, hwctl, mesa-2404,
+  prompting-client, snapd, snapd-desktop-integration); dpkg knew no
+  `chromium-browser` and had `firefox` as not installed (`un`);
+  `apt-cache policy firefox` showed no installed version (the stub
+  `1:1snap1-0ubuntu9.1` is only a candidate). After `sudo apt update`,
+  `sudo apt full-upgrade -s` would upgrade 88 packages, install none and
+  remove none (two held back by phasing: `ubuntu-pro-client` and its
+  `-l10n`), with no browser in its output. `snap refresh --list` offered
+  only the installed system snaps. Patrone Software's Updates page had
+  System Updates and Files, and no browser among the system updates.
 
 Not checked: the slot's right-click menu with no browser (it should leave
 the chooser out of "Default web browser"); a second link while the chooser
