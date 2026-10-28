@@ -17,6 +17,11 @@
 #   ("William Daugherty": "wdaugherty"), not the whole name run together.
 # - Patrone's licence agreement gets a page of its own after "Try or
 #   install" (patrone_licence_page.dart).
+# - Other people's names and logos go (docs/COMPLIANCE.md, item 10): the
+#   "Automated with Landscape" choice (Landscape is Canonical's management
+#   service), Microsoft's Windows logo beside Windows' partitions (a plain
+#   disk instead), and Ubuntu's own slides, unused, with Ubuntu's mascot and
+#   27 other apps' logos.
 import colorsys
 import re
 import shutil
@@ -43,6 +48,19 @@ for target, picture in {
 }.items():
     assert target.exists(), target
     shutil.copyfile(images / picture, target)
+# A plain disk (the one beside other drives) beside Windows' partitions, in
+# place of Microsoft's logo
+shutil.copyfile(bootstrap / 'assets/storage/block-device.svg', bootstrap / 'assets/storage/windows.svg')
+
+# Ubuntu's slides, which only show when there are no others; patrone-branding
+# has Patrone's (/usr/share/desktop-provision/slides)
+shutil.rmtree(bootstrap / 'assets/slides')
+pubspec = bootstrap / 'pubspec.yaml'
+text = pubspec.read_text(encoding='utf-8')
+new = re.sub(r'^    - assets/slides/.*\n', '', text, flags=re.M)
+assert new != text, pubspec
+pubspec.write_text(new, encoding='utf-8')
+print("Ubuntu's slides and Windows' logo out")
 
 PATRONE_BLUE = '#288bfa'
 BLUE_HUE = 212 / 360  # Patrone Blue's
@@ -71,8 +89,6 @@ def recolor_hex(match):
 
 svgs = recolored = 0
 for svg in sorted(list((provision / 'assets').rglob('*.svg')) + list((bootstrap / 'assets').rglob('*.svg'))):
-    if '/slides/' in svg.as_posix():
-        continue  # patrone-branding's slides take their place
     text = svg.read_text(encoding='utf-8')
     new = re.sub(r'#[0-9A-Fa-f]{6}\b', recolor_hex, text)
     svgs += 1
@@ -145,3 +161,19 @@ edit(bootstrap / 'lib/app/installation_step.dart',
      '  tryOrInstall(TryOrInstallPage.new, discreteStep: false, allowedToHide: true),\n'
      '  patroneLicence(PatroneLicencePage.new, allowedToHide: true),\n')
 print('licence agreement page')
+
+# "Type of installation" without "Automated with Landscape". Its pages stay
+# in the app, with no way to reach them; patrone-branding's installer
+# settings list none of them either.
+edit(bootstrap / 'lib/pages/autoinstall/autoinstall_page.dart',
+     '''        const SizedBox(height: kWizardSpacing / 2),
+        OptionButton(
+          title: Text(lang.autoinstallLandscapeOption),
+          subtitle: Text(lang.autoinstallLandscapeDescription),
+          value: AutoinstallType.landscape,
+          groupValue: autoinstallModel.type,
+          onChanged: (value) =>
+              ref.read(autoinstallModelProvider.notifier).setType(value),
+        ),
+''', '')
+print('no Landscape')

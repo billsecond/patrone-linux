@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="ko">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>이 주제의 번역을 돕는 방법과 위치를 설명합니다.</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Michael Hill</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Zaria</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>조성호</mal:name>
+      <mal:email>shcho@gnome.org</mal:email>
+      <mal:years>2021, 2022, 2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>번역 개선에 참여하기</title>
+
+<p>그놈 도움말은 전세계 봉사자 집단이 번역하고 있으며, 여전히 <link href="https://l10n.gnome.org/module/gnome-user-docs/">수많은 언어</link>로 번역이 필요합니다.</p>
+<p>번역을 시작하려면 먼저 <link href="https://l10n.gnome.org/register">계정을 만들고</link> 사용하는 언어의 <link href="http://l10n.gnome.org/teams/">번역팀</link>에 가입해야 합니다. 그러면 새 번역을 업로드할 수 있습니다.</p>
+<p><link href="https://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link> 매트릭스 방에서 다른 그놈 번역자와 연결합니다. <link xref="help-matrix">Get help with Matrix</link> 페이지에 자세한 정보가 있습니다. 원하신다면, <link xref="help-irc">그놈 IRC 서버</link>의 #gnome-i18n IRC 채널도 있습니다. 이 방에 있는 참여자는 전세계에 흩어져있기 때문에, 답변에 시간이 걸릴 수도 있습니다.</p>
+<p>대신, 국제화 팀에 <link href="https://discourse.gnome.org/tag/i18n">그놈 디스코스</link>로 연락할 수도 있습니다.</p>
+
+</page>

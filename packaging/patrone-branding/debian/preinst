@@ -5,6 +5,8 @@
 # ESM update notes (90-updates-available) in the login message. Settings'
 # "Ubuntu Desktop" page is named "Desktop". lsb-release and legal are links
 # to Patrone's (rules), not configuration files, so installing asks nothing.
+# Yaru's start-here icons are Ubuntu's logo, and its distributor-logo icons
+# links to them: Patrone's P takes their place.
 set -e
 
 diverted="
@@ -19,7 +21,14 @@ diverted="
 /etc/update-motd.d/90-updates-available
 /etc/update-motd.d/91-contract-ua-esm-status
 /usr/share/applications/gnome-ubuntu-panel.desktop
+/usr/share/icons/Yaru/scalable/places/start-here-symbolic.svg
+/usr/share/icons/Yaru/scalable/places/distributor-logo-symbolic.svg
 "
+for size in 16 22 24 32 48 256; do
+    diverted="$diverted
+/usr/share/icons/Yaru/${size}x$size/places/start-here.png
+/usr/share/icons/Yaru/${size}x$size@2x/places/start-here.png"
+done
 
 if [ "$1" = install ] || [ "$1" = upgrade ]; then
     for file in $diverted; do

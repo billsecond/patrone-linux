@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="pt">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>Use <app>Ajustes</app> para iniciar aplicações automaticamente no início de sessão.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Tiago Santos</mal:name>
+      <mal:email>tiagofsantos81@sapo.pt</mal:email>
+      <mal:years>2014, 2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hugo Carvalho</mal:name>
+      <mal:email>hugokarvalho@hotmail.com</mal:email>
+      <mal:years>2020, 2021</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Iniciaar aplicações automaticamente ao iniciar a sessão</title>
+
+  <p>Quando inicia a sessão, o computador inicia automaticamente alguns aplicações e os executa em segundo plano. Geralmente, esses são programas importantes que ajudam a executar sua sessão na área de trabalho sem problemas.</p>
+
+  <p>Pode usar o aplicativo <app>Ajustes</app> para adicionar outras aplicações usados com frequência, como navegadores web ou editores, à lista de programas iniciados automaticamente no início da sessão.</p>
+
+  <note style="important">
+    <p>Você precisa ter <app>Ajustes</app> instalado em seu computador para alterar essa configuração.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweaks">Instalar <app>Ajustes</app></link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>Para iniciar um aplicativo automaticamente no início da sessão:</title>
+    <item>
+      <p>Abra o panorama de <gui xref="shell-introduction#activities">Atividades</gui> e comece a digitar <gui>Ajustes</gui>.</p>
+    </item>
+    <item>
+      <p>Clique em <gui>Ajustes</gui> para abrir o aplicativo.</p>
+    </item>
+    <item>
+      <p>Clique na aba <gui>Aplicativos de inicialização</gui>.</p>
+    </item>
+    <item>
+      <p>Clique no botão <gui style="button">+</gui> para obter uma lista de aplicações disponíveis.</p>
+    </item>
+    <item>
+      <p>Clique em <gui style="button">Adicionar</gui> para adicionar um aplicativo de sua escolha à lista.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>Pode remover um aplicativo da lista clicando no botão <gui style="button">Remover</gui> ao lado do aplicativo.</p>
+  </note>
+
+</page>

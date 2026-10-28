@@ -1,8 +1,8 @@
 # Patrone's desktop
 
 `patrone-desktop` (`packaging/patrone-desktop`) is the package that makes an
-Ubuntu install Patrone's desktop. It depends on Ubuntu's desktop
-(`ubuntu-desktop-minimal`) and `patrone-branding`, recommends Patrone's apps,
+Ubuntu install Patrone's desktop. It depends on `patrone-branding` and on
+Ubuntu's desktop, which it lists itself (below), recommends Patrone's apps,
 and leaves out everything that reports to Canonical. It also recommends a
 few tools everyone gets (the user asked for them, 2026-10-26): `fastfetch`,
 `nano` and `vim` (Ubuntu installs only `vim-tiny`), `btop` and `htop`,
@@ -14,12 +14,34 @@ Center.
 | File | Installed as | What it does |
 | --- | --- | --- |
 | `gnome-initial-setup/vendor.conf` | `/etc/gnome-initial-setup/vendor.conf` | First-login setup skips Ubuntu's "Help improve Ubuntu" page (`ubuntu_insights`), which asks to send system and error reports to Canonical, and its Ubuntu Pro page (`ubuntu_pro`) |
-| `systemd/ubuntu-pro-only.conf` | `/usr/lib/systemd/system/{apt-news,esm-cache}.service.d/` | Ubuntu Pro's apt news and ESM check, which fetch Canonical's news and offers at every `apt update`, run only on a machine attached to Ubuntu Pro |
-| `chrony/patrone-nts.sources` | `/etc/chrony/sources.d/` | The clock's servers: Cloudflare (`time.cloudflare.com`), Netnod (`nts.netnod.se`), PTB (`ptbtime1.ptb.de`) and SIDN Labs (`ntppool1.time.nl`), each authenticated with NTS, in place of Ubuntu's `ntp.ubuntu.com` pools |
+| `chrony/patrone-nts.sources` | `/etc/chrony/sources.d/` | The clock's servers: Cloudflare (`time.cloudflare.com`), Netnod (`nts.netnod.se`), and PTB (`ptbtime1.ptb.de`), each authenticated with NTS, in place of Ubuntu's `ntp.ubuntu.com` pools. Not TimeNL (SIDN Labs), whose terms ask vendors to ask first (`docs/COMPLIANCE.md`, item 7) |
 | `chrony/patrone-nts.conf` | `/etc/chrony/conf.d/` | `nocerttimecheck 1`: a computer whose clock starts far off can still use NTS (below) |
 | `networkmanager/30-patrone-connectivity.conf` | `/usr/lib/NetworkManager/conf.d/` | NetworkManager's check for Wi-Fi sign-in pages asks GNOME's server (`nmcheck.gnome.org`) in place of `connectivity-check.ubuntu.com`. It comes after Ubuntu's `20-connectivity-ubuntu.conf`, so it wins |
 | `update-manager/patrone.cfg` | `/etc/update-manager/release-upgrades.d/` | `Prompt=never`: nothing offers to upgrade to Ubuntu's next release, or asks `changelogs.ubuntu.com` whether there is one. Patrone moves to a new Ubuntu base itself |
+| `connections.txt` | `/usr/share/doc/patrone-desktop/connections.txt` | What the system connects to, and who runs each service, for users (`/etc/legal` points to it): the website's list (`/privacy/patrone-linux`), kept to what this version does. Change both together |
 | `session/make-session-mode` | `/usr/libexec/patrone-desktop/` | Writes `/usr/share/gnome-shell/modes/ubuntu.json`: Ubuntu's session mode (moved aside to `ubuntu.json.ubuntu` by preinst) with Patrone's taskbar among the session's own extensions (below). Run by postinst, and again by a trigger whenever `gnome-shell-common` brings a new one; if Ubuntu's file changes shape, or the result isn't valid JSON, Ubuntu's is used as it is |
+
+### Ubuntu's desktop, listed here
+
+Ubuntu's desktop is two metapackages, `ubuntu-desktop-minimal` and
+`ubuntu-minimal`, and they need what Patrone leaves out: Ubuntu Pro's client
+(`ubuntu-pro-client`, with its services and its apt hook), Software Updater
+(`update-manager`, which showed Ubuntu's logo, Ubuntu Pro's rows and a
+Livepatch tip) and, through it, `update-notifier` and
+`ubuntu-release-upgrader-gtk`. So since 0.2.0, `patrone-desktop` takes their
+place (docs/COMPLIANCE.md, items 3 and 12; docs/NEXT.md §16): its Depends
+and Recommends are theirs (1.570.4), less those, `hwctl` (Canonical's
+hardware-certification tool), Ubuntu's Help (`ubuntu-docs`, whose place
+`patrone-branding` takes), `network-manager-config-connectivity-ubuntu`
+(Ubuntu's server for the network check, which Patrone's asks GNOME's), the
+reporting packages (below), Firefox and Ptyxis; and it recommends
+`gnome-user-docs`, GNOME's Help, which `ubuntu-docs` used to bring.
+`Conflicts` on `ubuntu-pro-client`, `update-manager` and `hwctl` takes them,
+and Ubuntu's metapackages with them, off a system that has them. Updates
+come from Patrone Software, and Settings falls back to it.
+
+When Ubuntu's metapackages change (a new Ubuntu base), compare their lists
+with these: `apt-cache show ubuntu-desktop-minimal ubuntu-minimal`.
 
 ### The taskbar is part of the session
 
@@ -67,8 +89,8 @@ one of these servers could feed it a wrong time.
 | `apport` | Writes crash reports to `/var/crash` | Kept, and recommended so that removing `apport-gtk` doesn't leave it to `apt autoremove`: the reports stay on the machine for debugging, and nothing sends them |
 | `whoopsie-preferences`, `libinsights0` | Record the choices in Settings and first-login setup | Kept: Settings and first-login setup depend on them. They write a setting and never upload anything |
 
-All four removed packages are only recommended by `ubuntu-desktop-minimal`,
-so removing them leaves Ubuntu's desktop installed.
+All four removed packages were only recommended by Ubuntu's desktop, so
+`patrone-desktop`'s list leaves them out.
 
 Settings → Privacy & Security → Telemetry still shows "Send error reports to
 Canonical" and the system-report switches: Ubuntu builds that page into
@@ -87,8 +109,9 @@ needs:
 - **Flatpak apps:** Flathub, from Patrone Software, which keeps the web
   browser up to date (Patrone Linux comes with none: Patrone Browser
   Chooser asks which to install).
-- **Ubuntu Pro:** Settings and `pro attach` contact Canonical only when
-  someone attaches the machine to Ubuntu Pro.
+
+Ubuntu Pro's client isn't installed (above): nothing fetches its news or
+checks for its extended updates.
 
 Ubuntu's daily news for the login message (`motd-news`) is already off:
 its script runs only when `/etc/default/motd-news` sets `ENABLED=1`, and that

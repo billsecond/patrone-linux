@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="eu">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>Nola eta non lagundu gai hauek itzultzen.</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Michael Hill</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Zaria</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Asier Saratsua Garmendia</mal:name>
+      <mal:email>asiersarasua@ni.eus</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Lagundu itzulpenak hobetzen</title>
+
+<p>Mundu osoko boluntarioen komunitate bat ari da GNOMEren laguntza itzultzen. Itzulpena behar duten <link href="https://l10n.gnome.org/module/gnome-user-docs/">hainbat hizkuntza</link> daude.</p>
+<p>Itzultzen hasteko, <link href="https://l10n.gnome.org/register/">kontu bat sortu</link> behar da eta zure hizkuntzaren <link href="https://l10n.gnome.org/teams/">itzulpen-taldearekin</link> bat egin behar duzu. Horren ondoren, itzulpen berriak igo ahal izango dituzu.</p>
+<p>
+    Connect with other GNOME translators in the <link href="https://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link> Matrix room. See the <link xref="help-matrix">Get help with Matrix</link> page for more information. If you prefer, there is also an IRC channel, #gnome-i18n, on the <link xref="help-irc">GNOME IRC server</link>. As the people in these rooms are located across the world, it may take a moment to get a response.
+</p>
+<p>Beste komunikazio-kanal bat internazionalizazio-taldearen <link href="https://discourse.gnome.org/tag/i18n">GNOME Discourse</link> gunea da.</p>
+
+</page>

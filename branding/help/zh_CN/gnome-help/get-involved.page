@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="zh-CN">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>怎样或者上哪儿报告这些帮助主题中的错误。</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>TeliuTe</mal:name>
+      <mal:email>teliute@163.com</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>tuberry</mal:name>
+      <mal:email>orzun@foxmail.com</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Victor_Trista</mal:name>
+      <mal:email>ljlzjzm@hotmail.com</mal:email>
+      <mal:years>2023</mal:years>
+    </mal:credit>
+  </info>
+  <title>参加志愿者社区以改善本指南</title>
+
+  <section id="submit-issue">
+
+   <title>提交问题</title>
+
+   <p>这份帮助文档是由社区志愿者创建的。也欢迎您的参与。如果您发现其中存在问题（如错别字、错误的说明或缺失的主题），您可以提交一个<em>新问题</em>。要提交新问题，请访问<link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">问题跟踪器</link>。</p>
+
+   <p>您需要先注册，这样才能提交问题并通过电子邮件接收它的状态更新。如果您还没有账号，请点击<gui><link href="https://gitlab.gnome.org/users/sign_in">登录/注册</link></gui>按钮来创建。</p>
+
+   <p>如果您已有账号，请登录后返回<link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">文档问题跟踪器</link>，并点击 <gui>新建议题</gui>。在报告新问题之前，请<link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">浏览</link>确认是否已经存在类似问题。</p>
+
+   <p>在提交问题之前，请在 <gui>Labels</gui> 菜单中选择合适的标签。如果是针对本文档提交问题，您应该选择 <gui>gnome-help</gui> 标签。如果您不确定问题与哪个组件有关，请不要选择任何组件。</p>
+
+   <p>如果您请求的是未涵盖的帮助主题，请选择 <gui>Feature</gui> 作为标签。填写标题和描述部分，然后点击 <gui>Submit issue</gui>。</p>
+
+   <p>您的问题将被赋予一个 ID 号，其状态将在处理过程中被更新。感谢您让 GNOME 帮助变得更好！</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>联系我们</title>
+
+<p>在<link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix 聊天室与其他 GNOME 文档编辑者联系。详情请参阅<link xref="help-matrix">获取有关 Matrix 的帮助</link>页面。如果您愿意，<link xref="help-irc">GNOME IRC server</link>上还有一个 IRC 频道 #gnome-i18n。由于这些聊天室的成员遍布世界各地，因此可能需要一些时间才能得到回复。</p>
+<p>另外，您也可以使用<link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>与文档团队联系。</p>
+
+   <p>我们的<link href="https://wiki.gnome.org/DocumentationProject">维基页面</link>包含有关如何加入和贡献的有用信息。</p>
+
+
+   </section>
+</page>

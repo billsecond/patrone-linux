@@ -20,22 +20,28 @@ Comment: Built by installer/build.sh from ubuntu-desktop-provision at the
  commit installer/README.md names, changed by installer/patch_source.py
  (Patrone's pictures in place of Ubuntu's logo, mascot and disk icon, the
  other pictures recolored from Ubuntu's orange to Patrone's blue, the
- spinner, the suggested username) and installer/debrand_l10n.py (its
- messages). ubuntu_flavor (MPL-2.0, its notice in NOTICES.Z) has its Ubuntu
- flavor's name changed to Patrone Linux.
+ spinner, the suggested username, the licence agreement's page; without
+ the Landscape choice, Ubuntu's slides or the Windows logo) and
+ installer/debrand_l10n.py (its messages). ubuntu_flavor (MPL-2.0, its
+ notice in NOTICES.Z) has its Ubuntu flavor's name changed to Patrone Linux.
+ Patrone's wordmark and P in it come from Patrone's logo, which was made
+ with an AI image generator, so they're Patrone's only as far as anyone
+ holds copyright in them (patrone-branding's copyright file says more).
 License: GPL-3
 
 Files: usr/lib/patrone-installer/data/flutter_assets/packages/yaru/assets/fonts/*
 Copyright: 2010, 2011 Canonical Ltd.
 Comment: The Ubuntu font family, unchanged, bundled by the yaru Flutter
- package (https://pub.dev/packages/yaru) for the installer's text. Ubuntu
- and Canonical are registered trademarks of Canonical Ltd.; the licence
- grants no rights under trademark law.
+ package (https://pub.dev/packages/yaru) for the installer's text, with
+ the licence beside them (UFL.txt). Ubuntu and Canonical are registered
+ trademarks of Canonical Ltd.; the licence grants no rights under trademark
+ law.
 License: UFL-1.0
 
 Files: usr/lib/patrone-installer/data/flutter_assets/packages/yaru/assets/yaru_icons.otf
 Copyright: The Yaru icon authors (https://github.com/ubuntu/yaru.dart)
-Comment: The yaru Flutter package's icon font, unchanged.
+Comment: The yaru Flutter package's icon font, unchanged; yaru's notice of
+ its licence is beside it (assets/LICENSE.CCBYSA).
 License: CC-BY-SA-4.0
  Licensed under the Creative Commons Attribution-ShareAlike 4.0
  International License:

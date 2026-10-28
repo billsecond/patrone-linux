@@ -4,6 +4,7 @@ set -e
 . /usr/share/debconf/confmodule
 
 pools=/etc/chrony/sources.d/ubuntu-ntp-pools.sources
+esm_hook=/etc/apt/apt.conf.d/20apt-esm-hook.conf
 
 if [ "$1" = configure ]; then
     # Ubuntu's chrony asks whether to keep its ntp.ubuntu.com pools in
@@ -20,8 +21,17 @@ if [ "$1" = configure ]; then
         rm -f "$pools"
     fi
 
-    # Pick up the new time servers, the network check's server and the
-    # drop-ins for Ubuntu Pro's apt news and ESM check.
+    # Before 0.2.0, Ubuntu Pro's apt hook was moved aside. Ubuntu Pro's
+    # client is gone now (Conflicts), leaving its configuration files behind,
+    # this one among them: it goes too, rather than back into apt's way.
+    if [ "$(dpkg-divert --listpackage "$esm_hook")" = patrone-desktop ]; then
+        dpkg-divert --package patrone-desktop --remove \
+            --divert /usr/share/patrone-desktop/20apt-esm-hook.conf.ubuntu "$esm_hook"
+        rm -f /usr/share/patrone-desktop/20apt-esm-hook.conf.ubuntu
+        rmdir --ignore-fail-on-non-empty /usr/share/patrone-desktop 2> /dev/null || true
+    fi
+
+    # Pick up the new time servers and the network check's server
     if [ -d /run/systemd/system ]; then
         systemctl daemon-reload || true
         systemctl try-restart chrony.service || true

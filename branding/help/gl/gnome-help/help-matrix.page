@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="gl">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Páxina web de Matrix</title></link>
+
+
+    <desc>Converse en vivo con contribuidores de GNOME.</desc>
+
+    <keywords>matrix, chat, asistencia técnica, en vivo, comunidade, axuda</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Fran Diéguez</mal:name>
+      <mal:email>frandieguez@gnome.org</mal:email>
+      <mal:years>2011-2024</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Obter axuda con Matrix</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> é unha plataforma de chat moderna e de fontes abertas. Como o correo, vostede pode crear unha conta nun dos innumerábeis servidores e usar calquera cliente para conectarse incluíndo os baseados en web.</p>
+  <steps>
+    <item><p>Escolla un cliente. Matrix mantén unha <link href="https://matrix.org/docs/projects/try-matrix-now/">lista de clientes populares</link>, incluíndo o famoso cliente <link href="https://app.element.io">Element</link> e a aplicación de GNOME <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>.</p></item>
+    <item><p>Cree unha conta. A maioría dos clientes guiaranlle no proceso e a conta funcionará con calquera cliente de Matrix.</p></item>
+    <item><p>Únase á sala <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> e pregunte de novo.</p></item>
+  </steps>
+  <p>Pode atopar máis información, incluíndo como explorar as salas de GNOME, na <link href="https://wiki.gnome.org/GettingInTouch/Matrix">wiki de GNOME</link>.</p>
+  <note>
+  <p>Teña en conta o <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">código de conducta de GNOME</link> cando chatea en Matrix ou outras plataformas de GNOME.</p>
+    </note>
+
+</page>

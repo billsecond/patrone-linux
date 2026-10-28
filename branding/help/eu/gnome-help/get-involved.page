@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="eu">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Nola eta non jakinarazi laguntza honetan egon daitezkeen arazoak.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Asier Saratsua Garmendia</mal:name>
+      <mal:email>asiersarasua@ni.eus</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+  <title>Hartu parte gida honen hobekuntzan</title>
+
+  <section id="submit-issue">
+
+   <title>Jakinarazi akats bat</title>
+
+   <p>Laguntzako dokumentazio hau boluntarioen komunitate batek sortzen du. Nahi baduzu, hartu parte gure lanean. Laguntza-orri hauek arazoren bat dutela aurkitzen baduzu (adibidez, akats ortografikoak, argibide okerrak edo falta diren gaiak), bidali <em>akats berri bat</em>. Akats berria bidaltzeko, joan <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">akatsen aztarnarira</link>.</p>
+
+   <p>Akats bat jakinarazteko eta haren egoerari buruzko eguneratzeak posta bidez jasotzeko erregistratu egin beharko duzu. Oraindik ez baduzu kontu bat, egin klik <gui><link href="https://gitlab.gnome.org/users/sign_in">Hasi saioa / Erregistratu</link></gui> botoian bat sortzeko.</p>
+
+   <p>Kontu bat baduzu, ziurtatu saioa hasita duzula, bueltatu <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">dokumentazioaren akatsen aztarnarira</link> eta egin klik <gui>Akats berria</gui> aukeran. Akats bat jakinarazi baino lehen, <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">arakatu</link> akatsen zerrenda, beste norbaitek antzeko akats bat jakinarazi ez duela ziurtatzeko.</p>
+
+   <p>Akatsa bidali baino lehen, aukeratu etiketa egokiak <gui>Etiketak</gui> menuan. Dokumentazioko akats baten berri ematen ari bazara, aukeratu <gui>gnome-help</gui> etiketa. Ez badakizu ziur zein osagairena den akatsa, ez aukeratu etiketarik.</p>
+
+   <p>Oraindik inoiz aztertu ez den gai bati buruzko laguntza eskatzen ari bazara, aukeratu <gui>Eginbidea</gui> etiketa gisa. Bete izenburua eta deskribapena eta egin klik <gui>Bidali akatsa</gui> aukeran.</p>
+
+   <p>Akatsari ID zenbaki bat esleituko zaio, eta bere egoera eguneratuko da aldaketak jasaten dituenean. Eskerrik asko GNOMEren laguntza hobetzen laguntzeagatik.</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Kontaktua</title>
+
+<p>Egin bat GNOMEren dokumentazioa editatzen duten beste lagun batzuekin <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix gelan. Ikus <link xref="help-matrix">Get help with Matrix</link> orria informazio gehiagorako. Nahiago baduzu, badago IRC kanal bat, #gnome-docs, <link xref="help-irc">GNOMEren IRC zerbitzarian</link>. Gela horietan aritzen den jendea mundu osokoa denez, batzuetan denboratxo bat itxaron behar da erantzuna jasotzeko.</p>
+<p>Beste komunikazio-kanal bat dokumentazio-taldearen <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link> gunea da.</p>
+
+   <p>Gure <link href="https://wiki.gnome.org/DocumentationProject">wiki-orriak</link> informazio erabilgarria du lagundu nahi duen ororentzat.</p>
+
+
+   </section>
+</page>

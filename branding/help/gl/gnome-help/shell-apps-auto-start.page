@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="gl">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>Use <app>Axustes</app> para iniciar aplicacións automaticamente ao iniciar sesión.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Fran Diéguez</mal:name>
+      <mal:email>frandieguez@gnome.org</mal:email>
+      <mal:years>2011-2024</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Iniciar aplicacións automaticamente ao iniciar sesión</title>
+
+  <p>Cando inicie sesión o seu computador iniciará algunhas aplicacións automaticametne e executaráas en segundo plano. Isto normalmente son programas importantes que lle axudan á súa sesión de escritorio a correr correctamente.</p>
+
+  <p>Pode usar a aplicación <app>Axustes</app> para engadir outras aplicacións que usa frecuentemente, como un navegador web ou editores, á lista de programas que se inician automaticamente ao iniciar sesión.</p>
+
+  <note style="important">
+    <p>Dete ter <app>Axustes</app> instalado no seu computador para cambiar esta preferencia.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweaks">Instalar <app>Axustes</app></link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>Para iniciar unha aplicación automaticamente ao iniciar sesión:</title>
+    <item>
+      <p>Abra a vista de <gui xref="shell-introduction#activities">Actividades</gui> e comece a escribir <gui>Axustes</gui>.</p>
+    </item>
+    <item>
+      <p>Prema <gui>Axustes</gui> para abrir a aplicación.</p>
+    </item>
+    <item>
+      <p>Prema na lapela <gui>Aplicacións de inicio</gui>.</p>
+    </item>
+    <item>
+      <p>Prema o botón <gui style="button">+</gui> para obter unha lista das aplicacións dispoñíbeis.</p>
+    </item>
+    <item>
+      <p>Prema en <gui style="button">Engadir</gui> para engadir unha aplicación da súa elección á lista.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>Pode eliminar unha aplicación da lista premendo no botón <gui style="button">Eliminar</gui> ao carón da aplicación.</p>
+  </note>
+
+</page>

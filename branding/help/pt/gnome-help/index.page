@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:e="http://projectmallard.org/experimental/" xmlns:its="http://www.w3.org/2005/11/its" type="guide" id="index" xml:lang="pt">
+
+<info>
+    <desc>Um guia para os utilizadores do ambiente gráfico GNOME.</desc>
+
+    <title type="link">Ajuda do GNOME</title>
+    <title type="text">Ajuda do GNOME</title>
+    <title role="trail" type="link">Ajuda</title>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Tiago Santos</mal:name>
+      <mal:email>tiagofsantos81@sapo.pt</mal:email>
+      <mal:years>2014, 2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hugo Carvalho</mal:name>
+      <mal:email>hugokarvalho@hotmail.com</mal:email>
+      <mal:years>2020, 2021</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Ajuda do GNOME</title>
+
+<links type="topic" groups="gs"/>
+
+<links type="topic" style="experimental-gnome-top" groups="intro #first"/>
+
+<links type="topic" style="experimental-gnome-tiles 2column" groups="        shell-overview        net media files        prefs hardware        a11y tips more-help"/>
+</page>

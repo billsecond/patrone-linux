@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="es">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>Use <app>Retoques</app> para ejecutar aplicaciones automáticamente al iniciar la sesión.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Daniel Mustieles</mal:name>
+      <mal:email>daniel.mustieles@gmail.com</mal:email>
+      <mal:years>2011 - 2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nicolás Satragno</mal:name>
+      <mal:email>nsatragno@gnome.org</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Francisco Molinero</mal:name>
+      <mal:email>paco@byasl.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jorge González</mal:name>
+      <mal:email>jorgegonz@svn.gnome.org</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Ejecutar aplicaciones automáticamente al iniciar la sesión</title>
+
+  <p>Cuando inicia la sesión su equipo ejecuta automáticamente algunas aplicaciones y las ejecuta en segundo plano. Normalmente son programas importantes que ayudan al escritorio a ejecutarse con suavidad.</p>
+
+  <p>Puede usar la aplicación <app>Retoques</app> para añadir otras aplicaciones que use frecuentemente, como navegadores web o editores, a la lista de programas que ejecutar automáticamente al iniciar la sesión.</p>
+
+  <note style="important">
+    <p>Necesita tener instalado <app>Retoques</app> en su equipo para modificar esta opción.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweak-tool">Instalar <app>Retoques</app></link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>Para ejecutar una aplicación automáticamente al iniciar la sesión:</title>
+    <item>
+      <p>Abra la vista de <gui xref="shell-introduction#activities">Actividades</gui> y empiece a escribir <gui>Retoques</gui>.</p>
+    </item>
+    <item>
+      <p>Pulse en <gui>Retoques</gui> para abrir la aplicación.</p>
+    </item>
+    <item>
+      <p>Pulse la pestaña <gui>Aplicaciones al inicio</gui>.</p>
+    </item>
+    <item>
+      <p>Pulse el botón <gui style="button">+</gui> para obtener una lista de aplicaciones disponibles.</p>
+    </item>
+    <item>
+      <p>Pulse <gui style="button">Añadir</gui> para añadir una aplicación a la lista.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>Puede quitar una aplicación de la lista pulsando el botón <gui style="button">Quitar</gui> junto a la aplicación.</p>
+  </note>
+
+</page>

@@ -1,3 +1,24 @@
+patrone-desktop (0.2.0) resolute; urgency=medium
+
+  * Lists Ubuntu's desktop packages itself, in place of Ubuntu's
+    metapackages (ubuntu-desktop-minimal and ubuntu-minimal), less what's
+    Canonical's own (docs/COMPLIANCE.md, items 3 and 12):
+    - Ubuntu Pro's client and its services (ubuntu-pro-client): Ubuntu Pro
+      is for Canonical's own Ubuntu. Its apt news and ESM drop-ins go with
+      it, and Ubuntu Pro's apt hook, moved aside until now, is gone.
+    - Software Updater (update-manager), with Ubuntu's logo, Ubuntu Pro's
+      rows and a Livepatch tip. Patrone Software has the updates.
+    - hwctl, Canonical's hardware-certification tool.
+    - Ubuntu's connectivity-check server (Patrone's check asks GNOME's).
+    Ubuntu's Help (ubuntu-docs) gives way to patrone-branding's.
+  * /usr/share/doc/patrone-desktop/connections.txt: what the system
+    connects to, and who runs each service (docs/COMPLIANCE.md, item 20).
+  * The clock no longer uses TimeNL (ntppool1.time.nl): its terms ask
+    vendors to ask SIDN Labs first (docs/COMPLIANCE.md, item 7). Cloudflare's,
+    Netnod's and PTB's NTS servers remain.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 14:00:00 -0500
+
 patrone-desktop (0.1.7) resolute; urgency=medium
 
   * Recommends patrone-guest-tools: Hyper-V's integration services and

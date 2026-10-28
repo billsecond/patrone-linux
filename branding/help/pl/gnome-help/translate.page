@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="pl">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>Jak i gdzie można pomóc tłumaczyć tę pomoc.</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Michael Hill</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Zaria</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Piotr Drąg</mal:name>
+      <mal:email>piotrdrag@gmail.com</mal:email>
+      <mal:years>2017-2023</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Aviary.pl</mal:name>
+      <mal:email>community-poland@mozilla.org</mal:email>
+      <mal:years>2017-2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Dołączanie, aby ulepszać tłumaczenia</title>
+
+<p>Pomoc GNOME jest tłumaczona przez ogólnoświatową społeczność ochotników, a <link href="https://l10n.gnome.org/module/gnome-user-docs/">wiele języków</link> nadal potrzebuje tłumaczeń.</p>
+<p>Aby rozpocząć tłumaczenie, <link href="https://l10n.gnome.org/register/">utwórz konto</link> i dołącz do <link href="https://l10n.gnome.org/teams/">zespołu tłumaczy</link> dla danego języka. Umożliwi to wysyłanie nowych tłumaczeń.</p>
+<p>Dołącz do innych tłumaczy GNOME w pokoju <link href="https://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link> w sieci Matrix. <link xref="help-matrix">Na tej stronie</link> można znaleźć więcej informacji. Jeśli wolisz, jest także kanał #gnome-i18n w sieci IRC, na serwerze <link xref="help-irc">GNOME</link>. Z powodu różnic stref czasowych odpowiedź może nie przyjść od razu.</p>
+<p>Można także skontaktować się z zespołem tłumaczeń za pomocą serwisu <link href="https://discourse.gnome.org/tag/i18n">GNOME Discourse</link> (w języku angielskim).</p>
+
+</page>

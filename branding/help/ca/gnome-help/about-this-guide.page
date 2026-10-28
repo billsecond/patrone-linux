@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="ca">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Alguns consells sobre com utilitzar la guia d'ajuda de l'escriptori.</desc>
+    <credit type="author">
+      <name>Projecte de documentació del GNOME</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jaume Jorba</mal:name>
+      <mal:email>jaume.jorba@gmail.com</mal:email>
+      <mal:years>2018, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jordi Mas i Hernàndez</mal:name>
+      <mal:email>jmas@softcatala.org</mal:email>
+      <mal:years>2018, 2020-2023</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Miquel-Àngel Burgos i Fradeja</mal:name>
+      <mal:email>miquel.angel.burgos@gmail.com</mal:email>
+      <mal:years>2020</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Maite Guix i Ribé</mal:name>
+      <mal:email>maite.guix@me.com</mal:email>
+      <mal:years>2022</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Quant a aquesta guia</title>
+<p>Aquesta guia està dissenyada per a oferir-vos un recorregut per les funcions del vostre escriptori, respondre les preguntes relacionades amb l'ordinador i proporcionar consells sobre com utilitzar l'ordinador amb més eficàcia. Aquí teniu algunes notes sobre la guia d'ajuda:</p>
+
+<list>
+  <item><p>La guia s'ordena en petites tasques orientades a temes i no per capítols. Això vol dir que no cal fer una lectura a través de tot un manual per a trobar la resposta a les seves preguntes.</p></item>
+  <item><p>Els elements relacionats estan enllaçats entre si. Els enllaços «Veure també» al final d'algunes pàgines us dirigiran a temes relacionats. Això facilita la cerca de temes similars que us poden ajudar a realitzar una determinada tasca.</p></item>
+  <item><p>Disposeu d'un mecanisme de cerca integrada. La barra que trobareu a la part superior del navegador d'ajuda és una <em>barra de cerca</em>, la qual us mostrarà els resultats rellevants tan bon punt comenceu a escriure-hi.</p></item>
+  <item><p>La guia es millora constantment. Tot i que intentem proporcionar-vos una àmplia informació útil, sabem que no podem respondre a totes les vostres preguntes aquí. Si necessiteu més ajuda, podeu contactar amb l'equip de suport de la vostra distribució.</p></item>
+</list>
+
+</page>

@@ -10,6 +10,9 @@ under its makers' own terms, in the same files.
 Patrone Linux comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
 applicable law.
 
+What it connects to, and who runs each service, is in
+/usr/share/doc/patrone-desktop/connections.txt.
+
 Linux® is the registered trademark of Linus Torvalds in the U.S. and other
 countries. Ubuntu and Canonical are registered trademarks of Canonical Ltd.
 GNOME is a trademark of the GNOME Foundation. Windows is a trademark of the

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="hu">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Kérjen segítséget IRC-n.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Bojtos Péter</mal:name>
+      <mal:email>ptr at ulx dot hu</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Griechisch Erika</mal:name>
+      <mal:email>griechisch.erika at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kelemen Gábor</mal:name>
+      <mal:email>kelemeng at gnome dot hu</mal:email>
+      <mal:years>2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Kucsebár Dávid</mal:name>
+      <mal:email>kucsdavid at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Lakatos 'Whisperity' Richárd</mal:name>
+      <mal:email>whisperity at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Lukács Bence</mal:name>
+      <mal:email>lukacs.bence1 at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Meskó Balázs</mal:name>
+      <mal:email>mesko dot balazs at fsf dot hu</mal:email>
+      <mal:years>2021, 2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nagy Zoltán</mal:name>
+      <mal:email>dzodzie at gmail dot com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Úr Balázs</mal:name>
+      <mal:email>ur dot balazs at fsf dot hu</mal:email>
+      <mal:years>2016, 2019, 2021, 2022, 2023, 2024, 2025</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>Az IRC az Internet Relay Chat (Interneten közvetített csevegés) rövidítése. Ez egy valós idejű, többfelhasználós üzenetküldési rendszer. A GNOME IRC-kiszolgálóján segítséget és tanácsokat kaphat más GNOME felhasználóktól és fejlesztőktől.</p>
+   <p>A GNOME IRC-kiszolgálójához való kapcsolódáshoz használja a <app>Polari</app> vagy a <app>HexChat</app> alkalmazásokat.</p>
+   <p>Ahhoz, hogy IRC-fiókot hozzon létre a Polari alkalmazásban, nézze meg a <link href="help:polari/">Polari dokumentációját</link>.</p>
+   <p>A GNOME IRC-kiszolgálója az <sys>irc.libera.chat</sys>. Ha a számítógépe megfelelően van beállítva, akkor a <link href="irc://irc.libera.chat/gnome"/> hivatkozásra kattintva beléphet a <sys>gnome</sys> csatornára.</p>
+   <p>Noha az IRC valós idejű csevegést biztosít, az emberek nem mindig válaszolnak azonnal, ezért legyen türelmes.</p>
+
+  <note>
+    <p>Ne feledje az IRC-en csevegés közben betartani a <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME viselkedési kódexet</link>!</p>
+  </note>
+
+</page>

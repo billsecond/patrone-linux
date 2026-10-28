@@ -1,7 +1,6 @@
 #!/usr/bin/make -f
 
 pkg = debian/patrone-desktop
-dropins = $(pkg)/usr/lib/systemd/system
 
 %:
 	dh $@
@@ -9,10 +8,6 @@ dropins = $(pkg)/usr/lib/systemd/system
 override_dh_auto_install:
 	install -Dm644 gnome-initial-setup/vendor.conf \
 	    $(pkg)/etc/gnome-initial-setup/vendor.conf
-	install -Dm644 systemd/ubuntu-pro-only.conf \
-	    $(dropins)/apt-news.service.d/patrone-ubuntu-pro-only.conf
-	install -Dm644 systemd/ubuntu-pro-only.conf \
-	    $(dropins)/esm-cache.service.d/patrone-ubuntu-pro-only.conf
 	install -Dm644 networkmanager/30-patrone-connectivity.conf \
 	    $(pkg)/usr/lib/NetworkManager/conf.d/30-patrone-connectivity.conf
 	install -Dm644 chrony/patrone-nts.sources \
@@ -31,4 +26,9 @@ override_dh_auto_install:
 	install -d $(pkg)/usr/share/python-apt/templates
 	ln -s ubuntu.info $(pkg)/usr/share/python-apt/templates/patrone.info
 	ln -s ubuntu.mirrors $(pkg)/usr/share/python-apt/templates/patrone.mirrors
-	install -d $(pkg)/usr/share/patrone-desktop
+	# What the system connects to, and who runs each service
+	install -Dm644 connections.txt $(pkg)/usr/share/doc/patrone-desktop/connections.txt
+
+# Not compressed, so the path the description and /etc/legal give stays true
+override_dh_compress:
+	dh_compress -Xconnections.txt

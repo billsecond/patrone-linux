@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="es">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Cómo y dónde informar de un error en estos temas de ayuda.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Daniel Mustieles</mal:name>
+      <mal:email>daniel.mustieles@gmail.com</mal:email>
+      <mal:years>2011 - 2022</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Nicolás Satragno</mal:name>
+      <mal:email>nsatragno@gnome.org</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Francisco Molinero</mal:name>
+      <mal:email>paco@byasl.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jorge González</mal:name>
+      <mal:email>jorgegonz@svn.gnome.org</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  </info>
+  <title>Participar para mejorar esta guía</title>
+
+  <section id="submit-issue">
+
+   <title>Informar de un error</title>
+
+   <p>Esta documentación la ha creado por una comunidad de voluntarios. Si quiere participar es bienvenido/a . Si encuentra un problema con estas páginas de ayuda (errores ortográficos, instrucciones incorrectas, o temas que se deberían cubrir pero no están), puede enviar un <em>informe de error</em>. Para informar de un error, vaya a <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">gestor de incidencias</link>.</p>
+
+   <p>Debe registrarse para abrir un informe de error y recibir actualizaciones por correo electrónico acerca de su estado. Pulse el botón <gui><link href="https://gitlab.gnome.org/users/sign_in">Iniciar sesión / Registrarse</link></gui> para registrar una nueva cuenta.</p>
+
+   <p>Once you have an account, make sure you are logged in, then go back to the
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">documentation
+   issue tracker</link> and click <gui>New issue</gui>. Before reporting a new issue, please
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">browse</link>
+   for the issue to see if something similar already exists.</p>
+
+   <p>Antes de informar de un error, elija la etiqueta adecuada en el menú <gui>Labels</gui>. Si va a informar de un erro en esta documentación, debe elegir la etiqueta <gui>gnome-help</gui>. Si no está seguro de a qué componente pertenece el error, no elija ninguno.</p>
+
+   <p>Si está solicitando ayuda acerca de un tema que cree que no está cubierto, seleccione la etiqueta <gui>Feature</gui>. Rellene las secciones «Title» y «Description» y pulse <gui>Submit issue</gui>.</p>
+
+   <p>Su informe obtendrá un número de ID, y su estado se actualizará a medida que se trata. Gracias por ayudar a mejorar el proyecto Ayuda de GNOME.</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Contactar</title>
+
+<p>
+    Connect with other GNOME documentation editors in the <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix room. See the <link xref="help-matrix">Get help with Matrix</link> page for more information. If you prefer, there is also an IRC channel, #gnome-docs, on the <link xref="help-irc">GNOME IRC server</link>. As the people in these rooms are located across the world, it may take a moment to get a response.
+</p>
+<p>
+  Alternatively, you can contact the Documentation Team using
+  <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.
+</p>
+
+   <p>Our <link href="https://wiki.gnome.org/DocumentationProject">wiki page</link>
+   contains useful information how you can join and contribute.</p>
+
+
+   </section>
+</page>

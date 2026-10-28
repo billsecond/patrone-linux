@@ -7,9 +7,102 @@ Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Vcs-Git: https://github.com/billsecond/patrone-linux.git
 
+# Ubuntu's desktop, listed here in place of Ubuntu's metapackages
+# (ubuntu-desktop-minimal and ubuntu-minimal 1.570.4): their Depends and
+# Recommends, less Ubuntu Pro's client (ubuntu-pro-client), Software Updater
+# (update-manager, and update-notifier and ubuntu-release-upgrader-gtk,
+# which need it), Ubuntu's Help (ubuntu-docs, whose place patrone-branding
+# takes), Canonical's hardware-certification tool (hwctl) and connectivity
+# check (Patrone's is GNOME's), the crash reporter and system reports
+# (below), Firefox, Ptyxis and Resources (Patrone Task Manager takes its
+# place). desktop/README.md says why each.
 Package: patrone-desktop
 Architecture: all
-Depends: ${misc:Depends}, patrone-branding, ubuntu-desktop-minimal
+Depends: ${misc:Depends},
+         patrone-branding (>= 0.1.19),
+         adduser,
+         alsa-base,
+         alsa-utils,
+         anacron,
+         apt,
+         at-spi2-core,
+         bc,
+         bsdutils,
+         ca-certificates,
+         chrony | time-daemon,
+         console-setup,
+         debconf,
+         debconf-i18n,
+         dhcpcd-base,
+         dmz-cursor-theme,
+         e2fsprogs,
+         eject,
+         fontconfig,
+         fonts-dejavu-core,
+         foomatic-db-compressed-ppds,
+         gdm3,
+         ghostscript,
+         gnome-control-center,
+         gnome-menus,
+         gnome-session-canberra,
+         gnome-settings-daemon,
+         gnome-shell,
+         gnome-shell-ubuntu-extensions,
+         gstreamer1.0-alsa,
+         gstreamer1.0-packagekit,
+         gstreamer1.0-plugins-base-apps,
+         init,
+         inputattach,
+         iproute2,
+         iputils-ping,
+         iw,
+         kbd,
+         kmod,
+         language-selector-common,
+         language-selector-gnome,
+         less,
+         libatk-adaptor,
+         libnotify-bin,
+         libsasl2-modules,
+         locales,
+         login,
+         lsb-release,
+         mawk,
+         mount,
+         nautilus,
+         netbase,
+         netcat-openbsd,
+         netplan.io,
+         openprinting-ppds,
+         passwd,
+         pipewire-pulse,
+         printer-driver-pnm2ppa,
+         procps,
+         python3,
+         rfkill,
+         sensible-utils,
+         software-properties-common,
+         spice-vdagent,
+         sudo,
+         sudo-rs,
+         tzdata,
+         ubuntu-drivers-common,
+         ubuntu-keyring,
+         ubuntu-session,
+         ubuntu-settings,
+         udev,
+         unzip,
+         vim-tiny,
+         whiptail,
+         wireplumber,
+         wpasupplicant,
+         xdg-terminal-exec,
+         xdg-user-dirs,
+         xdg-user-dirs-gtk,
+         xkb-data,
+         yelp,
+         zenity,
+         zip
 Recommends: apport,
             7zip,
             bat,
@@ -31,26 +124,122 @@ Recommends: apport,
             patrone-shell-config,
             patrone-software,
             patrone-task-manager,
-            patrone-terminal
-Conflicts: apport-gtk, ubuntu-advantage-desktop-daemon, ubuntu-insights,
-           ubuntu-report, update-notifier, whoopsie
+            patrone-terminal,
+            appstream,
+            apt-config-icons-hidpi,
+            avahi-daemon,
+            baobab,
+            bluez,
+            bluez-cups,
+            brltty,
+            cloud-init,
+            cups,
+            cups-bsd,
+            cups-client,
+            cups-filters,
+            dirmngr,
+            dracut,
+            fonts-liberation,
+            fonts-noto-cjk,
+            fonts-noto-color-emoji,
+            fonts-noto-core,
+            fonts-ubuntu,
+            fwupd,
+            fwupd-signed,
+            gamemode,
+            gir1.2-gmenu-3.0,
+            gnome-bluetooth-sendto,
+            gnome-calculator,
+            gnome-characters,
+            gnome-clocks,
+            gnome-disk-utility,
+            gnome-font-viewer,
+            gnome-initial-setup,
+            gnome-keyring,
+            gnome-logs,
+            gnome-remote-desktop,
+            gnome-text-editor,
+            gnome-user-docs,
+            gpg-agent,
+            gsettings-ubuntu-schemas,
+            gst-audio-thumbnailer,
+            gst-video-thumbnailer,
+            gvfs-fuse,
+            hplip,
+            ibus,
+            ibus-gtk,
+            ibus-gtk3,
+            ibus-table,
+            im-config,
+            kdump-tools,
+            laptop-detect,
+            libglib2.0-bin,
+            libnss-mdns,
+            libpam-fprintd,
+            libpam-gnome-keyring,
+            libpam-sss,
+            libspa-0.2-bluetooth,
+            libwmf-0.2-7-gtk,
+            loupe,
+            memtest86+,
+            nautilus-sendto,
+            network-manager,
+            network-manager-openvpn-gnome,
+            network-manager-pptp-gnome,
+            orca,
+            packagekit,
+            papers,
+            pcmciautils,
+            plymouth-theme-spinner,
+            policykit-desktop-privileges,
+            printer-driver-brlaser,
+            printer-driver-c2esp,
+            printer-driver-foo2zjs,
+            printer-driver-m2300w,
+            printer-driver-min12xxw,
+            printer-driver-ptouch,
+            printer-driver-pxljr,
+            printer-driver-sag-gdi,
+            printer-driver-splix,
+            rsyslog,
+            seahorse,
+            snapd,
+            speech-dispatcher,
+            sysprof,
+            systemd-oomd,
+            wsdd,
+            xcursor-themes,
+            xdg-desktop-portal-gnome,
+            xdg-utils,
+            yaru-theme-gnome-shell,
+            yaru-theme-gtk,
+            yaru-theme-icon,
+            yaru-theme-sound
+# Removing update-manager and ubuntu-pro-client takes Ubuntu's metapackages,
+# which depend on them, with them.
+Conflicts: apport-gtk, hwctl, ubuntu-advantage-desktop-daemon, ubuntu-insights,
+           ubuntu-pro-client, ubuntu-report, update-manager, update-notifier,
+           whoopsie
 Provides: update-notifier
 Description: Patrone Linux's desktop
- Ubuntu's desktop with Patrone's branding and apps, and nothing that reports
+ Ubuntu's desktop with Patrone's branding and apps, and none of Canonical's
+ own services: no Ubuntu Pro (its client, its services and its notices), no
+ Software Updater (Patrone Software tells of updates and installs them), no
+ hwctl (Canonical's hardware-certification tool), and nothing that reports
  to Canonical: no whoopsie (error reports), ubuntu-insights or ubuntu-report
  (system reports), and no apport-gtk, the crash dialog that offered to send
  them. Crash reports still collect in /var/crash for debugging, and nothing
  sends them. First-login setup skips Ubuntu's page that asks to send reports
- and its Ubuntu Pro page, and Ubuntu Pro's apt news and ESM check run only on
- a machine attached to Ubuntu Pro. Ubuntu Pro's notice at login
- (update-notifier, whose place in Ubuntu's desktop this package takes) and
- its desktop service (ubuntu-advantage-desktop-daemon) are removed; Patrone
- Software tells of updates.
+ and its Ubuntu Pro page. It lists Ubuntu's desktop packages itself, in
+ place of Ubuntu's metapackages (ubuntu-desktop-minimal and ubuntu-minimal),
+ which need Ubuntu Pro and Software Updater.
  .
- The clock is set from NTS servers run by Cloudflare, Netnod, PTB and SIDN
- Labs, NetworkManager checks for Wi-Fi sign-in pages with GNOME's server, and
+ The clock is set from NTS servers run by Cloudflare, Netnod and PTB,
+ NetworkManager checks for Wi-Fi sign-in pages with GNOME's server, and
  nothing offers to upgrade to Ubuntu's next release. Its app store is GNOME
- Software, with Patrone's picks, in place of Canonical's App Center.
+ Software, with Patrone's picks, in place of Canonical's App Center. What
+ the system connects to, and who runs each service, is in
+ /usr/share/doc/patrone-desktop/connections.txt.
  .
  It also brings a few everyday tools: fastfetch (system information, in
  Patrone's colors), nano and the full vim; btop and htop (what's running);

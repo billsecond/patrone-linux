@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="gl">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>Como e onde informar de problemas.</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Michael Hill</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Zaria</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Fran Diéguez</mal:name>
+      <mal:email>frandieguez@gnome.org</mal:email>
+      <mal:years>2011-2024</mal:years>
+    </mal:credit>
+  </info>
+
+<title>Participar para mellorar as traducións</title>
+
+<p>A axuda de GNOME tradúcese grazas á comunidade de voluntarios de todo o mundo, e hai <link href="https://l10n.gnome.org/module/gnome-user-docs/">varios idiomas</link> para os que se seguen precisando traducións.</p>
+<p>Para comezar a traducir, <link href="https://l10n.gnome.org">cree unha conta</link> e únase ao <link href="https://l10n.gnome.org/teams/">equipo de tradución</link> do seu idioma. Isto daralle a posibilidade de subir traducións novas.</p>
+<p>Contacte con outros tradutores de GNOME na sala Matrix <link href="https://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link>. Consulte a páxina <link xref="help-matrix">Obter axuda con Matrix</link> para obter máis información. Se o prefire, tamén hai unha canle IRC, #gnome-i18n, no <link xref="help-irc">servidor IRC de GNOME</link>. Como as persoas destas salas están situadas en todo o mundo, pode tardar uns minutos en obter unha resposta.</p>
+<p>De forma alternativa, pode contactar co Equipo de internacionalización empregando a <link href="https://discourse.gnome.org/tag/i18n">GNOME Discourse</link>.</p>
+
+</page>

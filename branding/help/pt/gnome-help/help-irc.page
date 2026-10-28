@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="pt">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Obtenha suporte ao vivo no IRC.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Tiago Santos</mal:name>
+      <mal:email>tiagofsantos81@sapo.pt</mal:email>
+      <mal:years>2014, 2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hugo Carvalho</mal:name>
+      <mal:email>hugokarvalho@hotmail.com</mal:email>
+      <mal:years>2020, 2021</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC significa Internet Relay Chat. É um sistema de mensageiria multi-utilizador em tempo real. Pode obter ajuda ou conselho no servidor IRC do GNOME de outros utilizadores e desenvolvedores do GNOME.</p>
+   <p>Para conectar ao servidor do IRC do GNOME, use o <app>Polari</app> ou <app>HexChat</app>.</p>
+   <p>Para criar uma conta IRC no Polari, veja a <link href="help:polari/">documentação do Polari</link>.</p>
+   <p>
+      The GNOME IRC server is <sys>irc.libera.chat</sys>.
+      If your computer is properly configured you can click on the link
+      <link href="irc://irc.libera.chat/gnome"/> to access the <sys>gnome</sys> channel.
+   </p>
+   <p>Apesar do IRC ser um meio de discussão em tempo real, as pessoas tendem a não responder imediatamente. Então, seja paciente.</p>
+
+  <note>
+    <p>Por favor, note que o <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">código de conduta do GNOME</link> se aplica quando conversa no IRC.</p>
+  </note>
+
+</page>

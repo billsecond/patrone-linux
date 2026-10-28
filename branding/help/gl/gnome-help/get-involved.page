@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="gl">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Como e onde informar de problemas.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Fran Diéguez</mal:name>
+      <mal:email>frandieguez@gnome.org</mal:email>
+      <mal:years>2011-2024</mal:years>
+    </mal:credit>
+  </info>
+  <title>Participar para mellorar esta guía</title>
+
+  <section id="submit-issue">
+
+   <title>Remitir un informe de erro</title>
+
+   <p>Esta documentación foi creada por unha comunidade de voluntarios. Se quere participar é benvido. Se atopa un problema con estas páxinas de axuda (erros ortográficos, instrucións incorrectas, ou temas que se deberían cubrir pero non están), pode enviar un <em>informe de erro</em>. Para informar dun erro, vaia a <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">xestor de problemas</link>.</p>
+
+   <p>Debe rexistrarse para abrir un informe de erro e recibir actualizacións por correo electrónico sobre o seu estado. Se aínda non ten unha conta, simplemente prema na ligazón <gui><link href="https://gitlab.gnome.org/users/sign_in">Iniciar sesión / Rexistrarse</link></gui> para crear unha.</p>
+
+   <p>Once you have an account, make sure you are logged in, then go back to the
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">documentation
+   issue tracker</link> and click <gui>New issue</gui>. Before reporting a new issue, please
+   <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">browse</link>
+   for the issue to see if something similar already exists.</p>
+
+   <p>Antes de enviar o seu problema, escolla a etiqueta adecuada no menú <gui>Etiquetas</gui>. Se está a presentar un problema contra esta documentación, debe escoller a etiqueta <gui>gnome-help</gui>. Se non estás seguro de que compoñente pertence o seu problema, non elixe ningún.</p>
+
+   <p>Se está solicitando axuda sobre un tema que crea que non está cuberto, seleccione <gui>Caracteristica</gui> como etiqueta. Complete as seccións «Título» e «Descrición» e prema <gui>Crear incidencia</gui>.</p>
+
+   <p>A súa incidencia obterá un número de ID, e o seu estado actualizarase a medida que se xestiona. Grazas por axudar a mellorar o proxecto Axuda de GNOME!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Contacte connosco</title>
+
+<p>Contacte con outros editores de documentación de GNOME na sala Matrix <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link>. Consulte a páxina <link xref="help-matrix">Obter axuda con Matrix</link> para obter máis información. Se o prefire, tamén hai unha canle IRC, #gnome-docs, no <link xref="help-irc">servidor IRC de GNOME</link>. Como as persoas destas salas están situadas en todo o mundo, pode tardar uns minutos en obter unha resposta.</p>
+<p>De forma alternativa, pode contactar co Equipo de internacionalización empregando a <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link>.</p>
+
+   <p>A nosa <link href="https://wiki.gnome.org/DocumentationProject">páxina de wiki</link> contén información útil sobre como pode unirse e contribuír..</p>
+
+
+   </section>
+</page>

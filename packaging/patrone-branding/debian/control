@@ -20,11 +20,17 @@ Depends: ${misc:Depends},
          plymouth-theme-ubuntu-text
 # Patrone's wallpapers in place of Ubuntu's: GNOME Shell depends on
 # ubuntu-wallpapers (for its default wallpaper), so this package stands in
-# for it, and apt removes Ubuntu's (Policy 7.6.2, replacing a package).
-Provides: ubuntu-wallpapers
-Conflicts: ubuntu-wallpapers,
+# for it, and apt removes Ubuntu's (Policy 7.6.2, replacing a package). The
+# same for Help: GNOME's pages of GNOME Help depend on ubuntu-docs, Ubuntu's
+# front page for them ("Ubuntu Desktop Guide", with Ubuntu's logo), and this
+# package has GNOME's own front page (help/).
+Provides: ubuntu-docs,
+          ubuntu-wallpapers
+Conflicts: ubuntu-docs,
+           ubuntu-wallpapers,
            ubuntu-wallpapers-resolute
-Replaces: ubuntu-wallpapers,
+Replaces: ubuntu-docs,
+          ubuntu-wallpapers,
           ubuntu-wallpapers-resolute
 Description: Patrone Linux's name, logos and artwork
  Names the system Patrone Linux and puts Patrone's logo where Ubuntu's was:
@@ -38,5 +44,8 @@ Description: Patrone Linux's name, logos and artwork
  one, with variants to choose from in Settings in place of Ubuntu's
  wallpapers (it replaces ubuntu-wallpapers), makes blue the accent color
  in place of Ubuntu's orange, turns Ubuntu's dock off by default, and sets
- up fastfetch with the Patrone logo. Removing the package puts Ubuntu's
- files back.
+ up fastfetch with the Patrone logo. Help is GNOME Help, with GNOME's own
+ front page in place of Ubuntu's (it replaces ubuntu-docs), and the logo
+ icons apps ask for (start-here and distributor-logo) are Patrone's P in
+ place of Ubuntu's, in every color of Yaru's icons. Removing the package
+ puts Ubuntu's files back.

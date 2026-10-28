@@ -38,11 +38,14 @@ ScreenGrabCraft and MailCraft. Each is listed by the ID in its own
 | DeckCraft | `ai.storyteller.deckcraft` | |
 | SoundCraft | `ai.storyteller.soundcraft` | |
 | FigCraft | `ai.storyteller.figcraft` | |
-| Craft Launcher | `ai.storyteller.artcraft-launcher` | |
 | ScreenGrabCraft | `io.github.billsecond.screengrabcraft` | Yes |
 | MailCraft | `io.github.billsecond.mailcraft` | Yes |
 
-All of them are in Editor's Choice and their categories' picks. They come
+The Craft Launcher (`ai.storyteller.artcraft-launcher`) is out of the list
+and the index until the ArtCraft Team allows its icon, their trademarked
+"A", which their own NOTICE keeps out of the open-source licence
+(`docs/COMPLIANCE.md`, item 6). All the others are in Editor's Choice and
+their categories' picks. They come
 from **Patrone's app index** (since 0.1.4), a Flatpak repository in the
 user's GitHub that holds no apps: [billsecond/patrone-app-index](https://github.com/billsecond/patrone-app-index),
 published with GitHub Pages at `https://billsecond.github.io/patrone-app-index/repo/`.

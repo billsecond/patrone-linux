@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="ta">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>IRC இல் நேரடி ஆதரவைப் பெறுக.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>பேப்டிஸ்ட் மில்-மேத்தியாஸ்</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Shantha kumar,</mal:name>
+      <mal:email>shkumar@redhat.com</mal:email>
+      <mal:years>2013</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC என்பது இண்டர்நெட் ரிலே சாட் என்பதைக் குறிக்கிறது. அது ஒரு நிகழ் நேர பல பயனர் செய்தி அனுப்பல் பயன்பாடு. நீங்கள் GNOME IRC சேவையகத்தில் உள்ள மற்ற GNOME பயனர்கள் மற்றும் உருவாக்குநர்களிடமிருந்து உதவி மற்றும் ஆலோசனைகளைப் பெறலாம்.</p>
+   <p>
+      To connect to the GNOME IRC server, use <app>Polari</app> or <app>HexChat</app>.
+   </p>
+   <p>
+      To create an IRC account in Polari, see the
+      <link href="help:polari/">Polari documentation</link>.
+   </p>
+   <p>
+      The GNOME IRC server is <sys>irc.libera.chat</sys>.
+      If your computer is properly configured you can click on the link
+      <link href="irc://irc.libera.chat/gnome"/> to access the <sys>gnome</sys> channel.
+   </p>
+   <p>
+      While IRC is a real-time discussion medium, people tend to not reply immediately, so be patient.
+   </p>
+
+  <note>
+    <p>Please note the
+    <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME code of
+    conduct</link> applies when you chat on IRC.</p>
+  </note>
+
+</page>

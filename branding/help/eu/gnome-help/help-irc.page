@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="eu">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Eskuratu zuzeneko laguntza IRC bidez.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Asier Saratsua Garmendia</mal:name>
+      <mal:email>asiersarasua@ni.eus</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC akronimoak Internet Relay Chat esan nahi du. Erabiltzaile anitzeko eta denbora errealeko mezularitza-sistema da. GNOMEren beste erabiltzaile eta garatzaile batzuen aholkuak eta laguntza jaso ditzakezu GNOMEren IRC zerbitzariaren inguruan.</p>
+   <p>GNOMEren IRC zerbitzuarekin konektatzeko, erabili <app>Polari</app> edo <app>HexChat</app>.</p>
+   <p>Polari aplikazioan IRC kontu bat sortzeko, begiratu <link href="help:polari/">Polariren dokumentazioa</link>.</p>
+   <p>GNOMEren IRC zerbitzaria <sys>irc.libera.chat</sys> da. Zure ordenagailua ongi konfiguratuta badago, egin klik <link href="irc://irc.libera.chat/gnome"/> estekan <sys>gnome</sys> kanalera sartzeko.</p>
+   <p>IRC denbora errealeko eztabaidarako gunea da, baina jendeak ez du berehala erantzuten askotan, ez jarri urduri.</p>
+
+  <note>
+    <p>Kontuan izan <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOMEren jokabide-kodea</link> jarraitu behar dela IRC kanaletan berriketan aritzean.</p>
+  </note>
+
+</page>

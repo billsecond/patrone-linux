@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="fa">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>چند نکته دربارهٔ استفاده از راهنمای میزکار.</desc>
+    <credit type="author">
+      <name>پروژهٔ مستندسازی گنوم</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+
+<title>دربارهٔ این راهنما</title>
+<p>This guide is designed to give you a tour of the features of your desktop,
+answer your computer-related questions, and provide tips on using your
+computer more effectively. Here are a few notes regarding the help guide:</p>
+
+<list>
+  <item><p>The guide is sorted into small, task-oriented topics — not
+  chapters. This means that you don’t need to skim through an entire manual
+  to find the answer to your questions.</p></item>
+  <item><p>Related items are linked together. “See Also” links at the bottom
+  of some pages will direct you to related topics. This makes it easy to find
+  similar topics that might help you perform a certain task.</p></item>
+  <item><p>It includes built-in search. The bar at the top of the help browser
+  is a <em>search bar</em>, and relevant results will start appearing as soon
+  as you start typing.</p></item>
+  <item><p>راهنما به طور مداوم در حال بهبود است. اگرچه ما سعی می کنیم مجموعه‌ی جامعی از اطلاعات مفید را در اختیار شما قرار دهیم، اما می دانیم که در اینجا نمی توانیم به تمام سوالات شما پاسخ دهیم. در صورتی که کمک بیش‌تری می‌خواهید، می‌توانید به گروه پشتیبانی توزیعتان مراجعه کنید.</p></item>
+</list>
+
+</page>

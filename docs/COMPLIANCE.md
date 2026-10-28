@@ -52,24 +52,24 @@ Nothing was published, uploaded, or sent to anyone outside these sessions.
 | --- | --- | --- | --- | --- |
 | [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download | The user (where to host); main session (build it); website session (link it) | Yes: confirmed |
 | [2](#2-canonicals-rule-on-redistributing-ubuntus-binaries) | Canonical's policy asks derived distributions to recompile Ubuntu's binaries; Patrone ships Ubuntu's own | Needs a lawyer | The user | Yes: same count, needs a lawyer |
-| [3](#3-ubuntus-logo-is-still-on-screen) | Ubuntu's logo is still on screen: Help, Software Updater, the logo icons | Confirmed problem | Main session | Yes: confirmed |
-| [4](#4-linux-in-the-name-needs-the-linux-foundations-sublicence) | "Linux" in the name needs the Linux Foundation's (free) sublicence | Confirmed problem, before a public release | The user | Yes: confirmed |
+| [3](#3-ubuntus-logo-is-still-on-screen) | Ubuntu's logo is still on screen: Help, Software Updater, the logo icons | Confirmed problem, **fixed on screen** (2026-10-28); Ubuntu's hidden layers on the disc remain | Main session (the layers) | Yes: confirmed |
+| [4](#4-linux-in-the-name-needs-the-linux-foundations-sublicence) | "Linux" in the name needs the Linux Foundation's (free) sublicence | Confirmed problem, before a public release; **applied for** (2026-10-28), waiting on the Linux Foundation | The user | Yes: confirmed |
 | [5](#5-the-website-keeps-full-ip-addresses-for-a-year-and-says-it-keeps-none) | The download log keeps full IP addresses for a year, "deleted" data stays in the file, and the privacy page contradicts the code | Confirmed problem | Website session | Yes: confirmed, by a test |
-| [6](#6-the-app-index-republishes-artcrafts-trademarked-icon) | The app index republishes ArtCraft's trademarked, non-open-source "A" icon | Likely problem, needs a lawyer | The user | Yes: likely problem |
-| [7](#7-timenl-asks-vendors-to-ask-first) | TimeNL's terms ask vendors to contact them before shipping its server as a default | Likely problem | The user, then main session | Yes: likely problem |
+| [6](#6-the-app-index-republishes-artcrafts-trademarked-icon) | The app index republishes ArtCraft's trademarked, non-open-source "A" icon | Likely problem, needs a lawyer; **taken off the index** (2026-10-28) until the ArtCraft Team allows it | The user (ask them) | Yes: likely problem |
+| [7](#7-timenl-asks-vendors-to-ask-first) | TimeNL's terms ask vendors to contact them before shipping its server as a default | Likely problem, **fixed** (2026-10-28: TimeNL dropped) | | Yes: likely problem |
 | [8](#8-the-rust-apps-shipped-none-of-their-crates-notices) | The Rust apps shipped none of the MIT/Apache notices of the code compiled into them | Confirmed problem, **fixed** (`5b9356e`, `460713b`) | Rebuild each package | Yes: confirmed; it found the standard library gap, fixed in `460713b` |
-| [9](#9-the-wallpaper-and-logo-are-ai-generated-but-labelled-gpl-3-by-william-daugherty) | The wallpaper (and almost certainly the logo) is AI-generated, but the copyright file claims it as the owner's GPL-3+ work | Confirmed problem (the label); needs a lawyer (ownership) | The user; wallpapers session | Yes: confirmed, image hash checked |
-| [10](#10-the-installer-still-carries-canonicals-and-other-peoples-pieces) | The installer: "Automated with Landscape", a telemetry page, 27 other companies' app logos and Windows' logo, fonts and data without their licences | Confirmed (notices, **fixed**); likely problem (the rest) | Main session | Yes: confirmed; it found the extra fonts, data and Windows logo |
-| [11](#11-thunderbird-in-the-live-session) | Thunderbird, Canonical's build of Mozilla's app, is in the live session | Likely problem | Main session | Yes: likely problem |
-| [12](#12-ubuntu-pro-landscape-and-other-canonical-services) | Ubuntu Pro's client and services, and other Canonical services | Likely problem (Pro); fine (the rest) | Main session | No (research, checked on the VM) |
-| [13](#13-patrones-rebuilds-of-ubuntu-packages-say-ubuntu-maintains-them) | Patrone's rebuilds of GDM, Settings and first-login setup say Ubuntu maintains them, and their copyright files don't mention Patrone | Likely problem | Main session | Yes: likely problem |
+| [9](#9-the-wallpaper-and-logo-are-ai-generated-but-labelled-gpl-3-by-william-daugherty) | The wallpaper (and almost certainly the logo) is AI-generated, but the copyright file claims it as the owner's GPL-3+ work | Confirmed problem (the label), **fixed** (2026-10-28: labelled as AI-made); needs a lawyer (ownership) | The user (a lawyer, a vector master) | Yes: confirmed, image hash checked |
+| [10](#10-the-installer-still-carries-canonicals-and-other-peoples-pieces) | The installer: "Automated with Landscape", 27 other companies' app logos and Windows' logo, fonts and data without their licences (and no telemetry page after all) | Confirmed (notices); likely problem (the rest): **fixed** (2026-10-28) | | Yes: confirmed; it found the extra fonts, data and Windows logo |
+| [11](#11-thunderbird-in-the-live-session) | Thunderbird, Canonical's build of Mozilla's app, is in the live session | Likely problem, **fixed** (2026-10-28); still in Ubuntu's hidden layer (item 3) | | Yes: likely problem |
+| [12](#12-ubuntu-pro-landscape-and-other-canonical-services) | Ubuntu Pro's client and services, hwctl, and other Canonical services | Likely problem (Pro, hwctl), **fixed** (2026-10-28); fine (the rest) | | No (research, checked on the VM) |
+| [13](#13-patrones-rebuilds-of-ubuntu-packages-say-ubuntu-maintains-them) | Patrone's rebuilds of GDM, Settings and first-login setup say Ubuntu maintains them, and their copyright files don't mention Patrone | Likely problem, **fixed** (Settings `67f052b`; GDM and first-login setup 2026-10-28) | | Yes: likely problem |
 | [14](#14-the-website-ubuntu-in-a-url-and-incomplete-trademark-notices) | The website: Ubuntu in a URL, incomplete trademark notices, no source link, a licence click-through to watch | Likely problem | Website session | Yes: URL confirmed |
 | [15](#15-windows-11s-look-and-feel) | Windows 11's look and feel, the "Start" name, the File Manager icon, "Windows-style" descriptions | Needs a lawyer (low to moderate risk) | The user | No (research, two sources each) |
 | [16](#16-the-zfs-kernel-module) | ZFS's kernel module (CDDL) is installed with the GPL kernel | Needs a lawyer | The user | Yes: needs a lawyer |
 | [17](#17-nvidia-and-broadcom-drivers-on-the-disc) | NVIDIA's and Broadcom's drivers are on the disc | Fine to redistribute; their indemnities need a lawyer | The user | Yes: byte-identical; needs a lawyer |
 | [18](#18-smaller-notices-and-wording) | Smaller notices and wording (`/etc/legal` **fixed**, `patrone-branding`'s and `patrone-installer`'s copyright files **fixed**) | Mixed | Several | In part (the copyright files, `/etc/legal`) |
 | [19](#19-privacy-law-for-the-website) | Privacy law for the website: GDPR applicability, an EU/UK representative, CAN-SPAM | Needs a lawyer (applicability); cheap steps either way | The user; website session | Yes: needs a lawyer |
-| [20](#20-what-the-os-contacts-and-whether-users-are-told) | What the OS contacts, and whether users are told | Fine (operators' terms); likely problem (no notice in the OS) | Website session; main session | In part (TimeNL) |
+| [20](#20-what-the-os-contacts-and-whether-users-are-told) | What the OS contacts, and whether users are told | Fine (operators' terms); likely problem (no notice in the OS), **fixed** (2026-10-28) | Website session (its list, brought up to date) | In part (TimeNL) |
 | [21](#21-the-app-index-otherwise) | The app index otherwise: licences, Flathub, GitHub's terms | Fine, with small fixes | The user | In part (ArtCraft) |
 | [23](#23-the-websites-notices-and-the-javascript-notice) | The website's notices: no cookie banner needed; how the JavaScript notice, the point-of-collection notice and the privacy policy must work | Fine without a banner; requirements sent | Website session | No (research, sources quoted) |
 | [24](#24-the-licence-agreement) | The licence agreement for the download and the installer, `legal/eula.md` 1.0, Texas law | **Written**; needs a lawyer before it's relied on | Website session; main session | Yes: independent review, its must-fixes applied |
@@ -249,6 +249,37 @@ permission."
 docs package that provides `ubuntu-docs`; a Patrone icon theme over Yaru's
 for the two logo icons.
 
+**Fixed on screen** (2026-10-28):
+
+- Software Updater is gone: `patrone-desktop` 0.2.0 lists Ubuntu's desktop
+  packages itself, in place of `ubuntu-desktop-minimal` and
+  `ubuntu-minimal`, less `update-manager` (and Ubuntu Pro's client, item
+  12), and conflicts with it (`desktop/README.md`).
+- Help is GNOME Help: `patrone-branding` 0.1.19 replaces `ubuntu-docs`
+  (Provides, Conflicts, Replaces, as for the wallpapers) with GNOME's own
+  front page and the seven other pages Ubuntu moves out of
+  `gnome-user-docs`, unchanged from GNOME's release, in GNOME's 45
+  languages (CC BY-SA 3.0, its text in the copyright file). No Ubuntu
+  pictures are left in `/usr/share/help`.
+- The logo icons are Patrone's P: not an icon theme of Patrone's after all
+  (Settings switches between Yaru's themes by name, which would drop it),
+  but Yaru's own `start-here` files, which its `distributor-logo` icons
+  link to, moved aside (`dpkg-divert`) with Patrone's in their place, in
+  every Yaru color and the dark style, and both symbolic icons.
+  `patrone-logo`, os-release's `LOGO`, is in `hicolor` too.
+
+Checked on the dev VM, with both packages installed: GTK's own lookup
+(GTK 4, in the session) gives Patrone's files for `distributor-logo`,
+`start-here` and their symbolic versions (checksums match); Help's front
+page belongs to `patrone-branding` and is GNOME's ("GNOME Help"), and every
+language's parses as XML. Not yet seen on screen, or in a fresh install
+from an ISO: the next ISO is built only once Hyper-V resizing works (the
+user, 2026-10-28), and that install checks this item, 10, 11 and 12.
+
+Still on the disc: **Ubuntu's own layers**, hidden under Patrone's (the
+last bullet above). Not done here: self-contained layers change how the
+disc is built, and are left for the main session.
+
 ## 4. "Linux" in the name needs the Linux Foundation's sublicence
 
 **Confirmed problem, before a public release.** The Linux Foundation's
@@ -271,6 +302,19 @@ Once licensed, add the sublicence's legend (its §3.1): "The registered
 trademark Linux® is used pursuant to a sublicense from the Linux
 Foundation, the exclusive licensee of Linus Torvalds, owner of the mark on
 a world-wide basis."
+
+**Applied for** (2026-10-28: the user filled in the Foundation's request
+form). Waiting on the Foundation. The attribution ("Linux® is the
+registered trademark of Linus Torvalds in the U.S. and other countries.")
+is now in `/etc/legal`, the licence agreement (section 4), the website's
+footer and the repository's README. When it's granted, add the §3.1 legend
+above beside each of them (`branding/system/legal`, `legal/eula.md` in a
+new version, the website's footer, `README.md`), and follow whatever the
+grant says about the name. **"Patrone Linux OS" until then?** Not needed
+yet: nothing is offered to the public under the name while the download is
+closed (it opens only with the source, item 1). If the download is to open
+before the Foundation answers, use "Patrone Linux OS" or "the Patrone Linux
+operating system" in titles and first mentions until it does.
 
 ## 5. The website keeps full IP addresses for a year, and says it keeps none
 
@@ -348,6 +392,13 @@ from getartcraft.com: the user has to send it), and meanwhile remove
 icon: a changed listing is closer to the "modified version" the brand
 licence forbids.
 
+**Done meanwhile** (2026-10-28): the launcher comes out of the app index's
+`apps.list` with billsecond/patrone-app-index's pull request 1 (open: the
+index drops and prunes it at the next build after it merges), and out of
+Patrone Software's featured apps (`patrone-software` 0.1.5). Asking the
+ArtCraft Team is still the user's, and whether listing it at all is fine
+is a lawyer's question.
+
 ## 7. TimeNL asks vendors to ask first
 
 **Likely problem, before a public release.** `patrone-desktop` sets the
@@ -367,6 +418,12 @@ settles it.
 **Fix**: the user emails SIDN Labs and asks for a Patrone name (such as
 `ntp.patrone.time.nl`), or the main session drops TimeNL until they answer;
 three NTS servers remain.
+
+**Fixed** (2026-10-28, `patrone-desktop` 0.2.0): TimeNL is dropped from
+`patrone-nts.sources`, with the description, `connections.txt` and the
+READMEs; Cloudflare's, Netnod's and PTB's NTS servers remain. The website's
+list still names it (sent to the website session). Writing to SIDN Labs
+would let it come back; nothing else needs it.
 
 ## 8. The Rust apps shipped none of their crates' notices
 
@@ -438,6 +495,18 @@ human-drawn vector master of the logo (already on `branding/README.md`'s
 list) and a trademark clearance search for PATRONE (classes 9 and 42). The
 licence choice is the user's.
 
+**Labelled** (2026-10-28; the user left it to this review, so the simplest
+honest option, without changing the licence): `patrone-branding`'s
+copyright file has a stanza of its own for the logo and wallpaper 01 and
+everything made from them (the logo files, splash, slides' logo, logo
+icons, fastfetch logo), saying they were made with an AI image generator
+(the C2PA manifest's facts), that such material may not be protected by
+copyright, and that GPL-3+ applies only as far as anyone holds copyright
+in them. `patrone-installer`'s and first-login setup's copyright files say
+the same of their P. `branding/README.md` records the provenance, beside
+the generated wallpapers' note that code draws them. Still a lawyer's
+question: who owns what, and whether to have the logo redrawn by hand.
+
 ## 10. The installer still carries Canonical's and other people's pieces
 
 **Likely problem** (main session, `installer/`, `branding/system/desktop-provision/`).
@@ -449,7 +518,13 @@ licence choice is the user's.
   `telemetry:`; only its picture changed), though the installer only writes
   `/var/log/installer/telemetry` locally and nothing uploads it: a consent
   question about nothing, the reason Settings' Telemetry page was hidden.
-  `telemetry: visible: false`.
+  `telemetry: visible: false`. **Correction** (2026-10-28, from the
+  installer's source): the installer has no such page. `telemetry:` in
+  `whitelabel.yaml` is for Ubuntu's first-boot setup (`ubuntu_init`, whose
+  steps include it and Ubuntu Pro's), which Patrone doesn't use; Patrone's
+  front end (`ubuntu_bootstrap`) has no telemetry step, and its English
+  text has no telemetry message. It does write the local record above,
+  which `desktop/connections.txt` now mentions. Nothing to fix.
 - **Ubuntu's unused slides** are still in the bundle
   (`flutter_assets/assets/slides/`): Ubuntu's mascot and 27 other products'
   logos (Discord, Spotify, Steam, Teams, Slack, VS Code, Firefox and
@@ -477,6 +552,22 @@ licence choice is the user's.
   default). Canonical publishes no terms for it; Patrone's privacy page
   discloses it. Fine; whether to keep it is the user's call (§16 item 11).
 
+**Fixed** (2026-10-28, `patrone-installer` 0.1.4, `patrone-branding`
+0.1.19; `installer/README.md`): `patch_source.py` takes the Landscape
+choice off the "Type of installation" page, and `whitelabel.yaml` no longer
+lists Landscape's pages, so they can't show; Windows' partitions get the
+plain disk icon (`block-device.svg`); Ubuntu's slides are deleted from the
+source and the pubspec, so they aren't in the app (`build.sh` also drops
+the empty folders an earlier build left); `UFL.txt` and yaru's
+`LICENSE.CCBYSA` are copied beside the fonts. The Applications page's one
+choice no longer promises a web browser ("Patrone's desktop, apps and
+everyday tools. You choose a web browser the first time you need one.",
+`debrand_l10n.py`). Checked in the built app: `libapp.so` has no
+"Automated with Landscape" and has the new wording; `windows.svg` is
+byte-identical to `block-device.svg`; no files under `assets/slides`; both
+licence files present. **Not yet seen running**: the installer runs only
+from an ISO, and the next one waits for Hyper-V resizing (item 3).
+
 ## 11. Thunderbird in the live session
 
 **Likely problem** (main session). The live seed has `thunderbird_1228.snap`
@@ -494,6 +585,11 @@ terms: "You may not collect personal information in the context of your
 distribution of the software", and "you must distribute the most recent
 version". A disc snapshot goes stale, and the website logs each download's
 address (item 5). One more reason for self-contained layers.
+
+**Fixed** (2026-10-28, `iso/build-iso.sh`): the live layer purges the
+`thunderbird` stub (its language packs go with it), and both layers' seeds
+drop Thunderbird's snap. Ubuntu's hidden standard layer still has
+`thunderbird_1228.snap` (item 3).
 
 ## 12. Ubuntu Pro, Landscape and other Canonical services
 
@@ -525,6 +621,27 @@ address (item 5). One more reason for self-contained layers.
   deb and a snap, idle, and sends hardware details to `hw.ubuntu.com` when
   used. Remove it or disclose it.
 
+**Fixed** (2026-10-28, `patrone-desktop` 0.2.0): Ubuntu Pro's client and
+`hwctl` are gone. `patrone-desktop` no longer depends on Ubuntu's
+metapackages (which need Ubuntu Pro's client and Software Updater) but
+lists their packages itself, and conflicts with `ubuntu-pro-client`,
+`update-manager` and `hwctl`, so an upgrade takes them, and the
+metapackages, off. Its old Ubuntu Pro drop-ins are gone, and Ubuntu Pro's
+apt hook, which it had moved aside, is removed rather than put back. The
+ISO's seed drops `hwctl`'s snap, the installer's layer purges what nothing
+needs any more (16 packages, Ubuntu's release upgrader among them;
+`iso/README.md` lists them), and both layers purge what the removed
+packages left. Checked on the dev VM: a dry run, then
+the install, removed exactly 12 packages (`ubuntu-pro-client` and its
+translations, `ubuntu-advantage-desktop-daemon`, `update-manager`,
+`update-manager-core`, `update-notifier`, `update-notifier-common`,
+`ubuntu-release-upgrader-gtk`, `ubuntu-docs`, `hwctl`, `ubuntu-minimal`,
+`ubuntu-desktop-minimal`); `dpkg --audit` is clean; Ubuntu Pro's units are
+gone; `apt-get -s autoremove` offers only their libraries and an old
+kernel. Ubuntu Pro's apt hook stayed there as a removed package's
+configuration file (inert: both its commands check for Pro's files first),
+which is why the ISO and `patrone-desktop` remove it.
+
 ## 13. Patrone's rebuilds of Ubuntu packages say Ubuntu maintains them
 
 **Likely problem** (main session; `gnome-settings/` is being edited by the
@@ -546,6 +663,19 @@ is fine: the convention, and Pop!_OS does the same.
 for Patrone's files to `debian/copyright`. **Done for GNOME Settings** since
 this review (`67f052b`, revision 12; read, not built); still to do for
 `gdm/build.sh` and `gnome-initial-setup/build.sh`.
+
+**Fixed for GDM and first-login setup** (2026-10-28): `gdm/build.sh`
+(revision 2) and `gnome-initial-setup/build.sh` (revision 3) name Patrone
+as maintainer and Ubuntu Developers as the original one. GDM's copyright
+file is plain text, so it gets a paragraph naming Patrone's patch;
+first-login setup's gets two stanzas: Patrone's P in place of Ubuntu's logo
+and mascot, and `patrone-software.svg`, with GNOME Software's icon (GPL-2+)
+and the ten Craft apps' icons, under MIT with its notice and their
+holders' lines as their own `LICENSE-MIT` files give them ("ArtCraft Team
+and the ... contributors", "the MailCraft contributors"). Checked in the
+built packages: `Maintainer` and `Original-Maintainer` are as above in
+`gdm3`, `libgdm1` and `gnome-initial-setup`, GDM's copyright file ends with
+the paragraph, and first-login setup's passes a strict DEP-5 parse.
 
 ## 14. The website: Ubuntu in a URL, and incomplete trademark notices
 
@@ -788,6 +918,17 @@ and first-login setup), and add what `privacy_os.html` leaves out: hwctl,
 Chromium's Google services, GitHub's address logging and the installer's
 telemetry page.
 
+**Fixed** (2026-10-28, `patrone-desktop` 0.2.0):
+`/usr/share/doc/patrone-desktop/connections.txt` (`desktop/connections.txt`)
+lists each connection and who runs it, as the website's page does, for
+this version: no browser preinstalled, no Ubuntu Pro or `hwctl`, GitHub's
+address logging, the installer's local record. `/etc/legal`, shown at a
+text console's login, says where it is. Not linked from Settings › About
+or first-login setup: both are rebuilds other sessions are changing. The
+website's page still describes Chromium, `hwctl`, Ubuntu Pro's tools and a
+telemetry question in the installer, which this release doesn't have; sent
+to the website session.
+
 ## 21. The app index otherwise
 
 - The 13 other storytold apps and MailCraft are `MIT OR Apache-2.0`, with
@@ -968,25 +1109,44 @@ the nine points in `legal/README.md`.
 
 ## Decisions for the user
 
-1. **Where the source goes** (item 1): the repository made public, or
-   source tarballs and a source mirror beside the ISO. Nothing should be
-   downloadable before this.
+The user's answers (2026-10-28): open the repository to the public, and
+"what ever you need for the compliance" for the rest, so this review took
+the simplest safe option where no lawyer or the user personally is needed.
+
+1. **Where the source goes** (item 1): the repository goes public (the main
+   session is doing it); the source of Ubuntu's binaries beside the ISO is
+   still to build. Nothing should be downloadable before both.
 2. **Canonical** (item 2): take advice on the binaries clause, and decide
    whether to write to Canonical.
-3. **Apply for the Linux sublicence** (item 4), and whether the name becomes
-   "Patrone Linux OS" in titles.
-4. **ArtCraft's icon** (item 6): ask the ArtCraft Team, and drop the
-   launcher from the index meanwhile.
-5. **TimeNL** (item 7): write to SIDN Labs, or drop it.
-6. **The AI-made art** (item 9): how to license it, whether to have the
-   logo redrawn, and a trademark search for PATRONE.
+3. **The Linux sublicence** (item 4): applied for; waiting on the Linux
+   Foundation.
+4. **ArtCraft's icon** (item 6): coming off the app index (its pull request
+   waits for the user to merge it) until the ArtCraft Team gives
+   permission; asking them is the user's.
+5. **TimeNL** (item 7): dropped. Writing to SIDN Labs would bring it back.
+6. **The AI-made art** (item 9): labelled honestly; who owns it, and a
+   hand-drawn logo, are for a lawyer and the user.
 7. **ZFS** (item 16) and **NVIDIA/Broadcom** (item 17): keep or drop.
 8. **How close to Windows** (item 15): the menu's name, the copied strings,
    the Royal theme, the File Manager icon.
 9. **GDPR** (item 19): whether to appoint EU and UK representatives.
 10. **The licence agreement** (item 24): written, with Texas law as you
-    chose; have a lawyer check the nine points in `legal/README.md` before
-    relying on it.
+    chose.
+
+## For a lawyer
+
+1. Canonical's binaries clause, and whether to write to Canonical (item 2).
+2. Whether the source mirror is needed, or Launchpad is enough, and how far
+   the duty reaches into Canonical's snaps (item 1).
+3. ArtCraft's trademarked icon (item 6).
+4. Who owns the AI-made logo and wallpaper, and a trademark search for
+   PATRONE (item 9).
+5. How close to Windows' look and names is safe (item 15).
+6. ZFS's kernel module (item 16), and NVIDIA's and Broadcom's indemnities
+   and terms (item 17).
+7. Whether GDPR and UK law apply to the website, and the representatives
+   (item 19).
+8. The licence agreement's nine points (`legal/README.md`, item 24).
 
 ## Fixes made in this review
 

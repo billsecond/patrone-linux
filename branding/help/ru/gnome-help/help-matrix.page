@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="ru">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Домашняя страница Matrix</title></link>
+
+
+    <desc>Общайтесь в прямом эфире с участниками GNOME.</desc>
+
+    <keywords>matrix, чат, поддержка, прямой эфир, сообщество, помощь</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Александр Прокудин</mal:name>
+      <mal:email>alexandre.prokoudine@gmail.com</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Алексей Кабанов</mal:name>
+      <mal:email>ak099@mail.ru</mal:email>
+      <mal:years>2011-2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Станислав Соловей</mal:name>
+      <mal:email>whats_up@tut.by</mal:email>
+      <mal:years>2013-2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юлия Дронова</mal:name>
+      <mal:email>juliette.tux@gmail.com</mal:email>
+      <mal:years>2013-2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Юрий Мясоедов</mal:name>
+      <mal:email>ymyasoedov@yandex.ru</mal:email>
+      <mal:years>2015</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Ser82-png</mal:name>
+      <mal:email>asvmail.as@gmail.com</mal:email>
+      <mal:years>2022-2025</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Вячеслав Гурин</mal:name>
+      <mal:email>slavkaplay6@gmail.com</mal:email>
+      <mal:years>2025</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Получение помощи с помощью Matrix</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> - это современная платформа для общения с открытым исходным кодом. Как и в случае с электронной почтой, вы можете создать учётную запись на одном из множества серверов и использовать для подключения любое количество клиентов, в том числе с веб-интерфейсом.</p>
+  <steps>
+    <item><p>Выбор клиента. Matrix поддерживает следующий <link href="https://matrix.org/docs/projects/try-matrix-now/">список популярных клиентов</link>, включая популярный <link href="https://app.element.io">Element</link> и собственный клиент GNOME - <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>.</p></item>
+    <item><p>Создание учётной записи. Большинство клиентов проведут вас через этот процесс, и учётная запись будет работать на любом клиенте Matrix.</p></item>
+    <item><p>Присоединяйтесь к комнате <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> и сразу же задавайте вопросы.</p></item>
+  </steps>
+  <p>Более подробную информацию, в том числе о том, как просматривать другие комнаты GNOME, можно найти на <link href="https://wiki.gnome.org/GettingInTouch/Matrix">GNOME wiki</link>.</p>
+  <note>
+  <p>Обязательно перейдите по ссылке <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">кодекс поведения GNOME</link>, перед тем, как начать общение в Matrix и других платформах GNOME.</p>
+    </note>
+
+</page>

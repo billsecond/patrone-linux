@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="fi">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Matrix-verkkosivu</title></link>
+
+
+    <desc>Keskustele Gnome-avustajien kanssa.</desc>
+
+    <keywords>matrix, chat, support, live, community, help</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Timo Jyrinki</mal:name>
+      <mal:email>timo.jyrinki@iki.fi</mal:email>
+      <mal:years>2012.</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jiri Grönroos</mal:name>
+      <mal:email>jiri.gronroos+l10n@iki.fi</mal:email>
+      <mal:years>2012-2026.</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Tuki Matrixissa</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> on nykyaikainen, avoimen lähdekoodin keskustelualusta. Kuten sähköpostin kanssa, voit luoda tilin yhdelle monista palvelimista ja käyttää haluamaasi sovellusta, myös selainpohjaisia, yhdistämiseen.</p>
+  <steps>
+    <item><p>Valitse sovellus. Matrix ylläpitää <link href="https://matrix.org/docs/projects/try-matrix-now/">luetteloa suosituista asiakassovelluksista</link>, mukaan lukien suosittu <link href="https://app.element.io">Element</link> ja Gnomen oma <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>.</p></item>
+    <item><p>Luo tili. Useimmat sovellukset opastavat tämän vaiheen läpi, ja luotu tili toimii millä tahansa Matrix-asiakasohjelmistolla.</p></item>
+    <item><p>Liity <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link>-huoneeseen ja esitä kysymyksesi.</p></item>
+  </steps>
+  <p>Lisätietoja, mukaan lukien kuinka selata muita Gnomen huoneita, on <link href="https://wiki.gnome.org/GettingInTouch/Matrix">Gnomen wikissä</link>.</p>
+  <note>
+  <p>Huomioi <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">Gnomen käytössäännöstö</link>, kun keskustelet Matrixissa ja muilla Gnomen alustoilla.</p>
+    </note>
+
+</page>

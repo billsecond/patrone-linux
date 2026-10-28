@@ -41,6 +41,15 @@ snap revision 665), with these changes, all made by `build.sh`:
 - **The suggested username** (`patch_source.py`): the first initial and last
   name, "wdaugherty" for "William Daugherty" (Ubuntu's runs the whole name
   together).
+- **Other people's names and logos** (`patch_source.py`;
+  `docs/COMPLIANCE.md`, item 10): no "Automated with Landscape" on the "Type
+  of installation" page (Landscape is Canonical's management service; its
+  pages stay in the app, unreachable, and `whitelabel.yaml` lists none of
+  them); a plain disk beside Windows' partitions in place of Microsoft's
+  logo; and none of Ubuntu's own slides, which show only when there are no
+  others and carried Ubuntu's mascot and 27 other apps' logos. The Ubuntu
+  fonts' licence and Yaru's icon font's notice are copied beside them
+  (`build.sh`).
 
 - **Ubuntu's flavor is named Patrone Linux** (`ubuntu_flavor` 0.5.0+1, from
   pub.dev, with `ubuntu('Ubuntu')` made `ubuntu('Patrone Linux')`). The
@@ -51,6 +60,16 @@ snap revision 665), with these changes, all made by `build.sh`:
   (`debrand_l10n.py`; the window's title, "Patrone Linux Installer", among
   them), and their translations, which say Ubuntu, give way to the English.
   Ubuntu Pro's pages keep their text; the installer doesn't show them.
+- **The Applications page** (`debrand_l10n.py`): its one choice, "Default
+  selection", says "Patrone's desktop, apps and everyday tools. You choose a
+  web browser the first time you need one." Ubuntu's promised a web
+  browser, and Patrone Linux installs none.
+
+The installer has no telemetry page: that page, and Ubuntu Pro's, belong to
+Ubuntu's first-boot setup (`ubuntu_init`, in the same source), which Patrone
+doesn't use. It does keep a record of the pages shown, for the install's
+logs (`/var/log/installer/telemetry`, written by Ubuntu's front end, on the
+new system only; nothing sends it).
 
 The install engine stays the snap's: its `subiquity-server` service runs in
 the live session, and Patrone's front end talks to it on

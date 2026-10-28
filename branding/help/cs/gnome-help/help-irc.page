@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="cs">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Jak získat živou pomoc na IRC.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Adam Matoušek</mal:name>
+      <mal:email>adamatousek@gmail.com</mal:email>
+      <mal:years>2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Marek Černocký</mal:name>
+      <mal:email>marek@manet.cz</mal:email>
+      <mal:years>2014, 2015</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC je zkratka pro Internet Relay Chat. Jedná se o systém pro psaní zpráv mezi více uživateli v reálném čase. Nápovědu a rady můžete získat od jiných uživatelů a vývojářů GNOME na serveru IRC GNOME.</p>
+   <p>K připojení k serveru IRC použijte <app>Polari</app> nebo <app>HexChat</app>.</p>
+   <p>Jak si vytvořit účet IRC v Polari najdete v <link href="help:polari/">dokumentaci k Polari</link>.</p>
+   <p>
+      The GNOME IRC server is <sys>irc.libera.chat</sys>.
+      If your computer is properly configured you can click on the link
+      <link href="irc://irc.libera.chat/gnome"/> to access the <sys>gnome</sys> channel.
+   </p>
+   <p>Ačkoliv je IRC diskuze v reálném čase, nemůžete očekávat od lidí okamžité reakce. Buďte prosím trpěliví.</p>
+
+  <note>
+    <p>Upozorňujeme, že během diskuzí na IRC platí <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">kodex chování GNOME</link>.</p>
+  </note>
+
+</page>

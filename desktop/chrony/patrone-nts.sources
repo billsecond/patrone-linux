@@ -1,7 +1,8 @@
 # The time servers Patrone uses in place of Ubuntu's ntp.ubuntu.com pools,
-# run by four operators other than Canonical (Cloudflare, Netnod, PTB and
-# SIDN Labs), each authenticated with NTS.
+# run by three operators other than Canonical (Cloudflare, Netnod and PTB),
+# each authenticated with NTS. Each offers its servers to anyone; TimeNL
+# (SIDN Labs) asks vendors to ask first, so it's not here
+# (docs/COMPLIANCE.md, item 7).
 server time.cloudflare.com iburst nts
 server nts.netnod.se iburst nts
 server ptbtime1.ptb.de iburst nts
-server ntppool1.time.nl iburst nts

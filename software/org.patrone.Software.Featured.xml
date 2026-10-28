@@ -92,12 +92,6 @@
     <categories><category>Featured</category></categories>
     <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
   </component>
-  <!-- The Craft Launcher, which installs and opens the Craft apps -->
-  <component merge="append">
-    <id>ai.storyteller.artcraft-launcher</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
   <component merge="append">
     <id>io.github.billsecond.screengrabcraft</id>
     <categories><category>Featured</category></categories>

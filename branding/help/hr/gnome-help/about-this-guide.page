@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="hr">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Nekoliko savjeta za korištenje priručnika radne površine.</desc>
+    <credit type="author">
+      <name>Projekt GNOME dokumentacije</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+
+<title>O ovom priručniku</title>
+<p>Ovaj priručnik je osmišljen kako bi vam pružio uvid u značajke vaše radne površine, odgovorio na vaša pitanja povezana uz računalo i pružio savjete o učinkovitijem korištenju vašeg računala. Evo nekoliko napomena povezanih s ovim priručnikom:</p>
+
+<list>
+  <item><p>Ovaj priručnik je razvrstan u male, po zadacima usmjerene teme - ne poglavlja. To znači da ne trebate preletjeti cijeli priručnik kako bi pronašli odgovor na svoja pitanja.</p></item>
+  <item><p>Srodne stavke međusobno su povezane. "Pogledajte i" poveznice na dnu pojedinih stranica usmjerit će vas na srodne teme. To olakšava pronalaženje sličnih tema koje bi vam mogle pomoći u obavljanju određenog zadatka.</p></item>
+  <item><p>Uključuje ugrađenu pretragu. Traka na vrhu preglednika pomoći je <em>traka za pretragu</em>, a relevantni rezultati počet će se pojavljivati čim počnete tipkati.</p></item>
+  <item><p>Priručnik se stalno poboljšava. Iako vam pokušavamo pružiti opsežan skup korisnih informacija, znamo da ne možemo odgovoriti na sva vaša pitanja ovdje. Ako vam je potrebna dodatna pomoć, možete se obratiti timu podrške vaše distribucije.</p></item>
+</list>
+
+</page>

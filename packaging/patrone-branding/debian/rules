@@ -90,3 +90,19 @@ override_dh_auto_install:
 	    $(pkg)/usr/share/gnome-background-properties/patrone-wallpapers.xml
 	install -Dm644 fastfetch/config.jsonc $(pkg)/etc/xdg/fastfetch/config.jsonc
 	install -Dm644 fastfetch/logo.txt $(pkg)/usr/share/patrone/fastfetch/logo.txt
+	# GNOME's own pages of GNOME Help, which Ubuntu's ubuntu-docs replaces
+	# (tools/make_help.sh)
+	install -d $(pkg)/usr/share/help
+	cp -r help/. $(pkg)/usr/share/help/
+	# The P in place of Ubuntu's logo in Yaru's icons: start-here, which
+	# Yaru's distributor-logo icons link to, and both symbolic icons
+	# (tools/make_logo_icons.sh; preinst moves Yaru's aside)
+	install -d $(pkg)/usr/share/icons/Yaru
+	cp -r icons/. $(pkg)/usr/share/icons/Yaru/
+	# os-release's LOGO, for programs that look in icon themes only
+	install -Dm644 icons/48x48/places/start-here.png \
+	    $(pkg)/usr/share/icons/hicolor/48x48/apps/patrone-logo.png
+	install -Dm644 icons/256x256/places/start-here.png \
+	    $(pkg)/usr/share/icons/hicolor/256x256/apps/patrone-logo.png
+	install -Dm644 icons/scalable/places/start-here-symbolic.svg \
+	    $(pkg)/usr/share/icons/hicolor/symbolic/apps/patrone-logo-symbolic.svg

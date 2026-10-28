@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="pl">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Kilka wskazówek używania podręcznika użytkownika.</desc>
+    <credit type="author">
+      <name>Projekt dokumentacji GNOME</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Piotr Drąg</mal:name>
+      <mal:email>piotrdrag@gmail.com</mal:email>
+      <mal:years>2017-2023</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Aviary.pl</mal:name>
+      <mal:email>community-poland@mozilla.org</mal:email>
+      <mal:years>2017-2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>O tym podręczniku</title>
+<p>Ten podręcznik ma na celu przedstawienie głównych funkcji środowiska, udzielenie odpowiedzi na częste pytania związane z komputerami oraz udzielenie wskazówek na temat bardziej efektywnego używania komputera. Poniżej znajduje się kilka uwag na temat podręcznika:</p>
+
+<list>
+  <item><p>Podręcznik jest podzielony na małe, zadaniowe tematy — nie rozdziały. Oznacza to, że nie trzeba przeglądać całego dokumentu, aby znaleźć właściwe odpowiedzi.</p></item>
+  <item><p>Powiązane elementy są połączone. Odnośniki „Patrz także” na dole niektórych stron kierują na podobne tematy. Ułatwia to znajdowanie podobnych informacji, które mogą pomóc wykonać konkretne zadanie.</p></item>
+  <item><p>Wbudowana jest funkcja wyszukiwania. Pasek na górze przeglądarki pomocy to <em>pasek wyszukiwania</em>, a właściwe wyniki pojawią się od razu po rozpoczęciu wpisywania.</p></item>
+  <item><p>Ten podręcznik jest cały czas ulepszany. Chociaż staramy się dostarczyć wyczerpujący zestaw przydatnych informacji, nie możemy zapewnić odpowiedzi na każde pytanie. Jeśli potrzebujesz dalszej pomocy, skontaktuj się z zespołem pomocy używanej dystrybucji.</p></item>
+</list>
+
+</page>

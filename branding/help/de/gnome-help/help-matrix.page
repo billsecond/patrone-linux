@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" version="1.1" id="help-matrix" xml:lang="de">
+  <info>
+
+    <revision version="gnome:40" date="2022-05-27" status="draft"/>
+
+    <credit type="author">
+      <name>Zaria</name>
+      <email>zaria@vivaldi.net</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <link type="guide" xref="more-help"/>
+    
+    <link type="seealso" href="https://matrix.org"><title>Internetseite von Matrix</title></link>
+
+
+    <desc>In Echtzeit mit GNOME-Mitwirkenden schreiben.</desc>
+
+    <keywords>Matrix, Chat, Support, Gemeinschaft, Hilfe</keywords>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Hendrik Knackstedt</mal:name>
+      <mal:email>hendrik.knackstedt@t-online.de</mal:email>
+      <mal:years>2011</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Gabor Karsay</mal:name>
+      <mal:email>gabor.karsay@gmx.at</mal:email>
+      <mal:years>2011-2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Benjamin Steinwender</mal:name>
+      <mal:email>b@stbe.at</mal:email>
+      <mal:years>2014</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Wolfgang Stöggl</mal:name>
+      <mal:email>c72578@yahoo.de</mal:email>
+      <mal:years>2016</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Mario Blättermann</mal:name>
+      <mal:email>mario.blaettermann@gmail.com</mal:email>
+      <mal:years>2011-2013, 2017-2018</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Tim Sabsch</mal:name>
+      <mal:email>tim@sabsch.com</mal:email>
+      <mal:years>2018-2024</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Christian Kirbach</mal:name>
+      <mal:email>christian.kirbach@gmail.com</mal:email>
+      <mal:years>2011-2026</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Philipp Kiemle</mal:name>
+      <mal:email>l10n@prly.mozmail.com</mal:email>
+      <mal:years>2021, 2023, 2025</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Jürgen Benvenuti</mal:name>
+      <mal:email>gastornis@posteo.org</mal:email>
+      <mal:years>2022-2024.</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>Hilfe mittels Matrix erhalten</title>
+
+  <p><link href="https://matrix.org/">Matrix</link> ist eine moderne Open-Source-Plattform zum schriftlichen Austausch. Legen Sie ähnlich wie bei E-Mail ein Konto auf einem der vielen Server an. Es steht eine Vielzahl an Programmen zum Verbinden zur Verfügung sowie webbasierte Systeme.</p>
+  <steps>
+    <item><p>Wählen Sie eine Anwendung. Matrix pflegt eine <link href="https://matrix.org/docs/projects/try-matrix-now/">Liste beliebter Anwendungen</link>, einschließlich des populären Programms <link href="https://app.element.io">Element</link> und GNOMEs eigener <link href="https://wiki.gnome.org/action/show/Apps/Fractal">Fractal</link>-Anwendung.</p></item>
+    <item><p>Legen Sie ein Konto an. Die meisten Anwendungen begleiten Sie bei dem Vorgang. Das Konto wird mit jeder Matrix-Anwendung funktionieren.</p></item>
+    <item><p>Treten Sie dem Raum <link href="https://matrix.to/#/#gnome:gnome.org">#gnome:gnome.org</link> bei und stellen Sie Ihre Frage.</p></item>
+  </steps>
+  <p>Weitere Informationen, auch wie Sie andere GNOME-Räume durchstöbern, finden Sie im <link href="https://wiki.gnome.org/GettingInTouch/Matrix">GNOME Wiki</link>.</p>
+  <note>
+  <p>Bitte beachten Sie den <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME code of conduct</link>, wenn Sie Unterhaltungen in Matrix und anderen GNOME-Plattformen führen.</p>
+    </note>
+
+</page>

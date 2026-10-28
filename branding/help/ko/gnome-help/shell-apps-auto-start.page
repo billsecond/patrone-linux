@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:if="http://projectmallard.org/if/1.0/" type="topic" style="task" version="1.0 if/1.0" id="shell-apps-auto-start" xml:lang="ko">
+
+  <info>
+    <link type="guide" xref="shell-overview#desktop"/>
+
+    <revision pkgversion="3.33" date="2019-07-21" status="review"/>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+
+    <credit type="author">
+      <name>Aruna Sankaranarayanan</name>
+      <email>aruna.evam@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <desc>로그인할 때 프로그램을 자동으로 시작하도록 <app>기능 개선</app>을 활용합니다.</desc>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>조성호</mal:name>
+      <mal:email>shcho@gnome.org</mal:email>
+      <mal:years>2021, 2022, 2023</mal:years>
+    </mal:credit>
+  </info>
+
+  <title>로그인할 때 자동으로 프로그램을 시작하게 설정하기</title>
+
+  <p>로그인할 때, 컴퓨터에서 일부 프로그램을 자동으로 백그라운드에서 시작합니다. 여러 자동 시작 프로그램은 보통 데스크톱 새션을 자연스럽게 실행하도록 도와주는 중요한 프로그램입니다.</p>
+
+  <p>웹 브라우저 또는 편집기와 같이 자주 사용하는 다른 프로그램 목록을 보고 로그인할 때 자동으로 시작하도록 추가할 때 <app>기능 개선</app> 프로그램을 활용할 수 있습니다.</p>
+
+  <note style="important">
+    <p>이 설정을 바꾸려면 <app>기능 개선</app>을 컴퓨터에 설치해야합니다.</p>
+    <if:if test="action:install">
+      <p><link style="button" action="install:gnome-tweaks"><app>기능 개선</app>을 설치합니다</link></p>
+    </if:if>
+  </note>
+
+  <steps>
+    <title>로그인할 때 프로그램을 자동으로 시작하게 하려면:</title>
+    <item>
+      <p><gui xref="shell-introduction#activities">현재 활동</gui> 개요를 열고 <gui>기능 개선</gui> 입력을 시작합니다.</p>
+    </item>
+    <item>
+      <p><gui>기능 개선</gui>을 눌러 프로그램을 엽니다.</p>
+    </item>
+    <item>
+      <p><gui>시작 프로그램</gui> 탭을 누릅니다.</p>
+    </item>
+    <item>
+      <p><gui style="button">+</gui> 단추를 눌러 가용 프로그램 목록을 띄웁니다.</p>
+    </item>
+    <item>
+      <p><gui style="button">추가</gui>를 눌러 목록에서 선택한 프로그램을 추가합니다.</p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>프로그램 이름 옆에 있는 <gui style="button">제거</gui> 단추를 눌러 목록에서 프로그램을 제거할 수 있습니다.</p>
+  </note>
+
+</page>

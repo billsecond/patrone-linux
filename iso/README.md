@@ -62,10 +62,29 @@ In both:
   Firefox's snap whenever it's installed or upgraded, is removed; Ubuntu's
   desktop only recommends it. So is `chromium-browser`, the same for
   Chromium's snap, which `patrone-default-apps` depended on before 0.2.0.
+- **No Thunderbird or hwctl** (`docs/COMPLIANCE.md`, items 11 and 12): the
+  `thunderbird` stub and its language packs, which Ubuntu's full desktop in
+  the live layer recommends, are removed, and the seed has neither
+  Thunderbird's snap (Canonical's build of Mozilla's app) nor `hwctl`'s
+  (Canonical's hardware-certification tool).
+- **Ubuntu's metapackages go**: `patrone-desktop` 0.2.0 lists Ubuntu's
+  desktop packages itself, less Ubuntu Pro's client, Software Updater,
+  Ubuntu's Help and `hwctl` (`desktop/README.md`), so installing it removes
+  `ubuntu-desktop-minimal`, `ubuntu-minimal` and, in the live layer,
+  `ubuntu-desktop`. In the installer's layer, what nothing installed needs
+  any more is removed too (`apt-get autoremove`, listed in the build's
+  output), so a new system's apt doesn't start by offering to: in the build
+  of 2026-10-28, 16 packages, Ubuntu's release upgrader
+  (`ubuntu-release-upgrader-core`, `python3-distupgrade`), Software
+  Updater's library (`python3-update-manager`), and what only the packages
+  Patrone removes had pulled in (`gdb`, `libc6-dbg`, `patch`, `screen`,
+  `python3-debian`, `distro-info`, WebKit's and libhandy's GObject
+  bindings and their libraries). Anyone who wants `gdb` or `screen` can
+  install them.
 - **What Patrone's packages remove is purged**, so nothing is left of their
-  settings (`rc`): `ubuntu-report`'s autostart entry, and `update-notifier`'s
+  settings (`rc`): `ubuntu-report`'s autostart entry, `update-notifier`'s
   ("Ubuntu Pro is available" at login), which `patrone-desktop` takes the
-  place of.
+  place of, and Ubuntu Pro's apt hook.
 
 **The live session's boot image** (`casper/initrd`) is Ubuntu's own, which
 knows the disc (`conf/uuid.conf`) and how to start the live session, with

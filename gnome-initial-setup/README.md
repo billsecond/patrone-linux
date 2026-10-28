@@ -26,6 +26,14 @@ without the crash reporter, which `patrone-desktop` removes, each call asked
 for an administrator's password, five times in one setup (2026-10-27). In
 revision 2 the page doesn't call it.
 
+From revision 3 the package names Patrone as its maintainer and Ubuntu
+Developers as the original one, as Debian's guidelines for derivatives have
+it, and its copyright file names Patrone's pictures and the icons in
+`patrone-software.svg`: GNOME Software's (GPL-2+) and ten Craft apps',
+which their makers (the ArtCraft Team and the contributors of each, and
+MailCraft's) license as MIT OR Apache-2.0, used here under MIT, whose
+notice the file carries (`docs/COMPLIANCE.md`, item 13).
+
 ```sh
 gnome-initial-setup/build.sh      # on the dev VM; the package lands in out/
 ```

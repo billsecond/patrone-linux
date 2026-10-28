@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="zh-CN">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>一些关于使用帮助指南的小提示。</desc>
+    <credit type="author">
+      <name>GNOME 文档项目</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>TeliuTe</mal:name>
+      <mal:email>teliute@163.com</mal:email>
+      <mal:years>2011, 2012</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>tuberry</mal:name>
+      <mal:email>orzun@foxmail.com</mal:email>
+      <mal:years>2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Victor_Trista</mal:name>
+      <mal:email>ljlzjzm@hotmail.com</mal:email>
+      <mal:years>2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>关于本指南</title>
+<p>本指南旨在向您介绍桌面的功能，解答有关计算机的问题，以及提供有关更高效使用计算机的提示。以下是有关帮助指南的一些注意事项：</p>
+
+<list>
+  <item><p>该指南分为一些面向任务的小主题，而不是章节。这意味着您无需浏览整个手册即可找到问题的答案。</p></item>
+  <item><p>相关项目都链接在一起。一些页面底部的“亦见”链接将引导您转到相关主题。这样可以轻松找到可能有助于您执行特定任务的类似主题。</p></item>
+  <item><p>它还包括内置搜索功能，帮助浏览器顶部有一个<em>搜索栏</em>，在您输入的同时就可以显示相关结果。</p></item>
+  <item><p>本指南正在不断改进。虽然我们努力为您提供全面的帮助信息，但也知道无法在这里解答您所有的问题。如果需要更多的帮助，您可以咨询您使用的发行版的支持团队。</p></item>
+</list>
+
+</page>

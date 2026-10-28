@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="help-irc" xml:lang="da">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Få livesupport på IRC.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+    <revision pkgversion="3.36.3" date="2020-07-17" status="review"/>
+
+    <credit type="author">
+      <name>Baptiste Mille-Mathias</name>
+      <email>baptistem@gnome.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>scootergrisen</mal:name>
+      <mal:email/>
+      <mal:years>2015-2016, 2019-2021</mal:years>
+    </mal:credit>
+  
+    <mal:credit xmlns:mal="http://projectmallard.org/1.0/" type="translator copyright">
+      <mal:name>Alan Mortensen</mal:name>
+      <mal:email/>
+      <mal:years>2023</mal:years>
+    </mal:credit>
+  </info>
+
+<title>IRC</title>
+   <p>IRC står for Internet Relay Chat. Det er et beskedsystem til flere brugere i realtid. Du kan få hjælp og råd på GNOMEs IRC-server fra andre GNOME-brugere og -udviklere.</p>
+   <p>Brug <app>Polari</app> eller <app>HexChat</app> til at oprette forbindelse til GNOMEs IRC-server.</p>
+   <p>I <link href="help:polari/">Polaris dokumentation</link> kan du se hvordan du opretter en IRC-konto.</p>
+   <p>GNOMEs IRC-server er <sys>irc.libera.chat</sys>. Hvis din computer er konfigureret korrekt, så kan du klikke på linket <link href="irc://irc.libera.chat/gnome"/> for at åbne <sys>gnome</sys>-kanalen.</p>
+   <p>Selvom IRC er et diskussionsmedie i realtid så har folk det med ikke at svare lige med det samme, så vær tålmodig.</p>
+
+  <note>
+    <p>Bemærk venligst at <link href="https://wiki.gnome.org/Foundation/CodeOfConduct">GNOME-adfærdskodekset</link> gælder når du chatter på IRC.</p>
+  </note>
+
+</page>

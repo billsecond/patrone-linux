@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="about-this-guide" xml:lang="lv">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Daži padomi, kā izmantot darbvirsmas palīdzības rokasgrāmatu.</desc>
+    <credit type="author">
+      <name>GNOME dokumentācijas projekts</name>
+      <email>gnome-doc-list@gnome.org</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+
+<title>Par šo rokasgrāmatu</title>
+<p>This guide is designed to give you a tour of the features of your desktop,
+answer your computer-related questions, and provide tips on using your
+computer more effectively. Here are a few notes regarding the help guide:</p>
+
+<list>
+  <item><p>Šī rokasgrāmata ir sadalīta mazās, uz uzdevumiem orientētās tēmas, nevis nodaļās. Tas nozīmē, ka jums nav jāpārlapo visa rokasgrāmata, lai atrastu atbildes uz saviem jautājumiem.</p></item>
+  <item><p>Radniecīgie paragrāfi ir saistīti kopā. “Skatīt arī” adreses dažu lapu apakšā jūs novirzīs uz radniecīgajām tēmām. Tas padara vieglu līdzīgu tēmu meklēšanu, kas varētu palīdzēt jums veikt noteiktus uzdevumus.</p></item>
+  <item><p>Tas sevī ietver iebūvētu meklēšanu. Augšējā josla palīdzības pārlūkā ir <em>meklēšanas josla</em>, un atbilstoši rezultāti sāks parādīties, tiklīdz jūs sāksiet rakstīt.</p></item>
+  <item><p>The guide is constantly being improved. Although we attempt to
+  provide you with a comprehensive set of helpful information, we know we can’t
+  answer all of your questions here. If you need more assistance, you can check
+  with your distribution’s support team.</p></item>
+</list>
+
+</page>

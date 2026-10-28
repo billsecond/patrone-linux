@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="get-involved" xml:lang="kk">
+
+  <info>
+    <link type="guide" xref="more-help"/>
+    <desc>Осы көмек тақырыптарындағы мәселелер туралы қалай және қайда хабарлау керек.</desc>
+
+    <revision pkgversion="3.4.0" date="2012-02-19" status="review"/>
+
+    <credit type="author">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany@antopolski.com</email>
+    </credit>
+    <credit type="author">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+  <title>Осы нұсқаулықты жақсартуға қатысыңыз</title>
+
+  <section id="submit-issue">
+
+   <title>Мәселе туралы хабарлау</title>
+
+   <p>Бұл көмек құжаттамасын еріктілер қауымдастығы жасаған. Қатысуыңызға болады. Егер сіз осы көмек беттерінде мәселені байқасаңыз (мысалы, қателер, қате нұсқаулар немесе қамтылуы керек, бірақ қамтылмаған тақырыптар), <em>жаңа мәселе</em> жібере аласыз. Жаңа мәселені жіберу үшін <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">мәселелер трекеріне</link> өтіңіз.</p>
+
+   <p>Мәселені жіберу және оның күйі туралы жаңартуларды электрондық пошта арқылы алу үшін тіркелуіңіз керек. Егер сізде тіркелгі жоқ болса, оны жасау үшін <gui><link href="https://gitlab.gnome.org/users/sign_in">Кіру / Тіркелу</link></gui> батырмасын шертіңіз.</p>
+
+   <p>Тіркелгіңіз болғаннан кейін, жүйеге кіргеніңізге көз жеткізіңіз, содан кейін <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">құжаттама мәселелерінің трекеріне</link> оралып, <gui>Жаңа мәселе</gui> батырмасын шертіңіз. Жаңа мәселе туралы хабарламас бұрын, ұқсас мәселенің бар-жоғын көру үшін <link href="https://gitlab.gnome.org/GNOME/gnome-user-docs/issues">шолыңыз</link>.</p>
+
+   <p>Мәселені жібермес бұрын, <gui>Белгілер</gui> мәзірінен сәйкес белгіні таңдаңыз. Егер сіз осы құжаттамаға қатысты мәселе жіберсеңіз, <gui>gnome-help</gui> белгісін таңдауыңыз керек. Мәселеңіздің қай компонентке қатысты екеніне сенімді болмасаңыз, ештеңе таңдамаңыз.</p>
+
+   <p>Егер сіз қамтылмаған деп санайтын тақырып бойынша көмек сұрасаңыз, белгі ретінде <gui>Мүмкіндік</gui> таңдаңыз. Тақырыбы мен Сипаттамасы бөлімдерін толтырып, <gui>Мәселені жіберу</gui> батырмасын шертіңіз.</p>
+
+   <p>Мәселеңізге ID нөмірі беріледі және ол қаралған сайын оның күйі жаңартылып отырады. GNOME көмек бөлімін жақсартуға көмектескеніңіз үшін рақмет!</p>
+
+   </section>
+
+   <section id="contact-us">
+   <title>Бізбен байланысу</title>
+
+<p>GNOME құжаттамасының басқа редакторларымен <link href="https://matrix.to/#/#docs:gnome.org">#docs:gnome.org</link> Matrix бөлмесінде байланысыңыз. Қосымша ақпарат алу үшін <link xref="help-matrix">Matrix бойынша көмек алу</link> бетін қараңыз. Қаласаңыз, <link xref="help-irc">GNOME IRC серверінде</link> #gnome-docs IRC арнасы да бар. Бұл бөлмелердегі адамдар бүкіл әлемде орналасқандықтан, жауап алу үшін біраз уақыт кетуі мүмкін.</p>
+<p>Сонымен қатар, Құжаттама тобымен <link href="https://discourse.gnome.org/tag/documentation">GNOME Discourse</link> арқылы байланысуға болады.</p>
+
+   <p>Біздің <link href="https://wiki.gnome.org/DocumentationProject">вики бетімізде</link> қалай қосылуға және үлес қосуға болатыны туралы пайдалы ақпарат бар.</p>
+
+
+   </section>
+</page>

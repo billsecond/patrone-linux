@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="tip" id="translate" xml:lang="kk">
+
+  <info>
+   <link type="guide" xref="more-help"/>
+   <link type="seealso" xref="get-involved"/>
+    <desc>Бұл тақырыптарды аударуға қалай және қай жерде көмектесуге болады.</desc>
+    <revision pkgversion="3.11.4" version="0.1" date="2014-01-26" status="review"/>
+
+    <credit type="author copyright">
+      <name>Tiffany Antopolski</name>
+      <email>tiffany.antopolski@gmail.com</email>
+      <years>2011</years>
+    </credit>
+     <credit type="editor">
+      <name>Michael Hill</name>
+      <email>mdhillca@gmail.com</email>
+    </credit>
+     <credit type="editor">
+      <name>Petr Kovar</name>
+      <email>pknbe@volny.cz</email>
+    </credit>
+    <credit type="editor">
+        <name>Заря</name>
+        <email>zaria@vivaldi.net</email>
+    </credit>
+
+  <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
+
+<title>Аудармаларды жақсартуға қатысу</title>
+
+<p>GNOME көмек мәтіндерін бүкіл әлемдегі еріктілер қауымдастығы аударады және әлі де аударманы қажет ететін <link href="https://l10n.gnome.org/module/gnome-user-docs/">көптеген тілдер</link> бар.</p>
+<p>Аударуды бастау үшін <link href="https://l10n.gnome.org/register/">тіркелгі жасаңыз</link> және өз тіліңіздің <link href="https://l10n.gnome.org/teams/">аудару тобына</link> қосылыңыз. Бұл сізге жаңа аудармаларды жүктеп салу мүмкіндігін береді.</p>
+<p>Басқа GNOME аудармашыларымен <link href="https://matrix.to/#/#i18n:gnome.org">#i18n:gnome.org</link> Matrix бөлмесінде байланысыңыз. Қосымша ақпарат алу үшін <link xref="help-matrix">Matrix арқылы көмек алу</link> бетін қараңыз. Егер қаласаңыз, <link xref="help-irc">GNOME IRC серверінде</link> #gnome-i18n IRC арнасы да бар. Бұл бөлмелердегі адамдар бүкіл әлемде орналасқандықтан, жауап алу үшін біраз уақыт кетуі мүмкін.</p>
+<p>Сонымен қатар, <link href="https://discourse.gnome.org/tag/i18n">GNOME Discourse</link> арқылы Интернационалдандыру тобымен байланысуға болады.</p>
+
+</page>

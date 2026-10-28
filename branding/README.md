@@ -25,6 +25,27 @@ Intended for:
 The image here is a picture of ASCII art. The real terminal logo has to be
 written as actual text characters so terminals can print it.
 
+### Where it and wallpaper 01 come from
+
+Both were made with an AI image generator. The original wallpaper
+(`wallpapers/patrone-back-01.png`) carries a C2PA manifest, signed by
+OpenAI: generated with ChatGPT (`gpt-image`) on 2026-10-25. The concept has
+no metadata left (WebP drops it), but it was made the same day the same
+way, and the wallpaper shows the same logo. Everything cut or drawn from
+them is Patrone's work on top: the logo files, the splash, the login and
+About pictures, the installer's and first-login setup's P, the logo icons,
+wallpaper 01's family and the fastfetch logo. The generated wallpapers are
+different (below): code draws every pixel.
+
+Material an AI generates without enough human authorship may not be
+protected by copyright (the US Copyright Office's report on AI, Part 2,
+January 2025), so `patrone-branding`'s copyright file says so, and offers
+these files under GPL-3+ only as far as anyone holds copyright in them.
+The name and logo are also Patrone's trademarks (`legal/eula.md`, section
+3). A human-drawn vector master of the logo (below) would settle it, and is
+a lawyer's question with a trademark search for PATRONE
+(`docs/COMPLIANCE.md`, item 9).
+
 ## Logo files
 
 `logos/` holds transparent PNGs cut from the concept by
@@ -67,6 +88,8 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | Wallpapers to choose from | Wallpaper 01's family and the generated wallpapers (below) in Settings → Appearance, and none of Ubuntu's | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties`. GNOME Shell depends on `ubuntu-wallpapers`, so the package provides it and replaces `ubuntu-wallpapers` and `ubuntu-wallpapers-resolute` (63 MB), which apt then removes |
 | Typeface | Patrone Sans (`fonts-patrone-sans`, built in `fonts/`: Noto Sans with a tailed l and a slashed zero, every weight in one variable font), also the stand-in for Microsoft's Segoe UI, which can't be redistributed: for the desktop, apps, window titles (semibold) and the login screen; web pages and documents that ask for sans-serif, system-ui or Segoe UI get it too, in Chromium and in Flatpak apps as well, with Noto Sans (from `fonts-noto-core`) behind it for scripts it doesn't cover. Patrone Settings' Theme page switches between Patrone Sans and Noto Sans, which was the typeface until 2026-10-26. Monospace stays Ubuntu Sans Mono | GNOME's font settings in the override above and `95-patrone-settings`; `system/fontconfig/05-patrone-fonts.conf` in `/etc/fonts/conf.d` and, for snaps (which don't read `conf.d`), `/etc/fonts/snap-override`; for Flatpak apps, which see neither, a copy in `/usr/share/fonts/patrone-fontconfig` with `system/fontconfig/flatpak-fonts.conf`, which their fontconfig finds through `FONTCONFIG_PATH` (`system/environment.d/60-patrone-fontconfig.conf`) |
 | Settings | Ubuntu's "Ubuntu Desktop" page is named "Desktop" | `system/settings/gnome-ubuntu-panel.desktop` replaces Ubuntu's (GNOME Settings names each page from its desktop file) |
+| Help | GNOME Help, with GNOME's own front page and pages about the guide and getting help, in GNOME's 45 languages, in place of Ubuntu's "Ubuntu Desktop Guide" with Ubuntu's logo | `help/`, copied from GNOME's release of `gnome-user-docs` 50.0 by `tools/make_help.sh`: the pages Ubuntu's `gnome-user-docs` leaves out for `ubuntu-docs`, which the package replaces (Provides, Conflicts, Replaces), as it does `ubuntu-wallpapers` |
+| The logo icons apps ask for (`start-here`, `distributor-logo`, and their symbolic versions) | Patrone's P, in every color of Yaru's icons and its dark style, in place of Ubuntu's logo | `icons/`, made by `tools/make_logo_icons.sh` (the P at each of Yaru's sizes, and a one-color P traced with potrace); installed over Yaru's, which are moved aside (Yaru's `distributor-logo` icons are links to `start-here`). `os-release`'s `LOGO`, `patrone-logo`, is in the `hicolor` theme too |
 
 The login-screen theme is built from the Yaru that's installed when the
 package is built, so rebuild the package when Yaru's GNOME Shell theme
