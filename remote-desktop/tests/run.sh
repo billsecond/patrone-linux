@@ -226,9 +226,12 @@ vmconnect_test() {
     "$tests/test-client" 127.0.0.1 "$port" 12 $'alice\twrong\n' $'right\n' > "$work/client.log" 2>&1 || true
     reached=$(cat "$work/reached" 2> /dev/null || true)
     # VMConnect's own connection stays up throughout: activated by the proxy,
-    # again for the login screen, and again for the desktop
+    # again for the login screen, and again for the desktop. And it's told
+    # the account has signed in, as Windows tells it, which VMConnect waits
+    # for before letting its window be resized.
     if grep -q "signed in alice; opening their desktop" "$work/greeter.log" && [[ $reached == alice ]] &&
-        grep -q "^connected for 1[0-9] seconds, activated 3 times" "$work/client.log"; then
+        grep -q "^connected for 1[0-9] seconds, activated 3 times" "$work/client.log" &&
+        grep -q "^the server says alice is signed in" "$work/client.log"; then
         echo "ok   vmconnect: the login screen, then the account's desktop, on one connection"
     else
         echo "FAIL vmconnect: the login screen, then the account's desktop (reached \"$reached\")"

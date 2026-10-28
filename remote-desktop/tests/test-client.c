@@ -33,6 +33,7 @@
 #include <freerdp/gdi/gdi.h>
 #include <freerdp/gdi/gfx.h>
 #include <freerdp/input.h>
+#include <freerdp/session.h>
 #include <freerdp/settings.h>
 #include <winpr/image.h>
 #include <winpr/synch.h>
@@ -131,11 +132,21 @@ static BOOL desktop_resize(rdpContext* context)
 	return gdi_resize(context->gdi, width, height);
 }
 
+/* The server saying the user has signed in, as Windows does */
+static BOOL save_session_info(rdpContext* context, UINT32 type, const void* data)
+{
+	WINPR_UNUSED(context);
+	if (type == INFO_TYPE_LOGON || type == INFO_TYPE_LOGON_LONG)
+		printf("the server says %s is signed in\n", ((const logon_info*)data)->username);
+	return TRUE;
+}
+
 static BOOL post_connect(freerdp* instance)
 {
 	if (!gdi_init(instance, PIXEL_FORMAT_BGRX32))
 		return FALSE;
 	instance->context->update->DesktopResize = desktop_resize;
+	instance->context->update->SaveSessionInfo = save_session_info;
 	return TRUE;
 }
 

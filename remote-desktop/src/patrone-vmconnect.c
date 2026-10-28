@@ -20,11 +20,13 @@
  */
 
 #define _GNU_SOURCE
+#include <limits.h>
 #include <linux/vm_sockets.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <freerdp/channels/disp.h>
 #include <freerdp/freerdp.h>
@@ -32,6 +34,7 @@
 #include <freerdp/server/proxy/proxy_config.h>
 #include <freerdp/server/proxy/proxy_context.h>
 #include <freerdp/server/proxy/proxy_modules_api.h>
+#include <freerdp/session.h>
 #include <freerdp/settings.h>
 #include <winpr/string.h>
 #include <winpr/synch.h>
@@ -51,6 +54,7 @@ static const char plugin_desc[] =
 typedef struct
 {
 	BOOL at_desktop;
+	BOOL told_signed_in;
 	char user[USER_MAX + 1];
 } Session;
 
@@ -156,10 +160,47 @@ static BOOL client_pre_connect(proxyPlugin* plugin, proxyData* pdata, void* para
 	       freerdp_settings_set_string(settings, FreeRDP_Domain, NULL);
 }
 
+/* VMConnect, like Remote Desktop Connection, counts the session as signed in
+ * only once the server says so (a Save Session Info PDU, "logon"), and until
+ * then keeps its window one size. Windows sends one after its own sign-in;
+ * GNOME Remote Desktop never does, so the plugin does, for the account, once
+ * VMConnect's side is active on the desktop. */
+static void tell_signed_in(proxyData* pdata, Session* session)
+{
+	char host[HOST_NAME_MAX + 1] = "";
+	logon_info info = { 0 };
+
+	if (session->told_signed_in)
+		return;
+	session->told_signed_in = TRUE;
+	if (gethostname(host, sizeof(host) - 1) != 0)
+		host[0] = '\0';
+	info.sessionId = 1;
+	info.username = session->user;
+	info.domain = host;
+	/* Version 2, as Windows sends it: FreeRDP writes version 1's fixed-size
+	 * fields short, and its own client refuses them */
+	if (pdata->ps->update->SaveSessionInfo(pdata->ps, INFO_TYPE_LOGON_LONG, &info))
+		WLog_INFO(TAG, "told VMConnect that %s is signed in", session->user);
+	else
+		WLog_WARN(TAG, "couldn't tell VMConnect that %s is signed in", session->user);
+}
+
+/* VMConnect's side active again: on the desktop, the last activation */
+static BOOL peer_activate(proxyPlugin* plugin, proxyData* pdata, void* param)
+{
+	WINPR_UNUSED(param);
+	Session* session = get_session(plugin, pdata);
+	if (session && session->at_desktop)
+		tell_signed_in(pdata, session);
+	return TRUE;
+}
+
 /* The connection whose client is on its way to the desktop. Each connection's
  * client has a thread of its own, which runs the redirection and then the
  * desktop's activation. */
 static __thread proxyData* redirected;
+static __thread Session* redirected_session;
 
 /* Once the desktop is up, VMConnect's side takes its settings, as after the
  * proxy's first connection (pf_client_post_connect, which a redirection
@@ -170,11 +211,22 @@ static void on_desktop_activated(void* context, const ActivatedEventArgs* event)
 	proxyData* pdata = redirected;
 	WINPR_UNUSED(event);
 
+	Session* session = redirected_session;
 	redirected = NULL;
+	redirected_session = NULL;
 	PubSub_UnsubscribeActivated(back->pubSub, on_desktop_activated);
+	/* Without a reactivation, VMConnect's side is already active */
+	if (pdata && !config_true(pdata, "ReactivateAtDesktop", TRUE))
+	{
+		if (session)
+			tell_signed_in(pdata, session);
+		return;
+	}
 	if (!pdata || pdata->pc != back || !pf_context_copy_settings(pdata->ps->settings, back->settings) ||
 	    !pdata->ps->update->DesktopResize(pdata->ps))
 		WLog_WARN(TAG, "couldn't bring VMConnect's side up to date with the desktop");
+	else
+		WLog_INFO(TAG, "VMConnect's side takes the desktop's settings");
 }
 
 /* The login screen's redirection: the account, its desktop's port (as the
@@ -251,6 +303,7 @@ static BOOL client_redirect(proxyPlugin* plugin, proxyData* pdata, void* param)
 	if (ok)
 	{
 		redirected = pdata;
+		redirected_session = session;
 		session->at_desktop = TRUE;
 		WLog_INFO(TAG, "signed in %s from the Hyper-V host, to their desktop on port %u",
 		          session->user, port);
@@ -359,6 +412,7 @@ FREERDP_ENTRY_POINT(BOOL proxy_module_entry_point(proxyPluginsManager* manager, 
 	plugin.ServerFetchTargetAddr = fetch_target;
 	plugin.ClientPreConnect = client_pre_connect;
 	plugin.ClientRedirect = client_redirect;
+	plugin.ServerPeerActivate = peer_activate;
 	plugin.DynamicChannelCreate = dynamic_channel_create;
 	plugin.DynChannelToIntercept = watch_channel;
 	plugin.DynChannelIntercept = channel_data;
