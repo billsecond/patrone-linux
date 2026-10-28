@@ -79,13 +79,13 @@ Waiting on the user:
   settings"): Settings → **Desktop** → **Desktop Bubble**, the first switch
   on GNOME Settings' own Desktop page, with **Recycle Bin on the Desktop**
   under it; they take the place of Ubuntu's Desktop Icons settings there
-  (GNOME Settings `patrone10`). Patrone Settings → Desktop calls it
+  (GNOME Settings `patrone10`; `patrone11`, which has it too, is the newest). Patrone Settings → Desktop calls it
   "Desktop bubble: On / Off" now (`patrone-settings` 0.3.6). Off, the pill
   goes and the files show across the desktop at once, no signing out; the
   Recycle Bin stays docked in its corner, and if it's hidden too, the
   desktop's right-click menu has Show Recycle Bin. Install:
-  `sudo apt install ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone10_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone10_all.deb
+  `sudo apt install ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone11_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone11_all.deb
   ~/src/patrone-linux/out/patrone-settings_0.3.6_amd64.deb`. Checked in
   the throwaway shell (shell/gnome/README.md, "The desktop bubble").
 
