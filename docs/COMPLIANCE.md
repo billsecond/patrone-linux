@@ -821,8 +821,18 @@ telemetry page.
 - **Secure Boot**: shim, GRUB and the kernel are Ubuntu's, unchanged and
   signed by Canonical; Mint and Zorin boot the same way. Patrone can't
   change GRUB or the kernel and keep Secure Boot.
-- **The disc's apt repository** is Ubuntu's, signed with a one-time key
-  embedded in the disc's own `cdrom.sources`.
+- **The disc's apt repository** (`dists/`, `pool/`) is Ubuntu's, signed
+  with a one-time key embedded in the disc's own `cdrom.sources`. Its
+  `Release` files and package names say Ubuntu, and must: changing them
+  would break the signature. They're part of item 2 (Ubuntu's own
+  binaries), not branding. The disc's volume name and `.disk/info` say
+  Patrone Linux.
+- **The `ubuntu` link at the disc's root** (Ubuntu's `ubuntu -> .`, a
+  Debian-era convention that Windows shows as a 0 KB file named UBUNTU,
+  found by the user) was used by nothing on Patrone's disc: apt and the
+  installer use `file:///cdrom`, and neither the initrd nor `md5sum.txt`
+  goes through it. The main session took it off in `cd60745`, from the
+  next ISO build.
 - **Ubuntu's fonts** (Ubuntu Font Licence 1.0) are unmodified; if Patrone
   ever changes them, the licence requires a new name. **Patrone Sans**:
   OFL 1.1, Noto has no Reserved Font Name, the name table credits the Noto
