@@ -33,6 +33,7 @@
 #include <freerdp/server/proxy/proxy_modules_api.h>
 #include <freerdp/settings.h>
 #include <winpr/string.h>
+#include <winpr/synch.h>
 #include <winpr/wlog.h>
 
 #define TAG MODULE_TAG("patrone-vmconnect")
@@ -66,6 +67,24 @@ static BOOL config_true(proxyData* pdata, const char* key, BOOL otherwise)
 	return strcmp(value, "true") == 0;
 }
 
+/* The address the connection comes from. FreeRDP has handed the socket to its
+ * transport by now (peer->sockfd is -1), so it's found through the
+ * transport's event, which watches that socket. */
+static BOOL peer_address(freerdp_peer* peer, struct sockaddr_storage* address)
+{
+	HANDLE events[MAXIMUM_WAIT_OBJECTS] = { 0 };
+	const DWORD count = peer->GetEventHandles(peer, events, MAXIMUM_WAIT_OBJECTS);
+
+	for (DWORD i = 0; i < count; i++)
+	{
+		socklen_t size = sizeof(*address);
+		const int fd = GetEventFileDescriptor(events[i]);
+		if (fd >= 0 && getpeername(fd, (struct sockaddr*)address, &size) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
 /* Only the Hyper-V host may connect: VMConnect's connections come through it.
  * The host handles VMConnect's own security (TLS, and NLA with the host's
  * account), and the guest's side runs without it: FreeRDP's VMConnect mode.
@@ -75,11 +94,10 @@ static BOOL session_initialize(proxyPlugin* plugin, proxyData* pdata, void* para
 	WINPR_UNUSED(plugin);
 	freerdp_peer* peer = param;
 	struct sockaddr_storage address = { 0 };
-	socklen_t size = sizeof(address);
+	const BOOL found = peer_address(peer, &address);
+	const struct sockaddr_vm* vsock = (const struct sockaddr_vm*)&address;
 
-	if (getpeername(peer->sockfd, (struct sockaddr*)&address, &size) == 0 &&
-	    address.ss_family == AF_VSOCK &&
-	    ((const struct sockaddr_vm*)&address)->svm_cid == VMADDR_CID_HOST)
+	if (found && address.ss_family == AF_VSOCK && vsock->svm_cid == VMADDR_CID_HOST)
 	{
 		WLog_INFO(TAG, "a connection from the Hyper-V host");
 		return !config_true(pdata, "HostHandlesSecurity", TRUE) ||
@@ -87,7 +105,13 @@ static BOOL session_initialize(proxyPlugin* plugin, proxyData* pdata, void* para
 	}
 	if (config_true(pdata, "AllowLocal", FALSE))
 		return TRUE;
-	WLog_WARN(TAG, "refused a connection that didn't come from the Hyper-V host");
+	if (!found)
+		WLog_WARN(TAG, "refused a connection whose address couldn't be read");
+	else if (address.ss_family == AF_VSOCK)
+		WLog_WARN(TAG, "refused a connection from vsock address %u, not the Hyper-V host",
+		          vsock->svm_cid);
+	else
+		WLog_WARN(TAG, "refused a connection that didn't come over a Hyper-V socket");
 	return FALSE;
 }
 

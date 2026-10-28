@@ -238,6 +238,27 @@ vmconnect_test() {
         done
         failures=$((failures + 1))
     fi
+
+    # As shipped, only the Hyper-V host gets in: the plugin must find where a
+    # connection comes from (once, it never could, and refused everyone) and
+    # refuse one that isn't on a Hyper-V socket.
+    port=$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')
+    sed -e "s|^Port=.*|Port=$port|" -e '/^AllowLocal=/d' "$work/vmconnect.ini" > "$work/strict.ini"
+    "$tests/test-proxy" "$work/strict.ini" "$bin/proxy-patrone-vmconnect-plugin.so" \
+        > "$work/strict.log" 2>&1 &
+    pids+=($!)
+    for _ in $(seq 50); do
+        [[ -n $(ss -Hltn "sport = :$port") ]] && break
+        sleep 0.1
+    done
+    "$tests/test-client" 127.0.0.1 "$port" 3 > /dev/null 2>&1 || true
+    if grep -q "refused a connection that didn't come over a Hyper-V socket" "$work/strict.log"; then
+        echo "ok   vmconnect: only the Hyper-V host gets in"
+    else
+        echo "FAIL vmconnect: only the Hyper-V host gets in"
+        grep -i -E 'refused|vmconnect' "$work/strict.log" | tail -n 5
+        failures=$((failures + 1))
+    fi
     kill "${pids[@]}" 2> /dev/null || true
     wait "${pids[@]}" 2> /dev/null || true
     rm -rf "$work"
