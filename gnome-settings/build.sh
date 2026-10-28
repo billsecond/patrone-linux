@@ -17,9 +17,9 @@ set -euo pipefail
 
 # Patrone's revision of the page and patches: one more with each change to
 # them, so a new build of the same Ubuntu version installs as an upgrade
-revision=10
+revision=11
 # What changed in it, for the package's changelog
-changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop's \"Enable Remote Desktop\" switch in System > Remote Desktop > Remote Login."
+changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)

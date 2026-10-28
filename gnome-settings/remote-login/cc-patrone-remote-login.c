@@ -1,16 +1,18 @@
 /* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
- * Patrone Remote Desktop in GNOME Settings' Remote Login page (System >
- * Remote Desktop > Remote Login), in place of GNOME's own Remote Login,
- * which drives gnome-remote-desktop's system daemon instead. One switch,
- * "Enable Remote Desktop", turns it on for the account using Settings,
+ * Patrone Remote Desktop in GNOME Settings: the first tab of System >
+ * Remote Desktop, named "Remote Desktop", in place of GNOME's own Remote
+ * Login, which drives gnome-remote-desktop's system daemon instead. One
+ * switch, "Remote Desktop", turns it on for the account using Settings,
  * through patrone-remote-desktop's helper (/usr/libexec/patrone-remote-
  * desktop/settings, run with pkexec: turning it on or off asks for an
  * administrator's password). Then the page asks for the account's own
  * password once, which the helper checks and records what NLA checks, and
  * shows what to connect to: the computer's name and addresses, the
  * username, and a Remote Desktop Connection file (patrone-remote-desktop
- * rdp-file). remote-desktop/README.md in Patrone's repository has the rest.
+ * rdp-file). Under that it says what the other ways in do: Desktop
+ * Sharing (the next tab), Secure Shell and GNOME's Remote Login.
+ * remote-desktop/README.md in Patrone's repository has the rest.
  *
  * Copyright (C) 2026 William Daugherty
  *
@@ -42,10 +44,12 @@
 #include <glib/gi18n.h>
 
 #include "cc-patrone-remote-login.h"
+#include "secure-shell/cc-secure-shell-page.h"
 
 #define PKEXEC "/usr/bin/pkexec"
 #define HELPER "/usr/libexec/patrone-remote-desktop/settings"
 #define COMMAND "/usr/sbin/patrone-remote-desktop"
+#define SSH_SERVER "/usr/sbin/sshd"
 
 /* pkexec's exit status when the password dialog was dismissed */
 #define PKEXEC_DISMISSED 126
@@ -496,6 +500,46 @@ on_save_clicked (CcPatroneRemoteLogin *self)
                         self->cancellable, on_save_chosen, self);
 }
 
+/* A row that says what another way in does */
+static GtkWidget *
+add_explanation (AdwPreferencesGroup *group, const char *title, const char *text)
+{
+  GtkWidget *row = adw_action_row_new ();
+
+  adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), title);
+  adw_action_row_set_subtitle (ADW_ACTION_ROW (row), text);
+  adw_preferences_group_add (group, row);
+  return row;
+}
+
+/* ...which opens that way's own settings */
+static void
+make_link (GtkWidget *row, GCallback callback, gpointer data)
+{
+  adw_action_row_add_suffix (ADW_ACTION_ROW (row), gtk_image_new_from_icon_name ("go-next-symbolic"));
+  gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
+  g_signal_connect_swapped (row, "activated", callback, data);
+}
+
+/* Desktop Sharing is the Remote Desktop page's next tab (named so by
+ * cc-remote-desktop-page.c in Patrone's build) */
+static void
+on_desktop_sharing_activated (CcPatroneRemoteLogin *self)
+{
+  GtkWidget *stack = gtk_widget_get_ancestor (GTK_WIDGET (self), ADW_TYPE_VIEW_STACK);
+
+  if (stack != NULL &&
+      adw_view_stack_get_child_by_name (ADW_VIEW_STACK (stack), CC_PATRONE_DESKTOP_SHARING_TAB) != NULL)
+    adw_view_stack_set_visible_child_name (ADW_VIEW_STACK (stack), CC_PATRONE_DESKTOP_SHARING_TAB);
+}
+
+/* GNOME's own Secure Shell dialog, as System's Secure Shell row opens it */
+static void
+on_secure_shell_activated (CcPatroneRemoteLogin *self)
+{
+  adw_dialog_present (ADW_DIALOG (g_object_new (CC_TYPE_SECURE_SHELL_PAGE, NULL)), GTK_WIDGET (self));
+}
+
 static GtkWidget *
 add_group (AdwPreferencesPage *page, const char *title, const char *description)
 {
@@ -534,6 +578,8 @@ cc_patrone_remote_login_init (CcPatroneRemoteLogin *self)
 {
   AdwPreferencesPage *page = ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
   g_autoptr(GPtrArray) addresses = find_addresses ();
+  g_autofree char *ssh_command = NULL;
+  g_autofree char *ssh_text = NULL;
   GtkWidget *group, *label, *row, *button;
   const char *host = g_get_host_name ();
 
@@ -543,11 +589,11 @@ cc_patrone_remote_login_init (CcPatroneRemoteLogin *self)
   self->host = strchr (host, '.') != NULL ? g_strdup (host) : g_strdup_printf ("%s.local", host);
 
   group = add_group (page, NULL, NULL);
-  label = gtk_label_new (_("Use this computer's desktop from another computer, with Windows' "
-                           "Remote Desktop Connection or another RDP app. You sign in with your "
-                           "own username and password and get the same desktop, with the same "
-                           "windows. While you're connected, this computer's own screen shows "
-                           "the login screen."));
+  label = gtk_label_new (_("Use this computer from another one, with Windows' Remote Desktop "
+                           "Connection or another RDP app. You sign in with your own username "
+                           "and password and get your own desktop, with your windows as you left "
+                           "them. While you're connected, this computer's own screen shows the "
+                           "login screen."));
   gtk_label_set_wrap (GTK_LABEL (label), TRUE);
   gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_CENTER);
   gtk_widget_set_hexpand (label, TRUE);
@@ -556,7 +602,7 @@ cc_patrone_remote_login_init (CcPatroneRemoteLogin *self)
 
   group = add_group (page, NULL, NULL);
   self->switch_row = ADW_SWITCH_ROW (adw_switch_row_new ());
-  adw_preferences_row_set_title (ADW_PREFERENCES_ROW (self->switch_row), _("_Enable Remote Desktop"));
+  adw_preferences_row_set_title (ADW_PREFERENCES_ROW (self->switch_row), _("_Remote Desktop"));
   adw_preferences_row_set_use_underline (ADW_PREFERENCES_ROW (self->switch_row), TRUE);
   g_signal_connect_swapped (self->switch_row, "notify::active", G_CALLBACK (on_switch_active), self);
   adw_preferences_group_add (ADW_PREFERENCES_GROUP (group), GTK_WIDGET (self->switch_row));
@@ -596,6 +642,37 @@ cc_patrone_remote_login_init (CcPatroneRemoteLogin *self)
   g_signal_connect_swapped (button, "clicked", G_CALLBACK (on_save_clicked), self);
   adw_action_row_add_suffix (ADW_ACTION_ROW (row), button);
   adw_preferences_group_add (ADW_PREFERENCES_GROUP (group), row);
+
+  /* What the other remote settings do, so nobody has to guess */
+  group = add_group (page, _("Other Ways to Connect"), NULL);
+  row = add_explanation (ADW_PREFERENCES_GROUP (group), _("Desktop Sharing"),
+                         _("Shows the desktop you're using now in another computer's remote "
+                           "desktop app, for someone to watch or, with Remote Control on, to "
+                           "use with you. It has its own username and password, set on its "
+                           "tab, and works only while you're signed in here."));
+  make_link (row, G_CALLBACK (on_desktop_sharing_activated), self);
+
+  ssh_command = g_strdup_printf ("ssh %s@%s", g_get_user_name (), self->host);
+  if (g_file_test (SSH_SERVER, G_FILE_TEST_IS_EXECUTABLE))
+    ssh_text = g_strdup_printf (_("Lets you run commands on this computer from another "
+                                  "computer's terminal (%s), signing in with your own "
+                                  "username and password. Text only, no desktop."),
+                                ssh_command);
+  else
+    ssh_text = g_strdup_printf (_("Lets you run commands on this computer from another "
+                                  "computer's terminal (%s), signing in with your own "
+                                  "username and password. Text only, no desktop. It needs "
+                                  "the openssh-server package, which isn't installed."),
+                                ssh_command);
+  row = add_explanation (ADW_PREFERENCES_GROUP (group), _("Secure Shell (SSH)"), ssh_text);
+  if (g_file_test (SSH_SERVER, G_FILE_TEST_IS_EXECUTABLE))
+    make_link (row, G_CALLBACK (on_secure_shell_activated), self);
+
+  add_explanation (ADW_PREFERENCES_GROUP (group), _("GNOME Remote Login"),
+                   _("GNOME's own way to sign in from another computer, which Remote Desktop "
+                     "takes the place of here: it opens a login screen, after a username and "
+                     "password set for the whole computer. Only one of the two can be on, "
+                     "since both use port 3389."));
 
   self->toasts = ADW_TOAST_OVERLAY (adw_toast_overlay_new ());
   adw_toast_overlay_set_child (self->toasts, GTK_WIDGET (page));

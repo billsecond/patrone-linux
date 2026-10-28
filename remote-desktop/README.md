@@ -25,15 +25,17 @@ Remote Desktop is off until an administrator turns it on and adds the
 accounts that may use it.
 
 **In Settings** (Patrone's build of GNOME Settings, `gnome-settings/`):
-System › Remote Desktop › Remote Login › **Enable Remote Desktop**. Turning
-it on asks for an administrator's password, then turns Remote Desktop on
-and lets the account using Settings sign in. Then it asks for that
-account's own password once, which it checks and records what NLA checks,
-so the account can connect right away. The page then shows what to connect
-to: the computer's name and IP addresses, the username, and a connection
-file to save. Turning it off (an administrator's password again) turns
-Remote Desktop off for every account; the accounts stay in the group, so
-turning it on again needs no new password.
+System › Remote Desktop, whose first tab is Remote Desktop, has one switch,
+**Remote Desktop**. Turning it on asks for an administrator's password,
+then turns Remote Desktop on and lets the account using Settings sign in.
+Then it asks for that account's own password once, which it checks and
+records what NLA checks, so the account can connect right away. The tab
+then shows what to connect to: the computer's name and IP addresses, the
+username, and a connection file to save. Turning it off (an
+administrator's password again) turns Remote Desktop off for every
+account; the accounts stay in the group, so turning it on again needs no
+new password. Under "Other Ways to Connect", the tab says what Desktop
+Sharing, Secure Shell (SSH) and GNOME's Remote Login do.
 
 **From a terminal:**
 
@@ -45,7 +47,7 @@ sudo adduser NAME remote-desktop
 An account added this way can connect once it has signed in on the
 computer with its password after joining the group (on the login screen,
 with `sudo`, over SSH), or changed its password, or confirmed it in
-Settings' Remote Login page: that's when Patrone records what NLA checks.
+Settings' Remote Desktop tab: that's when Patrone records what NLA checks.
 
 Then connect from Windows with `mstsc /v:HOSTNAME`, and give the Linux
 account's username and password in Remote Desktop Connection's dialog. The
@@ -176,11 +178,12 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    account's first login asked for a password to "update information about
    software" (2026-10-27).
 
-8. **Settings' switch**: Patrone's GNOME Settings shows its own Remote Login
-   page (`gnome-settings/remote-login/`) wherever
-   `/usr/libexec/patrone-remote-desktop/settings` is installed, in place of
-   GNOME's, whose system daemon `enable` turns off (both would listen on
-   port 3389). The page runs that helper through `pkexec`; the helper acts
+8. **Settings' switch**: Patrone's GNOME Settings shows its own Remote
+   Desktop tab (`gnome-settings/remote-login/`) first in System › Remote
+   Desktop wherever `/usr/libexec/patrone-remote-desktop/settings` is
+   installed, in place of GNOME's Remote Login tab, whose system daemon
+   `enable` turns off (both would listen on port 3389). The tab runs that
+   helper through `pkexec`; the helper acts
    only for pkexec's caller (`PKEXEC_UID`), never for an account it's
    given. `data/org.patrone.remote-desktop.policy` picks polkit's action by
    the helper's first argument: `status` and `password` ask nothing,

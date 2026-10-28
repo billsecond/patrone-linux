@@ -1,10 +1,12 @@
-Description: Patrone Remote Desktop in Remote Login's place
- With patrone-remote-desktop installed, System > Remote Desktop > Remote
- Login shows Patrone's page (panels/system/remote-desktop/
+Description: Patrone Remote Desktop first in System > Remote Desktop
+ With patrone-remote-desktop installed, System > Remote Desktop's first
+ tab is Patrone's page, named Remote Desktop (panels/system/remote-desktop/
  cc-patrone-remote-login.c, from gnome-settings/remote-login in Patrone's
- repository): an "Enable Remote Desktop" switch and how to connect, in
- place of GNOME's Remote Login, which drives gnome-remote-desktop's system
- daemon.
+ repository): a "Remote Desktop" switch, how to connect, and what the
+ other ways in do. It takes the place of GNOME's Remote Login, which
+ drives gnome-remote-desktop's system daemon; Desktop Sharing comes after
+ it, and System's Remote Desktop row says what it's for. Secure Shell's
+ row says what SSH does. Without the package, the page is GNOME's.
 Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Forwarded: not-needed
 ---
@@ -18,6 +20,126 @@ Forwarded: not-needed
    'remote-desktop/cc-remote-desktop-page.c',
    'remote-desktop/cc-remote-login-page.c',
    'remote-desktop/cc-tls-certificate.c',
+--- a/panels/system/cc-system-panel.blp
++++ b/panels/system/cc-system-panel.blp
+@@ -51,7 +51,8 @@
+ 
+           $CcListRow {
+             title: _("Se_cure Shell");
+-            subtitle: _("SSH network access");
++            // Patrone: what it does, in plain words
++            subtitle: _("Run commands on this computer from another one");
+             icon-name: "utilities-terminal-symbolic";
+             show-arrow: true;
+             activated => $on_secure_shell_row_clicked(template);
+--- a/panels/system/cc-system-panel.c
++++ b/panels/system/cc-system-panel.c
+@@ -32,6 +32,7 @@
+ #include "datetime/cc-datetime-page.h"
+ #include "region/cc-region-page.h"
+ #include "remote-desktop/cc-remote-desktop-page.h"
++#include "remote-desktop/cc-patrone-remote-login.h"
+ #include "secure-shell/cc-secure-shell-page.h"
+ #include "users/cc-users-page.h"
+ 
+@@ -181,6 +182,14 @@
+   /* Hide the remote-desktop page if the g-r-d service is either "masked", "static", or "not-found". */
+   gtk_widget_set_visible (GTK_WIDGET (self->remote_desktop_row), service_state == CC_SERVICE_STATE_ENABLED ||
+                                                                  service_state == CC_SERVICE_STATE_DISABLED);
++  /* Patrone: Patrone Remote Desktop's page, which doesn't need g-r-d's
++   * system service */
++  if (cc_patrone_remote_login_available ())
++    {
++      gtk_widget_set_visible (GTK_WIDGET (self->remote_desktop_row), TRUE);
++      adw_action_row_set_subtitle (ADW_ACTION_ROW (self->remote_desktop_row),
++                                   _("Use this computer's desktop from another one"));
++    }
+   gtk_widget_set_visible (GTK_WIDGET (self->software_updates_group), show_software_updates_group (self));
+ 
+   cc_panel_add_static_subpage (CC_PANEL (self), "about", CC_TYPE_ABOUT_PAGE);
+--- a/panels/system/remote-desktop/cc-remote-desktop-page.blp
++++ b/panels/system/remote-desktop/cc-remote-desktop-page.blp
+@@ -4,7 +4,8 @@
+ template $CcRemoteDesktopPage: Adw.NavigationPage {
+   title: _("Remote Desktop");
+   tag: "remote-desktop";
+-  visible: bind desktop_sharing_page.visible;
++  // Patrone: cc-remote-desktop-page.c binds visible to Desktop Sharing's,
++  // unless Patrone Remote Desktop is installed
+ 
+   child: Adw.BreakpointBin {
+     width-request: 300;
+--- a/panels/system/remote-desktop/cc-remote-desktop-page.c
++++ b/panels/system/remote-desktop/cc-remote-desktop-page.c
+@@ -20,9 +20,12 @@
+ #undef G_LOG_DOMAIN
+ #define G_LOG_DOMAIN "cc-remote-desktop-page"
+ 
++#include <glib/gi18n.h>
++
+ #include "cc-remote-desktop-page.h"
+ #include "cc-desktop-sharing-page.h"
+ #include "cc-remote-login-page.h"
++#include "cc-patrone-remote-login.h"
+ 
+ #ifdef HAVE_CONFIG_H
+ # include "config.h"
+@@ -32,6 +35,8 @@
+   AdwNavigationPage parent_instance;
+ 
+   CcDesktopSharingPage *desktop_sharing_page;
++  CcRemoteLoginPage *remote_login_page;
++  AdwViewStack *stack;
+ 
+   GCancellable *cancellable;
+ };
+@@ -63,6 +68,33 @@
+   gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/control-center/system/remote-desktop/cc-remote-desktop-page.ui");
+ 
+   gtk_widget_class_bind_template_child (widget_class, CcRemoteDesktopPage, desktop_sharing_page);
++  gtk_widget_class_bind_template_child (widget_class, CcRemoteDesktopPage, remote_login_page);
++  gtk_widget_class_bind_template_child (widget_class, CcRemoteDesktopPage, stack);
++}
++
++/* Patrone: with Patrone Remote Desktop installed, its page (in Remote
++ * Login's place, see cc-remote-login-page.c) is the first tab, named
++ * Remote Desktop, with Desktop Sharing after it */
++static void
++put_remote_desktop_first (CcRemoteDesktopPage *self)
++{
++  GtkWidget *sharing = GTK_WIDGET (self->desktop_sharing_page);
++  AdwViewStackPage *page = adw_view_stack_get_page (self->stack, sharing);
++  g_autofree char *title = g_strdup (adw_view_stack_page_get_title (page));
++  g_autofree char *icon = g_strdup (adw_view_stack_page_get_icon_name (page));
++
++  page = adw_view_stack_get_page (self->stack, GTK_WIDGET (self->remote_login_page));
++  adw_view_stack_page_set_title (page, _("_Remote Desktop"));
++
++  g_object_ref (sharing);
++  adw_view_stack_remove (self->stack, sharing);
++  page = adw_view_stack_add_titled_with_icon (self->stack, sharing, CC_PATRONE_DESKTOP_SHARING_TAB,
++                                              title, icon);
++  adw_view_stack_page_set_use_underline (page, TRUE);
++  g_object_bind_property (sharing, "visible", page, "visible", G_BINDING_SYNC_CREATE);
++  g_object_unref (sharing);
++
++  adw_view_stack_set_visible_child (self->stack, GTK_WIDGET (self->remote_login_page));
+ }
+ 
+ static void
+@@ -73,4 +105,12 @@
+   gtk_widget_init_template (GTK_WIDGET (self));
+ 
+   self->cancellable = g_cancellable_new ();
++
++  /* Patrone: GNOME's page shows only where Desktop Sharing can; with
++   * Patrone Remote Desktop it always shows */
++  if (cc_patrone_remote_login_available ())
++    put_remote_desktop_first (self);
++  else
++    g_object_bind_property (self->desktop_sharing_page, "visible", self, "visible",
++                            G_BINDING_SYNC_CREATE);
+ }
 --- a/panels/system/remote-desktop/cc-remote-login-page.c
 +++ b/panels/system/remote-desktop/cc-remote-login-page.c
 @@ -33,6 +33,7 @@

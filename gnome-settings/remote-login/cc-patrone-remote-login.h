@@ -1,7 +1,7 @@
 /* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
- * Patrone Remote Desktop in GNOME Settings' Remote Login page: the
- * "Enable Remote Desktop" switch and how to connect.
+ * Patrone Remote Desktop in GNOME Settings' Remote Desktop page: the
+ * "Remote Desktop" switch, how to connect, and what the other ways in do.
  *
  * Copyright (C) 2026 William Daugherty
  *
@@ -24,6 +24,9 @@
 #include <adwaita.h>
 
 G_BEGIN_DECLS
+
+/* The Remote Desktop page's Desktop Sharing tab, in Patrone's build */
+#define CC_PATRONE_DESKTOP_SHARING_TAB "desktop-sharing"
 
 #define CC_TYPE_PATRONE_REMOTE_LOGIN (cc_patrone_remote_login_get_type ())
 G_DECLARE_FINAL_TYPE (CcPatroneRemoteLogin, cc_patrone_remote_login, CC, PATRONE_REMOTE_LOGIN, AdwBin)
