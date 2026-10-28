@@ -1,7 +1,8 @@
 # Next steps
 
-Last updated 2026-10-26, after the branding, Chromium, terminal autostart and
-Patrone Remote Desktop work.
+Last updated 2026-10-27, after the ISO's installer, first-login setup and a
+search of the installed system for Ubuntu's name (section 16 lists what's
+left of it).
 
 ## Where things stand
 
@@ -100,9 +101,12 @@ Waiting on the user:
   Patrone's, with no Ptyxis and Chromium seeded in place of Firefox and App
   Center (the user: "IT SHOULDN'T SAY UBUNTU"; "the other terminal
   shouldn't even show up"). `scripts/hyperv/new-test-vm.ps1` made the
-  `PatroneTest` VM (Secure Boot on). The user wants to **watch the install
-  from start to finish**: don't start one in the VM without them. Found on
-  the way:
+  `PatroneTest` VM (Secure Boot on). The user watched the first installs;
+  for later ones they asked for the install to be done here, in Hyper-V
+  (2026-10-27: "Please make sure that you also do this install yourself").
+  If they have a Remote Desktop window open to `PatroneTest` (an `mstsc`
+  window named after its address), leave it alone and use another VM. Found
+  on the way:
   - **The installer is Patrone's build of Ubuntu's** (`installer/README.md`,
     package `patrone-installer`, live session only). Ubuntu's front end
     takes its name from a fixed list of Ubuntu's flavors
@@ -134,6 +138,25 @@ Waiting on the user:
     takes Ubuntu's copy, moved aside by the diversion, as deleted by the
     user. The ISO build answers with `--force-confnew`; an install with apt
     on a running system asks.
+  - **"Install Patrone Linux" boots to the installer alone**, full screen
+    in a GNOME Kiosk session with no desktop behind it (`installer/README.md`,
+    "Installing with nothing else"); "Try Patrone Linux" is the live
+    desktop. The kiosk session doesn't switch to a text console with
+    Ctrl+Alt+F3.
+  - **First-login setup is Patrone's build of Ubuntu's**
+    (`gnome-initial-setup/README.md`): "Choose how Patrone Linux looks",
+    Patrone Software in place of App Center, Patrone's pictures. Patrone
+    Terminal waits for it to finish before it opens at the first login, so
+    it no longer covers the setup's pages.
+  - **Settings › System › Remote Login has "Enable Remote Desktop"**
+    (`e0eb760`, from a side session): the user couldn't find how to turn on
+    Remote Desktop in an install. They tried it in `PatroneTest`.
+  - **A search of the installed system for Ubuntu's name** (the user,
+    2026-10-27: "a full search on the name and references across the OS")
+    found the snaps and notices fixed in `98c51cd` and the bigger pieces in
+    section 16. The user's rule for it: saying Patrone Linux is based on
+    Ubuntu is welcome where it explains what's different ("don't dog
+    ubuntu, just explain the differences").
 - **The Craft apps show and install in Patrone Software** (done
   2026-10-27, `patrone-software` 0.1.4, installed; the user: "Looks
   great"). They come from Patrone's app index,
@@ -1925,7 +1948,158 @@ session was ended), and the own-account log-out. The Sessions column also
 changed: "Desktop, on the screen, 1 terminal sign-in"; it used to call
 headless desktops remote.
 
+## 16. Ubuntu's name: what the search found, and what's left
+
+The user, 2026-10-27, after a fresh install from the ISO: "a full search on
+the name and references across the OS". A subagent searched the installed
+system's files (the ISO's layers, mounted read-only: text, binaries'
+strings, GNOME's settings as the session reads them). The user's rule for
+the fixes: saying Patrone Linux is based on Ubuntu is welcome where it
+explains what's different ("don't dog ubuntu, just explain the
+differences"); `os-release` already says "0.1 (based on Ubuntu 26.04.1
+LTS)" and `/etc/legal` now does too.
+
+**Fixed** (`98c51cd`, `6747c7b`, `3ee6d60`, `1591e4c`, `afcd314`;
+patrone-branding 0.1.11, patrone-desktop 0.1.6, gnome-initial-setup
+patrone2, patrone-remote-desktop 0.4.6):
+
+- **App Center, Security Center and Firefox came back** in every install:
+  Ubuntu's layers are preseeded (their snaps set up already), so the ISO's
+  changes to the snap seed were ignored, and Chromium, the taskbar's first
+  favorite, wasn't installed. The ISO build resets and preseeds again
+  (`iso/README.md`), and drops Security Center (Ubuntu Pro's and the snaps'
+  settings) too.
+- `/etc/lsb-release` said Ubuntu 26.04.1 LTS, which is why the installer
+  took an earlier install for Ubuntu (os-prober reads it before
+  os-release); now Patrone Linux 0.1, codename `resolute` kept for tools.
+- "Ubuntu Pro is available" at login (`update-notifier`), Ubuntu Pro's
+  desktop service and password prompts, its advert in `apt upgrade` (the
+  ESM hook, moved aside), the ESM notes in the text console's login
+  message, `/etc/legal`, Ubuntu's web search (`client=ubuntu`) and App
+  Center's search in the Start menu, and leftover settings of removed
+  packages (ubuntu-report's autostart entry showed in Task Manager).
+- **Password prompts at first login**, found by the install that checked
+  the above: polkit's journal named who asked. First-login setup asked
+  five times "to change your privacy settings": Ubuntu Insights' page,
+  skipped but still made, kept calling the crash reporter's settings
+  (`whoopsie-preferences`), which without the crash reporter need an
+  administrator; Patrone's build no longer calls them
+  (`gnome-initial-setup/README.md`). And Patrone Software's background
+  service asked "to update information about software": Patrone's desktop
+  is the account's off-screen session (Remote Desktop's design, section
+  3), which logind makes the account's display session, so polkit treats
+  the account's apps as remote. `45-patrone-desktops.rules` now gives them
+  Flatpak's and PackageKit's actions as at the screen
+  (`remote-desktop/README.md`, "Permissions"). Other actions an app asks
+  for still get the remote answer; add them there as they turn up.
+- **Two things the name change broke**: automatic security updates
+  (unattended-upgrades named the allowed origins by the system's ID, now
+  "Patrone"), and Software & Updates' view of the archive (python-apt had
+  no template for "patrone").
+
+**Checked** in a fresh install of the last ISO (sha256 `0576b0fd...`) in
+Hyper-V, in `PatroneTest2` (the user had Remote Desktop open on
+`PatroneTest`), 2026-10-27, with the test account and "Erase disk": the
+installer called the earlier install "Patrone Linux (0.1)"; the firmware
+boot entry is "Patrone Linux", in `\EFI\patrone\`; `snap list` has Chromium
+and no App Center, Firefox or Security Center; `/etc/lsb-release` and
+`/etc/legal` are Patrone's; `update-notifier`, Ubuntu Pro's desktop service
+and `whoopsie` aren't installed, and GNOME's Package Updater didn't come
+in; no Ubuntu Pro notice at login, no Ubuntu or Pro entries in
+`/etc/xdg/autostart`, no ESM apt hook; unattended-upgrades' allowed origins
+name Ubuntu's archive; first-login setup ran with no password prompt
+(polkit's journal has none) and Patrone Software's Flathub refresh at login
+went through; Patrone Terminal opened after setup, not before. Not
+checked: a real unattended upgrade (it needs root), the Software & Updates
+window, `apt upgrade`'s output (only the hook's absence), and Help.
+
+**Left, bigger** (each needs a package of Patrone's or a patch in a
+rebuild; recommendations first):
+
+1. **A Patrone desktop metapackage in place of `ubuntu-desktop-minimal`.**
+   Ubuntu's requires `update-manager`, `yelp`, `language-selector-gnome` and
+   `ubuntu-settings`, and `ubuntu-minimal` requires `ubuntu-pro-client`.
+   `patrone-desktop` already takes `update-notifier`'s place (it provides
+   it); one metapackage of Patrone's, listing the same packages less these,
+   would let most of what follows simply be removed. The biggest
+   structural step left here; recommended first.
+2. **Software Updater** (`update-manager`): groups updates under "Ubuntu
+   base" with Ubuntu's logo, and has Ubuntu Pro rows, an "Enable Ubuntu
+   Pro..." button and a Livepatch tip. Recommended: remove it with item 1;
+   Patrone Software has an updates page, and Settings falls back to it.
+3. **Ubuntu Pro's services** (`ubuntu-pro-client`): "Ubuntu Pro Background
+   Auto Attach" and three more show in Task Manager's services. Removable
+   only with item 1 (`ubuntu-minimal` needs it).
+4. **Help is "Ubuntu Desktop Guide"** with Ubuntu's logo (`ubuntu-docs`,
+   19 pages; 15 more in `gnome-user-docs`, which needs it). Recommended: a
+   Patrone docs package that provides `ubuntu-docs`, as was done for the
+   wallpapers, with GNOME's own pages and a Patrone index page.
+5. **Paths into App Center, now gone**: "App Details" on a snap in the
+   shell's app menu and in Settings › Apps (they log "Snap store is not
+   installed!" and do nothing), "Find More in App Center" in Open With,
+   `snapd-desktop-integration`'s "App Updates" notification, and
+   `prompting-client`'s "Open in App Center". Recommended: point them at
+   Patrone Software in the GNOME Shell and Settings rebuilds; check whether
+   Patrone Software lists snaps first.
+6. **Settings › Desktop** (Ubuntu's page, renamed) still has a Dock section
+   for the dock Patrone turns off, and "No Ubuntu settings found" in its
+   error state. A patch in the GNOME Settings rebuild.
+7. **Fonts:** the monospace default is Ubuntu Sans Mono (Ubuntu's setting,
+   which `90_patrone` keeps), and `fonts-ubuntu` puts four Ubuntu families
+   in every font list. The user's call which monospace font is Patrone's
+   (JetBrains Mono is installed already, for the terminal).
+8. **Boot names:** GRUB's menu says "Patrone Linux GNU/Linux" (Ubuntu's
+   `10_linux` adds "GNU/Linux" to any name but Ubuntu's: a one-line patch,
+   or a diverted copy). The firmware's boot entry is already Patrone's: the
+   installer named it "Patrone Linux", in `\EFI\patrone\` (Hyper-V's boot
+   order after the install of 2026-10-27). Only shim's fallback list
+   (`BOOTX64.CSV`, "This is the boot entry for ubuntu") still says ubuntu;
+   the firmware uses it only if that entry is lost.
+9. **Icons:** Yaru's `distributor-logo` and `start-here` are Ubuntu's logo
+   (Software Updater shows it), and os-release's `LOGO=patrone-logo` names
+   an icon no theme has. A Patrone icon theme on top of Yaru's blue would
+   fix both.
+10. **The taskbar's favorites** name apps the ISO doesn't install:
+    Thunderbird, LibreOffice Writer and Rhythmbox (and Chromium, fixed
+    above). The user's call: put them in the ISO or drop them.
+11. **The installer** (seen in the install of 2026-10-27's last ISO) still
+    offers "Automated with Landscape", Canonical's management service, on
+    its "Type of installation" page, and finds the time zone through
+    Canonical's location service (`geoip.ubuntu.com`, subiquity's
+    default). Recommended: hide the Landscape choice in Patrone's build of
+    the front end; the lookup is the user's call (it's what fills in the
+    time zone by itself). The last slide, "Almost there", has its text
+    beside its one-line title, not in the right-hand column like the
+    others (`branding/system/desktop-provision/slides/`).
+12. **Links to Ubuntu or nowhere:** first-login setup's "View release
+    notes" opens Ubuntu's release notes for version 0.1
+    (`https://www.ubuntu.com/getubuntu/releasenotes?os=ubuntu&ver=0.1`,
+    `pages/welcome/gis-welcome-page.c`), and os-release's home, support and
+    bug links (Settings › About) are this private repository, which users
+    can't open. Recommended: hide the release notes link until Patrone has
+    release notes, and point os-release at Patrone's website once it's
+    public.
+13. **First-login setup runs under the taskbar:** its last page's "Open
+    Patrone Software" button, and "You can change this later in the
+    Settings app" on the others, are hidden behind the taskbar at the
+    bottom of the screen. The setup window should keep clear of it (or the
+    taskbar stay out of the first login).
+14. **Smaller:** Language Support's tooltip "The recommended value for
+    Ubuntu is IBus" (hide its launcher or patch it); translations (`.mo`
+    files, en_GB and others) carry their own Ubuntu strings, not searched;
+    the kernel says `#30-Ubuntu` in `uname -a`, which is accurate (it's
+    Ubuntu's kernel) and stays.
+
+Also still open from the ISO work: Remote Desktop breaks automatic login
+(section 3), `patrone-branding` asks about `/etc/issue` when installed with
+apt on a running system, and the version: the ISO says 26.04.1 and the
+installed system 0.1. The user's call which one Patrone shows.
+
 ## Suggested order
+
+Next (the user, 2026-10-27): "tomorrow we will talk about next big steps".
+Section 16 lists what's left of Ubuntu's name, with a recommendation for
+each; the Patrone desktop metapackage (its item 1) is the biggest.
 
 The user's quick steps first (bash login shell, RDP checks, trying the
 compositor, the desktop design). Then the compositor's next features and
