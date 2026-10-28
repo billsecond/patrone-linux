@@ -1,0 +1,21 @@
+# Patrone's builds come before Ubuntu's (apt_preferences(5)).
+#
+# Patrone builds some of Ubuntu's packages with its own changes (GDM, GNOME
+# Settings, first-login setup), and Ubuntu's next update of one would
+# otherwise replace Patrone's build, changes and all. So everything from
+# Patrone's repository wins, even over a newer version from Ubuntu, until
+# Patrone has built Ubuntu's update with its changes (packaging/ubuntu-updates.sh
+# does that daily). 600 is above Ubuntu's 500 but below 1000, so a newer
+# build installed by hand isn't downgraded.
+Package: *
+Pin: release o=Patrone
+Pin-Priority: 600
+
+# And Ubuntu's versions of those packages never replace Patrone's build once
+# it's installed, even where apt hasn't read Patrone's repository yet (an
+# install that's never been online): below 100, the installed version's
+# priority, they're only installed where the package isn't. Keep this list to
+# the packages Patrone builds from Ubuntu's.
+Package: gdm3 libgdm1 libgdm-dev gir1.2-gdm-1.0 gnome-control-center gnome-control-center-data gnome-control-center-dev gnome-control-center-faces gnome-initial-setup
+Pin: release o=Ubuntu
+Pin-Priority: 90

@@ -234,9 +234,12 @@ Description: Patrone Linux's desktop
  place of Ubuntu's metapackages (ubuntu-desktop-minimal and ubuntu-minimal),
  which need Ubuntu Pro and Software Updater.
  .
- The clock is set from NTS servers run by Cloudflare, Netnod and PTB,
- NetworkManager checks for Wi-Fi sign-in pages with GNOME's server, and
- nothing offers to upgrade to Ubuntu's next release. Its app store is GNOME
+ Patrone's own updates come from its apt repository on GitHub Pages
+ (billsecond.github.io/patrone-apt), whose key and source it installs; its
+ builds of Ubuntu's GDM, GNOME Settings and first-login setup come before
+ Ubuntu's own. The clock is set from NTS servers run by Cloudflare, Netnod
+ and PTB, NetworkManager checks for Wi-Fi sign-in pages with GNOME's server,
+ and nothing offers to upgrade to Ubuntu's next release. Its app store is GNOME
  Software, with Patrone's picks, in place of Canonical's App Center. What
  the system connects to, and who runs each service, is in
  /usr/share/doc/patrone-desktop/connections.txt.

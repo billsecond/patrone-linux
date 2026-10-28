@@ -1,0 +1,11 @@
+# Runs patrone-ubuntu-updates.service once a day (see there).
+[Unit]
+Description=Rebuild Patrone's builds of Ubuntu's updated packages daily
+
+[Timer]
+OnCalendar=*-*-* 05:30
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

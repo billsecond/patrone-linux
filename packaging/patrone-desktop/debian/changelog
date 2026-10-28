@@ -1,3 +1,15 @@
+patrone-desktop (0.2.1) resolute; urgency=medium
+
+  * Patrone's own updates: its apt repository, hosted on GitHub Pages
+    (billsecond.github.io/patrone-apt), and its key, so Patrone's packages
+    update through Patrone Software and the daily automatic updates like
+    Ubuntu's. Its builds of Ubuntu's packages (GDM, GNOME Settings,
+    first-login setup) come before Ubuntu's own, even newer ones
+    (preferences.d/patrone.pref): Patrone builds each of Ubuntu's updates
+    to them again with its changes.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 15:00:00 -0500
+
 patrone-desktop (0.2.0) resolute; urgency=medium
 
   * Lists Ubuntu's desktop packages itself, in place of Ubuntu's

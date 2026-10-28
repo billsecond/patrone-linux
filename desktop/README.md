@@ -18,6 +18,10 @@ Center.
 | `chrony/patrone-nts.conf` | `/etc/chrony/conf.d/` | `nocerttimecheck 1`: a computer whose clock starts far off can still use NTS (below) |
 | `networkmanager/30-patrone-connectivity.conf` | `/usr/lib/NetworkManager/conf.d/` | NetworkManager's check for Wi-Fi sign-in pages asks GNOME's server (`nmcheck.gnome.org`) in place of `connectivity-check.ubuntu.com`. It comes after Ubuntu's `20-connectivity-ubuntu.conf`, so it wins |
 | `update-manager/patrone.cfg` | `/etc/update-manager/release-upgrades.d/` | `Prompt=never`: nothing offers to upgrade to Ubuntu's next release, or asks `changelogs.ubuntu.com` whether there is one. Patrone moves to a new Ubuntu base itself |
+| `apt/patrone.sources` | `/etc/apt/sources.list.d/` | Patrone's own updates: its apt repository on GitHub Pages, `https://billsecond.github.io/patrone-apt` (below) |
+| `apt/patrone-archive-keyring.gpg` | `/usr/share/keyrings/` | The key that repository is signed with, and the only one apt takes for it (`Signed-By`) |
+| `apt/patrone.pref` | `/etc/apt/preferences.d/` | Patrone's builds come before Ubuntu's, even Ubuntu's newer versions (below) |
+| `apt/52patrone-unattended-upgrades` | `/etc/apt/apt.conf.d/` | The daily automatic updates install from Ubuntu's archive (whose origins Ubuntu's own file names by the system's ID, now "Patrone") and from Patrone's repository |
 | `connections.txt` | `/usr/share/doc/patrone-desktop/connections.txt` | What the system connects to, and who runs each service, for users (`/etc/legal` points to it): the website's list (`/privacy/patrone-linux`), kept to what this version does. Change both together |
 | `session/make-session-mode` | `/usr/libexec/patrone-desktop/` | Writes `/usr/share/gnome-shell/modes/ubuntu.json`: Ubuntu's session mode (moved aside to `ubuntu.json.ubuntu` by preinst) with Patrone's taskbar among the session's own extensions (below). Run by postinst, and again by a trigger whenever `gnome-shell-common` brings a new one; if Ubuntu's file changes shape, or the result isn't valid JSON, Ubuntu's is used as it is |
 
@@ -42,6 +46,35 @@ come from Patrone Software, and Settings falls back to it.
 
 When Ubuntu's metapackages change (a new Ubuntu base), compare their lists
 with these: `apt-cache show ubuntu-desktop-minimal ubuntu-minimal`.
+
+### Updates
+
+Patrone's packages come from its own apt repository,
+[billsecond/patrone-apt](https://github.com/billsecond/patrone-apt), on
+GitHub Pages: Patrone runs no servers. Since 0.2.1, `patrone-desktop`
+installs its source and key, so every install gets Patrone's updates the
+way it gets Ubuntu's: Patrone Software shows them, and the daily automatic
+updates install them (`52patrone-unattended-upgrades` allows the `Patrone`
+origin). `packaging/publish.sh` publishes (`packaging/README.md`,
+"Publishing").
+
+Patrone builds three of Ubuntu's packages with its own changes: GDM
+(`gdm/`), GNOME Settings (`gnome-settings/`) and first-login setup
+(`gnome-initial-setup/`). Their versions are Ubuntu's plus `patroneN`, so
+Ubuntu's next update of one is newer and would replace Patrone's build.
+`patrone.pref` stops that: Patrone's repository has priority 600, over
+Ubuntu's 500, so its builds win whatever the versions; and Ubuntu's versions
+of those packages have 90, under the 100 of what's installed, so they don't
+replace Patrone's build even before apt has read Patrone's repository. The
+dev VM builds each of Ubuntu's updates to them again, with Patrone's
+changes, and publishes it (`packaging/ubuntu-updates.sh`, daily); until it
+does, installs keep Patrone's previous build, so Ubuntu's fixes to those
+packages arrive through Patrone, a day or so later. A daily check in the
+repository opens an issue whenever one is behind.
+
+Nothing offers Ubuntu's next release (`update-manager/patrone.cfg`,
+`Prompt=never`, which `do-release-upgrade` and the login message read):
+Patrone moves to a new Ubuntu base itself (`docs/NEXT.md`, "Updates").
 
 ### The taskbar is part of the session
 
