@@ -43,10 +43,16 @@ In both:
 
 - **Ptyxis, Ubuntu's terminal, is removed** (the user: "the other terminal
   shouldn't even show up"); Ubuntu's desktop only recommends it.
-- **The snap seed** (`/var/lib/snapd/seed`, the snaps a new system sets up
-  at first boot) has Chromium, and the snaps it needs, in place of Firefox
-  and App Center (the `snap-store` snap), and without Security Center (Ubuntu
-  Pro's and the snaps' settings); `snap debug validate-seed` checks it.
+- **No web browser.** Each account picks its first one: the taskbar's Web
+  browser button, or the first link opened, brings up Patrone Browser
+  Chooser, which has Patrone Software install the browser from Flathub
+  (`browser-chooser/`). The snap seed (`/var/lib/snapd/seed`, the snaps a
+  new system sets up at first boot) has neither Firefox nor Chromium, nor
+  App Center (the `snap-store` snap) or Security Center (Ubuntu Pro's and
+  the snaps' settings); `snap debug validate-seed` checks it. The build
+  stops if a layer has a browser after all: a package that provides
+  `x-www-browser` or `gnome-www-browser`, a launcher in the `WebBrowser`
+  category, or a browser's snap in the seed (`check_no_browser`).
   Ubuntu's layers come with their seed's snaps set up already
   ("preseeded"), which kept App Center, Firefox and Security Center and
   ignored the seed's changes (found by a search of the installed system,
@@ -54,7 +60,8 @@ In both:
   is changed and preseeded again when it's closed, or, if that fails, sets
   its snaps up at first boot. The `firefox` package, a stub that installs
   Firefox's snap whenever it's installed or upgraded, is removed; Ubuntu's
-  desktop only recommends it.
+  desktop only recommends it. So is `chromium-browser`, the same for
+  Chromium's snap, which `patrone-default-apps` depended on before 0.2.0.
 - **What Patrone's packages remove is purged**, so nothing is left of their
   settings (`rc`): `ubuntu-report`'s autostart entry, and `update-notifier`'s
   ("Ubuntu Pro is available" at login), which `patrone-desktop` takes the

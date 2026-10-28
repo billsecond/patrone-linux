@@ -1,11 +1,14 @@
-# Patrone's favorite apps (the dock, and the Activities overview), over
-# Ubuntu's: Chromium first, in place of Firefox, then Patrone Terminal and
+# Patrone's favorite apps (the Start menu's pinned apps, and the Activities
+# overview), over Ubuntu's: the web browser first, then Patrone Terminal and
 # Patrone File Manager (in place of Ubuntu's Files), and GNOME Software (in
-# place of Canonical's App Center: patrone-software). Ubuntu
-# sets them again for its own session ([org.gnome.shell:ubuntu]), which beats
-# a plain default there, so both are set. Users' own favorites still win.
+# place of Canonical's App Center: patrone-software). Patrone Linux comes
+# with no browser; the list names those Patrone Browser Chooser installs,
+# from Flathub, and Chromium's snap (on systems from before 2026-10-28), and
+# GNOME Shell shows only the apps installed. Ubuntu sets them again for its
+# own session ([org.gnome.shell:ubuntu]), which beats a plain default there,
+# so both are set. Users' own favorites still win.
 [org.gnome.shell]
-favorite-apps=['chromium_chromium.desktop', 'org.patrone.Terminal.desktop', 'org.patrone.FileManager.desktop', 'thunderbird_thunderbird.desktop', 'libreoffice-writer.desktop', 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Software.desktop', 'org.gnome.Yelp.desktop']
+favorite-apps=['org.chromium.Chromium.desktop', 'org.mozilla.firefox.desktop', 'com.brave.Browser.desktop', 'com.google.Chrome.desktop', 'com.microsoft.Edge.desktop', 'com.vivaldi.Vivaldi.desktop', 'com.opera.Opera.desktop', 'io.gitlab.librewolf-community.desktop', 'app.zen_browser.zen.desktop', 'org.gnome.Epiphany.desktop', 'chromium_chromium.desktop', 'org.patrone.Terminal.desktop', 'org.patrone.FileManager.desktop', 'thunderbird_thunderbird.desktop', 'libreoffice-writer.desktop', 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Software.desktop', 'org.gnome.Yelp.desktop']
 
 [org.gnome.shell:ubuntu]
-favorite-apps=['chromium_chromium.desktop', 'org.patrone.Terminal.desktop', 'org.patrone.FileManager.desktop', 'thunderbird_thunderbird.desktop', 'libreoffice-writer.desktop', 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Software.desktop', 'org.gnome.Yelp.desktop']
+favorite-apps=['org.chromium.Chromium.desktop', 'org.mozilla.firefox.desktop', 'com.brave.Browser.desktop', 'com.google.Chrome.desktop', 'com.microsoft.Edge.desktop', 'com.vivaldi.Vivaldi.desktop', 'com.opera.Opera.desktop', 'io.gitlab.librewolf-community.desktop', 'app.zen_browser.zen.desktop', 'org.gnome.Epiphany.desktop', 'chromium_chromium.desktop', 'org.patrone.Terminal.desktop', 'org.patrone.FileManager.desktop', 'thunderbird_thunderbird.desktop', 'libreoffice-writer.desktop', 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Software.desktop', 'org.gnome.Yelp.desktop']

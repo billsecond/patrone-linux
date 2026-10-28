@@ -1,16 +1,25 @@
-# Patrone's default apps, installed as /etc/xdg/mimeapps.list: Chromium for
-# the web, Patrone File Manager for folders, and Patrone Unpack for
-# archives, .deb packages and Flatpak files. The apps after each Patrone app
-# are fallbacks for when it isn't installed (Nautilus, Ubuntu's Files,
-# extracts archives itself; GNOME Software installs .deb packages). It's read
-# before Ubuntu's lists in /usr/share/applications, and a user's own choices
-# (~/.config/mimeapps.list) still win.
+# Patrone's default apps, installed as /etc/xdg/mimeapps.list: Patrone File
+# Manager for folders, and Patrone Unpack for archives, .deb packages and
+# Flatpak files. The apps after each Patrone app are fallbacks for when it
+# isn't installed (Nautilus, Ubuntu's Files, extracts archives itself; GNOME
+# Software installs .deb packages). Each list's first installed app is the
+# default.
+#
+# Web links and pages: Patrone Linux comes with no browser, so the default
+# is whichever one is installed: Flathub's, in Patrone Browser Chooser's
+# order, then the same browsers as snaps or their makers' own packages
+# (browser-chooser/src/browsers.rs has the same IDs). With none installed,
+# it's Patrone Browser Chooser, last: it asks which browser to install, then
+# opens the link with it.
+#
+# It's read before Ubuntu's lists in /usr/share/applications, and a user's
+# own choices (~/.config/mimeapps.list) still win.
 [Default Applications]
-application/xhtml+xml=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
-text/html=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
+application/xhtml+xml=org.chromium.Chromium.desktop;org.mozilla.firefox.desktop;com.brave.Browser.desktop;com.google.Chrome.desktop;com.microsoft.Edge.desktop;com.vivaldi.Vivaldi.desktop;com.opera.Opera.desktop;io.gitlab.librewolf-community.desktop;app.zen_browser.zen.desktop;org.gnome.Epiphany.desktop;chromium_chromium.desktop;chromium.desktop;firefox_firefox.desktop;firefox.desktop;brave_brave.desktop;brave-browser.desktop;google-chrome.desktop;microsoft-edge.desktop;vivaldi-stable.desktop;opera.desktop;librewolf.desktop;org.patrone.BrowserChooser.desktop;
+text/html=org.chromium.Chromium.desktop;org.mozilla.firefox.desktop;com.brave.Browser.desktop;com.google.Chrome.desktop;com.microsoft.Edge.desktop;com.vivaldi.Vivaldi.desktop;com.opera.Opera.desktop;io.gitlab.librewolf-community.desktop;app.zen_browser.zen.desktop;org.gnome.Epiphany.desktop;chromium_chromium.desktop;chromium.desktop;firefox_firefox.desktop;firefox.desktop;brave_brave.desktop;brave-browser.desktop;google-chrome.desktop;microsoft-edge.desktop;vivaldi-stable.desktop;opera.desktop;librewolf.desktop;org.patrone.BrowserChooser.desktop;
 inode/directory=org.patrone.FileManager.desktop;org.gnome.Nautilus.desktop;
-x-scheme-handler/http=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
-x-scheme-handler/https=chromium_chromium.desktop;org.gnome.Epiphany.desktop;
+x-scheme-handler/http=org.chromium.Chromium.desktop;org.mozilla.firefox.desktop;com.brave.Browser.desktop;com.google.Chrome.desktop;com.microsoft.Edge.desktop;com.vivaldi.Vivaldi.desktop;com.opera.Opera.desktop;io.gitlab.librewolf-community.desktop;app.zen_browser.zen.desktop;org.gnome.Epiphany.desktop;chromium_chromium.desktop;chromium.desktop;firefox_firefox.desktop;firefox.desktop;brave_brave.desktop;brave-browser.desktop;google-chrome.desktop;microsoft-edge.desktop;vivaldi-stable.desktop;opera.desktop;librewolf.desktop;org.patrone.BrowserChooser.desktop;
+x-scheme-handler/https=org.chromium.Chromium.desktop;org.mozilla.firefox.desktop;com.brave.Browser.desktop;com.google.Chrome.desktop;com.microsoft.Edge.desktop;com.vivaldi.Vivaldi.desktop;com.opera.Opera.desktop;io.gitlab.librewolf-community.desktop;app.zen_browser.zen.desktop;org.gnome.Epiphany.desktop;chromium_chromium.desktop;chromium.desktop;firefox_firefox.desktop;firefox.desktop;brave_brave.desktop;brave-browser.desktop;google-chrome.desktop;microsoft-edge.desktop;vivaldi-stable.desktop;opera.desktop;librewolf.desktop;org.patrone.BrowserChooser.desktop;
 application/zip=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;
 application/x-zip-compressed=org.patrone.Unpack.desktop;
 application/x-tar=org.patrone.Unpack.desktop;org.gnome.Nautilus.desktop;

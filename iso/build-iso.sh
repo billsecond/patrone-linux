@@ -6,7 +6,8 @@
 # Ubuntu's disc is made of stacked layers (casper/*.squashfs). This adds two,
 # each with Patrone's packages installed (the newest build of each in
 # DEB-DIR, as packaging/build.sh leaves them in out/), Ptyxis taken out, and
-# a snap seed with Chromium in place of Firefox and App Center:
+# a snap seed without Firefox and App Center. There's no web browser: each
+# account picks its first one (patrone-browser-chooser).
 #
 # - minimal.patrone, what the installer installs: Ubuntu's English layer
 #   with Patrone's packages, on the base. It's the installer's only choice,
@@ -176,11 +177,14 @@ open_layer() {
     # Patrone Terminal is the terminal (the user: "the other terminal
     # shouldn't even show up"). Ubuntu's desktop only recommends Ptyxis.
     in_root apt-get purge -y ptyxis
-    # Chromium is the browser. Ubuntu's firefox package is a stub that
+    # No web browser: the first time one's needed, Patrone Browser Chooser
+    # asks which to install. Ubuntu's firefox package is a stub that
     # installs Firefox's snap whenever it's installed or upgraded, and
     # Ubuntu's desktop only recommends it. A hold left it to every updater
-    # to honour; an update to the stub is in resolute-updates (1snap1-0ubuntu9.1).
-    in_root apt-get purge -y firefox
+    # to honour; an update to the stub is in resolute-updates
+    # (1snap1-0ubuntu9.1). chromium-browser is the same for Chromium's snap,
+    # which patrone-default-apps depended on before 0.2.0.
+    in_root apt-get purge -y firefox chromium-browser
     # The settings left by packages Patrone's removed (ubuntu-report's
     # autostart entry; update-notifier's, which said "Ubuntu Pro is
     # available" at login)
@@ -188,9 +192,29 @@ open_layer() {
     [ -z "$leftovers" ] || in_root apt-get purge -y $leftovers
 
     # Security Center is Ubuntu Pro's and the snaps' settings
-    seed_drop "$root/var/lib/snapd/seed" firefox snap-store desktop-security-center
-    seed_add "$root/var/lib/snapd/seed" chromium
+    seed_drop "$root/var/lib/snapd/seed" firefox chromium snap-store desktop-security-center
     snap debug validate-seed "$root/var/lib/snapd/seed/seed.yaml"
+    check_no_browser "$name"
+}
+
+# check_no_browser NAME: stops the build if the open layer has a web
+# browser, as a package, a launcher or a snap in its seed, so none comes
+# back unasked.
+check_no_browser() {
+    local found
+    found=$(
+        in_root dpkg-query -W -f '${db:Status-Abbrev} ${Package}: ${Provides}\n' |
+            awk '$1 == "ii" && /(x|gnome)-www-browser/ {print "package " $2}'
+        grep -l -E '^Categories=(.*;)?WebBrowser(;|$)' "$root"/usr/share/applications/*.desktop 2>/dev/null |
+            sed 's/^/launcher /'
+        grep -E '^    name: (firefox|chromium|brave|opera|vivaldi|librewolf|epiphany)' \
+            "$root/var/lib/snapd/seed/seed.yaml" | sed 's/^ *name: /snap /'
+    ) || true
+    if [ -n "$found" ]; then
+        echo "build-iso.sh: $1 has a web browser:" >&2
+        echo "$found" >&2
+        exit 1
+    fi
 }
 
 # close_layer NAME: tidies the open layer, closes it and compresses it.

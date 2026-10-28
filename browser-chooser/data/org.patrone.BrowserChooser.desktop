@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Choose a Web Browser
+Comment=Install a web browser through Patrone Software and make it the default
+Exec=patrone-browser-chooser %U
+Icon=org.patrone.BrowserChooser
+Terminal=false
+Type=Application
+# Reached from the taskbar's Web browser button and from links, not the
+# Start menu, and not offered as a browser itself (no WebBrowser category)
+NoDisplay=true
+Categories=GTK;Network;
+MimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;application/xhtml+xml;
+StartupNotify=true

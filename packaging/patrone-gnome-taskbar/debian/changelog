@@ -1,3 +1,12 @@
+patrone-gnome-taskbar (0.4.4) resolute; urgency=medium
+
+  * The Web browser slot shows with no browser installed, and opens Patrone
+    Browser Chooser to install one. While the chooser is the default for
+    web links, a browser it doesn't know of opens instead if one's
+    installed, and the slot's menu doesn't offer the chooser as a browser.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 12:00:00 -0500
+
 patrone-gnome-taskbar (0.4.3) resolute; urgency=medium
 
   * With the Recycle Bin off the desktop, it rides on the desktop bubble's

@@ -14,7 +14,8 @@ Done:
   rustc, for package builds) through rustup. Claude Code, `gh` and `git`
   signed in.
 - Stack decided: Rust + Smithay compositor, GTK4 shell (see `docs/PLAN.md`).
-  Default apps decided, including **Chromium in place of Firefox**. License:
+  Default apps decided, including **no web browser preinstalled** (since
+  2026-10-28; it was Chromium in place of Firefox: section 4). License:
   **GPL-3.0-or-later** (`LICENSE`), set in the crates and Debian packaging;
   the compositor keeps Smithay's MIT notice in `compositor/NOTICE`.
 - **Milestone 2: the compositor** (`compositor/`) runs nested in GNOME with
@@ -31,7 +32,7 @@ Done:
   `shell-config/zshrc` and `zprofile` remain for anyone who picks zsh.
 - **Packages** (`packaging/`): `patrone-terminal` (0.1.1, with a login
   autostart entry), `patrone-shell-config`, `patrone-branding`,
-  `patrone-default-apps` (Chromium in place of Firefox) and
+  `patrone-default-apps` (no browser since 0.2.0: section 4) and
   `patrone-remote-desktop` build on the VM. Everything the user asks for goes
   into these as Patrone's system-wide defaults (they said so, 2026-10-26);
   `scripts/hyperv/` is only dev-VM tooling.
@@ -73,6 +74,20 @@ Done:
   exactly how something was checked.)
 
 Waiting on the user:
+
+- **No web browser preinstalled; the user picks one** (the user,
+  2026-10-28: "Ask the user when they click on the browser with a modal if
+  they want to install Chromium, Fire Fox, Brave, etc, then use the current
+  patrone apps to open that up and set up the install"; section 4). The
+  taskbar's Web browser button, or the first link opened, brings up
+  Patrone Browser Chooser; the pick installs through Patrone Software from
+  Flathub, becomes the default and opens. Tried end to end in a fresh
+  install in `PatroneBrowserTest` (off now; start it to look, or delete
+  it). The next ISO has it. On PatroneDev, which has Chromium's snap,
+  Chromium stays the default:
+  `sudo apt install ~/src/patrone-linux/out/patrone-browser-chooser_0.1.0_amd64.deb
+  ~/src/patrone-linux/out/patrone-default-apps_0.2.0_all.deb
+  ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.4_all.deb`.
 
 - **The desktop bubble's off switch** (the user, 2026-10-28: "allow the
   user to disable the desktop bubble, and put that somewhere in
@@ -124,8 +139,9 @@ Waiting on the user:
   remasters Ubuntu 26.04.1's desktop ISO with two Patrone layers, what the
   installer installs and the live session, so the boot splash, live
   desktop, installer (patrone-branding 0.1.9) and installed system are
-  Patrone's, with no Ptyxis and Chromium seeded in place of Firefox and App
-  Center (the user: "IT SHOULDN'T SAY UBUNTU"; "the other terminal
+  Patrone's, with no Ptyxis and no App Center, and since 2026-10-28 no web
+  browser (section 4; it seeded Chromium in place of Firefox before) (the
+  user: "IT SHOULDN'T SAY UBUNTU"; "the other terminal
   shouldn't even show up"). `scripts/hyperv/new-test-vm.ps1` made the
   `PatroneTest` VM (Secure Boot on). The user watched the first installs;
   for later ones they asked for the install to be done here, in Hyper-V
@@ -797,11 +813,77 @@ Plan:
    through display control, and `hyperv_drm` resolution changes in the basic
    console.
 
-## 4. Chromium instead of Firefox
+## 4. The web browser: none preinstalled, the user picks one
 
-Decided 2026-10-25 (see "Default apps" in `docs/PLAN.md`): Canonical's
-Chromium snap, kept current by snapd (stable was 156, two days old, when
-checked), customized with enterprise policies rather than forked or rebranded.
+**Since 2026-10-28** Patrone Linux comes with no browser (the user: "Ask
+the user when they click on the browser with a modal if they want to
+install Chromium, Fire Fox, Brave, etc, then use the current patrone apps
+to open that up and set up the install"). **Patrone Browser Chooser**
+(`browser-chooser/`, `patrone-browser-chooser` 0.1.0) comes up from the
+taskbar's Web browser button and from any link opened while no browser is
+installed. It offers Chromium, Firefox, Brave, Google Chrome, Microsoft
+Edge, Vivaldi, Opera, LibreWolf, Zen Browser and GNOME Web, all from
+Flathub (Patrone Software doesn't browse the Snap Store), and runs
+`gnome-software --install=system/flatpak/flathub/<ID>/stable`, so Patrone
+Software opens on the browser's page already installing it. When the
+browser's launcher appears it becomes the account's default for the web,
+opens with the waiting link, and the chooser closes. Also changed:
+`patrone-default-apps` 0.2.0 (no `chromium-browser`; the chooser last in
+`/etc/xdg/mimeapps.list`'s web lists, after the browsers it offers),
+`patrone-gnome-taskbar` 0.4.4 (the Web browser slot shows with no browser
+and opens the chooser), and `iso/build-iso.sh` (no Chromium in the seed,
+`chromium-browser` purged with `firefox`, and the build stops if a browser
+is left in a layer).
+
+Checked (2026-10-28) in a fresh install of an ISO built with these, in a
+new Hyper-V VM, `PatroneBrowserTest` (now off; delete it when done with
+it):
+
+- The installed system had no browser: no `firefox` or `chromium-browser`
+  package, no browser snap (the seed has none), no Flatpak apps. Both
+  layers' manifests list only `patrone-browser-chooser`.
+- At first login, the taskbar showed the Web browser slot. First-login
+  setup's release notes (its own web view) → "open in browser" brought up
+  the chooser with "Then it opens documentation.ubuntu.com."; Not now
+  closed it; the taskbar button by itself brought it up too.
+- Firefox → Install opened Patrone Software on Firefox's page (Flathub,
+  Verified), already installing; it asked for the password once
+  ("Authentication is required to install software"). When it finished,
+  Firefox opened by itself on the release notes link and the chooser was
+  gone; the taskbar slot showed Firefox's window.
+- `gio mime x-scheme-handler/https` and `text/html` gave
+  `org.mozilla.firefox.desktop`; the account's `~/.config/mimeapps.list`
+  had it for all four web types. `xdg-open https://example.com/` from the
+  terminal opened a tab in Firefox.
+- Flathub's catalog was already there at the first click: Patrone Software
+  fetched it at sign-in (08:40:40, a minute before). So the chooser's own
+  fetch for a catalog that's missing (`flatpak update --system --appstream
+  flathub`) wasn't needed; run by hand in the desktop it finished with no
+  password prompt.
+
+Not checked: the slot's right-click menu with no browser (it should leave
+the chooser out of "Default web browser"); a second link while the chooser
+is open; the "On this computer" list (a browser installed from elsewhere);
+Chrome's and Edge's installs, which download from Google and Microsoft;
+the dark style. Found on the way:
+
+- **The installer still says "web browser"**: its Applications page
+  describes the default selection as "Just the essentials, web browser and
+  basic utilities" (Ubuntu's text, in `ubuntu_provision`'s strings). It
+  needs a line in `installer/debrand_l10n.py` and the installer rebuilt.
+- **First-login setup's "View release notes"** shows Ubuntu's release
+  notes (documentation.ubuntu.com, with Ubuntu's logo), for section 16.
+- **Flatpak apps can't read Patrone's title button style**: Firefox logged
+  "Failed to import: ... /usr/share/patrone/titlebuttons/wide/gtk-3.0.css:
+  No such file", the account's `gtk.css` importing a file outside the
+  sandbox. Harmless (Firefox draws its own title bar), but GTK 3 Flatpak
+  apps won't get the style.
+
+### Before 2026-10-28: Chromium instead of Firefox
+
+Decided 2026-10-25: Canonical's Chromium snap, kept current by snapd
+(stable was 156, two days old, when checked), customized with enterprise
+policies rather than forked or rebranded.
 
 Done 2026-10-26 (the user asked to replace Firefox): `patrone-default-apps`
 (`default-apps/`) depends on Ubuntu's `chromium-browser` stub, which
@@ -824,16 +906,12 @@ Chromium. Findings:
   `/etc/xdg/xdg-ubuntu:/etc/xdg`), and a user's
   `~/.config/mimeapps.list` before that.
 
-Still to do:
-
-- The snap reads policies from `/etc/chromium-browser/policies` (its
-  `etc-chromium-browser-policies` plug, seen in `meta/snap.yaml`). After
-  installing, check `snap connections chromium` shows that plug connected.
-- Write Patrone's policies in `/etc/chromium-browser/policies/managed/`:
-  homepage, bookmarks, default search engine, `BrowserThemeColor` Patrone
-  Blue. Package them (for example `patrone-chromium-defaults`).
-- ISO: replace the Firefox snap with Chromium in the seed, the dock
-  favourites and the default browser (`/etc/xdg/mimeapps.list`).
+What was still to do then, Chromium's enterprise policies (homepage,
+bookmarks, search engine, `BrowserThemeColor` in
+`/etc/chromium-browser/policies/managed/`, read through the snap's
+`etc-chromium-browser-policies` plug), no longer applies: there's no
+preinstalled browser to set up, and Flathub's Chromium reads its policies
+from inside its sandbox.
 
 ## 5. fastfetch logo
 

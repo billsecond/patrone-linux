@@ -1,3 +1,15 @@
+patrone-default-apps (0.2.0) resolute; urgency=medium
+
+  * No web browser comes with Patrone Linux: drop the dependency on
+    chromium-browser (Chromium's snap). Until a browser's installed, web
+    links open Patrone Browser Chooser, which asks which one to install;
+    after that, whichever browser is installed (Flathub's, then the same
+    browsers as snaps or their makers' packages) is the default.
+  * Favorites: the browsers the chooser installs, and Chromium's snap,
+    first; GNOME Shell shows the ones installed.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 12:00:00 -0500
+
 patrone-default-apps (0.1.4) resolute; urgency=medium
 
   * GNOME Software takes App Center's place in the favorites, and as the

@@ -9,11 +9,12 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 
 Package: patrone-default-apps
 Architecture: all
-Depends: ${misc:Depends}, chromium-browser
+Depends: ${misc:Depends}, patrone-browser-chooser
 Recommends: patrone-file-manager, patrone-terminal, patrone-unpack
 Description: Patrone Linux's default apps
- Makes Chromium the default web browser and puts it in the favorites in place
- of Firefox, along with Patrone Terminal. Folders open in Patrone File
- Manager, which takes Ubuntu's Files' place in the favorites, and archives,
- .deb packages and Flatpak files in Patrone Unpack. Chromium comes from
- Canonical's snap, which keeps it up to date. Users' own choices still win.
+ Patrone Linux comes with no web browser: until one's installed, web links
+ open Patrone Browser Chooser, which asks which one to install. Whichever
+ browser is installed then opens them, and comes first in the favorites,
+ with Patrone Terminal. Folders open in Patrone File Manager, which takes
+ Ubuntu's Files' place in the favorites, and archives, .deb packages and
+ Flatpak files in Patrone Unpack. Users' own choices still win.

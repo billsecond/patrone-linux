@@ -1,0 +1,40 @@
+/* Patrone Browser Chooser: a short list of browsers, each a row with its
+ * icon, its name over one line about it, and an Install button, in the
+ * system's light or dark colors. */
+
+.chooser-title {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.chooser-heading {
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.chooser-link {
+  font-weight: bold;
+}
+
+.chooser-dim {
+  opacity: 0.7;
+}
+
+.chooser-name {
+  font-weight: bold;
+}
+
+.chooser-list {
+  border: 1px solid alpha(currentColor, 0.12);
+  border-radius: 10px;
+}
+
+.chooser-list > row:first-child {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.chooser-list > row:last-child {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}

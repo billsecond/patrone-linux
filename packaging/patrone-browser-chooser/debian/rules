@@ -1,0 +1,33 @@
+#!/usr/bin/make -f
+# The source tree arrives with its crates vendored (packaging/build.sh), so
+# cargo never touches the network.
+
+export CARGO_HOME = $(CURDIR)/debian/cargo-home
+pkg = debian/patrone-browser-chooser
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cargo build --release --frozen
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	cargo test --release --frozen
+endif
+
+override_dh_auto_install:
+	install -Dm755 target/release/patrone-browser-chooser $(pkg)/usr/bin/patrone-browser-chooser
+	# The last of /etc/xdg/mimeapps.list's choices for web links
+	# (patrone-default-apps), so a link opened with no browser installed
+	# comes here
+	install -Dm644 data/org.patrone.BrowserChooser.desktop $(pkg)/usr/share/applications/org.patrone.BrowserChooser.desktop
+	install -Dm644 data/org.patrone.BrowserChooser.svg $(pkg)/usr/share/icons/hicolor/scalable/apps/org.patrone.BrowserChooser.svg
+
+override_dh_auto_clean:
+	rm -rf target debian/cargo-home
+
+# dh_clean deletes *.orig files, but every vendored crate has a
+# Cargo.toml.orig that cargo checksums.
+override_dh_clean:
+	dh_clean -XCargo.toml.orig

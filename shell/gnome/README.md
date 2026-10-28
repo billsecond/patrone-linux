@@ -60,8 +60,15 @@ From the left:
   its the primary app for each make those the primary"). The terminal is
   Patrone Terminal and art is ArtCraft (else LibreOffice Draw, GIMP,
   Krita, Inkscape or Pinta) unless changed in the slot's menu. A slot no
-  installed app can do isn't shown. With Patrone's icons, Settings shows
-  Patrone's gear too, so it matches.
+  installed app can do isn't shown, except the web browser's: Patrone
+  Linux comes with no browser, so until one's installed the slot opens
+  **Patrone Browser Chooser** (`browser-chooser/`), which asks which
+  browser to install and has Patrone Software install it. It's the last of
+  the system's choices for web links, so whenever it's the default and a
+  browser it doesn't know of is installed, the slot opens that browser
+  instead (`fallback` in `roles.js`); its menu never offers the chooser as
+  a browser. With Patrone's icons, Settings shows Patrone's gear too, so it
+  matches.
 - **Running apps** that aren't pinned, in the order they started. An app
   shows the moment it's opened, its icon pulsing until its first window
   appears, as on Windows, so a slow one (a snap or a Flatpak starting for

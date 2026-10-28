@@ -12,6 +12,7 @@
 #   ./packaging/build.sh patrone-desktop
 #   ./packaging/build.sh patrone-unpack -d
 #   ./packaging/build.sh patrone-task-manager -d
+#   ./packaging/build.sh patrone-browser-chooser -d
 #   ./packaging/build.sh fonts-patrone-sans
 #   ./packaging/build.sh patrone-software
 #   ./packaging/build.sh patrone-installer   (after installer/build.sh)
@@ -38,6 +39,7 @@ case $package in
     patrone-desktop) source_dir=desktop ;;
     patrone-unpack) source_dir=unpack ;;
     patrone-task-manager) source_dir=task-manager ;;
+    patrone-browser-chooser) source_dir=browser-chooser ;;
     fonts-patrone-sans) source_dir=fonts ;;
     patrone-software) source_dir=software ;;
     patrone-installer) source_dir=installer ;;

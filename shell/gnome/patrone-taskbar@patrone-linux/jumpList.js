@@ -9,7 +9,7 @@ import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-import {candidatesForRole, roleMenuName, setAppForRole} from './roles.js';
+import {ROLES, candidatesForRole, roleMenuName, setAppForRole} from './roles.js';
 import {taskbarWindows, launchApp} from './util.js';
 
 const RECENT_ITEMS = 8;
@@ -125,7 +125,8 @@ export class JumpList extends PopupMenu.PopupMenu {
 
     _addDefaultAppChoices(role, current) {
         const candidates = candidatesForRole(role);
-        if (current && !candidates.includes(current))
+        // Not the role's fallback (the browser chooser), which isn't a choice
+        if (current && current.get_id() !== ROLES[role].fallback && !candidates.includes(current))
             candidates.unshift(current);
         if (candidates.length === 0)
             return;

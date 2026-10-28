@@ -3,20 +3,27 @@
 // particular app. A slot opens whichever app is the default for its job, and
 // that app's windows show under the slot: WordCraft for documents while it's
 // the default for them, LibreOffice Writer once that is (the user,
-// 2026-10-26). A slot with no app for its job doesn't show.
+// 2026-10-26). A slot with no app for its job doesn't show, except the web
+// browser's: Patrone Linux comes with no browser, and the slot opens Patrone
+// Browser Chooser to install one.
 
 import Gio from 'gi://Gio';
 import Shell from 'gi://Shell';
 
 // Each role: its name; the file or link types whose default app it opens,
 // tried in order, or else the taskbar setting that names its app and the
-// apps it prefers; and the desktop file categories its other choices have
-// (any of them, and none of `exclude`)
+// apps it prefers; the desktop file categories its other choices have (any
+// of them, and none of `exclude`); and the app it opens when nothing does
+// the job, which isn't one of the choices
 export const ROLES = {
     web: {
         name: 'Web browser',
         categories: ['WebBrowser'],
         types: ['x-scheme-handler/https', 'x-scheme-handler/http', 'text/html'],
+        // Patrone Browser Chooser, which installs a browser through Patrone
+        // Software. It's also the last of the system's choices for web
+        // links (patrone-default-apps), so the default can be the chooser.
+        fallback: 'org.patrone.BrowserChooser.desktop',
     },
     terminal: {
         name: 'Terminal',
@@ -122,7 +129,7 @@ function lookup(id) {
  * The app a role slot opens: the system's default for the first of the
  * role's types that has one; or, for a role without types, the one chosen in
  * the taskbar's settings, else the first preferred app installed. Failing
- * those, the first app that could do the job.
+ * those, the first app that could do the job, then the role's fallback.
  *
  * @param {string} role
  * @param {Gio.Settings} settings - the taskbar's settings
@@ -136,10 +143,12 @@ export function appForRole(role, settings) {
     if (def.types) {
         for (const type of def.types) {
             const app = lookup(Gio.AppInfo.get_default_for_type(type, false)?.get_id());
-            if (app)
+            // The fallback is the default only while no app is chosen, or
+            // installed under a name the system's list doesn't know
+            if (app && app.get_id() !== def.fallback)
                 return app;
         }
-        return candidatesForRole(role)[0] ?? null;
+        return candidatesForRole(role)[0] ?? lookup(def.fallback);
     }
 
     for (const id of [settings.get_string(def.setting), ...def.preferred]) {
@@ -147,7 +156,7 @@ export function appForRole(role, settings) {
         if (app)
             return app;
     }
-    return candidatesForRole(role)[0] ?? null;
+    return candidatesForRole(role)[0] ?? lookup(def.fallback);
 }
 
 /**

@@ -82,7 +82,11 @@ None of these sends reports about the machine. They fetch what the system
 needs:
 
 - **Updates:** Ubuntu's archive (`archive.ubuntu.com`, `security.ubuntu.com`).
-- **Snaps:** the Snap Store, which keeps Chromium up to date.
+- **Snaps:** the Snap Store, which keeps the system's snaps (such as the
+  firmware updater) up to date.
+- **Flatpak apps:** Flathub, from Patrone Software, which keeps the web
+  browser up to date (Patrone Linux comes with none: Patrone Browser
+  Chooser asks which to install).
 - **Ubuntu Pro:** Settings and `pro attach` contact Canonical only when
   someone attaches the machine to Ubuntu Pro.
 

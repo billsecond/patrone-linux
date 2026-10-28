@@ -1,0 +1,24 @@
+Source: patrone-browser-chooser
+Section: web
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               cargo (>= 1.93),
+               rustc (>= 1.93),
+               libgtk-4-dev,
+               pkgconf
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/billsecond/patrone-linux.git
+
+Package: patrone-browser-chooser
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, flatpak, gnome-software-plugin-flatpak
+Recommends: patrone-software
+Description: Asks which web browser to install, the first time one's needed
+ Patrone Linux comes with no web browser. The first time one's needed,
+ from the taskbar's Web browser button or a link opened in any app,
+ Patrone Browser Chooser asks which to install: Chromium, Firefox, Brave,
+ Google Chrome, Microsoft Edge, Vivaldi, Opera, LibreWolf, Zen Browser or
+ GNOME Web. Patrone Software installs it from Flathub; it then becomes the
+ default for web links and opens, with the link that was waiting.

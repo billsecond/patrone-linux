@@ -1,0 +1,8 @@
+patrone-browser-chooser (0.1.0) resolute; urgency=medium
+
+  * First package: asks which web browser to install (Chromium, Firefox,
+    Brave and seven more, all from Flathub), has Patrone Software install
+    it, makes it the default for web links and opens it, with the links
+    that were waiting.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 12:00:00 -0500
