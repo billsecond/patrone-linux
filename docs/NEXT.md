@@ -2372,6 +2372,70 @@ checked; in short:
 - Also seen: the installer warns "The computer is not plugged in to a
   power source" in Hyper-V, which shows the guest a battery.
 
+## 18. Updates: Patrone's apt repository, Ubuntu's updates, the next LTS
+
+The user, 2026-10-28, on the recommendation of a Patrone update channel on
+GitHub, a check that rebuilds Patrone's changed pieces when Ubuntu updates
+them, and no offer of Ubuntu's next release: "Thanks, do it."
+
+**Patrone's apt repository** (billsecond/patrone-apt, on GitHub Pages, signed
+with a key kept only on the dev VM) and the daily rebuilds of Ubuntu's
+updates to GDM, GNOME Settings and first-login setup are built and were
+tried on PatroneDev against a local copy of the repository. They wait for
+the user's OK to make billsecond/patrone-apt public, and come in their own
+change.
+
+**Ubuntu's release upgrades are off**, as before: `patrone-desktop`'s
+`release-upgrades.d/patrone.cfg` says `Prompt=never`, and Ubuntu's upgrader
+reads that folder after `/etc/update-manager/release-upgrades`, so it wins.
+Checked on PatroneDev (2026-10-28): `do-release-upgrade -c` answers "Prompt
+is set to never so upgrading is not possible", and the login message's
+check (`check-new-release`) finds nothing.
+
+**Found on the way:** the daily automatic updates never run on Hyper-V VMs.
+Hyper-V shows the guest a battery (section 17), and unattended-upgrades
+stops when "System is on battery power" (`Unattended-Upgrade::OnlyOnACPower`,
+on by default; seen in `unattended-upgrade --dry-run --debug` on
+PatroneDev). Ubuntu has the same. Worth a fix in `patrone-guest-tools`:
+turn `OnlyOnACPower` off under Hyper-V (`ConditionVirtualization`).
+
+### Moving to the next LTS (28.04, 2028)
+
+Ubuntu 28.04 LTS comes out in April 2028; Ubuntu offers upgrades from 26.04
+once 28.04.1 is out, around August 2028. 26.04's standard support runs to
+2031, so there's no hurry. The plan:
+
+1. **Nothing offers Ubuntu's release** in the meantime (`Prompt=never`), so
+   no one lands on plain Ubuntu 28.04 without Patrone's packages.
+2. **A new suite** in Patrone's apt repository, named after 28.04's
+   codename, beside `resolute`. Everything is built again on a 28.04 dev VM:
+   the Rust packages with 28.04's `rustc` (raise `rust-version`), GDM, GNOME
+   Settings and first-login setup from 28.04's sources with the patches
+   brought up to date, the taskbar for 28.04's GNOME Shell (`shell-version`
+   in its metadata, and its API), the installer at 28.04's snap commit.
+   `patrone-branding`'s diversions and the python-apt templates are checked
+   against 28.04's `base-files`, `distro-info` and python-apt;
+   `patrone-desktop`'s package list against 28.04's `ubuntu-desktop-minimal`
+   and `ubuntu-minimal`; the list of packages Patrone pins before Ubuntu's
+   against what Patrone builds then.
+3. **A 28.04 ISO**, tried with fresh installs in throwaway VMs, as now.
+4. **The move for existing installs**, recommended: Ubuntu's own release
+   upgrader, driven by Patrone. `patrone-desktop` for 26.04 gets an update
+   that points `/etc/update-manager/meta-release` at a `meta-release` file
+   of Patrone's (on the repository's GitHub Pages site) that lists 28.04
+   only when Patrone is ready, sets `Prompt=lts`, and adds Patrone's
+   settings for the upgrader in `release-upgrades.d` (the upgrader reads
+   that folder too: which metapackage is the desktop, `patrone-desktop` in
+   place of `ubuntu-desktop`). The 28.04 `patrone-desktop` points Patrone's
+   source at the new suite. Ubuntu's upgrader knows how to move between
+   Ubuntu releases (held packages, removed ones, the reboot); a tool of
+   Patrone's that changes the suites and runs `apt full-upgrade` is the
+   fallback if it can't be made to accept Patrone. Either way, it's tried on
+   a copy of a 26.04 install first.
+5. **The `resolute` suite stays** for installs that haven't moved, with
+   fixes and the rebuilds of Ubuntu's updates, for as long as Patrone
+   supports 26.04.
+
 ## Suggested order
 
 Next (the user, 2026-10-27): "tomorrow we will talk about next big steps".
