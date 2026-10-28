@@ -1,7 +1,16 @@
-Patrone Linux is based on Ubuntu. The programs included with it are free
-software; the exact distribution terms for each program are described in the
-individual files in /usr/share/doc/*/copyright.
+Patrone Linux is based on Ubuntu. It is an independent project, not
+affiliated with or endorsed by Canonical Ltd., the GNOME Foundation,
+Microsoft or the Linux Foundation.
+
+Most of the programs included with it are free software; the exact
+distribution terms for each program are described in the individual files
+in /usr/share/doc/*/copyright. Some firmware is not free software, and comes
+under its makers' own terms, in the same files.
 
 Patrone Linux comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
 applicable law.
 
+Linux® is the registered trademark of Linus Torvalds in the U.S. and other
+countries. Ubuntu and Canonical are registered trademarks of Canonical Ltd.
+GNOME is a trademark of the GNOME Foundation. Windows is a trademark of the
+Microsoft group of companies. Other names are trademarks of their owners.
