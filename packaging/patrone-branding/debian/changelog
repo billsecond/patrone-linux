@@ -1,3 +1,21 @@
+patrone-branding (0.1.18) resolute; urgency=medium
+
+  * The boot splash's update screens no longer write over the logo: their
+    title ("Installing Updates...", "Upgrading System..." and the others)
+    and "Do not turn off your computer" were placed for Ubuntu's layout,
+    with its logo at the bottom, and landed on the P (the user saw it while
+    updates installed). They now sit under the wordmark, the title larger,
+    with the progress bar a little lower to make room, apart on screens
+    from 800x600 to 2560x1440. The other modes were checked too: boot,
+    file-system check messages, the disk-unlock password and questions,
+    shutdown and restart.
+  * The password field's border is Patrone Blue, not Ubuntu's orange
+    (tools/make_prompt_images.py recolors Plymouth's).
+  * tools/preview_splash.sh shows the splash in every mode without
+    rebooting, in an invisible screen, for screenshots.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 11:40:00 -0500
+
 patrone-branding (0.1.16) resolute; urgency=medium
 
   * fastfetch's logo is smoother: each character cell has its own color,

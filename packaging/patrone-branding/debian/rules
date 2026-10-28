@@ -34,12 +34,16 @@ override_dh_auto_install:
 	# Patrone's spinner, a single ring (tools/make_spinner.py)
 	install -m644 -t $(theme) system/plymouth/spinner/throbber-*.png \
 	    system/plymouth/spinner/animation-*.png
-	# The password prompt's images, copied from Plymouth's spinner theme.
-	# Copies, not links: the initramfs hook copies the theme folder with
-	# cp -a, so links to the spinner folder would dangle at boot.
+	# The password prompt's field, Plymouth's recolored from orange to
+	# Patrone Blue (tools/make_prompt_images.py)
+	install -m644 -t $(theme) system/plymouth/prompt/lock.png \
+	    system/plymouth/prompt/entry.png
+	# Its other images, copied from Plymouth's spinner theme. Copies, not
+	# links: the initramfs hook copies the theme folder with cp -a, so links
+	# to the spinner folder would dangle at boot.
 	for image in $(spinner)/*.png; do \
 	    name=$$(basename $$image); \
-	    case $$name in watermark.png | bgrt-fallback.png | throbber-* | animation-*) ;; \
+	    case $$name in watermark.png | bgrt-fallback.png | throbber-* | animation-* | lock.png | entry.png) ;; \
 	    *) install -m644 $$image $(theme)/$$name ;; esac; \
 	done
 	install -Dm644 system/plymouth/patrone-text.plymouth \

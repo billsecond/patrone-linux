@@ -6,7 +6,8 @@ ModuleName=two-step
 [two-step]
 # watermark.png is the Patrone logo; throbber-* and animation-* are Patrone's
 # spinner, drawn by branding/tools/make_spinner.py; the password prompt's
-# images are copied from Ubuntu's spinner theme.
+# images are Ubuntu's spinner theme's, its field recolored blue by
+# branding/tools/make_prompt_images.py.
 ImageDir=/usr/share/plymouth/themes/patrone
 WatermarkHorizontalAlignment=.5
 WatermarkVerticalAlignment=.42
@@ -14,8 +15,14 @@ HorizontalAlignment=.5
 VerticalAlignment=.72
 DialogHorizontalAlignment=.5
 DialogVerticalAlignment=.72
+# The update modes' title and subtitle go under the wordmark and over the
+# progress bar, which is lower than the spinner to make room: on screens
+# from 800x600 to 2560x1440 nothing touches (branding/README.md, "Boot
+# splash layout"). Only the update modes have titles or the bar.
 TitleHorizontalAlignment=.5
-TitleVerticalAlignment=.382
+TitleVerticalAlignment=.75
+TitleFont=Sans 20
+ProgressBarVerticalAlignment=.83
 Transition=none
 TransitionDuration=0.0
 BackgroundStartColor=0x030303

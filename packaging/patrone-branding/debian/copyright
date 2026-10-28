@@ -17,7 +17,8 @@ Copyright: 2006-2008 Red Hat, Inc.
            2003 University of Southern California
            2003 Charlie Brej <cbrej@cs.man.ac.uk>
 Comment: Copied at build time from Plymouth's spinner theme
- (plymouth-theme-spinner).
+ (plymouth-theme-spinner); entry.png and lock.png are its, recolored by
+ branding/tools/make_prompt_images.py.
 License: GPL-2+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
