@@ -11,8 +11,10 @@ mod checks;
 use std::cell::RefCell;
 use std::ffi::OsStr;
 use std::fs;
+use std::path::Path;
 use std::process::Command;
 use std::rc::Rc;
+use std::time::{Duration, Instant};
 
 use gtk::prelude::*;
 use gtk::{gdk, gio, glib};
@@ -24,6 +26,11 @@ const APP_ID: &str = "org.patrone.HyperVSetup";
 /// Sets up what's missing, as root, through pkexec
 /// (org.patrone.hyperv-setup.policy)
 const HELPER: &str = "/usr/libexec/patrone-hyperv-setup/apply";
+
+/// How long, at login, to give Hyper-V to open an enhanced session before
+/// saying the VM isn't set up for one: on the dev VM, it did 26 seconds
+/// after the service for it started
+const HOST_GRACE: Duration = Duration::from_secs(30);
 
 /// What --pretend-missing takes
 const PARTS: [&str; 4] = ["guest-tools", "enhanced-session", "transport", "services"];
@@ -60,6 +67,12 @@ struct Setup {
     hide: gtk::CheckButton,
     options: Rc<Options>,
     status: RefCell<Status>,
+}
+
+thread_local! {
+    /// The open window's state, which its buttons reach through weak
+    /// references, until it closes
+    static SETUP: RefCell<Option<Rc<Setup>>> = const { RefCell::new(None) };
 }
 
 fn main() -> glib::ExitCode {
@@ -129,7 +142,13 @@ fn print_status(status: &Status) {
     println!("vm-name={}", status.vm_name.as_deref().unwrap_or(""));
     println!("set-up={}", yes_no(status.set_up()));
     println!("to-set-up={}", status.to_set_up().join(","));
-    println!("windows={}", status.windows_command().unwrap_or_default());
+    println!(
+        "windows={}",
+        status
+            .windows_command()
+            .unwrap_or_default()
+            .replace('\n', "; ")
+    );
     println!("dont-show={}", yes_no(checks::dont_show_file().exists()));
 }
 
@@ -166,16 +185,25 @@ fn activate(app: &gtk::Application, options: &Rc<Options>) {
         window.present();
         return;
     }
-    if options.at_login && initial_setup_running() {
-        // A new account's first login: first-login setup comes first, and
-        // this waits for it to finish
+    let started = Instant::now();
+    let waiting = move |options: &Options| {
+        // A new account's first login: first-login setup comes first
+        initial_setup_running()
+            // Just after the VM starts, Hyper-V may not have opened its
+            // first enhanced session yet, which it does when the VM is set
+            // up for one
+            || (!Path::new(checks::SEEN).exists()
+                && !options.pretend.iter().any(|part| part == "transport")
+                && started.elapsed() < HOST_GRACE)
+    };
+    if options.at_login && waiting(options.as_ref()) {
         let hold = app.hold();
         let app = app.clone();
         let options = options.clone();
         glib::timeout_add_seconds_local(2, move || {
             // The app stays up while this waits, and no longer
             let _hold = &hold;
-            if initial_setup_running() {
+            if waiting(options.as_ref()) {
                 return glib::ControlFlow::Continue;
             }
             show(&app, &options);
@@ -211,6 +239,7 @@ fn show(app: &gtk::Application, options: &Rc<Options>) {
     let this = build(app, options, status);
     show_check(&this);
     this.window.present();
+    SETUP.with_borrow_mut(|setup| *setup = Some(this));
 }
 
 fn build(app: &gtk::Application, options: &Rc<Options>, status: Status) -> Rc<Setup> {
@@ -255,6 +284,7 @@ fn build(app: &gtk::Application, options: &Rc<Options>, status: Status) -> Rc<Se
         if let Some(this) = weak.upgrade() {
             save_dont_show(this.hide.is_active());
         }
+        SETUP.with_borrow_mut(|setup| *setup = None);
         glib::Propagation::Proceed
     });
     this
@@ -284,11 +314,11 @@ fn button(text: &str, suggested: bool) -> gtk::Button {
 fn page() -> gtk::Box {
     gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
-        .spacing(12)
-        .margin_top(24)
-        .margin_bottom(18)
-        .margin_start(24)
-        .margin_end(24)
+        .spacing(10)
+        .margin_top(18)
+        .margin_bottom(16)
+        .margin_start(22)
+        .margin_end(22)
         .build()
 }
 
@@ -345,15 +375,14 @@ fn add_row(list: &gtk::ListBox, icon: &str, name: &str, about: &str, state: &str
     if done {
         stands.append(&gtk::Image::from_icon_name("object-select-symbolic"));
     }
-    stands.append(&label(
-        state,
-        if done { "setup-done" } else { "setup-todo" },
-    ));
+    let state = label(state, if done { "setup-done" } else { "setup-todo" });
+    state.set_wrap(false);
+    stands.append(&state);
     let row = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
         .spacing(14)
-        .margin_top(10)
-        .margin_bottom(10)
+        .margin_top(8)
+        .margin_bottom(8)
         .margin_start(12)
         .margin_end(12)
         .build();
@@ -394,8 +423,8 @@ fn show_check(this: &Rc<Setup>) {
     } else {
         page.append(&label("Set up Hyper-V support", "setup-title"));
         page.append(&label(
-            "Patrone Linux is running in a Hyper-V virtual machine. To work there the \
-             way Windows does, it needs these, and some aren't set up yet.",
+            "Patrone Linux is running in a Hyper-V virtual machine, and some of what it \
+             needs there isn't set up yet.",
             "",
         ));
     }
@@ -414,8 +443,7 @@ fn show_check(this: &Rc<Setup>) {
         &list,
         "computer-symbolic",
         "Integration services",
-        "Lets Windows shut this VM down and back it up while it runs, keeps its \
-         clock right, and copies files in from Windows.",
+        "Shutting down and backing up from Windows, the clock, and copying files in.",
         state,
         done,
     );
@@ -429,8 +457,8 @@ fn show_check(this: &Rc<Setup>) {
         &list,
         "preferences-desktop-remote-desktop-symbolic",
         "Enhanced session",
-        "In VMConnect, Hyper-V's window onto this VM: Patrone's login screen, then \
-         your desktop, with copy and paste, sound, and a screen that fits the window.",
+        "Patrone's login screen and your desktop in VMConnect, with copy and paste, \
+         sound and resizing.",
         state,
         done,
     );
@@ -486,16 +514,13 @@ fn windows_about(status: &Status) -> String {
     let mut about = Vec::new();
     if !status.transport {
         about.push(
-            "Hyper-V hasn't opened an enhanced session with this VM yet. For Linux, \
-             it has to be set to use a Hyper-V socket."
+            "Hyper-V hasn't opened an enhanced session yet: Linux needs the Hyper-V \
+             socket transport."
                 .to_string(),
         );
     }
     if !status.services_off.is_empty() {
-        about.push(format!(
-            "Turned off for this VM: {}.",
-            status.services_off.join(", ")
-        ));
+        about.push(format!("Turned off: {}.", status.services_off.join(", ")));
     }
     if about.is_empty() {
         about.push(
@@ -509,8 +534,8 @@ fn windows_about(status: &Status) -> String {
 fn windows_box(status: &Status, command: &str) -> gtk::Box {
     let section = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
-        .spacing(8)
-        .margin_top(6)
+        .spacing(6)
+        .margin_top(4)
         .build();
     section.append(&label("On Windows", "setup-heading"));
     section.append(&label(
@@ -523,17 +548,37 @@ fn windows_box(status: &Status, command: &str) -> gtk::Box {
         "",
     ));
 
-    let code = gtk::Label::builder()
-        .label(command)
-        .xalign(0.0)
-        .wrap(true)
-        .wrap_mode(gtk::pango::WrapMode::WordChar)
-        .max_width_chars(52)
-        .selectable(true)
+    // A paragraph each command, wrapped only between words: Pango would
+    // also break after a hyphen, in Get-VMIntegrationService, which reads
+    // like two words to someone typing it
+    let code = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(6)
         .hexpand(true)
         .valign(gtk::Align::Center)
         .build();
-    code.add_css_class("monospace");
+    for line in command.lines() {
+        let markup: Vec<String> = line
+            .split(' ')
+            .map(|word| {
+                format!(
+                    "<span allow_breaks=\"false\">{}</span>",
+                    glib::markup_escape_text(word)
+                )
+            })
+            .collect();
+        let line = gtk::Label::builder()
+            .label(markup.join(" "))
+            .use_markup(true)
+            .xalign(0.0)
+            .wrap(true)
+            .wrap_mode(gtk::pango::WrapMode::Word)
+            .max_width_chars(52)
+            .selectable(true)
+            .build();
+        line.add_css_class("monospace");
+        code.append(&line);
+    }
     let copy = gtk::Button::builder()
         .label("Copy")
         .valign(gtk::Align::Center)

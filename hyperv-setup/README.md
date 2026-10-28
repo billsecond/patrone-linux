@@ -29,11 +29,18 @@ manager, starts with the desktop (`graphical-session.target`), only:
   for (`ConditionPathExists`), so nothing runs then either.
 
 Then the program checks, and shows nothing when everything's set up. On a
-new account's first login it waits for first-login setup to finish.
+new account's first login it waits for first-login setup to finish. While
+Hyper-V hasn't opened an enhanced session with the VM (below), it waits up
+to 30 seconds for one first: just after the VM starts, Hyper-V may not have
+yet (on the dev VM it did 26 seconds after the service for it started).
 
 Patrone's desktops keep running while nobody's looking at them
 (`remote-desktop/README.md`), so "each login" is each time the desktop
-starts: after a restart, or after logging out.
+starts: after a restart, or after logging out. Installed on a running
+system, the unit starts from the first login after the account's service
+manager restarts (a restart, or logging out of every session):
+`dh_installsystemduser` enables it, but running service managers don't
+reload.
 
 ## What it checks
 
@@ -109,4 +116,36 @@ as set up afterwards, so the dialog goes on to its next page.
 
 ## What was checked
 
-Not yet.
+On PatroneDev (2026-10-28), where everything is set up, with the missing
+parts pretended:
+
+- `--status` found all six integration services and read the VM's name
+  from Data Exchange. `udevadm test` on the VMBus channel of a live
+  enhanced session matched the rule (`SYSTEMD_WANTS=patrone-hyperv-setup-seen.service`),
+  and that unit, started, wrote the file.
+- In a hidden GNOME Shell under another account, clicked with a virtual
+  pointer (AT-SPI's click didn't reach the buttons), light and dark: each
+  page. Set Up with `--dry-run` went to "Setting up Hyper-V support", then
+  "One more step, on Windows" with Later and Shut Down. Set Up for real
+  brought GNOME Shell's password dialog ("Authentication is required to set
+  up Hyper-V support"), which was cancelled, and the dialog went back to its
+  first page. Copy put both commands on the clipboard, a line each. Ticking
+  "Don't show this again" and closing wrote the file, and `--at-login` then
+  exited at once; run by hand, the box was ticked, and unticking it removed
+  the file.
+- With `enhanced-session` moved aside, `--at-login` showed nothing for 13
+  seconds; 4 seconds after it was put back, the dialog showed, with the
+  transport set.
+- `apply guest-tools enhanced-session` as root: updated apt's lists, found
+  the guest tools installed and turned the service on (it was on), in 1.6
+  seconds. An unknown part exits 2; without root, 1.
+- The login unit, started in the account's own session with everything set
+  up: started, and ended without a window.
+
+Not checked yet: a fresh install, where the prompt really shows (after
+first-login setup), Set Up with a password, Restart and Shut Down, and a
+real enhanced session writing the file. VMs from
+`scripts/hyperv/new-test-vm.ps1` have the socket transport and Guest
+services on, so nothing shows there; to see the prompt, make the VM with
+Hyper-V Manager's defaults, or set the transport back to `VMBus` with the
+VM off.

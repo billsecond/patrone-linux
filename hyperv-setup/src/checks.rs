@@ -126,8 +126,8 @@ impl Status {
         !self.transport
     }
 
-    /// The PowerShell command for what's missing on Windows' side, if
-    /// anything is
+    /// The PowerShell commands for what's missing on Windows' side, if
+    /// anything is, a line each
     pub fn windows_command(&self) -> Option<String> {
         let name = self
             .vm_name
@@ -146,7 +146,7 @@ impl Status {
                 "Get-VMIntegrationService -VMName {name} | Enable-VMIntegrationService"
             ));
         }
-        (!commands.is_empty()).then(|| commands.join("; "))
+        (!commands.is_empty()).then(|| commands.join("\n"))
     }
 
     /// Nothing missing on either side
@@ -313,7 +313,7 @@ mod tests {
         status.vm_name = None;
         assert_eq!(
             status.windows_command().unwrap(),
-            "Set-VM -VMName 'NAME' -EnhancedSessionTransportType HvSocket; \
+            "Set-VM -VMName 'NAME' -EnhancedSessionTransportType HvSocket\n\
              Get-VMIntegrationService -VMName 'NAME' | Enable-VMIntegrationService"
         );
         status.transport = true;
