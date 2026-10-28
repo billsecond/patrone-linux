@@ -58,7 +58,7 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | What you see | Patrone's version | How |
 | --- | --- | --- |
 | The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "Patrone Linux 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"` | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
-| Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over Patrone's spinner (below) on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the password prompt's images are copied from Plymouth's spinner theme |
+| Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over Patrone's spinner (below) on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the password prompt's images are copied from Plymouth's spinner theme, its field recolored blue (`system/plymouth/prompt/`) |
 | Boot splash without graphics | `system/plymouth/patrone-text.plymouth`: "Patrone Linux 0.1" in Patrone's colors | Plymouth text theme, made the default |
 | Login screen | Patrone logo; a navy-to-black background; blue accents; Patrone Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
 | Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
@@ -100,6 +100,52 @@ make them again:
 
 ```
 python tools/make_spinner.py system/plymouth/spinner --preview system/plymouth/previews
+```
+
+## Boot splash layout
+
+![Every mode at 1920×1080](system/plymouth/previews/modes-1920x1080.png)
+
+Plymouth's two-step module places each thing at a fraction of the screen's
+height, so the gaps between them grow with the screen. In
+`patrone.plymouth`:
+
+| What | Where | Shown |
+| --- | --- | --- |
+| The logo | `WatermarkVerticalAlignment=.42` | Always |
+| The spinner | `VerticalAlignment=.72`, with messages (a file-system check's, shutdown's) under it | Boot, shutdown, restart |
+| The disk-unlock password or a question | `DialogVerticalAlignment=.72`, in the spinner's place, with the prompt and the keyboard layout under it | When asked; the spinner and title are hidden meanwhile |
+| The title ("Installing Updates...") and subtitle ("Do not turn off your computer") | `TitleVerticalAlignment=.75`, `TitleFont=Sans 20` | The four update modes |
+| The progress bar, with "31% complete" under it | `ProgressBarVerticalAlignment=.83` | The four update modes |
+
+The title was at `.382`, Ubuntu's place for it with its logo at the bottom,
+which put it on the P (the user saw it while updates installed,
+2026-10-28). The update screen's text and bar now sit under the wordmark;
+the gaps between them, measured in screenshots of the real `plymouthd`:
+
+| Screen | Wordmark to title | Subtitle to bar |
+| --- | --- | --- |
+| 800×600 (`previews/modes-800x600.png`, the tightest) | 16 px | 24 px |
+| 1280×720 | 55 px | 34 px |
+| 1024×768, 1366×768 | 71 px | 38 px |
+| 1920×1080 | 174 px | 63 px |
+| 2560×1440 | 293 px | 92 px |
+| 3840×2160 (Plymouth draws at twice the size there, so 1920×1080's layout) | 349 px | 126 px |
+
+The other modes never come closer to the wordmark than 20 px (a message
+under the spinner at 800×600).
+
+The password field (`system/plymouth/prompt/lock.png` and `entry.png`) is
+Plymouth's spinner theme's with its orange border made Patrone Blue by
+`tools/make_prompt_images.py`; its other images are copied as they are.
+
+To see every mode without rebooting, on a Linux machine with this package
+built, as root from a terminal (it draws in an invisible screen, so the
+real one is untouched):
+
+```
+sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.18_all.deb /tmp/splash $(tty) 1920x1080 1024x768
+python branding/tools/preview_splash_sheets.py /tmp/splash
 ```
 
 ## Wallpaper 01

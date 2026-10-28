@@ -101,13 +101,15 @@ Waiting on the user:
   settings"): Settings → **Desktop** → **Desktop Bubble**, the first switch
   on GNOME Settings' own Desktop page, with **Recycle Bin on the Desktop**
   under it; they take the place of Ubuntu's Desktop Icons settings there
-  (GNOME Settings `patrone10`; `patrone12`, which has it too, is the newest). Patrone Settings → Desktop calls it
+  (GNOME Settings `patrone10`), and since `patrone13` the page has no Dock
+  settings either (the user's OK, 2026-10-28: their switch would bring
+  Ubuntu's dock back beside the taskbar). Patrone Settings → Desktop calls it
   "Desktop bubble: On / Off" now (`patrone-settings` 0.3.6). Off, the pill
   goes and the files show across the desktop at once, no signing out; the
   Recycle Bin stays docked in its corner, and if it's hidden too, the
   desktop's right-click menu has Show Recycle Bin. Install:
-  `sudo apt install ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone12_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone12_all.deb
+  `sudo apt install ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone13_amd64.deb
+  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone13_all.deb
   ~/src/patrone-linux/out/patrone-settings_0.3.6_amd64.deb`. Checked in
   the throwaway shell (shell/gnome/README.md, "The desktop bubble").
 
@@ -117,7 +119,7 @@ Waiting on the user:
   Remote Desktop opens on a **Remote Desktop** tab with one **Remote
   Desktop** switch, then how to connect, then "Other Ways to Connect",
   which says what Desktop Sharing (now the second tab), Secure Shell and
-  GNOME's Remote Login do. It's in the same `patrone12` packages as the
+  GNOME's Remote Login do. It's in `patrone12` and later, as in the
   install line above (`gnome-settings/README.md`); `patrone12` also makes
   Patrone, not Ubuntu, the package's maintainer (`docs/COMPLIANCE.md`,
   item 13). Tried end to end in a fresh install.
@@ -2267,9 +2269,11 @@ rebuild; recommendations first):
    `prompting-client`'s "Open in App Center". Recommended: point them at
    Patrone Software in the GNOME Shell and Settings rebuilds; check whether
    Patrone Software lists snaps first.
-6. **Settings › Desktop** (Ubuntu's page, renamed) still has a Dock section
-   for the dock Patrone turns off, and "No Ubuntu settings found" in its
-   error state. A patch in the GNOME Settings rebuild.
+6. **Settings › Desktop** (Ubuntu's page, renamed): its Dock section, for
+   the dock Patrone turns off, is hidden while Patrone's taskbar is
+   installed (GNOME Settings `patrone13`, the user's OK, 2026-10-28). Left:
+   "No Ubuntu settings found" in its error state, which shows only without
+   Patrone's taskbar. A patch in the GNOME Settings rebuild.
 7. **Fonts:** the monospace default is Ubuntu Sans Mono (Ubuntu's setting,
    which `90_patrone` keeps), and `fonts-ubuntu` puts four Ubuntu families
    in every font list. The user's call which monospace font is Patrone's

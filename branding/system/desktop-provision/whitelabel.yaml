@@ -23,6 +23,10 @@ pages:
   try-or-install:
     image: "assets/images/mascot-light.svg"
     image-dark: "assets/images/mascot-dark.svg"
+  # Patrone's licence agreement (installer/patrone_licence_page.dart). The
+  # installer shows only the pages listed here, so without this line it
+  # skipped it (2026-10-28).
+  patrone-licence:
   rst:
     image: "assets/images/rst.svg"
   keyboard:
