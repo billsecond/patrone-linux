@@ -181,6 +181,11 @@ Set-VM -VMName NAME -EnhancedSessionTransportType HvSocket
 `hv_sock` loads by itself when something listens on vsock (its alias is the
 vsock family, `net-pf-40`).
 
+At login in a Hyper-V VM, Patrone Hyper-V Setup (`patrone-hyperv-setup`,
+`hyperv-setup/README.md`) offers to put back whatever of this is missing,
+these guest tools included, and shows that command, with the VM's own name,
+until Hyper-V has opened an enhanced session with the VM.
+
 ## VirtualBox
 
 **Not tried yet.** Nothing on this page about VirtualBox has been seen
