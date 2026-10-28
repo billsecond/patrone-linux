@@ -226,7 +226,8 @@ On for every account. **To turn it off** (the user asked for a switch,
 GNOME Settings' own Desktop page, where the desktop's settings are looked
 for (`gnome-settings/patches/patrone-desktop-switches.patch`; with
 Patrone's taskbar it takes the place of Ubuntu's Desktop Icons settings,
-whose switch would bring Ubuntu's icons back beside Patrone's). Patrone
+whose switch would bring Ubuntu's icons back beside Patrone's, and the
+page has no Dock settings, for the same reason). Patrone
 Settings → Desktop → Desktop bubble and GNOME Settings → Patrone have it
 too, and they're all the `desktop-bubble` setting, which the desktop
 follows at once: off, the pill goes and File Manager puts the files across

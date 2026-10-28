@@ -59,7 +59,7 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 | `patches/patrone-hide-telemetry.patch` | Hides the Telemetry row |
 | `remote-login/cc-patrone-remote-login.c`, `.h` | The Remote Desktop tab, added to `panels/system/remote-desktop/`. It runs `/usr/libexec/patrone-remote-desktop/settings` through `pkexec` for the switch's state (`status`), turning it on or off, and the password; the connection file comes from `patrone-remote-desktop rdp-file`. Its "Other Ways to Connect" rows open Desktop Sharing's tab and GNOME's Secure Shell dialog |
 | `patches/patrone-remote-login.patch` | Builds that tab and, where the helper is installed, shows it in Remote Login's place as the page's first tab (`cc-remote-login-page.c`, `cc-remote-desktop-page.c`), keeps the page shown even where Desktop Sharing can't run, and gives System's Remote Desktop and Secure Shell rows plain subtitles |
-| `patches/patrone-desktop-switches.patch` | Ubuntu's Desktop page (`panels/ubuntu`): where Patrone's taskbar is installed, switches for the desktop bubble and the Recycle Bin on the desktop come first, in place of Ubuntu's Desktop Icons settings. File Manager draws Patrone's desktop and Ubuntu's icons are off then, and their switch there would bring them back beside it |
+| `patches/patrone-desktop-switches.patch` | Ubuntu's Desktop page (`panels/ubuntu`): where Patrone's taskbar is installed, switches for the desktop bubble and the Recycle Bin on the desktop come first, in place of Ubuntu's Desktop Icons settings, and Ubuntu's Dock settings are hidden (revision 13; the user's OK, 2026-10-28). File Manager draws Patrone's desktop and the taskbar takes the dock's place, so Ubuntu's icons and dock are off then, and their switches there would bring them back beside Patrone's |
 | `build.sh` | Fetches Ubuntu's source, adds the page and the Remote Login page (each as a patch of its own) and the patches, versions it Ubuntu's version plus `patrone` and the revision, and builds |
 
 The page hides itself where neither Patrone's taskbar nor Patrone Settings
@@ -85,7 +85,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone12_amd64.deb ./out/gnome-control-center-data_*patrone12_all.deb
+sudo apt install ./out/gnome-control-center_*patrone13_amd64.deb ./out/gnome-control-center-data_*patrone13_all.deb
 ```
 
 ## How it was checked
@@ -155,6 +155,14 @@ does. So revision 9's two untried steps, a real administrator's password
 and connecting with the hash Settings records, are tried now. Not tried:
 Windows' own Remote Desktop Connection, and turning the switch off with a
 real password.
+
+`1:50.3-0ubuntu0.2patrone13` (no Dock settings), built on the dev VM and
+installed there (2026-10-28): the patch applied and the panel compiled
+with no warnings. In `shell/gnome/tests/headless.sh`'s throwaway GNOME
+Shell, Settings › Desktop showed Desktop Bubble and Recycle Bin on the
+Desktop, then Enhanced Tiling, and no Dock group, though Ubuntu's dock
+schema is installed (`gnome-shell-ubuntu-extensions`). Not tried: the
+page without Patrone's taskbar, where it's Ubuntu's code as before.
 
 ## Keeping up with Ubuntu
 
