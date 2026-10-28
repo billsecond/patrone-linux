@@ -243,23 +243,30 @@ fastfetch -c branding/fastfetch/config.jsonc --logo branding/fastfetch/logo.txt
 ```
 
 `logo.txt` is traced from the mark's own outline in `logos/patrone-logo.png`
-by `tools/make_terminal_logo.py`: quadrant block characters (▟ ▛ and so on)
-give each character cell four "pixels", which terminals draw as exact
-rectangles. The grid is shifted to where the mark's straight edges land on
-quadrant edges, and stray quadrants are cleared, so the edges are clean. A
-diagonal gradient of seven blues, from Highlight to Shadow, runs from the
-top right to the bottom left. Below the mark are the wordmark and the ruled
-"LINUX". To regenerate it, with a preview drawn as the terminal draws it:
+by `tools/make_terminal_logo.py`. Each character cell takes whichever block
+or shape character best matches the mark under it: full and partial blocks,
+sextants (2×3 cells), and the diagonal wedges of Unicode's Symbols for
+Legacy Computing, so the P's slanted edges are straight diagonals rather
+than stair steps. VTE, Patrone Terminal's engine, draws all of these itself
+as exact shapes (other terminals need a font that has them). The shapes are
+matched as VTE draws them: `tools/terminal-glyphs.png` is VTE's own drawing
+of `tools/terminal-glyphs.txt`, made with `tools/render_vte.py`, which
+draws any terminal text the way Patrone Terminal does. A diagonal gradient
+of seven blues, from Highlight to Shadow, runs from the top right to the
+bottom left. Below the mark are the wordmark and the ruled "LINUX". To
+regenerate it:
 
 ```
 python tools/make_terminal_logo.py logos/patrone-logo.png fastfetch/logo.txt --preview logo.png
 ```
 
+`--glyphs blocks` limits it to the long-standing block characters.
 `$1` to `$7` in the file are the blues, lightest first, `$8` the wordmark's
 white and `$9` the rule blue, as set in `config.jsonc` (the script prints
 them). The first trace (2026-10-25) came from the concept picture, whose
-soft edges left notches and stray blocks; it was redone from the logo for
-2026-10-28 (the user: "a bit nicer/cleaner").
+soft edges left notches and stray blocks. It was redone from the logo on
+2026-10-28 (the user: "a bit nicer/cleaner"), then with the diagonal shapes
+("smooth the edges out somehow").
 
 ## Colors measured from the concept
 
