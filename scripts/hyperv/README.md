@@ -92,18 +92,18 @@ username doesn't match.
 
 Settings → System → Remote Desktop does the same thing through the GUI.
 
-### Hyper-V enhanced session (experimental)
+### Hyper-V enhanced session
 
-In enhanced-session mode, VMConnect connects to vsock port 3389 in the guest.
-`guest/setup-enhanced-session.sh` installs `patrone-hyperv-rdp-bridge.service`,
-which forwards that port to GNOME Remote Desktop on TCP 3389:
+`patrone-remote-desktop` 0.5.0 serves VMConnect's enhanced session on vsock
+port 3389: Patrone's login screen, then the account's own desktop
+(`remote-desktop/README.md`). The host needs the Hyper-V socket transport,
+with the VM shut down:
 
 ```
-sudo ./scripts/hyperv/guest/setup-enhanced-session.sh   # in the VM
-Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket   # on Windows, VM shut down
+Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket
 ```
 
-Then start the VM and pick the enhanced session in VMConnect. This hasn't
-worked end to end yet. If VMConnect can't do NLA, the next step is to put
-`freerdp-proxy` between the bridge and GNOME Remote Desktop: the proxy accepts
-TLS without NLA and signs in to GNOME Remote Desktop with NLA itself.
+`guest/setup-enhanced-session.sh` and its `patrone-hyperv-rdp-bridge.service`
+are from before that, a bridge to GNOME's own Remote Login that never worked
+end to end; Patrone Remote Desktop's service stops the bridge if both are
+installed.
