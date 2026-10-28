@@ -1,3 +1,13 @@
+patrone-remote-desktop (0.4.7) resolute; urgency=medium
+
+  * Installing, removing and updating software on Patrone's desktops asks
+    for a password once, remembered for a few minutes and covering what
+    the install needs (an app's runtimes), as at the screen. polkit had
+    asked at every step: installing MailCraft asked at least 30 times
+    (the user, 2026-10-28: "suppress it down to a single one").
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 08:30:00 -0500
+
 patrone-remote-desktop (0.4.6) resolute; urgency=medium
 
   * Patrone Software works on Patrone's desktops without a password where

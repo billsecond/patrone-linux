@@ -172,11 +172,16 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    0.4.6 so does one in its `app.slice`, where apps opened from the desktop
    and Patrone Software's background service (`gnome-software.service`)
    run, and the rules cover what Patrone Software does: refreshing and
-   updating Flatpak apps and apt's lists, and, for administrators (as
-   Flatpak's and Ubuntu's own rules allow at the screen), installing and
-   removing Flatpak apps and installing updates. Without them a new
-   account's first login asked for a password to "update information about
-   software" (2026-10-27).
+   updating Flatpak apps and apt's lists. Without them a new account's
+   first login asked for a password to "update information about software"
+   (2026-10-27). Since 0.4.7, installing, removing and updating software
+   (Flatpak apps and bundles, apt packages through Patrone Software, snaps)
+   asks for a password once, which is remembered for a few minutes and
+   covers what the install needs, such as an app's runtimes, as at the
+   screen (`auth_admin_keep`). polkit had given each step its own password:
+   installing MailCraft asked at least 30 times (2026-10-28). 0.4.6 let
+   administrators install with no password, as Flatpak's and Ubuntu's own
+   rules do at the screen; the user asked for one.
 
 8. **Settings' switch**: Patrone's GNOME Settings shows its own Remote
    Desktop tab (`gnome-settings/remote-login/`) first in System › Remote

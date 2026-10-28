@@ -8,9 +8,10 @@
 //
 // This gives a graphical session with no seat what a desktop at the
 // machine's own screen gets without a password (allow_active "yes" in each
-// action's defaults, or what Ubuntu's and Flatpak's own rules give
-// administrators there), for the actions below only. SSH logins and other text
-// sessions, and every other action, are left to the defaults.
+// action's defaults, or what Ubuntu's own rules give administrators there),
+// and installing software with one password, for the actions below only.
+// SSH logins and other text sessions, and every other action, are left to
+// the defaults.
 
 var patroneDesktopActions = [
     "org.freedesktop.NetworkManager.enable-disable-network",
@@ -53,16 +54,28 @@ var patroneDesktopAdminActions = [
     "org.freedesktop.NetworkManager.settings.modify.system"
 ];
 
-// And administrators (the sudo group) at the screen install and remove
-// Flatpak apps (org.freedesktop.Flatpak.rules) and install updates
-// (org.freedesktop.packagekit.rules)
-var patroneDesktopSudoActions = [
+// Installing, removing and updating software asks for a password once, and
+// that password is remembered for a few minutes and covers what the action
+// implies: an app's install covers its runtimes and their extensions
+// (allow_active "auth_admin_keep", as at the screen). Without a seat,
+// polkit gave these "auth_admin", a password for every step: installing
+// MailCraft asked at least 30 times (2026-10-28; the user: "suppress it
+// down to a single one"). Ubuntu's own rules let administrators at the
+// screen do some of these with no password at all; Patrone's desktops ask
+// once.
+var patroneDesktopOnceActions = [
     "org.freedesktop.Flatpak.app-install",
     "org.freedesktop.Flatpak.runtime-install",
+    "org.freedesktop.Flatpak.install-bundle",
     "org.freedesktop.Flatpak.app-uninstall",
     "org.freedesktop.Flatpak.runtime-uninstall",
+    "org.freedesktop.Flatpak.configure-remote",
+    "org.freedesktop.packagekit.package-install",
+    "org.freedesktop.packagekit.package-reinstall",
     "org.freedesktop.packagekit.system-update",
-    "org.freedesktop.packagekit.trigger-offline-upgrade"
+    "org.freedesktop.packagekit.system-sources-configure",
+    "org.freedesktop.packagekit.trigger-offline-upgrade",
+    "io.snapcraft.snapd.manage"
 ];
 
 // A graphical session (Wayland or X11) with no seat, active: one of
@@ -114,11 +127,11 @@ function patroneIsDesktop(subject) {
 }
 
 polkit.addRule(function (action, subject) {
-    var wanted = patroneDesktopActions.indexOf(action.id) >= 0 ||
+    var free = patroneDesktopActions.indexOf(action.id) >= 0 ||
         (patroneDesktopAdminActions.indexOf(action.id) >= 0 &&
-         (subject.isInGroup("sudo") || subject.isInGroup("netdev"))) ||
-        (patroneDesktopSudoActions.indexOf(action.id) >= 0 && subject.isInGroup("sudo"));
-    if (wanted && patroneIsDesktop(subject))
-        return polkit.Result.YES;
+         (subject.isInGroup("sudo") || subject.isInGroup("netdev")));
+    var once = patroneDesktopOnceActions.indexOf(action.id) >= 0;
+    if ((free || once) && patroneIsDesktop(subject))
+        return free ? polkit.Result.YES : polkit.Result.AUTH_ADMIN_KEEP;
     return polkit.Result.NOT_HANDLED;
 });
