@@ -35,6 +35,11 @@ override_dh_auto_install:
 	    $(pkg)/usr/lib/udev/rules.d/62-patrone-hyperv-setup.rules
 	install -Dm644 README.md $(pkg)/usr/share/doc/patrone-hyperv-setup/README.md
 
+# patrone-hyperv-setup-seen.service runs only when Hyper-V opens an enhanced
+# session (the udev rule). Started as the package installs, as debhelper
+# would, it would say Hyper-V had.
+override_dh_installsystemd:
+
 override_dh_auto_clean:
 	rm -rf target debian/cargo-home
 
