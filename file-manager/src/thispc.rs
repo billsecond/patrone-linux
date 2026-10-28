@@ -55,17 +55,15 @@ impl Drive {
             Drive::Root => Some(places::root()),
             Drive::Mount(mount) => Some(mount.root()),
             Drive::Volume(volume) => volume.get_mount().map(|mount| mount.root()),
-            Drive::Mapped(_) => None,
+            // The folder that was mapped, which may be inside the share
+            Drive::Mapped(uri) => drives::is_connected(uri).then(|| gio::File::for_uri(uri)),
         }
     }
 
     /// The drive's mount: the folder its files are in, or its network
     /// address. None when it isn't mounted.
     pub fn mount_point(&self) -> Option<String> {
-        match self {
-            Drive::Mapped(_) => None,
-            drive => drive.root().map(|root| drives::mount_point(&root)),
-        }
+        self.root().map(|root| drives::mount_point(&root))
     }
 
     /// A drive that can be mounted (or a mapped drive connected) now.
@@ -99,7 +97,11 @@ impl Drive {
 /// What the unmount command is called for these mounts: "Eject" when they
 /// can be removed (USB drives, discs, disk images), else "Unmount".
 pub fn unmount_label(mounts: &[gio::Mount]) -> &'static str {
-    if !mounts.is_empty() && mounts.iter().all(|mount| mount.can_eject()) {
+    if !mounts.is_empty()
+        && mounts
+            .iter()
+            .all(|mount| mount.can_eject() || drives::is_image_mount(mount))
+    {
         "Eject"
     } else {
         "Unmount"
@@ -108,7 +110,7 @@ pub fn unmount_label(mounts: &[gio::Mount]) -> &'static str {
 
 /// Every drive This PC shows, the system drive first.
 pub fn drives() -> Vec<Drive> {
-    let monitor = gio::VolumeMonitor::get();
+    let monitor = crate::drives::monitor();
     let mut drives = vec![Drive::Root];
     for mount in places::mounts() {
         if mount.root().is_native() {
@@ -132,25 +134,25 @@ pub fn drives() -> Vec<Drive> {
     drives
 }
 
-/// Network shares that are mounted, then mapped network drives that
-/// aren't connected now.
+/// The mapped network drives, connected or not, then other network
+/// shares that are mounted.
 pub fn network_drives() -> Vec<Drive> {
-    let mounts: Vec<gio::Mount> = places::mounts()
-        .into_iter()
-        .filter(|mount| !mount.root().is_native())
-        .collect();
-    let mut drives: Vec<Drive> = mounts.iter().cloned().map(Drive::Mount).collect();
-    for uri in drives::mapped_drives() {
-        let file = gio::File::for_uri(&uri);
-        let connected = mounts.iter().any(|mount| {
-            let root = mount.root();
+    let mapped = drives::mapped_drives();
+    let mut list: Vec<Drive> = mapped.iter().cloned().map(Drive::Mapped).collect();
+    for mount in places::mounts() {
+        let root = mount.root();
+        if root.is_native() {
+            continue;
+        }
+        let is_mapped = mapped.iter().any(|uri| {
+            let file = gio::File::for_uri(uri);
             root.equal(&file) || file.has_prefix(&root)
         });
-        if !connected {
-            drives.push(Drive::Mapped(uri));
+        if !is_mapped {
+            list.push(Drive::Mount(mount));
         }
     }
-    drives
+    list
 }
 
 fn drive_tile(drive: &Drive) -> (gtk::FlowBoxChild, gtk::LevelBar, gtk::Label) {
@@ -181,9 +183,11 @@ fn drive_tile(drive: &Drive) -> (gtk::FlowBoxChild, gtk::LevelBar, gtk::Label) {
             Some(size) => format!("{} · Not mounted", util::size(size)),
             None => "Not mounted".to_owned(),
         }),
-        Drive::Mapped(_) => free.set_label("Disconnected"),
+        Drive::Mapped(_) if drive.root().is_none() => free.set_label("Disconnected"),
         _ => {}
     }
+    // Shown once there's something to say (show_usage)
+    free.set_visible(!free.label().is_empty());
     text.append(&free);
     // Where its files are: Linux's drive letter.
     let place = match (drive, drive.mount_point()) {
@@ -232,6 +236,7 @@ pub fn show_usage(root: gio::File, bar: gtk::LevelBar, free: gtk::Label) {
             util::size(available),
             util::size(size)
         ));
+        free.set_visible(true);
     });
 }
 
@@ -268,7 +273,7 @@ impl ThisPcPage {
         heading.set_tooltip_text(Some(
             "Every drive and where it's mounted. Linux has no drive letters: \
              each drive's files appear in a folder, its mount. The system drive \
-             is mounted at /, others under /media. Open a drive that isn't \
+             is mounted at /, others under /run/media. Open a drive that isn't \
              mounted to mount it.",
         ));
         content.append(&drives_section);
@@ -358,7 +363,7 @@ impl ThisPcPage {
         });
         self.widget.add_controller(click);
 
-        let monitor = gio::VolumeMonitor::get();
+        let monitor = crate::drives::monitor();
         let reload = {
             let weak = self.me.borrow().clone();
             move || {

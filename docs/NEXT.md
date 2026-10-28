@@ -94,6 +94,29 @@ Done:
 
 Waiting on the user:
 
+- **Drives and mounts in File Manager** (the user, 2026-10-28: "add under
+  computer Mounts where the drives are ... and add the ability to mount
+  other drives/resources"; `file-manager/README.md`, Drives and mounts).
+  This PC lists every drive with where it's mounted ("Mounted at /",
+  "Mounted at /run/media/..."), and drives that aren't mounted with their
+  size; opening one mounts it, and Mount, Eject and Unmount are in the
+  menus, the command bar and the navigation pane. Map network drive
+  (`\\server\share`, `sftp://`...) signs in when asked and can reconnect
+  at each sign-in; right-click an `.iso` or `.img` to Mount it.
+  `patrone-file-manager` 0.3.2 is installed on PatroneDev: close every
+  File Manager window to start using it (the desktop's icons switch at
+  the next sign-in). `patrone-remote-desktop` 0.5.1 lets Patrone's
+  seat-less desktops mount USB drives and disk images with no password
+  and internal drives with one; its polkit rule is already in place on
+  PatroneDev (checked with `pkcheck` against the desktop session), but
+  the package isn't installed, because installing it restarts Remote
+  Desktop and drops the connection:
+  `sudo apt install ~/src/patrone-fm-drives/out/patrone-remote-desktop_0.5.1_amd64.deb`
+  when that's fine. Tried with real input in a headless shell as the
+  `claude` account (a fake internal disk, `.iso` and `.img` files, a
+  stand-in network share, an SMB address with no server); not tried with
+  a real USB stick or SMB server, or in the user's own desktop.
+
 - **No web browser preinstalled; the user picks one** (the user,
   2026-10-28: "Ask the user when they click on the browser with a modal if
   they want to install Chromium, Fire Fox, Brave, etc, then use the current

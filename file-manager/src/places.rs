@@ -131,7 +131,7 @@ pub fn display_name(file: &gio::File) -> String {
 
 /// User-visible mounted drives, other than the system drive.
 pub fn mounts() -> Vec<gio::Mount> {
-    gio::VolumeMonitor::get()
+    crate::drives::monitor()
         .mounts()
         .into_iter()
         .filter(|mount| !mount.is_shadowed())

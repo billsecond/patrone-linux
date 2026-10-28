@@ -1064,6 +1064,8 @@ pub fn map_network_drive(window: &Window) {
         dialog.body.append(&sign_in);
         dialog.add_button("_Finish", 0, true);
         dialog.add_button("Cancel", 1, false);
+        // The address can be typed straight away, as on Windows.
+        entry.grab_focus();
         if dialog.run().await != 0 {
             return;
         }
@@ -1200,28 +1202,28 @@ pub fn can_disconnect(window: &Window) -> bool {
 /// the mapped ones so they don't reconnect at sign-in.
 pub fn disconnect(window: &Window) {
     for drive in selected_drives(window) {
-        match &drive {
-            Drive::Mapped(uri) => drives::forget_mapped(uri),
-            Drive::Mount(mount) if drive.is_network() => {
-                if let Some(uri) = drives::mapped_uri_of(mount) {
-                    drives::forget_mapped(&uri);
-                }
-                let w = window.clone();
-                let name = drive.name();
-                drives::unmount(mount, parent(window).as_ref(), move |result| {
-                    if let Err(error) = result
-                        && !error.matches(gio::IOErrorEnum::FailedHandled)
-                    {
-                        dialogs::error(
-                            parent(&w).as_ref(),
-                            "Disconnect",
-                            &format!("Can't disconnect {name}."),
-                            &dialogs::describe(&error),
-                        );
-                    }
-                });
+        let mount = match &drive {
+            Drive::Mapped(uri) => {
+                drives::forget_mapped(uri);
+                drives::mount_of(uri)
             }
-            _ => {}
-        }
+            Drive::Mount(mount) if drive.is_network() => Some(mount.clone()),
+            _ => None,
+        };
+        let Some(mount) = mount else { continue };
+        let w = window.clone();
+        let name = drive.name();
+        drives::unmount(&mount, parent(window).as_ref(), move |result| {
+            if let Err(error) = result
+                && !error.matches(gio::IOErrorEnum::FailedHandled)
+            {
+                dialogs::error(
+                    parent(&w).as_ref(),
+                    "Disconnect",
+                    &format!("Can't disconnect {name}."),
+                    &dialogs::describe(&error),
+                );
+            }
+        });
     }
 }

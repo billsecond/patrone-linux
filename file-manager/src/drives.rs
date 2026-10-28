@@ -2,8 +2,8 @@
 //! Mounts where the drives are ... and add the ability to mount other
 //! drives/resources"). On Linux every drive's files appear in a folder of
 //! the one tree under `/`, its mount (Linux's drive letter): the system
-//! drive is `/` itself, others are mounted at `/media/NAME`, network shares
-//! wherever GIO puts them. This mounts and unmounts drives, maps network
+//! drive is `/` itself, others are mounted at `/run/media/USER/NAME`,
+//! network shares wherever GIO puts them. This mounts and unmounts drives, maps network
 //! drives (Windows' "Map network drive", with "Reconnect at sign-in"), and
 //! mounts disk images (`.iso`, `.img`) as Windows does.
 
@@ -12,6 +12,18 @@ use std::time::Duration;
 use gtk::{gio, glib, prelude::*};
 
 use crate::config;
+
+thread_local! {
+    static MONITOR: gio::VolumeMonitor = gio::VolumeMonitor::get();
+}
+
+/// GIO's volume monitor, kept for as long as the app runs: GIO frees it
+/// with its last reference, and the signals connected to it with it, so
+/// This PC and the navigation pane missed drives being mounted and plugged
+/// in.
+pub fn monitor() -> gio::VolumeMonitor {
+    MONITOR.with(Clone::clone)
+}
 
 /// A volume's size, read from the kernel before it's mounted (GIO knows a
 /// drive's size only once its files are reachable).
@@ -146,15 +158,6 @@ fn same_address(a: &str, b: &str) -> bool {
         .eq_ignore_ascii_case(b.trim_end_matches('/'))
 }
 
-/// The mapped drive a mount is, if it's one.
-pub fn mapped_uri_of(mount: &gio::Mount) -> Option<String> {
-    let root = mount.root();
-    mapped_drives().into_iter().find(|uri| {
-        let file = gio::File::for_uri(uri);
-        root.equal(&file) || file.has_prefix(&root)
-    })
-}
-
 /// A short name for a network address: its share and server, as Windows
 /// names a mapped drive ("share (\\server)").
 pub fn network_name(uri: &str) -> String {
@@ -170,6 +173,7 @@ pub fn network_name(uri: &str) -> String {
         glib::Uri::unescape_string(part, None::<&str>).map_or(part.to_owned(), |s| s.to_string())
     });
     match (share, parsed.scheme().as_str()) {
+        (Some(share), _) if host.is_empty() => share,
         (Some(share), "smb") => format!("{share} (\\\\{host})"),
         (Some(share), _) => format!("{share} ({host})"),
         (None, _) => host,
@@ -191,11 +195,20 @@ pub async fn connect(uri: &str, parent: Option<&gtk::Window>) -> Result<gio::Fil
     }
 }
 
+/// The mount a network folder is in, when it's connected: from the
+/// volume monitor's list (GVfs answers `find_enclosing_mount` from a cache
+/// that outlives the mount).
+pub fn mount_of(uri: &str) -> Option<gio::Mount> {
+    let file = gio::File::for_uri(uri);
+    monitor().mounts().into_iter().find(|mount| {
+        let root = mount.root();
+        root.equal(&file) || file.has_prefix(&root)
+    })
+}
+
 /// Whether a network folder is connected now.
 pub fn is_connected(uri: &str) -> bool {
-    gio::File::for_uri(uri)
-        .find_enclosing_mount(gio::Cancellable::NONE)
-        .is_ok()
+    mount_of(uri).is_some()
 }
 
 /// At sign-in (`--restore`): connects the mapped network drives again, as
@@ -275,7 +288,7 @@ pub async fn mount_image(
         .ok_or_else(|| "The system didn't say which drive the image became.".to_owned())?;
     // GIO sees the new drive a moment later: the image's own file system,
     // or its first partition's.
-    let monitor = gio::VolumeMonitor::get();
+    let monitor = monitor();
     for _ in 0..50 {
         let volumes = monitor.volumes();
         let found = volumes
@@ -290,24 +303,56 @@ pub async fn mount_image(
             })
             .cloned();
         if let Some(volume) = found {
-            if let Ok(root) = root_of(&volume) {
-                return Ok(root);
-            }
-            let (sender, receiver) = crate::dialogs::oneshot();
-            mount_volume(&volume, parent.as_ref(), move |result| {
-                sender.send(result);
-            });
-            return match receiver.await {
+            let mounted = match root_of(&volume) {
                 Ok(root) => Ok(root),
-                // The desktop may have mounted it first.
-                Err(error) => root_of(&volume).map_err(|_| crate::dialogs::describe(&error)),
+                Err(_) => {
+                    let (sender, receiver) = crate::dialogs::oneshot();
+                    mount_volume(&volume, parent.as_ref(), move |result| {
+                        sender.send(result);
+                    });
+                    match receiver.await {
+                        Ok(root) => Ok(root),
+                        // The desktop may have mounted it first.
+                        Err(error) => {
+                            root_of(&volume).map_err(|_| crate::dialogs::describe(&error))
+                        }
+                    }
+                }
             };
+            // udisks has the image's drive detach itself once it's
+            // unmounted, so Eject puts it away.
+            if mounted.is_err() {
+                detach(&device).await;
+            }
+            return mounted;
         }
         glib::timeout_future(Duration::from_millis(200)).await;
     }
+    detach(&device).await;
     Err(format!(
         "The image became {device}, but it has no file system to open."
     ))
+}
+
+/// Detaches an image's drive that couldn't be mounted.
+async fn detach(device: &str) {
+    let launcher = gio::SubprocessLauncher::new(gio::SubprocessFlags::STDERR_SILENCE);
+    if let Ok(process) = launcher.spawn(&[
+        std::ffi::OsStr::new("udisksctl"),
+        std::ffi::OsStr::new("loop-delete"),
+        std::ffi::OsStr::new("--block-device"),
+        std::ffi::OsStr::new(device),
+    ]) {
+        let _ = process.wait_future().await;
+    }
+}
+
+/// Whether a mount is a disk image mounted from a file.
+pub fn is_image_mount(mount: &gio::Mount) -> bool {
+    mount
+        .volume()
+        .and_then(|volume| volume.identifier("class"))
+        .is_some_and(|class| class == "loop")
 }
 
 /// The drive in udisksctl's "Mapped file X as /dev/loop12."
@@ -341,6 +386,7 @@ mod tests {
         assert_eq!(network_name("smb://nas/photos"), r"photos (\\nas)");
         assert_eq!(network_name("sftp://me@host/srv/data/"), "data (host)");
         assert_eq!(network_name("ftp://ftp.example.com/"), "ftp.example.com");
+        assert_eq!(network_name("localtest:///home/me/share"), "share");
     }
 
     #[test]

@@ -46,7 +46,8 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
 - **Command bar:** New (folder, text document, anything in Templates);
   Cut, Copy, Paste, Rename, Share and Delete; Sort, View and Filter; buttons
   for the selection (Empty Recycle Bin, Restore, Extract all, Set as
-  background, Connect to server, Eject); "See more" (Undo, Redo, Pin to Quick
+  background, Map network drive, Mount, Eject or Unmount, Disconnect);
+  "See more" (Undo, Redo, Pin to Quick
   access, Copy path, Select all/none, Invert selection, Open in Terminal,
   Properties, Options); and Details.
 - **Navigation pane:** Home, Gallery, your home folder; the folders pinned to
@@ -57,6 +58,37 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   Favorites, Recent files), Gallery (every picture and video in Pictures,
   newest first), This PC (drives with usage bars, network locations), the
   Recycle Bin (Original location and Date deleted columns, Restore, Empty).
+- **Drives and mounts** (`src/drives.rs`, `src/thispc.rs`): Linux has no
+  drive letters; each drive's files appear in a folder of the one tree
+  under `/`, its mount. This PC lists every drive, mounted or not: a tile
+  says where the drive is mounted ("Mounted at /run/media/..."; the
+  system drive at `/`), or its size and "Not mounted". Opening one mounts
+  it, as does Mount in its menus, the command bar and the navigation pane;
+  Eject (USB drives, discs, disk images) or Unmount (internal drives) puts
+  it away. Internal drives ask for an administrator's password once
+  (udisks' `filesystem-mount-system`; Patrone Remote Desktop's polkit rule
+  gives Patrone's seat-less desktops the same as a desktop at the screen).
+  This PC and the navigation pane follow GIO's volume monitor, which
+  `drives::monitor()` keeps for the app's life: GIO frees it, and the
+  signals connected to it, with its last reference.
+  **Map network drive** takes `\\server\share` (a Windows share,
+  `smb://`) or any address GIO opens (`sftp://`, `ftp://`, `dav://`,
+  `nfs://`...), signs in through GTK's dialog when the server asks (it can
+  remember the password), and with "Reconnect at sign-in" keeps the
+  address in `mapped-drives`: `--restore`, run at each sign-in, connects
+  it again. A mapped drive keeps its own name and address in This PC's
+  Network locations, connected or not, and opens to the folder mapped.
+  Disconnect unmounts a network drive and forgets it. **Disk images**
+  (`.iso`, `.img`): Mount (right-click, or the command bar) sets the image
+  up read-only with `udisksctl loop-setup`, mounts its file system and
+  opens it; Eject unmounts it, and udisks detaches the image then (it
+  sets loop devices to clear themselves). Not done: VHD/VHDX images, and
+  mounting internal drives at sign-in.
+  Tested as the `claude` account in a private headless GNOME Shell (as in
+  Testing without a desktop session below), with a `scsi_debug` disk as
+  an internal drive, `.iso` and `.img` files, GVfs's `localtest:` backend
+  as a network share, a temporary polkit rule letting `claude` mount, and
+  an SMB address with no server for the sign-in dialog.
 - **Views:** Extra large, Large, Medium and Small icons, List, Details,
   Tiles and Content, plus Compact view. Details has sortable, resizable,
   reorderable columns (right-click a header for more columns). Sort and

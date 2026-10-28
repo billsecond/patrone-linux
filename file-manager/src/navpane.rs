@@ -191,7 +191,7 @@ impl NavPane {
             }
         });
 
-        let monitor = gio::VolumeMonitor::get();
+        let monitor = crate::drives::monitor();
         let rebuild = {
             let weak = self.me.borrow().clone();
             move || {
@@ -405,6 +405,11 @@ impl NavPane {
         if let Some(expander) = &node.expander {
             expander.set_name("chevron-right");
         }
+        self.remove_children(node);
+    }
+
+    /// Takes a node's rows below it out of the pane.
+    fn remove_children(&self, node: &Rc<Node>) {
         let mut nodes = self.nodes.borrow_mut();
         let Some(index) = nodes.iter().position(|n| Rc::ptr_eq(n, node)) else {
             return;
@@ -439,6 +444,10 @@ impl NavPane {
             if !node.expanded.get() {
                 return;
             }
+            // Drives mounted in quick succession refresh This PC twice
+            // while the first refresh is still listing: the last one's
+            // rows replace the first's.
+            pane.remove_children(&node);
             let Some(index) = pane
                 .nodes
                 .borrow()
