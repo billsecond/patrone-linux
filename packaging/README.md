@@ -95,8 +95,23 @@ installs its source, key and pins (`desktop/README.md`, "Updates").
 It uploads the new debs to the repository's `pool` release, writes the
 index (`dists/resolute`) and signs it, commits and pushes it to
 `~/src/patrone-apt`, and GitHub Pages has it a minute or two later. A
-package already published at that version or newer is skipped. Publish
-what's on `main`: every install takes it, by itself, within a day.
+package already published at that version or newer is skipped. Every
+install takes what's published, by itself, within a day.
+
+**Nothing publishes `main` by itself.** The daily job below follows only
+Ubuntu's updates to three packages, so each merge that bumps a package's
+version is published by hand, right after the merge. On the dev VM, in a
+clean, up-to-date checkout of `main` (`~/src/patrone-linux`, or a fresh
+worktree of `origin/main` when that one is on a branch):
+
+```
+export PATH=$HOME/.cargo/bin:$PATH             # over SSH, for the Rust packages
+./packaging/build.sh patrone-file-manager -d
+./packaging/publish.sh patrone-file-manager
+```
+
+Name the package rather than using `--all`: `out/` keeps builds from
+branches too, and `--all` takes the newest build of each, merged or not.
 
 The key is on the dev VM only, in `~/.local/share/patrone-apt/gnupg`
 (Ed25519, fingerprint `8FE6 1B83 753C 2636 CD74 0259 4FC3 52E3 D384 225F`),
