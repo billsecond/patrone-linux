@@ -370,7 +370,7 @@ Waiting on the user:
   sign-out leaves the user's systemd running, as SSH sessions do). On
   PatroneTest, install `~/src/patrone-linux/out/patrone-branding_0.1.15_all.deb`
   or the next ISO. PdfCraft looks the same afterwards: it draws its own
-  font, and the fix for that is in the app (same section).
+  font, which only its developers can change (same section).
 
 ## 1. Patrone Terminal
 
@@ -1979,8 +1979,11 @@ odd font that doesn't look correct."
   identical. MailCraft's `crates/ui-egui/src/theme.rs` reads a system font
   only on Windows (`SystemFont::read`: Segoe UI) and uses the bundled Inter
   elsewhere; ScreenGrabCraft's `crates/ui/src/lib.rs` always uses Inter.
-- **What the Craft apps need** (their own repositories; not changed): a
-  Linux `SystemFont::read` that asks for the desktop's font (the settings
+- **What the Craft apps would need**, for their developers: they're
+  third-party apps that Patrone's app index only lists, not the user's
+  projects (the user, 2026-10-28), so nothing was changed in them, and
+  the fix belongs with whoever makes them. It's a Linux
+  `SystemFont::read` that asks for the desktop's font (the settings
   portal's `org.gnome.desktop.interface font-name`, "Patrone Sans 11",
   which answers inside Flatpak too; else fontconfig's match for system-ui),
   finds its file through fontconfig (the host's fonts are in every sandbox,
