@@ -100,6 +100,8 @@ Not sent at all
 - Hardware-certification reports: Canonical's hwctl isn't installed.
 - Checks for Ubuntu's next release: off. Patrone moves to a new Ubuntu base
   itself.
+- News in the login message: off. Ubuntu's daily news (from
+  motd.ubuntu.com) isn't fetched.
 - Patrone's own apps (Terminal, File Manager, Settings, Task Manager and
   Unpack) don't go online by themselves. Unpack reaches Flathub only when a
   Flatpak app you're installing needs something from there.
