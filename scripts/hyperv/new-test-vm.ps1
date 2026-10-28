@@ -22,6 +22,8 @@ New-VM -Name $Name -Generation 2 -Path $Root -MemoryStartupBytes ($MemoryGB * 1G
 Set-VMProcessor -VMName $Name -Count $Cpus
 Set-VMMemory -VMName $Name -DynamicMemoryEnabled $false
 Set-VM -Name $Name -AutomaticCheckpointsEnabled $false -CheckpointType Standard
+# Enhanced Session for Linux guests is RDP over a Hyper-V socket (vsock 3389)
+Set-VM -Name $Name -EnhancedSessionTransportType HvSocket
 Set-VMFirmware -VMName $Name -EnableSecureBoot On -SecureBootTemplate MicrosoftUEFICertificateAuthority
 $dvd = Add-VMDvdDrive -VMName $Name -Path $Iso -Passthru
 Set-VMFirmware -VMName $Name -FirstBootDevice $dvd
