@@ -159,6 +159,17 @@ python3 tools/make_cursors.py /tmp/patrone-cursors
 python tools/make_cursors.py --preview system/cursors/previews
 ```
 
+GNOME Shell draws the cursor for GTK 4 apps (they name a shape and the
+shell draws it from its theme), so they get Patrone's, Flatpak ones too.
+GTK 3 apps load the images themselves, from fixed folders (`~/.icons`,
+`/usr/share/icons` and the like, or `XCURSOR_PATH`). In a Flatpak sandbox
+those are the runtime's, and Flatpak drops `XCURSOR_PATH` from the host, so
+GTK 3 apps in Flatpak keep the runtime's cursors, as they did when the theme
+was Yaru. A Flatpak override (`flatpak override --env=XCURSOR_PATH=...`,
+pointing at `/run/host/share/icons`, where the sandbox sees the host's
+themes) would give them Patrone's; a system-wide one reaches only apps
+installed system-wide, not those installed per account (Unpack's).
+
 ## Boot splash layout
 
 ![Every mode at 1920×1080](system/plymouth/previews/modes-1920x1080.png)
