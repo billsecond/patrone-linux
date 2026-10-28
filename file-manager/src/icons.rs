@@ -173,6 +173,9 @@ pub fn for_kind(kind: Kind) -> &'static str {
 
 /// The icon for an item in a file list.
 pub fn for_info(info: &gio::FileInfo) -> &'static str {
+    if let Some(icon) = network_place_icon(info) {
+        return icon;
+    }
     let is_dir = util::is_dir(info);
     if is_dir {
         if let Some(file) = util::file_of(info) {
@@ -183,8 +186,64 @@ pub fn for_info(info: &gio::FileInfo) -> &'static str {
     for_kind(kind_of(&util::content_type(info), false))
 }
 
+/// Computers and shares on the Network page, which GVfs lists as shortcuts
+/// to their addresses: they showed as blank files. A computer (or a
+/// workgroup) by GVfs's icon for it, a shared folder as a folder.
+fn network_place_icon(info: &gio::FileInfo) -> Option<&'static str> {
+    if !matches!(
+        info.file_type(),
+        gio::FileType::Shortcut | gio::FileType::Mountable
+    ) || !info.has_attribute("standard::target-uri")
+    {
+        return None;
+    }
+    let names: Vec<String> = if info.has_attribute("standard::icon") {
+        info.icon()
+            .and_then(|icon| icon.downcast::<gio::ThemedIcon>().ok())
+            .map(|icon| icon.names().iter().map(|name| name.to_string()).collect())
+            .unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+    let has = |part: &str| names.iter().any(|name| name.contains(part));
+    if has("workgroup") {
+        Some("pfm-network")
+    } else if has("computer") || has("server") {
+        Some("pfm-computer")
+    } else if has("folder") {
+        Some("pfm-folder")
+    } else {
+        // No icon to go by: a computer is the top of its address
+        let target = info.attribute_string("standard::target-uri")?;
+        Some(if is_server_top(&gio::File::for_uri(&target)) {
+            "pfm-computer"
+        } else {
+            "pfm-folder"
+        })
+    }
+}
+
+/// Whether a network address is a whole computer (smb://nas2/), not a
+/// folder on it.
+fn is_server_top(file: &gio::File) -> bool {
+    let network = file.uri_scheme().is_some_and(|scheme| {
+        matches!(
+            scheme.as_str(),
+            "smb" | "sftp" | "ssh" | "ftp" | "ftps" | "dav" | "davs" | "nfs" | "afp"
+        )
+    });
+    network
+        && glib::Uri::parse(&file.uri(), glib::UriFlags::NONE).is_ok_and(|uri| {
+            uri.host().is_some_and(|host| !host.is_empty())
+                && matches!(uri.path().as_str(), "" | "/")
+        })
+}
+
 /// A folder's icon: the special folders have their own.
 pub fn folder_icon(file: &gio::File) -> &'static str {
+    if is_server_top(file) {
+        return "pfm-computer";
+    }
     match places::special_of(file) {
         Some(Special::Home) => "pfm-folder-user",
         Some(Special::Desktop) => "pfm-folder-desktop",
@@ -280,6 +339,9 @@ fn system_folder_icon(file: &gio::File) -> Option<&'static str> {
 
 /// The 16-pixel icon for a folder in the navigation pane, tabs and menus.
 pub fn small_folder_icon(file: &gio::File) -> &'static str {
+    if is_server_top(file) {
+        return "pfm-nav-computer";
+    }
     match places::special_of(file) {
         Some(Special::Home) => "pfm-nav-user",
         Some(Special::Desktop) => "pfm-nav-desktop",
@@ -377,5 +439,42 @@ pub fn trash_icon() -> &'static str {
     ) {
         Ok(info) if info.attribute_uint32("trash::item-count") > 0 => "pfm-trash-full",
         _ => "pfm-trash",
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn shortcut(icon: Option<&str>, target: &str) -> gio::FileInfo {
+        let info = gio::FileInfo::new();
+        info.set_file_type(gio::FileType::Shortcut);
+        if let Some(icon) = icon {
+            info.set_icon(&gio::ThemedIcon::new(icon));
+        }
+        info.set_attribute_string("standard::target-uri", target);
+        info
+    }
+
+    #[test]
+    fn network_computers_look_like_computers() {
+        let computer = shortcut(Some("network-server"), "smb://nas2/");
+        assert_eq!(for_info(&computer), "pfm-computer");
+        let workgroup = shortcut(Some("network-workgroup"), "smb://workgroup/");
+        assert_eq!(for_info(&workgroup), "pfm-network");
+        let share = shortcut(Some("folder-remote"), "smb://nas2/photos");
+        assert_eq!(for_info(&share), "pfm-folder");
+        assert_eq!(for_info(&shortcut(None, "smb://nas2/")), "pfm-computer");
+        assert_eq!(for_info(&shortcut(None, "smb://nas2/photos")), "pfm-folder");
+    }
+
+    #[test]
+    fn only_network_addresses_are_computers() {
+        assert!(is_server_top(&gio::File::for_uri("smb://nas2/")));
+        assert!(is_server_top(&gio::File::for_uri("sftp://me@host")));
+        assert!(!is_server_top(&gio::File::for_uri("trash:///")));
+        assert!(!is_server_top(&gio::File::for_uri("network:///")));
+        assert!(!is_server_top(&gio::File::for_uri("smb://nas2/photos/")));
+        assert!(!is_server_top(&gio::File::for_path("/")));
     }
 }

@@ -36,6 +36,7 @@ mod properties;
 mod run;
 mod search;
 mod sidepane;
+mod signin;
 mod tab;
 mod tabbar;
 mod thispc;

@@ -73,8 +73,8 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   signals connected to it, with its last reference.
   **Map network drive** takes `\\server\share` (a Windows share,
   `smb://`) or any address GIO opens (`sftp://`, `ftp://`, `dav://`,
-  `nfs://`...), signs in through GTK's dialog when the server asks (it can
-  remember the password), and with "Reconnect at sign-in" keeps the
+  `nfs://`...), signs in when the server asks (the password can be
+  remembered in the keyring), and with "Reconnect at sign-in" keeps the
   address in `mapped-drives`: `--restore`, run at each sign-in, connects
   it again. A mapped drive keeps its own name and address in This PC's
   Network locations, connected or not, and opens to the folder mapped.
@@ -89,6 +89,20 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   an internal drive, `.iso` and `.img` files, GVfs's `localtest:` backend
   as a network share, a temporary polkit rule letting `claude` mount, and
   an SMB address with no server for the sign-in dialog.
+- **Signing in to mount** (`src/signin.rs`): every mount File Manager
+  starts uses its own `gio::MountOperation`, which answers GVfs's
+  questions with File Manager's dialogs instead of GTK's (whose words were
+  white on light grey in dark mode, with its buttons in a strip of their
+  own). A network folder asks as Windows does: "Enter network
+  credentials", the computer it's for, User name, Password (with a show
+  button), "Remember my credentials" (kept in the keyring by GVfs), and
+  Domain and guest sign-in under More choices; a wrong password asks again
+  and says so. An encrypted drive asks for its password; other questions
+  (an unknown SSH host key) show GIO's words with its choices as buttons.
+  The handlers stop the signal's emission: GIO's own handler, which runs
+  after them, answers "unhandled" at once. Unmounting still uses GTK's
+  operation, for its list of the apps keeping a drive busy. Computers on
+  the Network page (GVfs's shortcuts) show as computers, not blank files.
 - **Views:** Extra large, Large, Medium and Small icons, List, Details,
   Tiles and Content, plus Compact view. Details has sortable, resizable,
   reorderable columns (right-click a header for more columns). Sort and
