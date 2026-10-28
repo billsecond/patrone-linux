@@ -24,6 +24,18 @@ snap revision 665), with these changes, all made by `build.sh`:
 - **The spinner** (`patch_source.py`): Flutter's plain turning ring, in
   Patrone's blue, in place of Yaru's (on the Next button while a page
   works, and on the loading page).
+- **The licence agreement** (`patrone_licence_page.dart`, added by
+  `patch_source.py`; the user, 2026-10-28: "a strong EULA ... that we put
+  that ssame one up on the install page"): a page after "Try or install"
+  shows `legal/eula.md`, the agreement the website's download shows, which
+  `build.sh` puts beside the installer (`data/patrone-eula.md`). Next stays
+  off until "I have read and accept" is ticked. Accepting writes the
+  version and time to `/var/log/installer/patrone-licence-accepted`, which
+  the install engine copies to the new system with its logs; it goes
+  nowhere else. It's an Accept page, not a lock (the free software's own
+  licences let anyone run it; `docs/COMPLIANCE.md`, item 24): the live
+  session isn't behind it, automated installs show no pages, and without
+  the file the page is skipped.
 - **The suggested username** (`patch_source.py`): the first initial and last
   name, "wdaugherty" for "William Daugherty" (Ubuntu's runs the whole name
   together).

@@ -68,4 +68,6 @@ flutter build linux --release
 
 rm -rf "$here/bundle"
 cp -r build/linux/x64/release/bundle "$here/bundle"
+# Patrone's licence agreement, beside the installer, for its licence page
+cp "$here/../legal/eula.md" "$here/bundle/data/patrone-eula.md"
 echo "Built $here/bundle"

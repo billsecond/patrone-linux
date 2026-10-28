@@ -1,3 +1,13 @@
+patrone-installer (0.1.3) resolute; urgency=medium
+
+  * A licence agreement page after "Try or install": Patrone Linux's
+    agreement (legal/eula.md, the one the website's download shows), with
+    Next off until it's accepted. Accepting writes its version and time to
+    /var/log/installer/patrone-licence-accepted, which the install engine
+    copies to the new system; it goes nowhere else.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 10:30:00 -0500
+
 patrone-installer (0.1.2) resolute; urgency=medium
 
   * "Install Patrone Linux" (the ISO's first boot entry) logs in to a

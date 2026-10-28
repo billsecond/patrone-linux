@@ -15,6 +15,8 @@
 #   Flutter's plain one: a ring that turns, in Patrone's blue.
 # - The username it suggests is the first initial and last name
 #   ("William Daugherty": "wdaugherty"), not the whole name run together.
+# - Patrone's licence agreement gets a page of its own after "Try or
+#   install" (patrone_licence_page.dart).
 import colorsys
 import re
 import shutil
@@ -129,3 +131,17 @@ edit(provision / 'lib/src/identity/identity_model.dart',
     return name.sanitize().toLowerCase();
   }''')
 print('username: first initial and last name')
+
+# Patrone's licence agreement, after "Try or install" (patrone_licence_page.dart)
+page = bootstrap / 'lib/pages/patrone_licence/patrone_licence_page.dart'
+page.parent.mkdir(exist_ok=True)
+shutil.copyfile(Path(__file__).resolve().parent / 'patrone_licence_page.dart', page)
+edit(bootstrap / 'lib/pages.dart',
+     "export 'pages/loading/loading_page.dart';\n",
+     "export 'pages/loading/loading_page.dart';\n"
+     "export 'pages/patrone_licence/patrone_licence_page.dart';\n")
+edit(bootstrap / 'lib/app/installation_step.dart',
+     '  tryOrInstall(TryOrInstallPage.new, discreteStep: false, allowedToHide: true),\n',
+     '  tryOrInstall(TryOrInstallPage.new, discreteStep: false, allowedToHide: true),\n'
+     '  patroneLicence(PatroneLicencePage.new, allowedToHide: true),\n')
+print('licence agreement page')
