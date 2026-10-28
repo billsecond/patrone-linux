@@ -12,6 +12,8 @@ yaru = /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource
 # The login screen's theme: Yaru's with Patrone's stylesheet added
 override_dh_auto_build:
 	sh tools/make_gdm_theme.sh $(yaru) system/gdm/patrone-gdm.css build/gnome-shell-theme.gresource
+	# Patrone's cursor theme, drawn by tools/make_cursors.py
+	python3 tools/make_cursors.py build/cursors
 
 override_dh_auto_clean:
 	rm -rf build
@@ -53,6 +55,10 @@ override_dh_auto_install:
 	    $(pkg)/usr/share/applications/gnome-ubuntu-panel.desktop
 	install -Dm644 build/gnome-shell-theme.gresource \
 	    $(pkg)/usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
+	# The cursor theme, made the default by the override below, 95-patrone-settings
+	# (the login screen) and postinst (x-cursor-theme, for everything else)
+	install -d $(pkg)/usr/share/icons/Patrone
+	cp -a build/cursors/. $(pkg)/usr/share/icons/Patrone/
 	install -Dm644 system/schemas/90_patrone.gschema.override \
 	    $(pkg)/usr/share/glib-2.0/schemas/90_patrone.gschema.override
 	# Patrone Sans for sans-serif and Segoe UI: for the system (conf.d) and for

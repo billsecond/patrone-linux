@@ -8,6 +8,7 @@ if [ "$1" = remove ] || [ "$1" = deconfigure ]; then
     update-alternatives --remove text.plymouth $themes/patrone-text/patrone-text.plymouth
     update-alternatives --remove gdm-theme.gresource \
         /usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource
+    update-alternatives --remove x-cursor-theme /usr/share/icons/Patrone/cursor.theme
 fi
 
 #DEBHELPER#

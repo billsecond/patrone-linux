@@ -4,8 +4,10 @@
 # Shown at the file's own size, so it has its own small file
 logo='/usr/share/pixmaps/patrone-logo-login.png'
 
-# Blue focus rings and buttons in place of Ubuntu's orange, and Patrone's
-# typeface, Patrone Sans, in place of Ubuntu's
+# Blue focus rings and buttons in place of Ubuntu's orange, Patrone's
+# typeface, Patrone Sans, in place of Ubuntu's, and Patrone's cursors in
+# place of Yaru's
 [org/gnome/desktop/interface]
 accent-color='blue'
 font-name='Patrone Sans 11'
+cursor-theme='Patrone'

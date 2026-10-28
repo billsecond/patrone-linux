@@ -14,6 +14,11 @@ if [ "$1" = configure ]; then
     # when it next starts.
     update-alternatives --install /usr/share/gnome-shell/gdm-theme.gresource \
         gdm-theme.gresource /usr/share/gnome-shell/theme/Patrone/gnome-shell-theme.gresource 200
+    # The system's default cursor theme (/usr/share/icons/default), over
+    # Adwaita's (priority 90): for programs that don't follow GNOME's
+    # setting, X11 programs and Patrone's compositor among them
+    update-alternatives --install /usr/share/icons/default/index.theme \
+        x-cursor-theme /usr/share/icons/Patrone/cursor.theme 200
     # The boot splash is in the initramfs, and the boot menu takes its name
     # from os-release.
     if command -v update-initramfs > /dev/null; then

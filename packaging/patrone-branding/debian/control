@@ -6,6 +6,8 @@ Build-Depends: debhelper-compat (= 13),
                libgio-2.0-dev-bin,
                libglib2.0-bin,
                plymouth-theme-spinner,
+               python3,
+               python3-numpy,
                yaru-theme-gnome-shell
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
@@ -14,6 +16,7 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 Package: patrone-branding
 Architecture: all
 Depends: ${misc:Depends},
+         adwaita-icon-theme,
          fonts-noto-core,
          fonts-patrone-sans,
          plymouth-theme-spinner,
@@ -43,9 +46,10 @@ Description: Patrone Linux's name, logos and artwork
  wallpaper as the default, light in the light style and dark in the dark
  one, with variants to choose from in Settings in place of Ubuntu's
  wallpapers (it replaces ubuntu-wallpapers), makes blue the accent color
- in place of Ubuntu's orange, turns Ubuntu's dock off by default, and sets
- up fastfetch with the Patrone logo. Help is GNOME Help, with GNOME's own
- front page in place of Ubuntu's (it replaces ubuntu-docs), and the logo
- icons apps ask for (start-here and distributor-logo) are Patrone's P in
- place of Ubuntu's, in every color of Yaru's icons. Removing the package
- puts Ubuntu's files back.
+ in place of Ubuntu's orange, gives the desktop, apps and the login screen
+ Patrone's cursors (falling back to Adwaita's for any it lacks), turns
+ Ubuntu's dock off by default, and sets up fastfetch with the Patrone logo.
+ Help is GNOME Help, with GNOME's own front page in place of Ubuntu's (it
+ replaces ubuntu-docs), and the logo icons apps ask for (start-here and
+ distributor-logo) are Patrone's P in place of Ubuntu's, in every color of
+ Yaru's icons. Removing the package puts Ubuntu's files back.
