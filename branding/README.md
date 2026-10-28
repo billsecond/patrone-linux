@@ -159,16 +159,19 @@ python3 tools/make_cursors.py /tmp/patrone-cursors
 python tools/make_cursors.py --preview system/cursors/previews
 ```
 
-GNOME Shell draws the cursor for GTK 4 apps (they name a shape and the
-shell draws it from its theme), so they get Patrone's, Flatpak ones too.
-GTK 3 apps load the images themselves, from fixed folders (`~/.icons`,
-`/usr/share/icons` and the like, or `XCURSOR_PATH`). In a Flatpak sandbox
-those are the runtime's, and Flatpak drops `XCURSOR_PATH` from the host, so
-GTK 3 apps in Flatpak keep the runtime's cursors, as they did when the theme
-was Yaru. A Flatpak override (`flatpak override --env=XCURSOR_PATH=...`,
-pointing at `/run/host/share/icons`, where the sandbox sees the host's
-themes) would give them Patrone's; a system-wide one reaches only apps
-installed system-wide, not those installed per account (Unpack's).
+Flatpak apps get Patrone's cursors with no setting of Patrone's. Apps that
+name a cursor shape (the cursor-shape protocol) have GNOME Shell draw it
+from its theme: GTK 4 apps, and GTK 3 apps too (GTK 3.24.52 does). Apps
+that load cursor images themselves find the system's themes through the
+cursor library, whose built-in search path in Flatpak's runtimes ends with
+`/run/host/user-share/icons:/run/host/share/icons`, where a sandbox sees the
+system's icons. Setting `XCURSOR_PATH` in a Flatpak override would only
+narrow that path. Checked on PatroneDev on 2026-10-28 with gedit from
+Flathub (GTK 3.24.52, GNOME 51 runtime) in a hidden GNOME Shell: a GTK 3
+window in its sandbox showed Patrone's text, wait, progress and pointer
+cursors, asking the shell for them by shape, and libXcursor in the sandbox
+loaded Patrone's files with no `XCURSOR_PATH`. Apps on older runtimes
+weren't checked.
 
 ## Boot splash layout
 
