@@ -24,6 +24,9 @@ Comment: Built by installer/build.sh from ubuntu-desktop-provision at the
  the Landscape choice, Ubuntu's slides or the Windows logo) and
  installer/debrand_l10n.py (its messages). ubuntu_flavor (MPL-2.0, its
  notice in NOTICES.Z) has its Ubuntu flavor's name changed to Patrone Linux.
+ Patrone's wordmark and P in it come from Patrone's logo, which was made
+ with an AI image generator, so they're Patrone's only as far as anyone
+ holds copyright in them (patrone-branding's copyright file says more).
 License: GPL-3
 
 Files: usr/lib/patrone-installer/data/flutter_assets/packages/yaru/assets/fonts/*

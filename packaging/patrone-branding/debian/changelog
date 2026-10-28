@@ -11,6 +11,10 @@ patrone-branding (0.1.19) resolute; urgency=medium
     patrone-logo, is in the hicolor theme too, for programs that look only
     in icon themes.
   * /etc/legal says where the list of what the system connects to is.
+  * The copyright file says how the logo and wallpaper 01 were made: with
+    an AI image generator (OpenAI's ChatGPT, as the wallpaper's signed C2PA
+    manifest records), so they're offered under GPL-3+ only as far as
+    anyone holds copyright in them (docs/COMPLIANCE.md, item 9).
   * The installer's settings no longer list the pages of "Automated with
     Landscape", Canonical's management service, whose choice
     patrone-installer 0.1.4 takes out.

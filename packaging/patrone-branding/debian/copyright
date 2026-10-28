@@ -6,6 +6,32 @@ Files: *
 Copyright: 2026 William Daugherty
 License: GPL-3+
 
+Files: usr/share/backgrounds/patrone/patrone-back-01-*.png
+       usr/share/pixmaps/patrone-logo*
+       usr/share/plymouth/themes/patrone/watermark.png
+       usr/share/desktop-provision/slides/patrone-logo.png
+       usr/share/icons/Yaru/*/places/start-here.png
+       usr/share/icons/Yaru/scalable/places/*-symbolic.svg
+       usr/share/icons/hicolor/*/apps/patrone-logo*
+       usr/share/patrone/fastfetch/logo.txt
+Copyright: 2026 William Daugherty, as far as these files are protected by
+ copyright
+Comment: Patrone's logo and wallpaper 01, and everything cut or drawn from
+ them. Both were made with an AI image generator: the original wallpaper
+ (branding/wallpapers/patrone-back-01.png in the source) carries a C2PA
+ manifest, signed by OpenAI, recording that it was generated with ChatGPT
+ (gpt-image) on 2026-10-25, and the logo concept it shows
+ (branding/concepts/logo-concept-01.webp) was made the same way. William
+ Daugherty chose, cut out, recolored and adapted them (branding/tools/).
+ Material an AI generates without enough human authorship may not be
+ protected by copyright (US Copyright Office, "Copyright and Artificial
+ Intelligence, Part 2", January 2025), so these files are offered under
+ GPL-3+ only as far as anyone holds copyright in them. The Patrone name and
+ logo are also trademarks, which no copyright licence covers. Patrone's
+ other wallpapers (patrone-*.png apart from these) are drawn by code
+ (tools/make_generated_wallpapers.py), with no image model.
+License: GPL-3+
+
 Files: usr/share/plymouth/themes/patrone/bullet.png
        usr/share/plymouth/themes/patrone/capslock.png
        usr/share/plymouth/themes/patrone/entry.png

@@ -54,12 +54,15 @@ cat >> debian/copyright << 'EOF'
 Files: gnome-initial-setup/pages/language/distributor-logo.svg
  gnome-initial-setup/pages/welcome/ubuntu-mascot-light.svg
  gnome-initial-setup/pages/welcome/ubuntu-mascot-dark.svg
-Copyright: 2026 William Daugherty
+Copyright: 2026 William Daugherty, as far as these files are protected by
+ copyright
 Comment: Patrone's P, in place of Ubuntu's logo and mascot, put in by
  Patrone's build (gnome-initial-setup/patrone.py in
  https://github.com/billsecond/patrone-linux), which also changes the
  setup's words and recolors its other pictures from Ubuntu's orange to
- Patrone's blue.
+ Patrone's blue. The P comes from Patrone's logo, which was made with an AI
+ image generator, so it's offered under GPL-3+ only as far as anyone holds
+ copyright in it (patrone-branding's copyright file says more).
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

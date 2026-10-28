@@ -25,6 +25,27 @@ Intended for:
 The image here is a picture of ASCII art. The real terminal logo has to be
 written as actual text characters so terminals can print it.
 
+### Where it and wallpaper 01 come from
+
+Both were made with an AI image generator. The original wallpaper
+(`wallpapers/patrone-back-01.png`) carries a C2PA manifest, signed by
+OpenAI: generated with ChatGPT (`gpt-image`) on 2026-10-25. The concept has
+no metadata left (WebP drops it), but it was made the same day the same
+way, and the wallpaper shows the same logo. Everything cut or drawn from
+them is Patrone's work on top: the logo files, the splash, the login and
+About pictures, the installer's and first-login setup's P, the logo icons,
+wallpaper 01's family and the fastfetch logo. The generated wallpapers are
+different (below): code draws every pixel.
+
+Material an AI generates without enough human authorship may not be
+protected by copyright (the US Copyright Office's report on AI, Part 2,
+January 2025), so `patrone-branding`'s copyright file says so, and offers
+these files under GPL-3+ only as far as anyone holds copyright in them.
+The name and logo are also Patrone's trademarks (`legal/eula.md`, section
+3). A human-drawn vector master of the logo (below) would settle it, and is
+a lawyer's question with a trademark search for PATRONE
+(`docs/COMPLIANCE.md`, item 9).
+
 ## Logo files
 
 `logos/` holds transparent PNGs cut from the concept by
