@@ -6,3 +6,4 @@
 *.svg text eol=lf
 # Remote Desktop Connection files are read on Windows.
 *.rdp text eol=crlf
+*.gpg binary

@@ -3,9 +3,15 @@
 // and on Patrone ${distro_id} is "Patrone" (os-release's ID), which none of
 // the archive's origins ("Ubuntu") match, so it allowed nothing. These add
 // Ubuntu's own, as Ubuntu's file names them for Ubuntu.
+//
+// And Patrone's own repository (sources.list.d/patrone.sources), installed
+// by itself the same way: it's where Ubuntu's security fixes to the packages
+// Patrone builds with its changes (GDM, GNOME Settings, first-login setup)
+// arrive, since patrone.pref keeps Ubuntu's versions of those out.
 Unattended-Upgrade::Allowed-Origins {
         "Ubuntu:${distro_codename}";
         "Ubuntu:${distro_codename}-security";
         "UbuntuESMApps:${distro_codename}-apps-security";
         "UbuntuESM:${distro_codename}-infra-security";
+        "Patrone:${distro_codename}";
 };

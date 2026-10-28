@@ -19,6 +19,11 @@ Keeping it up to date
   security.ubuntu.com, or a mirror near you, run by Canonical. Once a day the
   computer checks for updates and installs security updates by itself.
   Patrone Software gets Ubuntu's apps and their updates here too.
+- Patrone's own updates (billsecond.github.io/patrone-apt), on GitHub Pages,
+  run by GitHub: Patrone's packages, and its builds of the few Ubuntu
+  packages it changes. The computer checks them with Ubuntu's, once a day,
+  and installs them by itself too. GitHub records the network address of
+  each computer that fetches them, under GitHub's own privacy statement.
 - The Snap Store, run by Canonical: a few times a day the computer asks for
   new versions of the snaps it has, the firmware updater among them.
 - Firmware updates: the Linux Vendor Firmware Service (cdn.fwupd.org), run

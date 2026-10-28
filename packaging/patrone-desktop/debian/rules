@@ -20,6 +20,14 @@ override_dh_auto_install:
 	    $(pkg)/usr/libexec/patrone-desktop/make-session-mode
 	install -Dm644 apt/52patrone-unattended-upgrades \
 	    $(pkg)/etc/apt/apt.conf.d/52patrone-unattended-upgrades
+	# Patrone's own updates: its repository on GitHub, its key, and the pins
+	# that put its builds before Ubuntu's
+	install -Dm644 apt/patrone.sources \
+	    $(pkg)/etc/apt/sources.list.d/patrone.sources
+	install -Dm644 apt/patrone-archive-keyring.gpg \
+	    $(pkg)/usr/share/keyrings/patrone-archive-keyring.gpg
+	install -Dm644 apt/patrone.pref \
+	    $(pkg)/etc/apt/preferences.d/patrone.pref
 	# Software & Updates reads the archive's suites from python-apt's
 	# template for the system's ID, "patrone": Ubuntu's, which updates with
 	# python-apt
