@@ -6,9 +6,15 @@ Build-Depends: debhelper-compat (= 13),
                freerdp-proxy,
                freerdp3-dev,
                gjs,
+               iproute2 <!nocheck>,
+               libcairo2-dev,
                libpam0g-dev,
+               libpango1.0-dev,
+               libxkbcommon-dev,
+               openssl <!nocheck>,
                pkgconf,
-               python3
+               python3,
+               systemd <!nocheck>
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Vcs-Git: https://github.com/billsecond/patrone-linux.git
@@ -29,7 +35,8 @@ Depends: ${shlibs:Depends},
          openssl,
          pkexec,
          python3,
-         util-linux
+         util-linux,
+         xkb-data
 Description: Patrone's desktops: one per account, on the screen and remotely
  Each account has one desktop, which keeps running whether or not anyone is
  looking at it. The machine's own screen (the "Patrone Desktop" login
@@ -44,3 +51,10 @@ Description: Patrone's desktops: one per account, on the screen and remotely
  administrator turns it on: with the Remote Desktop switch in Settings'
  System > Remote Desktop (Patrone's build of GNOME Settings), or
  "patrone-remote-desktop enable".
+ .
+ On Hyper-V, VMConnect's enhanced session (Remote Desktop over a Hyper-V
+ socket, which only the Hyper-V host can open) shows a login screen in its
+ window. Any account that may sign in at the computer signs in there with
+ its own password, checked by PAM, and gets its own desktop, with the
+ clipboard, sound and a screen that follows the window, whether or not
+ Remote Desktop is turned on.

@@ -58,8 +58,12 @@ Done:
   in a fresh install from an ISO with it, all six Hyper-V integration
   services were OK and checked from the host (file copy, production
   checkpoints, KVP, dynamic memory, shutdown, the host's clock). VirtualBox
-  is packaged but untried (the user chose not to install VirtualBox), and
-  Enhanced Session isn't built.
+  is packaged but untried (the user chose not to install VirtualBox).
+  Enhanced Session is `patrone-remote-desktop` 0.5.0's (below).
+- **Hyper-V's enhanced session** (`remote-desktop/README.md`, package
+  `patrone-remote-desktop` 0.5.0, 2026-10-28): VMConnect shows Patrone's
+  login screen, then the account's own desktop, resizing with the window.
+  Tried on the dev VM by the user with VMConnect; not yet in an ISO.
 - **Patrone taskbar** (section 7, `shell/gnome/README.md`, package
   `patrone-gnome-taskbar`): a compact Windows 11-style taskbar at the bottom
   in place of GNOME's top bar, with the Start menu (type to search), role
@@ -808,15 +812,12 @@ Plan:
 1. **Dev VM:** `mstsc` with Remote Login gives clipboard and full resolution.
    Resizing with the window is expected but unconfirmed: the session was
    still 3840×2160 with no resize logged when last checked. The VMConnect
-   enhanced session is optional for the dev VM. To try it: run
-   `scripts/hyperv/guest/setup-enhanced-session.sh`, shut the VM down, run
-   `Set-VM -VMName PatroneDev -EnhancedSessionTransportType HvSocket`, start
-   it, and connect with VMConnect. Its main value is learning whether
-   VMConnect does NLA, which decides how Patrone's own RDP server must work.
+   enhanced session works on the dev VM since 2026-10-28
+   (`patrone-remote-desktop` 0.5.0, with the HvSocket transport).
 2. **Patrone ISO:** done for the integration services by
    `patrone-guest-tools` (section 17), with the HWE kernel's cloud tools
    rather than `linux-cloud-tools-virtual`. Enhanced Session (RDP over
-   vsock) is still to do.
+   vsock) is `patrone-remote-desktop` 0.5.0's; the next ISO has it.
 3. **Patrone Desktop:** GNOME Remote Desktop only works with Mutter, so
    Patrone needs its own RDP path: implement the screen-cast and
    remote-desktop D-Bus APIs GNOME Remote Desktop uses, or write
@@ -2347,11 +2348,11 @@ checked; in short:
   Windows host had Windows Time stopped and its clock 6 s behind; after a
   checkpoint the guest followed it for a while. Worth starting Windows Time
   on the host (`Start-Service W32Time`; the user's call).
-- **Enhanced Session isn't built.** It's RDP over vsock 3389; Patrone Remote
-  Desktop listens on TCP and requires NLA, which VMConnect probably doesn't
-  do. The Remote Desktop session declined it as a design decision for the
-  user. First step: read what VMConnect offers in its first RDP packet with
-  a vsock listener on a test VM.
+- **Enhanced Session** is built (2026-10-28), in `patrone-remote-desktop`
+  0.5.0 rather than here: a second proxy on vsock 3389 shows Patrone's login
+  screen and then the account's own desktop (the user chose a login screen
+  in the window over NLA). See `remote-desktop/README.md`, "Hyper-V's
+  enhanced session".
 - **VirtualBox is packaged, not tried** (the user, 2026-10-28: don't install
   VirtualBox anywhere for this). Ubuntu's guest utilities (7.2.6,
   **multiverse**: Debian's `contrib`, only because the host's BIOS needs a

@@ -42,6 +42,13 @@ helper_refuses "malformed request" 'alice'
 helper_refuses "unusual account name" '../etc\0secret\0192.0.2.7\0'
 helper_refuses "account name too long" "$(printf 'a%.0s' $(seq 40))\\0secret\\0192.0.2.7\\0"
 helper_refuses "unknown account" 'nosuch-patrone-user\0secret\0192.0.2.7\0'
+answer=$(printf 'nosuch-patrone-user\0secret\0vmconnect\0' | "$auth" --vmconnect 2> /dev/null || true)
+if [[ $answer == denied ]]; then
+    echo "ok   helper: Hyper-V's console refuses an unknown account"
+else
+    echo "FAIL helper: Hyper-V's console and an unknown account (answered \"$answer\")"
+    failures=$((failures + 1))
+fi
 
 # --screen-sign-in acts only as root, for the login screen's services: here
 # (not root) it must do nothing, quietly, and never fail the sign-in.
@@ -158,22 +165,111 @@ else
     echo "skip login screen and polkit rule: gjs isn't installed"
 fi
 
-# The proxy must be able to read the shipped config (it once wasn't: FreeRDP
+# The proxy must be able to read the shipped configs (it once wasn't: FreeRDP
 # rejects "#" comments). It stops at the certificates, which don't exist here.
 config_parses() {
     local log
-    log=$(timeout 5 freerdp-proxy "$here/../data/proxy.ini" 2>&1 || true)
+    log=$(timeout 5 freerdp-proxy "$here/../data/$1" 2>&1 || true)
     if [[ $log == *"failed to parse"* ]]; then
-        echo "FAIL proxy: reads data/proxy.ini"
+        echo "FAIL proxy: reads data/$1"
         failures=$((failures + 1))
     else
-        echo "ok   proxy: reads data/proxy.ini"
+        echo "ok   proxy: reads data/$1"
     fi
 }
 if command -v freerdp-proxy > /dev/null; then
-    config_parses
+    config_parses proxy.ini
+    config_parses vmconnect.ini
 else
     echo "skip proxy: freerdp-proxy isn't installed"
+fi
+
+# Hyper-V's enhanced session, end to end, with stand-ins for Hyper-V's host
+# (a client with no username or password, as VMConnect connects), the
+# sign-in helper and the account's desktop (NLA with the secret): the proxy
+# shows the login screen, which refuses a wrong password, takes the right
+# one, and hands the proxy's client to the desktop.
+vmconnect_test() {
+    local work bin tests port pids=() reached
+    work=$(mktemp -d)
+    bin=$(dirname "$auth")
+    tests=$(dirname "$test_plugin")
+    openssl req -x509 -newkey rsa:2048 -nodes -days 1 -quiet -subj /CN=test \
+        -keyout "$work/tls.key" -out "$work/tls.crt" 2> /dev/null
+    "$tests/test-desktop" "$work/tls.crt" "$work/tls.key" alice 0123abcd \
+        "$work/desktop.port" "$work/reached" > "$work/desktop.log" 2>&1 &
+    pids+=($!)
+    for _ in $(seq 50); do
+        [[ -s $work/desktop.port ]] && break
+        sleep 0.1
+    done
+    python3 "$here/fake-auth.py" "$work/auth.sock" "$(< "$work/desktop.port")" &
+    pids+=($!)
+    systemd-socket-activate --inetd --accept --listen="$work/greeter.sock" \
+        "$bin/patrone-remote-desktop-greeter" --certificate "$work/tls.crt" --key "$work/tls.key" \
+        --auth-socket "$work/auth.sock" --keyboard us 2> "$work/greeter.log" &
+    pids+=($!)
+    port=$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')
+    sed -e "s|^Host=.*|Host=127.0.0.1|" -e "s|^Port=.*|Port=$port|" \
+        -e "s|^Modules=.*|Modules=|" -e "s|^Required=.*|Required=|" \
+        -e "s|^Greeter=.*|Greeter=$work/greeter.sock\nAllowLocal=true|" \
+        -e "s|/var/lib/patrone-remote-desktop/vmconnect|$work|" \
+        "$here/../data/vmconnect.ini" > "$work/vmconnect.ini"
+    "$tests/test-proxy" "$work/vmconnect.ini" "$bin/proxy-patrone-vmconnect-plugin.so" \
+        > "$work/proxy.log" 2>&1 &
+    pids+=($!)
+    for _ in $(seq 50); do
+        [[ -n $(ss -Hltn "sport = :$port") ]] && break
+        sleep 0.1
+    done
+
+    "$tests/test-client" 127.0.0.1 "$port" 12 $'alice\twrong\n' $'right\n' > "$work/client.log" 2>&1 || true
+    reached=$(cat "$work/reached" 2> /dev/null || true)
+    # VMConnect's own connection stays up throughout: activated by the proxy,
+    # again for the login screen, and again for the desktop. And it's told
+    # the account has signed in, as Windows tells it, which VMConnect waits
+    # for before letting its window be resized.
+    if grep -q "signed in alice; opening their desktop" "$work/greeter.log" && [[ $reached == alice ]] &&
+        grep -q "^connected for 1[0-9] seconds, activated 3 times" "$work/client.log" &&
+        grep -q "^the server says alice is signed in" "$work/client.log"; then
+        echo "ok   vmconnect: the login screen, then the account's desktop, on one connection"
+    else
+        echo "FAIL vmconnect: the login screen, then the account's desktop (reached \"$reached\")"
+        for log in greeter proxy desktop client; do
+            echo "--- $log"
+            tail -n 20 "$work/$log.log"
+        done
+        failures=$((failures + 1))
+    fi
+
+    # As shipped, only the Hyper-V host gets in: the plugin must find where a
+    # connection comes from (once, it never could, and refused everyone) and
+    # refuse one that isn't on a Hyper-V socket.
+    port=$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')
+    sed -e "s|^Port=.*|Port=$port|" -e '/^AllowLocal=/d' "$work/vmconnect.ini" > "$work/strict.ini"
+    "$tests/test-proxy" "$work/strict.ini" "$bin/proxy-patrone-vmconnect-plugin.so" \
+        > "$work/strict.log" 2>&1 &
+    pids+=($!)
+    for _ in $(seq 50); do
+        [[ -n $(ss -Hltn "sport = :$port") ]] && break
+        sleep 0.1
+    done
+    "$tests/test-client" 127.0.0.1 "$port" 3 > /dev/null 2>&1 || true
+    if grep -q "refused a connection that didn't come over a Hyper-V socket" "$work/strict.log"; then
+        echo "ok   vmconnect: only the Hyper-V host gets in"
+    else
+        echo "FAIL vmconnect: only the Hyper-V host gets in"
+        grep -i -E 'refused|vmconnect' "$work/strict.log" | tail -n 5
+        failures=$((failures + 1))
+    fi
+    kill "${pids[@]}" 2> /dev/null || true
+    wait "${pids[@]}" 2> /dev/null || true
+    rm -rf "$work"
+}
+if command -v systemd-socket-activate > /dev/null && command -v openssl > /dev/null; then
+    vmconnect_test
+else
+    echo "skip vmconnect: needs systemd-socket-activate and openssl"
 fi
 
 if ((failures)); then
