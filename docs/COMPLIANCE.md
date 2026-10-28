@@ -321,7 +321,7 @@ operating system" in titles and first mentions until it does.
 **Confirmed problem** (website session). At `77ce19f`:
 
 - The download form stores the visitor's **full IP address** on every row
-  (`website/src/download.rs:229`), cleared after `DOWNLOAD_RETENTION_DAYS`,
+  (the website repo's `src/download.rs:229`), cleared after `DOWNLOAD_RETENTION_DAYS`,
   **365 by default** (`config.rs:156`). GDPR recital 30 names IP addresses
   as personal data; Art. 5(1)(c) and (e) ask for no more than needed, for
   no longer than needed. Counting downloads and stopping abuse need a
@@ -681,7 +681,7 @@ the paragraph, and first-login setup's passes a strict DEP-5 parse.
 
 **Likely problem** (website session).
 
-- **`/ubuntu`** (`website/src/main.rs:92`): the policy needs Canonical's
+- **`/ubuntu`** (the website repo's `src/main.rs:92`): the policy needs Canonical's
   permission for "any Trademark in a domain name or URL". Rename it (for
   example `/foundation`).
 - **No source link** next to the ISO download (item 1).
@@ -1013,7 +1013,7 @@ record of each download), sent to the website session:
   or reading things on the device that aren't strictly necessary for what
   the user asked for. Nothing on the site needs consent, so a "we use
   cookies, accept?" banner would be untrue. Fine without one.
-- **The JavaScript notice** (`website/static/notice.js`) is an information
+- **The JavaScript notice** (the website repo's `static/notice.js`) is an information
   notice, not a consent request: no Accept or Reject, no "by continuing you
   agree" (continued browsing isn't consent, EDPB Guidelines 05/2020). It
   must not block or cover the page or the form's own notice; it should be a

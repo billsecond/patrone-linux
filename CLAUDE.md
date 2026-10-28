@@ -1,7 +1,10 @@
 # Patrone Linux
 
 An Ubuntu 26.04.1 LTS-based OS with its own brand-new Wayland desktop,
-**Patrone Desktop**. Private repo: `billsecond/patrone-linux`.
+**Patrone Desktop**. Public repo: `billsecond/patrone-linux`, public since
+2026-10-28. Its history before then, website included, is in the private
+`billsecond/patrone-linux-archive`. The website has its own private repo,
+`billsecond/patrone-website`.
 
 Read these before starting work:
 
@@ -15,6 +18,9 @@ Read these before starting work:
   Code", no AI attribution in commits, PRs, tags, release notes or code comments.
 - Commit as `William Daugherty (billsecond) <31995458+billsecond@users.noreply.github.com>`
   (already set in both clones' local git config).
+- **This repo is public.** Nothing private goes in it: not the user's email
+  address, and not the website, its `.env` or its download data, which stay
+  in the website's private repo and folder.
 - The stack is decided: Rust + Smithay for the compositor, GTK4 (gtk4-rs,
   gtk4-layer-shell) for the shell and apps. Don't revisit it without asking.
 - Never type passwords or approve sign-ins for the user. Root work on the VM
@@ -36,6 +42,7 @@ Read these before starting work:
 | SSH from Windows | `ssh patronedev` (key `~/.ssh/patronedev_ed25519`, alias in `~/.ssh/config`) |
 | Root on the VM | `ssh patronedev-claude`: user `claude` (no password, key `~/.ssh/patronedev_claude_ed25519`), passwordless sudo, in `adm` and `systemd-journal` |
 | Ubuntu ISO | `N:\Hyper-V\ISO\ubuntu-26.04.1-desktop-amd64.iso` (SHA256 verified) |
+| Website clone | `N:\Source\PatroneWebsite` (private `billsecond/patrone-website`). The site's container runs from there, with its `.env`, `data/` and `admin/data/`, which aren't committed. Its build reads this repo's `legal/` from `N:\Source\PatroneLinux` |
 
 Keep the two clones in sync through GitHub: push from one, pull in the other.
 Both `gh` and `git` are signed in on the VM; the VM's `gh` is 2.46, which is
