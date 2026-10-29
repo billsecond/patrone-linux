@@ -2556,7 +2556,7 @@ in the journal, fails the run, and becomes an issue in billsecond/patrone-apt
 that closes once that version is published. `patrone-installer` stays by
 hand (an issue says so). Checked on PatroneDev (2026-10-29), against a
 local copy of patrone-apt with a stand-in for `gh`, and a copy of
-patrone-linux whose `main` was this change: three packages made to look
+this repository whose `main` was this change: three packages made to look
 behind (Default Apps, first-login setup by revision, the installer) were
 built and published as one signed commit, and the installer got its issue,
 in 55 seconds. A version bump with a missing build dependency published

@@ -1,6 +1,6 @@
 [package]
 name = "patrone-task-manager"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2024"
 # Ubuntu 26.04's rustc, which builds the package
 rust-version = "1.93"

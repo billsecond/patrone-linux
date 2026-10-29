@@ -5,12 +5,12 @@ else's licences, trademarks and terms, and the privacy laws that touch the
 website (the user, 2026-10-28: "makes sure this is complient with ubuntu
 and everyone else, be very through and make sure you find ways to double
 check"). Read on 2026-10-28, against the ISO built on 2026-10-27
-(`/var/tmp/patrone-linux-26.04.1-amd64.iso` on the dev VM), the repository
+(in `/var/tmp` on the dev VM), the repository
 at `e961ef4` to `77ce19f`, the website at `77ce19f`, and
 [billsecond/patrone-app-index](https://github.com/billsecond/patrone-app-index).
 
 **Brought up to date on 2026-10-29** with what was merged that day:
-patrone-linux #19 to #29 and the website's #7 and #8. The user asked: "if
+this repository's #19 to #29 and the website's #7 and #8. The user asked: "if
 there is anything we need to do to be more complaint and less risky for any
 of the microsoft or conicial things do it now". Each item that changed says
 so under **2026-10-29**.
@@ -19,8 +19,8 @@ so under **2026-10-29**.
 be https://patroneos.com"). This review was written under the system's old
 name, which had "Linux" in it; it now uses the new name throughout, quotes
 included. Items 4 and 9 are brought up to date for the new name. The repository is
-<https://github.com/billsecond/patroneos> since then (GitHub redirects
-`billsecond/patrone-linux`).
+<https://github.com/billsecond/patroneos> since then (GitHub redirects its
+old address).
 
 **This is not legal advice.** Each finding is graded:
 
@@ -111,8 +111,8 @@ isn't public.
 
 Each `build.sh` runs `dpkg-buildpackage -b`, a binary-only build, so no
 source package is ever made, and every Patrone copyright file's `Source:`
-(and `os-release`'s `HOME_URL`) is `https://github.com/billsecond/patrone-linux`,
-which is private (`gh repo view`: `"visibility":"PRIVATE"`).
+(and `os-release`'s `HOME_URL`) was this repository, which was private
+then (`gh repo view`: `"visibility":"PRIVATE"`).
 
 **What the licences say** (`/usr/share/common-licenses/GPL-2` and `GPL-3`):
 
@@ -187,7 +187,7 @@ and the licence promises recipients the source, so publish it too.
 public"):
 
 1. Patrone's own sources are public: the repository is
-   <https://github.com/billsecond/patrone-linux> (its history rewritten
+   <https://github.com/billsecond/patroneos> (its history rewritten
    without the website, which has its own private repository).
 2. The rebuilds' source is Ubuntu's source package of the version each is
    built from, plus the repository's build script and patches at the disc's
@@ -208,13 +208,13 @@ public"):
    earlier build's layer and the pool, gave 958 source packages. The full
    run waits for the next ISO.
 4. Directions: `SOURCE.txt` at the disc's root and `/etc/legal`
-   (`patrone-branding` 0.1.21) say `https://patronelinux.com/source`, and
+   (`patrone-branding` 0.1.21) say `https://patroneos.com/source`, and
    the licence agreement's section 1 says the same; the website serves the
    folder there and links it from the download page (the website session).
 
 **Done for 26.04.1** (2026-10-28): the disc built from `d0c19ce` (sha256
 `1137635e6f47441b...`) is on the download page with its source folder,
-`/source/patrone-linux-26.04.1-source/` (1,093 of Ubuntu's source packages,
+the website's `/source/` folder for 26.04.1 (1,093 of Ubuntu's source packages,
 Patrone's repository at `d0c19ce` and the installer's upstream source: 8.3
 GB, 3,325 files), and the download page links it and the repository.
 Checked on the running site: the folder answers with its README, its
@@ -851,7 +851,7 @@ trademarks; the home page's Windows section adds that Patrone isn't
 affiliated with or endorsed by Microsoft. The site uses the OS's new names
 (item 15) and leads with Patrone's words ("Works the way Windows users
 expect", "Press the Super key"), and its screenshots were retaken from
-patrone-linux `ecdb5f8`, with the new names and File Manager's new icon.
+this repository at `ecdb5f8`, with the new names and File Manager's new icon.
 The website session checked every page for the new words and none of the
 old ones.
 
