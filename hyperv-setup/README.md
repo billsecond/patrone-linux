@@ -1,6 +1,6 @@
-# Patrone Hyper-V Setup
+# Patrone Virtual Machine Setup
 
-At each desktop login in a Hyper-V virtual machine, Patrone Hyper-V Setup
+At each desktop login in a Hyper-V virtual machine, Virtual Machine Setup
 checks what Patrone Linux needs there, and if something's missing, shows a
 dialog that offers to set it up. Packaged as `patrone-hyperv-setup` (Rust
 and GTK 4, app ID `org.patrone.HyperVSetup`); `patrone-desktop` recommends
@@ -9,6 +9,17 @@ the Patrone Linux starts up, have it check for Hyper-V and if its using
 Hyper-V as its host, then provide a prompt with an option to install
 support for Hyper-V, also allow a disable future notifications on this
 dialog box."
+
+**The name.** Microsoft's trademark guidelines keep its marks, Hyper-V
+among them, out of other products' names, while text may say what a
+product is for (`docs/COMPLIANCE.md`, item 15). So since 0.2.0 the window,
+the app's entry, the icon and the password prompt say "Virtual Machine
+Setup" (0.1.x said "Hyper-V Support"), and the text says what it's for.
+The dialog ends with "Hyper-V and Windows are trademarks of the Microsoft
+group of companies." The package, the program, its units, the polkit action
+and the app ID keep "hyperv": renaming them would need a migration (a
+transitional package, and moving each account's "Don't show this again"
+file and the file below that says Hyper-V has opened an enhanced session).
 
 ```
 patrone-hyperv-setup              the dialog, whatever's set up
@@ -153,3 +164,7 @@ real enhanced session writing the file. VMs from
 services on, so nothing shows there; to see the prompt, make the VM with
 Hyper-V Manager's defaults, or set the transport back to `VMBus` with the
 VM off.
+
+---
+
+Hyper-V and Windows are trademarks of the Microsoft group of companies.

@@ -1,5 +1,8 @@
 [Desktop Entry]
-Name=Hyper-V Support
+# Not "Hyper-V" in the name: Microsoft's guidelines keep its trademarks out
+# of product names (docs/COMPLIANCE.md, item 15). Hyper-V is a trademark of
+# the Microsoft group of companies.
+Name=Virtual Machine Setup
 Comment=Set up what Patrone Linux needs in a Hyper-V virtual machine
 Exec=patrone-hyperv-setup
 Icon=org.patrone.HyperVSetup
