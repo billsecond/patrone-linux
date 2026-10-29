@@ -2000,13 +2000,13 @@ zero. Done in `fonts/` (README and FONTLOG say how):
   lists); there's no italic (fontconfig slants it).
 - **Packages**: `fonts-patrone-sans` 2.0.0; `patrone-settings` 0.3.10 and
   GNOME Settings revision 18 (the Font cards' descriptions);
-  `patrone-branding` 0.1.24 (the fontconfig file's notes). The numbers skip
-  the ones other branches hold (0.3.8, 0.3.9, revisions 16 and 17, branding
-  0.1.23): renumber if those merge later.
+  `patrone-branding` 0.1.24 (the fontconfig file's notes), each above the
+  versions main had when it was merged in.
 - **Notice and licence**: the FONTLOG and the copyright file say it was
-  drawn with AI help, as `docs/COMPLIANCE.md` item 9 does for the logo. It's
-  under the OFL 1.1 with only PatroneOS's copyright; **the licence is the
-  user's to choose**, and this is a draft.
+  drawn with AI help, as `docs/COMPLIANCE.md` item 9 does for the logo. The
+  licence is the SIL Open Font License 1.1 with no Reserved Font Name and
+  only PatroneOS's copyright (William Daugherty): the user's choice,
+  2026-10-29 ("OFL 1.1").
 
 Checked on PatroneDev: fontbakery 1.1.0 universal (104 passed, nothing
 else), the comparison sheet against Patrone Sans 1 at 9 to 11 pt
