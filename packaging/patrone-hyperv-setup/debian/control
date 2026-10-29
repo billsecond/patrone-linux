@@ -14,8 +14,8 @@ Vcs-Git: https://github.com/billsecond/patrone-linux.git
 Package: patrone-hyperv-setup
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, apt, pkexec, systemd
-Description: Offers to set up Hyper-V support at login
- At each desktop login in a Hyper-V virtual machine, Patrone Hyper-V Setup
+Description: Virtual Machine Setup: gets Patrone Linux ready for Hyper-V
+ At each desktop login in a Hyper-V virtual machine, Virtual Machine Setup
  checks what Patrone Linux needs there, and if something's missing, shows
  a dialog that offers to set it up with one administrator's password:
  Hyper-V's integration services (patrone-guest-tools) and VMConnect's
@@ -28,3 +28,5 @@ Description: Offers to set up Hyper-V support at login
  It runs only in Hyper-V virtual machines (systemd's
  ConditionVirtualization), never in the installer's live session, and shows
  nothing when everything is set up.
+ .
+ Hyper-V and Windows are trademarks of the Microsoft group of companies.

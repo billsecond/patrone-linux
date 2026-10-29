@@ -181,7 +181,7 @@ Set-VM -VMName NAME -EnhancedSessionTransportType HvSocket
 `hv_sock` loads by itself when something listens on vsock (its alias is the
 vsock family, `net-pf-40`).
 
-At login in a Hyper-V VM, Patrone Hyper-V Setup (`patrone-hyperv-setup`,
+At login in a Hyper-V VM, Virtual Machine Setup (`patrone-hyperv-setup`,
 `hyperv-setup/README.md`) offers to put back whatever of this is missing,
 these guest tools included, and shows that command, with the VM's own name,
 until Hyper-V has opened an enhanced session with the VM.
@@ -274,3 +274,7 @@ redistributed.
 (`xserver-xorg-core`, about 4 MB), which a Wayland-only desktop doesn't
 otherwise have. It never runs: GDM 50 offers no X11 session, and nothing
 else starts it.
+
+---
+
+Hyper-V and Windows are trademarks of the Microsoft group of companies.

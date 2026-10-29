@@ -1,5 +1,5 @@
 [Unit]
-Description=Offer to set up Hyper-V support
+Description=Virtual Machine Setup: offer to set up what's missing
 Documentation=file:///usr/share/doc/patrone-hyperv-setup/README.md
 ConditionVirtualization=microsoft
 # Not in the installer's live session, which has the disc at /cdrom (and

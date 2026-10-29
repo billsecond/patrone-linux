@@ -1,6 +1,6 @@
-/* Patrone Hyper-V Setup: a row for each part of Hyper-V support, with
- * where it stands, then what to run on Windows, in the system's light or
- * dark colors. */
+/* Patrone Virtual Machine Setup: a row for each part of what Patrone
+ * Linux needs in Hyper-V, with where it stands, then what to run on
+ * Windows, in the system's light or dark colors. */
 
 .setup-title {
   font-size: 1.5em;
@@ -17,6 +17,12 @@
 
 .setup-dim {
   opacity: 0.7;
+}
+
+/* The trademark notice */
+.setup-legal {
+  font-size: 0.8em;
+  opacity: 0.6;
 }
 
 .setup-done {

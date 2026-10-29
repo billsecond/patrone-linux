@@ -60,8 +60,8 @@ Done:
   checkpoints, KVP, dynamic memory, shutdown, the host's clock). VirtualBox
   is packaged but untried (the user chose not to install VirtualBox).
   Enhanced Session is `patrone-remote-desktop` 0.5.0's (below).
-- **Hyper-V Setup** (section 17, `hyperv-setup/README.md`, package
-  `patrone-hyperv-setup` 0.1.0, 2026-10-28): at login in a Hyper-V VM, a
+- **Virtual Machine Setup** (section 17, `hyperv-setup/README.md`, package
+  `patrone-hyperv-setup` 0.2.0, 2026-10-29): at login in a Hyper-V VM, a
   dialog offers to set up what's missing (the guest tools, the enhanced
   session) with one password, and shows the PowerShell command for Windows'
   side; "Don't show this again" per account. Checked on PatroneDev with the
@@ -2426,7 +2426,12 @@ checked; in short:
 - Also seen: the installer warns "The computer is not plugged in to a
   power source" in Hyper-V, which shows the guest a battery.
 
-### Patrone Hyper-V Setup: the prompt at login
+### Patrone Virtual Machine Setup: the prompt at login
+
+0.2.0 (2026-10-29) renamed it from "Hyper-V Setup" (the window said
+"Hyper-V Support"): Microsoft's trademark guidelines keep Hyper-V out of
+product names (`docs/COMPLIANCE.md`, item 15). The package, program, units
+and app ID keep "hyperv", which a rename would have to migrate.
 
 The user, 2026-10-28: "When the Patrone Linux starts up, have it check for
 Hyper-V and if its using Hyper-V as its host, then provide a prompt with an

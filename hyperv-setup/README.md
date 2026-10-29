@@ -1,6 +1,6 @@
-# Patrone Hyper-V Setup
+# Patrone Virtual Machine Setup
 
-At each desktop login in a Hyper-V virtual machine, Patrone Hyper-V Setup
+At each desktop login in a Hyper-V virtual machine, Virtual Machine Setup
 checks what Patrone Linux needs there, and if something's missing, shows a
 dialog that offers to set it up. Packaged as `patrone-hyperv-setup` (Rust
 and GTK 4, app ID `org.patrone.HyperVSetup`); `patrone-desktop` recommends
@@ -9,6 +9,17 @@ the Patrone Linux starts up, have it check for Hyper-V and if its using
 Hyper-V as its host, then provide a prompt with an option to install
 support for Hyper-V, also allow a disable future notifications on this
 dialog box."
+
+**The name.** Microsoft's trademark guidelines keep its marks, Hyper-V
+among them, out of other products' names, while text may say what a
+product is for (`docs/COMPLIANCE.md`, item 15). So since 0.2.0 the window,
+the app's entry, the icon and the password prompt say "Virtual Machine
+Setup" (0.1.x said "Hyper-V Support"), and the text says what it's for.
+The dialog ends with "Hyper-V and Windows are trademarks of the Microsoft
+group of companies." The package, the program, its units, the polkit action
+and the app ID keep "hyperv": renaming them would need a migration (a
+transitional package, and moving each account's "Don't show this again"
+file and the file below that says Hyper-V has opened an enhanced session).
 
 ```
 patrone-hyperv-setup              the dialog, whatever's set up
@@ -146,10 +157,32 @@ parts pretended:
 - The login unit, started in the account's own session with everything set
   up: started, and ended without a window.
 
+0.2.0, the new name (2026-10-29), on PatroneDev:
+
+- Installed, the package's description, the app's entry, the icon's title
+  and polkit's action say "Virtual Machine Setup" or "this virtual
+  machine" (`dpkg-query`, `desktop-file-validate`, `pkaction`).
+- In the hidden GNOME Shell at 1024×768, a common size for Hyper-V's basic
+  window, where the prompt mostly shows, light and dark: each page has the
+  new name and the trademark line. With everything missing, the first page
+  fits above the taskbar both with the VM's name and without it (Data
+  Exchange's pool hidden in a mount namespace), after the opening line was
+  cut to one and the rows made a little tighter. Set Up as a dry run went
+  to "Setting up this virtual machine", then "One more step, on Windows";
+  with only the enhanced session missing, to "This virtual machine is set
+  up". Set Up for real brought GNOME Shell's password dialog, "Authentication
+  is required to set up this virtual machine", which was left unanswered.
+- A real enhanced session from VMConnect started
+  `patrone-hyperv-setup-seen.service` (twice that morning, in the journal),
+  which wrote the file again.
+
 Not checked yet: a fresh install, where the prompt really shows (after
-first-login setup), Set Up with a password, Restart and Shut Down, and a
-real enhanced session writing the file. VMs from
+first-login setup), Set Up with a password, and Restart and Shut Down. VMs from
 `scripts/hyperv/new-test-vm.ps1` have the socket transport and Guest
 services on, so nothing shows there; to see the prompt, make the VM with
 Hyper-V Manager's defaults, or set the transport back to `VMBus` with the
 VM off.
+
+---
+
+Hyper-V and Windows are trademarks of the Microsoft group of companies.
