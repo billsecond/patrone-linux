@@ -86,14 +86,25 @@ override_dh_auto_install:
 	    logos/patrone-logo.png logos/patrone-logo-text.png logos/patrone-logo-text-dark.png \
 	    logos/patrone-logo-login.png \
 	    logos/patrone-logo-text.svg logos/patrone-logo-text-dark.svg
+	# The logo's vector masters (tools/make_logos.py), for anything that
+	# wants it at another size
+	install -Dm644 -t $(pkg)/usr/share/patrone/logos logos/*.svg
 	# The installer's colors, pictures and slides (system/desktop-provision)
 	install -d $(pkg)/usr/share/desktop-provision
 	cp -r system/desktop-provision/. $(pkg)/usr/share/desktop-provision/
 	install -Dm644 logos/patrone-logo-text-dark.png $(pkg)/usr/share/desktop-provision/slides/patrone-logo.png
-	# Wallpaper 01 and its variants, and the generated designs
+	# Wallpapers 02 (Neon Horizon) and 03 and their variants
+	# (tools/make_wallpapers.py), and the generated designs
 	# (tools/make_generated_wallpapers.py), listed in Settings > Appearance
-	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/patrone-back-01-*.png
+	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone \
+	    wallpapers/patrone-back-02-*.png wallpapers/patrone-back-03-*.png
 	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/generated/patrone-*.png
+	# Wallpaper 01's family is retired. Its names lead to 02's, so a desktop
+	# set to one of them still has a wallpaper.
+	for name in light plain plain-light clean mark mark-light badge midnight blue graphite watermark; do \
+	    ln -s patrone-back-02-$$name.png $(pkg)/usr/share/backgrounds/patrone/patrone-back-01-$$name.png; \
+	done
+	ln -s patrone-back-02-dark.png $(pkg)/usr/share/backgrounds/patrone/patrone-back-01-8k.png
 	install -Dm644 system/backgrounds/patrone-wallpapers.xml \
 	    $(pkg)/usr/share/gnome-background-properties/patrone-wallpapers.xml
 	install -Dm644 fastfetch/config.jsonc $(pkg)/etc/xdg/fastfetch/config.jsonc

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1425" height="1000" viewBox="0 0 1425 1000">
+<title>PatroneOS</title>
+<defs><linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="700" y1="718" x2="1400" y2="400"><stop offset="0" stop-color="#1851A8"/><stop offset="0.55" stop-color="#2372DD"/><stop offset="1" stop-color="#288BFA"/></linearGradient><linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="450" y1="700" x2="100" y2="1000"><stop offset="0" stop-color="#1851A8"/><stop offset="1" stop-color="#134394"/></linearGradient><linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="700" y1="398" x2="300" y2="850"><stop offset="0" stop-color="#288BFA"/><stop offset="1" stop-color="#2372DD"/></linearGradient><linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="250" y1="300" x2="1350" y2="150"><stop offset="0" stop-color="#288BFA"/><stop offset="1" stop-color="#4DA0FC"/></linearGradient></defs>
+<path fill="url(#g0)" d="M891.32 398L1424.68 398A255 337 0 0 1 1170 718L680.12 718Z"/>
+<path fill="url(#g1)" d="M397.32 398L791.32 398L394 1000L0 1000L397.32 398Z"/>
+<path fill="url(#g2)" d="M397.32 398L791.32 398L459.26 901.13L262.26 602.64L397.32 398Z"/>
+<path fill="url(#g3)" d="M230 0L1170 0A255 337 0 0 1 1425 337L1425 381A255 337 0 0 1 1401.86 521.27A294 294 0 0 0 1117 300L428 300Z"/>
+</svg>

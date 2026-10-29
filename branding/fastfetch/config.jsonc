@@ -1,4 +1,4 @@
-// Patrone Linux's fastfetch setup, to be installed as
+// PatroneOS's fastfetch setup, to be installed as
 // /etc/xdg/fastfetch/config.jsonc, with logo.txt as
 // /usr/share/patrone/fastfetch/logo.txt. The logo has its colors written in
 // as 24-bit color codes (every cell its own, by tools/make_terminal_logo.py),

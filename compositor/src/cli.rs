@@ -23,7 +23,7 @@ Usage: patrone-compositor [OPTION...]
 /// The wallpaper in this repository, for running from a checkout.
 const DEFAULT_WALLPAPER: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../branding/wallpapers/patrone-back-01.png"
+    "/../branding/wallpapers/patrone-back-02.png"
 );
 const DEFAULT_SCREENSHOT_AFTER: Duration = Duration::from_secs(5);
 
@@ -183,7 +183,7 @@ mod tests {
         assert!(
             Options::default()
                 .wallpaper
-                .ends_with("patrone-back-01.png")
+                .ends_with("patrone-back-02.png")
         );
     }
 
