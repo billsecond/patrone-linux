@@ -9,6 +9,12 @@ check"). Read on 2026-10-28, against the ISO built on 2026-10-27
 at `e961ef4` to `77ce19f`, the website at `77ce19f`, and
 [billsecond/patrone-app-index](https://github.com/billsecond/patrone-app-index).
 
+**Brought up to date on 2026-10-29** with what was merged that day:
+patrone-linux #19 to #29 and the website's #7 and #8. The user asked: "if
+there is anything we need to do to be more complaint and less risky for any
+of the microsoft or conicial things do it now". Each item that changed says
+so under **2026-10-29**.
+
 **This is not legal advice.** Each finding is graded:
 
 - **Confirmed problem**: a duty that isn't met, shown by the files.
@@ -50,9 +56,9 @@ Nothing was published, uploaded, or sent to anyone outside these sessions.
 
 | # | Finding | Grade | Who acts | Re-checked |
 | --- | --- | --- | --- | --- |
-| [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download; **fixed for 26.04.1** (2026-10-28: the repository is public, and the disc's source is on the website beside it, gathered by `iso/build-source.sh`) | Each new disc: the same again | Yes: confirmed |
-| [2](#2-canonicals-rule-on-redistributing-ubuntus-binaries) | Canonical's policy asks derived distributions to recompile Ubuntu's binaries; Patrone ships Ubuntu's own | Needs a lawyer | The user | Yes: same count, needs a lawyer |
-| [3](#3-ubuntus-logo-is-still-on-screen) | Ubuntu's logo is still on screen: Help, Software Updater, the logo icons | Confirmed problem, **fixed on screen** (2026-10-28); Ubuntu's hidden layers on the disc remain | Main session (the layers) | Yes: confirmed |
+| [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download; **fixed for 26.04.1** (2026-10-28: the repository is public, and the disc's source is on the website beside it, gathered by `iso/build-source.sh`). Since 2026-10-29 the disc lists only what's on it. The snaps' own source can't all be gathered from the disc | Each new disc: the same again; a lawyer (the snaps) | Yes: confirmed |
+| [2](#2-canonicals-rule-on-redistributing-ubuntus-binaries) | Canonical's policy asks derived distributions to recompile Ubuntu's binaries; Patrone ships Ubuntu's own | Needs a lawyer; a letter to Canonical is drafted (2026-10-29), not sent | The user (a lawyer first) | Yes: same count, needs a lawyer |
+| [3](#3-ubuntus-logo-is-still-on-screen) | Ubuntu's logo is still on screen: Help, Software Updater, the logo icons | Confirmed problem, **fixed** (on screen 2026-10-28; on the disc 2026-10-29: none of Ubuntu's layers left, #29) | | Yes: confirmed |
 | [4](#4-linux-in-the-name-needs-the-linux-foundations-sublicence) | "Linux" in the name needs the Linux Foundation's (free) sublicence | Confirmed problem, before a public release; **applied for** (2026-10-28), waiting on the Linux Foundation | The user | Yes: confirmed |
 | [5](#5-the-website-keeps-full-ip-addresses-for-a-year-and-says-it-keeps-none) | The download log keeps full IP addresses for a year, "deleted" data stays in the file, and the privacy page contradicts the code | Confirmed problem | Website session | Yes: confirmed, by a test |
 | [6](#6-the-app-index-republishes-artcrafts-trademarked-icon) | The app index republishes ArtCraft's trademarked, non-open-source "A" icon | Likely problem, needs a lawyer; **taken off the index** (2026-10-28) until the ArtCraft Team allows it | The user (ask them) | Yes: likely problem |
@@ -60,14 +66,14 @@ Nothing was published, uploaded, or sent to anyone outside these sessions.
 | [8](#8-the-rust-apps-shipped-none-of-their-crates-notices) | The Rust apps shipped none of the MIT/Apache notices of the code compiled into them | Confirmed problem, **fixed** (`5b9356e`, `460713b`) | Rebuild each package | Yes: confirmed; it found the standard library gap, fixed in `460713b` |
 | [9](#9-the-wallpaper-and-logo-are-ai-generated-but-labelled-gpl-3-by-william-daugherty) | The wallpaper (and almost certainly the logo) is AI-generated, but the copyright file claims it as the owner's GPL-3+ work | Confirmed problem (the label), **fixed** (2026-10-28: labelled as AI-made); needs a lawyer (ownership) | The user (a lawyer, a vector master) | Yes: confirmed, image hash checked |
 | [10](#10-the-installer-still-carries-canonicals-and-other-peoples-pieces) | The installer: "Automated with Landscape", 27 other companies' app logos and Windows' logo, fonts and data without their licences (and no telemetry page after all) | Confirmed (notices); likely problem (the rest): **fixed** (2026-10-28) | | Yes: confirmed; it found the extra fonts, data and Windows logo |
-| [11](#11-thunderbird-in-the-live-session) | Thunderbird, Canonical's build of Mozilla's app, is in the live session | Likely problem, **fixed** (2026-10-28); still in Ubuntu's hidden layer (item 3) | | Yes: likely problem |
+| [11](#11-thunderbird-in-the-live-session) | Thunderbird, Canonical's build of Mozilla's app, is in the live session | Likely problem, **fixed** (2026-10-28; the hidden layer too, 2026-10-29, #29) | | Yes: likely problem |
 | [12](#12-ubuntu-pro-landscape-and-other-canonical-services) | Ubuntu Pro's client and services, hwctl, and other Canonical services | Likely problem (Pro, hwctl), **fixed** (2026-10-28); fine (the rest) | | No (research, checked on the VM) |
 | [13](#13-patrones-rebuilds-of-ubuntu-packages-say-ubuntu-maintains-them) | Patrone's rebuilds of GDM, Settings and first-login setup say Ubuntu maintains them, and their copyright files don't mention Patrone | Likely problem, **fixed** (Settings `67f052b`; GDM and first-login setup 2026-10-28) | | Yes: likely problem |
-| [14](#14-the-website-ubuntu-in-a-url-and-incomplete-trademark-notices) | The website: Ubuntu in a URL, incomplete trademark notices, no source link, a licence click-through to watch | Likely problem | Website session | Yes: URL confirmed |
-| [15](#15-windows-11s-look-and-feel) | Windows 11's look and feel, the "Start" name, the File Manager icon, "Windows-style" descriptions | Needs a lawyer (low to moderate risk) | The user | No (research, two sources each) |
+| [14](#14-the-website-ubuntu-in-a-url-and-incomplete-trademark-notices) | The website: Ubuntu in a URL, incomplete trademark notices, no source link, a licence click-through to watch | Likely problem, **fixed in the code** (`fe30ef4`; Microsoft's notices and non-affiliation, website #7, 2026-10-29) | Website session | Yes: URL confirmed |
+| [15](#15-windows-11s-look-and-feel) | Windows 11's look and feel, the "Start" name, the File Manager icon, "Windows-style" descriptions | Needs a lawyer (low risk); **the names, the Royal theme's name, the File Manager icon and the descriptions changed** (2026-10-29, #19 to #27, website #7 and #8); the look stays | The user | No (research, two sources each) |
 | [16](#16-the-zfs-kernel-module) | ZFS's kernel module (CDDL) is installed with the GPL kernel | Needs a lawyer | The user | Yes: needs a lawyer |
 | [17](#17-nvidia-and-broadcom-drivers-on-the-disc) | NVIDIA's and Broadcom's drivers are on the disc | Fine to redistribute; their indemnities need a lawyer | The user | Yes: byte-identical; needs a lawyer |
-| [18](#18-smaller-notices-and-wording) | Smaller notices and wording (`/etc/legal` **fixed**, `patrone-branding`'s and `patrone-installer`'s copyright files **fixed**) | Mixed | Several | In part (the copyright files, `/etc/legal`) |
+| [18](#18-smaller-notices-and-wording) | Smaller notices and wording (`/etc/legal` **fixed**, `patrone-branding`'s and `patrone-installer`'s copyright files **fixed**, Ubuntu's name in setup, Settings, Language Support and the boot menu **fixed**, #28) | Mixed | Several | In part (the copyright files, `/etc/legal`) |
 | [19](#19-privacy-law-for-the-website) | Privacy law for the website: GDPR applicability, an EU/UK representative, CAN-SPAM | Needs a lawyer (applicability); cheap steps either way | The user; website session | Yes: needs a lawyer |
 | [20](#20-what-the-os-contacts-and-whether-users-are-told) | What the OS contacts, and whether users are told | Fine (operators' terms); likely problem (no notice in the OS), **fixed** (2026-10-28) | Website session (its list, brought up to date) | In part (TimeNL) |
 | [21](#21-the-app-index-otherwise) | The app index otherwise: licences, Flathub, GitHub's terms | Fine, with small fixes | The user | In part (ArtCraft) |
@@ -209,6 +215,22 @@ Checked on the running site: the folder answers with its README, its
 a file resumes (206). Still open: the snaps, listed but not fetched (a
 lawyer's question, above); and doing the same for every later disc.
 
+**2026-10-29** (#29): the disc's layers are Patrone's own (item 3), so its
+`sources.manifest` lists only what's on it: 1,098 source packages and 10
+snaps, down from 1,112 and 18. Firefox's, Thunderbird's, App Center's,
+Security Center's, hwctl's and the `pc` and `pc-kernel` snaps (a second
+kernel) are off the disc, and their source with them; two of `pc-kernel`'s
+components stayed until #30. Checked on a test disc
+built from that branch; the published disc is still the `d0c19ce` one, until
+the next is built and its source gathered. **The snaps that stay** (bare,
+core24, firmware-updater, gnome-46-2404, gtk-common-themes, mesa-2404,
+prompting-client, snapd, snapd-desktop-integration and the installer's
+ubuntu-desktop-bootstrap): most of their manifests name their own code only
+as `source: .`, with no commit, so their complete source can't be gathered
+from the disc. The Ubuntu packages they're built from can be, from their
+`primed-stage-packages` and, in the base snaps, `usr/share/snappy/dpkg.yaml`.
+Still a lawyer's question.
+
 ## 2. Canonical's rule on redistributing Ubuntu's binaries
 
 **Needs a lawyer.**
@@ -248,6 +270,10 @@ none is needed. Linux Mint and Zorin OS ship Ubuntu's binaries.
 **The user's decision**: take advice, and decide whether to ask Canonical
 (legal@canonical.com) for written confirmation. Rebuilding every package
 is the only way to avoid the question.
+
+**2026-10-29**: a draft letter to Canonical, asking whether this is
+acceptable or what Canonical needs, is ready for a lawyer's reading. It's
+kept out of this repository and hasn't been sent.
 
 ## 3. Ubuntu's logo is still on screen
 
@@ -320,9 +346,19 @@ Center, Security Center, Thunderbird, hwctl, Ubuntu Pro, Software Updater)
 are installed, and nothing is left to autoremove but the install engine's
 `grub-pc-bin`.
 
-Still on the disc: **Ubuntu's own layers**, hidden under Patrone's (the
-last bullet above). Not done here: self-contained layers change how the
-disc is built, and are left for the main session.
+**Fixed on the disc** (2026-10-29, #29, `iso/build-iso.sh`): Patrone's two
+layers stand on none of Ubuntu's. `patrone`, what the installer installs, is
+the whole system, Ubuntu's base and English layers included; `patrone.live`,
+the live session, holds only how it differs from `patrone`. All of Ubuntu's
+layers leave the disc, with what Patrone's had hidden in them, and so does
+Ubuntu's seed system for TPM-backed encryption, which Patrone's installer
+doesn't offer. The disc is 5.47 GB, down from 7.23. **Checked**: on the dev
+VM, `patrone.live` stacked on `patrone` matches, file by file, the live
+session the build made from Ubuntu's three layers (`rsync --checksum`: no
+differences in 271,618 files, with owners, modes, extended attributes and
+hard links); and a fresh install in a throwaway Hyper-V VM booted the live
+session, installed, and booted the new system. Still installed, as part of
+Ubuntu's unchanged `base-files`: the `ubuntu-logo*` pixmaps (not on screen).
 
 ## 4. "Linux" in the name needs the Linux Foundation's sublicence
 
@@ -635,7 +671,8 @@ address (item 5). One more reason for self-contained layers.
 **Fixed** (2026-10-28, `iso/build-iso.sh`): the live layer purges the
 `thunderbird` stub (its language packs go with it), and both layers' seeds
 drop Thunderbird's snap. Ubuntu's hidden standard layer still has
-`thunderbird_1228.snap` (item 3).
+`thunderbird_1228.snap` (item 3). **2026-10-29**: no longer; Ubuntu's layers
+are off the disc (#29).
 
 ## 12. Ubuntu Pro, Landscape and other Canonical services
 
@@ -764,6 +801,18 @@ and stay closed until the source is published ("The download opens once
 Patrone Linux's source code is published alongside it"). Read in the code,
 not tested.
 
+**2026-10-29** (website #7 and #8): the footer says Patrone isn't
+affiliated with, sponsored by or endorsed by Canonical, Microsoft, the GNOME
+Foundation, the Debian project, Mozilla, Google, OffSec or the Linux
+Foundation, and names Windows, Hyper-V and Start as the Microsoft group's
+trademarks; the home page's Windows section adds that Patrone isn't
+affiliated with or endorsed by Microsoft. The site uses the OS's new names
+(item 15) and leads with Patrone's words ("Works the way Windows users
+expect", "Press the Super key"), and its screenshots were retaken from
+patrone-linux `ecdb5f8`, with the new names and File Manager's new icon.
+The website session checked every page for the new words and none of the
+old ones.
+
 ## 15. Windows 11's look and feel
 
 **Needs a lawyer; low to moderate risk** (the user). Microsoft's
@@ -802,6 +851,46 @@ Manager icon, descriptions that lead with Patrone's words ("works the way
 Windows users expect"), and rewording the docs before the repository goes
 public. Zorin OS sells "Windows 11-like" layouts with only a generic
 trademark footer.
+
+**2026-10-29**: what "To lower the risk" lists is done, in the OS and on
+the website (#19 to #27; website #7 and #8, item 14):
+
+- **The menu** (taskbar 0.4.5, #21): the button's tooltip and screen-reader
+  name are "Menu", and the docs call it "the Patrone menu". "Type here to
+  search" is "Search apps, files and the web"; Pinned, All apps,
+  Recommended and Best match are Favorites, All applications, Recent and Top
+  result; Pin to Start is Add to Favorites.
+- **File Manager** (0.3.6, #22; the taskbar's Files pin, 0.4.6, #25): "This
+  PC" is Computer, "Local Disk" is System drive, and Computer's sections
+  are Drives and Network drives. A new app icon, drawn for Patrone (a folder
+  in Patrone's blues with the slant of the P), replaces File Explorer's
+  yellow-folder shape. The copyright file no longer calls the art "in the
+  style of Windows 11's Fluent design".
+- **Task Manager** (0.2.1 and 0.2.2, #20 and #23): App history is Usage
+  history, Startup apps is Startup applications, and its commands are Run a
+  program, End, End process and its children, Show in File Manager and Show
+  details.
+- **The Royal theme is Sapphire** (Patrone Settings 0.3.7, GNOME Settings
+  revision 14, #24). Its look is unchanged.
+- **Hyper-V Setup is Virtual Machine Setup** (`patrone-hyperv-setup` 0.2.0,
+  #26): Microsoft's guidelines bar its marks in product names. Hyper-V
+  stays in the text as a truthful reference, with "Hyper-V and Windows are
+  trademarks of the Microsoft group of companies."
+- **Descriptions lead with Patrone's words.** Remote Desktop's
+  "Windows-style sessions" is "one desktop per account, on the screen and
+  remotely", with a trademark line (0.5.3, #19). File Manager, Task Manager
+  and the taskbar "work the way Windows users expect", and docs/NEXT.md and
+  docs/PLAN.md no longer call File Manager "an exact replica of Windows 11's
+  File Explorer" (#27).
+
+Left as it was: the look itself. That covers the taskbar's and the menu's
+layout, File Manager's layout and its Fluent-like folder and file icons, and
+the Sapphire theme's green Start button. Also left: "Start button" in
+Patrone Settings and GNOME Settings' Patrone page, the jump lists' "Pinned"
+folders and "Top apps" in the menu's search, `Segoe UI` as a fontconfig
+alias, and internal names (`this-pc`, `royal`, `org.patrone.HyperVSetup`).
+Still a lawyer's question, now at the low end: what's left is layout and
+look, which courts have mostly not protected.
 
 ## 16. The ZFS kernel module
 
@@ -889,7 +978,17 @@ AAC support, as in Ubuntu: low risk, not checked further.
   value for Ubuntu is IBus"; Settings › Desktop's "No Ubuntu settings found
   ... report a bug in Launchpad"; the GRUB menu's "Patrone Linux GNU/Linux".
   §16 items 6, 8, 12 and 14. Likely problem (minor): they imply Ubuntu
-  supports Patrone.
+  supports Patrone. **Fixed** (2026-10-29, #28):
+  - First-login setup's release notes link is hidden until Patrone has
+    release notes (`patrone4`).
+  - GNOME Settings' error state says "No desktop settings found", with no
+    Launchpad (`patrone15`).
+  - Language Support is rebuilt with Patrone's words: its tip, its error
+    message and its help (`language-selector/`, `patrone1`).
+  - The boot menu says "Patrone Linux": `patrone-branding` 0.1.22 moves
+    GRUB's `10_linux` and `10_linux_zfs` aside and runs them without "
+    GNU/Linux".
+  - Checked on the dev VM, and in a fresh install from a test disc.
 - **JetBrains Mono**: Ubuntu's `fonts-jetbrains-mono` copyright file says
   Apache-2, but the font is OFL 1.1 and no OFL text ships. Ubuntu's mistake,
   harmless to Patrone; optional note in `patrone-terminal`'s copyright.
@@ -1165,7 +1264,8 @@ the simplest safe option where no lawyer or the user personally is needed.
    beside the ISO on the website, from the next ISO on. Nothing should be
    downloadable before both.
 2. **Canonical** (item 2): take advice on the binaries clause, and decide
-   whether to write to Canonical.
+   whether to write to Canonical. A draft letter is ready (2026-10-29), kept
+   outside this repository.
 3. **The Linux sublicence** (item 4): applied for; waiting on the Linux
    Foundation.
 4. **ArtCraft's icon** (item 6): coming off the app index (its pull request
@@ -1176,20 +1276,24 @@ the simplest safe option where no lawyer or the user personally is needed.
    hand-drawn logo, are for a lawyer and the user.
 7. **ZFS** (item 16) and **NVIDIA/Broadcom** (item 17): keep or drop.
 8. **How close to Windows** (item 15): the menu's name, the copied strings,
-   the Royal theme, the File Manager icon.
+   the Royal theme, the File Manager icon. Changed, at the user's word
+   (2026-10-29: "do it now"); the look stays.
 9. **GDPR** (item 19): whether to appoint EU and UK representatives.
 10. **The licence agreement** (item 24): written, with Texas law as you
     chose.
 
 ## For a lawyer
 
-1. Canonical's binaries clause, and whether to write to Canonical (item 2).
+1. Canonical's binaries clause, and whether to send the draft letter to
+   Canonical (item 2).
 2. Whether the source mirror is needed, or Launchpad is enough, and how far
-   the duty reaches into Canonical's snaps (item 1).
+   the duty reaches into Canonical's snaps, whose manifests don't record
+   the commit of their own code (item 1).
 3. ArtCraft's trademarked icon (item 6).
 4. Who owns the AI-made logo and wallpaper, and a trademark search for
    PATRONE (item 9).
-5. How close to Windows' look and names is safe (item 15).
+5. Whether the look that's left is safe, now that the names are Patrone's
+   (item 15).
 6. ZFS's kernel module (item 16), and NVIDIA's and Broadcom's indemnities
    and terms (item 17).
 7. Whether GDPR and UK law apply to the website, and the representatives
@@ -1215,7 +1319,37 @@ Other sessions acted on their findings while this review was finishing:
 the website session in `fe30ef4` (item 5 and 14) and the Remote Desktop
 session in `67f052b` (items 13 and 18).
 
+**2026-10-29**, merged that day:
+
+| PR | What | Item |
+| --- | --- | --- |
+| #19 | Remote Desktop described in Patrone's words, with a trademark line (0.5.3) | 15 |
+| #20, #23 | Task Manager's page names and commands in Patrone's words (0.2.1, 0.2.2) | 15 |
+| #21 | The Patrone menu: "Menu", Favorites, All applications, Recent, Top result (taskbar 0.4.5) | 15 |
+| #22, #25 | File Manager: Computer, System drive, its own icon (0.3.6; taskbar 0.4.6) | 15 |
+| #24 | The Royal theme is Sapphire (Settings 0.3.7, GNOME Settings revision 14) | 15 |
+| #26 | Hyper-V Setup is Virtual Machine Setup, with a trademark line (0.2.0) | 15 |
+| #27 | The project notes in Patrone's words | 15 |
+| #28 | Ubuntu's name out of first-login setup, GNOME Settings, Language Support and the boot menu | 13, 18 |
+| #29 | The disc's layers are Patrone's own; Ubuntu's TPM seed system and its kernel snap gone | 1, 3, 11 |
+| #30 (open) | The kernel snap's two leftover components go too | 1, 17 |
+| Website #7, #8 | Patrone's names and words, Microsoft's trademarks and non-affiliation, new screenshots | 14, 15 |
+
+Each reaches installs when the daily publish builds its new version, and
+the disc when the next ISO is built.
+
 ## Inventory
+
+**2026-10-29**, from a test disc built from #29 with #28's packages
+(Patrone's own layers only): the installed system has 1,535 packages from
+899 source packages, and the live session 1,833 from 1,049. Nine of them
+are Patrone's rebuilds of Ubuntu packages (GDM's three, GNOME Settings'
+three, first-login setup, and Language Support's two), and 16 are Patrone's
+own in each. The seeds have 9 snaps (installed) and 10 (live, adding
+`ubuntu-desktop-bootstrap`). The live seed also kept two of `pc-kernel`'s
+NVIDIA driver components, 16 KB each, after `pc-kernel` itself went;
+#30 drops them. The disc's pool still has its 155 `.deb`s. Not broken down
+by archive component again.
 
 From the ISO built 2026-10-27, mounted read-only on the dev VM in
 `/var/tmp/patrone-compliance/` (`inv/` has the lists):
