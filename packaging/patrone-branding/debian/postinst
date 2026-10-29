@@ -19,6 +19,12 @@ if [ "$1" = configure ]; then
     # setting, X11 programs and Patrone's compositor among them
     update-alternatives --install /usr/share/icons/default/index.theme \
         x-cursor-theme /usr/share/icons/Patrone/cursor.theme 200
+    # Patrone's scripts in place of GRUB's, which preinst moved aside: they
+    # run GRUB's without " GNU/Linux" after the system's name. Copies, not
+    # links: GRUB's look for their neighbours where they are.
+    for file in /etc/grub.d/10_linux /etc/grub.d/10_linux_zfs; do
+        install -m755 /usr/lib/patrone-branding/grub-script "$file"
+    done
     # The boot splash is in the initramfs, and the boot menu takes its name
     # from os-release.
     if command -v update-initramfs > /dev/null; then

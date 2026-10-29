@@ -1,0 +1,13 @@
+#! /bin/sh
+# Patrone Linux's /etc/grub.d/10_linux and 10_linux_zfs, copies of this
+# that patrone-branding's postinst makes. Each runs GRUB's own script of
+# its name, which patrone-branding moves aside to
+# /usr/share/patrone-branding/grub/, with one change: GRUB adds " GNU/Linux"
+# to any system's name but Ubuntu's, so the boot menu said "Patrone Linux
+# GNU/Linux". Here it's the name alone, as os-release gives it. If GRUB's
+# script no longer has that line, it runs as it is.
+set -e
+original=/usr/share/patrone-branding/grub/$(basename "$0")
+script=$(sed 's|^\( *\)OS="${GRUB_DISTRIBUTOR} GNU/Linux"$|\1OS="${GRUB_DISTRIBUTOR}"|' "$original")
+# GRUB's script looks for its neighbours by its own path ($0)
+exec /bin/sh -c "$script" "$0" "$@"
