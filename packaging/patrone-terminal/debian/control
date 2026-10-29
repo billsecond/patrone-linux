@@ -17,8 +17,8 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, fonts-jetbrains-mono
 Recommends: patrone-shell-config
 Provides: x-terminal-emulator
-Description: terminal emulator for Patrone Linux
- Patrone Terminal is the default terminal of Patrone Linux, built on GTK 4
+Description: terminal emulator for PatroneOS
+ Patrone Terminal is the default terminal of PatroneOS, built on GTK 4
  and VTE. It copies selected text to the clipboard, pastes with a
  right-click, opens links with Ctrl+click, and has tabs and a dark theme in
  the Patrone colors.

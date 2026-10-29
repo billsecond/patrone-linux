@@ -1,3 +1,10 @@
+patrone-terminal (0.1.6) resolute; urgency=medium
+
+  * PatroneOS in place of Patrone Linux, the system's new name
+    (2026-10-29), in its About window and its description.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+
 patrone-terminal (0.1.5) resolute; urgency=medium
 
   * On an account's first login, the terminal opens once the first-login

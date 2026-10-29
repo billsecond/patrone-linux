@@ -1,6 +1,6 @@
 # Patrone Browser Chooser
 
-Patrone Linux comes with no web browser. The first time one's needed,
+PatroneOS comes with no web browser. The first time one's needed,
 Patrone Browser Chooser asks which to install, has Patrone Software install
 it, makes it the default for the web and opens it, with the link that was
 waiting. Packaged as `patrone-browser-chooser` (Rust and GTK 4, app ID

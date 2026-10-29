@@ -1,7 +1,7 @@
 # Patrone Virtual Machine Setup
 
 At each desktop login in a Hyper-V virtual machine, Virtual Machine Setup
-checks what Patrone Linux needs there, and if something's missing, shows a
+checks what PatroneOS needs there, and if something's missing, shows a
 dialog that offers to set it up. Packaged as `patrone-hyperv-setup` (Rust
 and GTK 4, app ID `org.patrone.HyperVSetup`); `patrone-desktop` recommends
 it, so it's in every install. The user asked for it on 2026-10-28: "When

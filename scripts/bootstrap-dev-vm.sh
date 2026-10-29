@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs everything the Patrone Linux dev VM needs to build packages and ISOs.
+# Installs everything the PatroneOS dev VM needs to build packages and ISOs.
 # Run once on a fresh Ubuntu 26.04 desktop install: sudo ./scripts/bootstrap-dev-vm.sh
 set -euo pipefail
 

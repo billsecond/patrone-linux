@@ -11,8 +11,8 @@ Package: patrone-default-apps
 Architecture: all
 Depends: ${misc:Depends}, patrone-browser-chooser
 Recommends: patrone-file-manager, patrone-terminal, patrone-unpack
-Description: Patrone Linux's default apps
- Patrone Linux comes with no web browser: until one's installed, web links
+Description: PatroneOS's default apps
+ PatroneOS comes with no web browser: until one's installed, web links
  open Patrone Browser Chooser, which asks which one to install. Whichever
  browser is installed then opens them, and comes first in the favorites,
  with Patrone Terminal. Folders open in Patrone File Manager, which takes

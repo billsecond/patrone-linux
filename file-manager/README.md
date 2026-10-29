@@ -1,6 +1,6 @@
 # Patrone File Manager
 
-The file manager of Patrone Linux ("File Manager" in menus), written in
+The file manager of PatroneOS ("File Manager" in menus), written in
 Rust with GTK4. It works the way Windows users expect, with the layout,
 right-click menus, options and keyboard shortcuts they know, in Patrone's
 own look and colors. App ID

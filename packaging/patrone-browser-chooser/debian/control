@@ -16,7 +16,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, flatpak, gnome-software-plugin-flatpak
 Recommends: patrone-software
 Description: Asks which web browser to install, the first time one's needed
- Patrone Linux comes with no web browser. The first time one's needed,
+ PatroneOS comes with no web browser. The first time one's needed,
  from the taskbar's Web browser button or a link opened in any app,
  Patrone Browser Chooser asks which to install: Chromium, Firefox, Brave,
  Google Chrome, Microsoft Edge, Vivaldi, Opera, LibreWolf, Zen Browser or

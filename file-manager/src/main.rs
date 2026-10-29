@@ -1,4 +1,4 @@
-//! Patrone File Manager: the file manager of Patrone Linux, which works
+//! Patrone File Manager: the file manager of PatroneOS, which works
 //! the way Windows users expect. GTK4, written in Rust.
 
 mod addressbar;

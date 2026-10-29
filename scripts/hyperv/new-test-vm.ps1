@@ -3,7 +3,7 @@
 # real PC), and the ISO in its DVD drive, first in the boot order. Start it
 # with Start-VM and watch it with vmconnect.
 #
-#   .\new-test-vm.ps1 -Iso N:\Hyper-V\ISO\patrone-linux-26.04.1-amd64.iso
+#   .\new-test-vm.ps1 -Iso N:\Hyper-V\ISO\patroneos-26.04.1-amd64.iso
 param(
     [Parameter(Mandatory)][string]$Iso,
     [string]$Name = 'PatroneTest',

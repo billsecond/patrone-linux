@@ -60,8 +60,8 @@ From the left:
   its the primary app for each make those the primary"). The terminal is
   Patrone Terminal and art is ArtCraft (else LibreOffice Draw, GIMP,
   Krita, Inkscape or Pinta) unless changed in the slot's menu. A slot no
-  installed app can do isn't shown, except the web browser's: Patrone
-  Linux comes with no browser, so until one's installed the slot opens
+  installed app can do isn't shown, except the web browser's: PatroneOS
+   comes with no browser, so until one's installed the slot opens
   **Patrone Browser Chooser** (`browser-chooser/`), which asks which
   browser to install and has Patrone Software install it. It's the last of
   the system's choices for web links, so whenever it's the default and a

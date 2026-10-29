@@ -1,3 +1,11 @@
+patrone-hyperv-setup (0.2.1) resolute; urgency=medium
+
+  * PatroneOS in place of Patrone Linux, the system's new name
+    (2026-10-29), in its messages, its launcher entry, its password prompt and
+    its description.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+
 patrone-hyperv-setup (0.2.0) resolute; urgency=medium
 
   * Its name is now Virtual Machine Setup, in the window, the dialog's

@@ -13,7 +13,7 @@ Depends: ${misc:Depends},
          linux-cloud-tools-generic-hwe-26.04 | linux-cloud-tools-generic,
          virtualbox-guest-utils,
          virtualbox-guest-x11
-Description: Patrone Linux's Hyper-V and VirtualBox guest support
+Description: PatroneOS's Hyper-V and VirtualBox guest support
  What a Windows guest gets from Hyper-V's integration services and
  VirtualBox's Guest Additions. Each part runs only under its own hypervisor
  (systemd's ConditionVirtualization), so a computer that isn't a virtual

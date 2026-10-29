@@ -13,7 +13,7 @@ which implies Ubuntu supports Patrone (`docs/COMPLIANCE.md`, item 18).
   tracker. Now it says only that it may be a bug.
 - **The help** (`help/C/index.docbook`) described Ubuntu: "Ubuntu has been
   translated", "Ubuntu uses the GNU gettext technology", "Ubuntu with
-  GNOME". It names Patrone Linux, which is built on Ubuntu, so what it says
+  GNOME". It names PatroneOS, which is built on Ubuntu, so what it says
   is as true. Its credits and licence (CC BY-SA 2.5) stay, with a line saying
   what Patrone changed, as the licence asks.
 - **Patrone maintains the build**, with Ubuntu Developers as the original

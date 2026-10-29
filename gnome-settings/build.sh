@@ -17,7 +17,7 @@ set -euo pipefail
 
 # Patrone's revision of the page and patches: one more with each change to
 # them, so a new build of the same Ubuntu version installs as an upgrade
-revision=15
+revision=16
 # What changed in it, for the package's changelog
 changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons and dock settings, and its error message without Ubuntu's name or Launchpad, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pages."
 
@@ -96,7 +96,7 @@ stanza="Files: panels/patrone/*
  panels/system/remote-desktop/cc-patrone-remote-login.*
 Copyright: 2026 William Daugherty
 License: GPL-2+
-Comment: Patrone Linux's own pages, added by Patrone's build (gnome-settings/
+Comment: PatroneOS's own pages, added by Patrone's build (gnome-settings/
  in https://github.com/billsecond/patrone-linux)."
 if ! stanza=$stanza awk '!done && previous == "" && /^License:/ { print ENVIRON["stanza"]; print ""; done = 1 }
         { print; previous = $0 }
