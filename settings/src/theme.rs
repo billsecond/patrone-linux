@@ -13,12 +13,14 @@ use gtk::gio;
 use gtk::glib;
 use gtk::prelude::*;
 
-/// Each theme: its setting value, name and description.
+/// Each theme: its setting value, name and description. "royal" is shown
+/// as Sapphire (its name since 0.3.7); the value stays, so nobody's choice
+/// changes.
 pub const THEMES: [(&str, &str, &str); 5] = [
     ("patrone", "Patrone", "Patrone's own look, light or dark"),
     ("modern", "Modern", "Clean and flat, with rounder buttons and no lines"),
     ("classic", "Classic", "Plain and square, with solid title bars"),
-    ("royal", "Royal", "Glossy royal blue, with a green Start button"),
+    ("royal", "Sapphire", "Glossy sapphire blue, with a green Start button"),
     ("studio", "Studio", "Soft and translucent, with round colored window buttons"),
 ];
 

@@ -1,7 +1,8 @@
-/* Patrone's Royal theme for GTK 3 apps (Patrone Settings imports it into
- * the account's ~/.config/gtk-3.0/gtk.css): glossy royal blue title bars
+/* Patrone's Sapphire theme (its folder and setting value are still
+ * "royal") for GTK 3 apps (Patrone Settings imports it into the
+ * account's ~/.config/gtk-3.0/gtk.css): glossy sapphire blue title bars
  * with white titles. The title bar buttons are a setting of their own
- * (data/titlebuttons); Royal's own are Glossy. */
+ * (data/titlebuttons); Sapphire's own are Glossy. */
 
 headerbar,
 .titlebar {

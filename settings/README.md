@@ -25,7 +25,7 @@ of GNOME Settings isn't installed; the launcher's actions open each page.
 | Taskbar | Size: Small (32 pixels), Medium (42, the default), Large (52). Layout: Left (the default), Centered, Split (Start on the left, the apps in the middle), Top (along the top of the screen). Start button: the Patrone P, one color, orb, grid, menu, circle, spark, prompt. Color: from the wallpaper (the default), or the theme's own. Pin icons: Patrone's (the default), or each app's own | `org.gnome.shell.extensions.patrone-taskbar` `size`, `layout`, `start-icon`, `color` and `pin-icons` (the taskbar's own schema; the page says so if the taskbar isn't installed, and leaves out Color and Pin icons for a taskbar older than 0.3.2). The Start button's icons are the taskbar's, from its `icons` folder |
 | Desktop | Desktop bubble: On (the default: the desktop's files in a bubble, which a pill at the screen's left edge opens, over any window) or Off (the files across the desktop); it changes at once. GNOME Settings' Desktop page has the same as a switch. Recycle Bin: On the desktop (the default) or Hidden. Terminal at sign-in: Over the logo (the default: large, over the wallpaper's logo, at any screen size) or Centered (at its own size, in the middle of the screen) | `org.gnome.shell.extensions.patrone-taskbar` `desktop-bubble` and `show-recycle-bin`, both yes-or-no, and `sign-in-terminal` (`logo` or `center`) (the taskbar's own schema; each is left out for a taskbar too old to have it). See `shell/gnome/README.md`, "The desktop bubble" and "The terminal at sign-in" |
 | Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps |
-| Theme | Themes: Patrone, Modern, Classic, Royal, Studio. Font: Patrone Sans (the default, `fonts/`, the `fonts-patrone-sans` package) or Noto Sans (the font it's based on) | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `document-font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, their sizes and styles kept (`src/font.rs`); the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
+| Theme | Themes: Patrone, Modern, Classic, Sapphire, Studio. Font: Patrone Sans (the default, `fonts/`, the `fonts-patrone-sans` package) or Noto Sans (the font it's based on) | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `document-font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, their sizes and styles kept (`src/font.rs`); the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
 
 The taskbar's layout, and the title bar buttons' corner and style, are the
 account's own choices: no theme changes them (the user's decisions,
@@ -40,22 +40,24 @@ Five looks, named for what they are, not after other systems:
 | Patrone | Patrone's own, light or dark | Pale blue-grey; in the dark style deep navy with a line of Patrone Blue | Wide |
 | Modern | Flat: rounder buttons, no line along the bar, a blue line under each running app | Flat, the window's own color, no line; normal-weight titles | Round |
 | Classic | Plain and square: a solid light or dark grey bar | Solid slate, white titles, square windows | Wide |
-| Royal | Glossy royal blue, a green Start button (just its icon), a lighter blue tray | Deep blue, white titles | Glossy |
+| Sapphire | Glossy sapphire blue, a green Start button (just its icon), a lighter blue tray | Deep blue, white titles | Glossy |
 | Studio | Translucent, the apps on a rounded shelf, dots under running apps | Soft brushed grey, bold titles | Dots |
 
 Patrone's, Modern's and Studio's title bars are for GTK 4 apps, light and
 dark (`@media (prefers-color-scheme: dark)`, which GTK 4 sets from the
 style); GTK 3 has no such rule, so GTK 3 apps keep their own title bars
-in those themes. Until 2026-10-26 only Classic and Royal had title bars of
+in those themes. Until 2026-10-26 only Classic and Sapphire had title bars of
 their own, so choosing among the others seemed to do nothing to windows.
 
 GTK reads the account's `gtk.css` once, when an app starts (`gtksettings.c`
 loads it and never again), so open apps can't follow a change: they show
 it when they're next opened.
 
-Royal was Classic until 2026-10-26, when the user asked for Classic to be
+Sapphire was Classic until 2026-10-26, when the user asked for Classic to be
 plainer and for the old look to stay as a theme of its own, without the word
-"start" on the Start button.
+"start" on the Start button. It was called Royal until 0.3.7, which renamed
+it to lean less on Windows XP's look (`docs/COMPLIANCE.md`, item 15); its
+setting value is still `royal`, so the choice of anyone who had it stays.
 
 ## Title bar button styles
 
