@@ -4,7 +4,9 @@
  * button icon), the desktop (its files in a bubble or across it, the
  * Recycle Bin, and where the terminal opens at sign-in), the title bar
  * buttons (top right or top left, and their style), the theme and the desktop's font (Patrone Sans or Noto Sans,
- * which the page sets itself). The same settings as Patrone Settings' window,
+ * which the page sets itself), and the mouse pointer (the cursor theme and
+ * size, which the page sets itself, with pictures from each theme's own
+ * cursors). The same settings as Patrone Settings' window,
  * which this page leans on: its pictures (/usr/share/patrone/settings/
  * previews) and, to apply a theme or button style, "patrone-settings
  * --set-theme" and "--set-title-buttons". The choices' values match
@@ -29,6 +31,7 @@
 
 #include "config.h"
 
+#include <string.h>
 #include <glib/gi18n-lib.h>
 #include <adwaita.h>
 
@@ -137,6 +140,65 @@ static const char * const font_packages[] = { "fonts-patrone-sans", "fonts-noto-
 #define FONT_SAMPLE_BIG "Aa"
 #define FONT_SAMPLE "Il1 O0 10:00"
 
+/* The mouse pointer's sizes, as GNOME's Accessibility page names them */
+#define CURSOR_THEME_KEY "cursor-theme"
+#define CURSOR_SIZE_KEY "cursor-size"
+static const Choice pointer_sizes[] = {
+  { "24", N_("Default"), N_("24 pixels, the usual size") },
+  { "32", N_("Medium"), N_("32 pixels") },
+  { "48", N_("Large"), N_("48 pixels") },
+  { "64", N_("Larger"), N_("64 pixels") },
+  { "96", N_("Largest"), N_("96 pixels") },
+};
+
+/* The pointers a theme's card shows, each by its names, newest first: the
+ * arrow, the hand over links, the text cursor and the busy one */
+static const char * const arrow_names[] = { "default", "left_ptr", NULL };
+static const char * const hand_names[] = { "pointer", "hand2", "hand1", NULL };
+static const char * const text_names[] = { "text", "xterm", NULL };
+static const char * const busy_names[] = { "wait", "watch", NULL };
+static const char * const * const shown_cursors[] = { arrow_names, hand_names, text_names, busy_names };
+#define N_SHOWN G_N_ELEMENTS (shown_cursors)
+
+/* The names GNOME asks for that a theme must have, or inherit, to be
+ * offered. GNOME Shell (mutter's Xcursor loader) looks a cursor up by
+ * these names in the theme and those it inherits from, then in the
+ * system's default theme, and only then by its old X11 name, so a theme
+ * with only the old names (DMZ, X.Org's whiteglass and redglass) shows the
+ * default theme's pointers, and choosing it would seem to do nothing */
+static const char * const needed_cursors[] = { "default", "pointer", "text" };
+
+/* How deep Inherits chains are followed, as libXcursor does */
+#define MAX_INHERITS 4
+
+/* Patrone's words for the cursor themes it ships or knows */
+static const Choice known_cursor_themes[] = {
+  { "Patrone", NULL, N_("Patrone's own: blue, with a white edge") },
+  { "Adwaita", NULL, N_("GNOME's own: black, with a white edge") },
+  { "Yaru", NULL, N_("Yaru's: dark grey, with a white edge") },
+  { "breeze_cursors", NULL, N_("KDE's Breeze: black, with a white edge") },
+  { "Breeze_Light", NULL, N_("KDE's Breeze: white, with a dark edge") },
+};
+
+/* One picture of a cursor: its first frame at one size */
+typedef struct
+{
+  guint nominal;
+  double xhot;
+  double yhot;
+  cairo_surface_t *surface;
+} CursorImage;
+
+/* An installed cursor theme, and its pointers in shown_cursors' order (a
+ * GPtrArray of CursorImage each, or NULL where it has none) */
+typedef struct
+{
+  char *name;
+  char *title;
+  char *detail;
+  GPtrArray *cursors[N_SHOWN];
+} CursorTheme;
+
 typedef struct _ChoiceSet ChoiceSet;
 typedef char *(*ReadFunc) (ChoiceSet *set);
 typedef void (*WriteFunc) (ChoiceSet *set, const char *value);
@@ -164,6 +226,15 @@ struct _CcPatronePanel
   GSettings *interface;
   GFile *icons_dir;
   GPtrArray *choice_sets;
+
+  /* The mouse pointer: the themes installed and their choices, the arrow
+   * of the theme that's set and the sizes' pictures, which draw it */
+  GPtrArray *cursor_themes;
+  Choice *cursor_choices;
+  GPtrArray *size_arrow;
+  GPtrArray *size_pictures;
+  gulong cursor_theme_id;
+  gulong cursor_size_id;
 };
 
 CC_PANEL_REGISTER (CcPatronePanel, cc_patrone_panel)
@@ -317,6 +388,443 @@ font_installed (GtkWidget *widget, const char *family)
   return FALSE;
 }
 
+/* A whole-number setting (the pointer's size) as choices */
+static char *
+read_int (ChoiceSet *set)
+{
+  return g_strdup_printf ("%d", g_settings_get_int (set->settings, set->key));
+}
+
+static void
+write_int (ChoiceSet *set, const char *value)
+{
+  g_settings_set_int (set->settings, set->key, (int) g_ascii_strtoll (value, NULL, 10));
+}
+
+/* The mouse pointer's themes and pictures */
+
+static void
+cursor_image_free (CursorImage *image)
+{
+  cairo_surface_destroy (image->surface);
+  g_free (image);
+}
+
+static void
+cursor_theme_free (CursorTheme *theme)
+{
+  g_free (theme->name);
+  g_free (theme->title);
+  g_free (theme->detail);
+  for (guint i = 0; i < N_SHOWN; i++)
+    g_clear_pointer (&theme->cursors[i], g_ptr_array_unref);
+  g_free (theme);
+}
+
+/* Where cursor themes are, in the order they're looked up (libXcursor's
+ * and GTK's): the account's, then the system's */
+static GStrv
+cursor_search_dirs (void)
+{
+  g_autoptr(GStrvBuilder) builder = g_strv_builder_new ();
+  g_autoptr(GPtrArray) dirs = g_ptr_array_new_with_free_func (g_free);
+  const char * const *system = g_get_system_data_dirs ();
+
+  g_ptr_array_add (dirs, g_build_filename (g_get_user_data_dir (), "icons", NULL));
+  g_ptr_array_add (dirs, g_build_filename (g_get_home_dir (), ".icons", NULL));
+  for (; *system != NULL; system++)
+    g_ptr_array_add (dirs, g_build_filename (*system, "icons", NULL));
+
+  for (guint i = 0; i < dirs->len; i++)
+    {
+      const char *dir = g_ptr_array_index (dirs, i);
+      gboolean seen = FALSE;
+
+      for (guint j = 0; j < i && !seen; j++)
+        seen = g_str_equal (dir, g_ptr_array_index (dirs, j));
+      if (!seen)
+        g_strv_builder_add (builder, dir);
+    }
+  return g_strv_builder_end (builder);
+}
+
+/* A value from a theme's index.theme, untranslated */
+static char *
+cursor_theme_index_value (const char * const *dirs, const char *theme, const char *key)
+{
+  for (; *dirs != NULL; dirs++)
+    {
+      g_autofree char *path = g_build_filename (*dirs, theme, "index.theme", NULL);
+      g_autoptr(GKeyFile) index = g_key_file_new ();
+
+      if (g_key_file_load_from_file (index, path, G_KEY_FILE_NONE, NULL))
+        return g_key_file_get_string (index, "Icon Theme", key, NULL);
+    }
+  return NULL;
+}
+
+/* The file for cursor `name` in `theme` or a theme it inherits from (not
+ * the system's default theme, which a missing one falls back to) */
+static char *
+find_cursor (const char * const *dirs, const char *theme, const char *name, guint depth)
+{
+  g_autofree char *inherits = NULL;
+  g_auto(GStrv) parents = NULL;
+
+  if (depth > MAX_INHERITS)
+    return NULL;
+  for (const char * const *dir = dirs; *dir != NULL; dir++)
+    {
+      g_autofree char *path = g_build_filename (*dir, theme, "cursors", name, NULL);
+
+      if (g_file_test (path, G_FILE_TEST_IS_REGULAR))
+        return g_steal_pointer (&path);
+    }
+
+  inherits = cursor_theme_index_value (dirs, theme, "Inherits");
+  parents = g_strsplit_set (inherits != NULL ? inherits : "", ",;", -1);
+  for (char **parent = parents; *parent != NULL; parent++)
+    {
+      char *found;
+
+      g_strstrip (*parent);
+      if (**parent == '\0' || g_str_equal (*parent, theme))
+        continue;
+      found = find_cursor (dirs, *parent, name, depth + 1);
+      if (found != NULL)
+        return found;
+    }
+  return NULL;
+}
+
+static gboolean
+read_word (GBytes *bytes, gsize at, guint32 *word)
+{
+  gsize length;
+  const guint8 *data = g_bytes_get_data (bytes, &length);
+
+  if (at > length || length - at < 4)
+    return FALSE;
+  memcpy (word, data + at, 4);
+  *word = GUINT32_FROM_LE (*word);
+  return TRUE;
+}
+
+/* The first frame at each size in an Xcursor file, or NULL */
+static GPtrArray *
+parse_xcursor (GBytes *bytes)
+{
+  const guint32 image_type = 0xfffd0002;
+  g_autoptr(GPtrArray) images = g_ptr_array_new_with_free_func ((GDestroyNotify) cursor_image_free);
+  gsize length;
+  const guint8 *data = g_bytes_get_data (bytes, &length);
+  guint32 header, count;
+
+  if (length < 16 || memcmp (data, "Xcur", 4) != 0 ||
+      !read_word (bytes, 4, &header) || !read_word (bytes, 12, &count))
+    return NULL;
+
+  for (guint32 entry = 0; entry < MIN (count, 4096); entry++)
+    {
+      guint32 type, nominal, position, chunk_header, width, height, xhot, yhot;
+      gsize at = (gsize) header + (gsize) entry * 12, start;
+      gboolean seen = FALSE;
+      CursorImage *image;
+      guint8 *pixels;
+      int stride;
+
+      if (!read_word (bytes, at, &type) || !read_word (bytes, at + 4, &nominal) ||
+          !read_word (bytes, at + 8, &position))
+        return NULL;
+      for (guint i = 0; i < images->len && !seen; i++)
+        seen = ((CursorImage *) g_ptr_array_index (images, i))->nominal == nominal;
+      if (type != image_type || seen)
+        continue;
+      if (!read_word (bytes, position, &chunk_header) || !read_word (bytes, (gsize) position + 16, &width) ||
+          !read_word (bytes, (gsize) position + 20, &height) || !read_word (bytes, (gsize) position + 24, &xhot) ||
+          !read_word (bytes, (gsize) position + 28, &yhot))
+        return NULL;
+      if (width == 0 || height == 0 || width > 0x7fff || height > 0x7fff)
+        continue;
+      start = (gsize) position + chunk_header;
+      if (start > length || (length - start) / 4 / width < height)
+        return NULL;
+
+      image = g_new0 (CursorImage, 1);
+      image->nominal = nominal;
+      image->xhot = xhot;
+      image->yhot = yhot;
+      /* Little-endian ARGB words, premultiplied: cairo's ARGB32 in this
+       * machine's byte order */
+      image->surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, (int) width, (int) height);
+      pixels = cairo_image_surface_get_data (image->surface);
+      stride = cairo_image_surface_get_stride (image->surface);
+      for (guint32 y = 0; y < height; y++)
+        for (guint32 x = 0; x < width; x++)
+          {
+            guint32 pixel;
+
+            read_word (bytes, start + ((gsize) y * width + x) * 4, &pixel);
+            memcpy (pixels + (gsize) y * stride + x * 4, &pixel, 4);
+          }
+      cairo_surface_mark_dirty (image->surface);
+      g_ptr_array_add (images, image);
+    }
+  return images->len > 0 ? g_steal_pointer (&images) : NULL;
+}
+
+/* A cursor by the first of `names` that `theme` has, or NULL */
+static GPtrArray *
+load_cursor (const char * const *dirs, const char *theme, const char * const *names)
+{
+  for (; *names != NULL; names++)
+    {
+      g_autofree char *path = find_cursor (dirs, theme, *names, 0);
+      g_autoptr(GFile) file = NULL;
+      g_autoptr(GBytes) bytes = NULL;
+
+      if (path == NULL)
+        continue;
+      file = g_file_new_for_path (path);
+      bytes = g_file_load_bytes (file, NULL, NULL, NULL);
+      return bytes != NULL ? parse_xcursor (bytes) : NULL;
+    }
+  return NULL;
+}
+
+static int
+compare_cursor_themes (gconstpointer a, gconstpointer b)
+{
+  const CursorTheme *first = *(CursorTheme * const *) a;
+  const CursorTheme *second = *(CursorTheme * const *) b;
+  gboolean first_patrone = g_str_equal (first->name, "Patrone");
+  gboolean second_patrone = g_str_equal (second->name, "Patrone");
+
+  if (first_patrone != second_patrone)
+    return first_patrone ? -1 : 1;
+  return g_utf8_collate (first->title, second->title);
+}
+
+/* The cursor themes installed that GNOME can show, Patrone's first */
+static GPtrArray *
+find_cursor_themes (void)
+{
+  g_auto(GStrv) dirs = cursor_search_dirs ();
+  GPtrArray *themes = g_ptr_array_new_with_free_func ((GDestroyNotify) cursor_theme_free);
+  g_autoptr(GHashTable) seen = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+  for (guint d = 0; dirs[d] != NULL; d++)
+    {
+      g_autoptr(GDir) dir = g_dir_open (dirs[d], 0, NULL);
+      const char *name;
+
+      while (dir != NULL && (name = g_dir_read_name (dir)) != NULL)
+        {
+          g_autofree char *cursors = g_build_filename (dirs[d], name, "cursors", NULL);
+          gboolean usable = TRUE;
+          CursorTheme *theme;
+
+          if (g_str_equal (name, "default") || g_hash_table_contains (seen, name) ||
+              !g_file_test (cursors, G_FILE_TEST_IS_DIR))
+            continue;
+          g_hash_table_add (seen, g_strdup (name));
+          for (guint i = 0; i < G_N_ELEMENTS (needed_cursors) && usable; i++)
+            {
+              g_autofree char *path = find_cursor ((const char * const *) dirs, name, needed_cursors[i], 0);
+              usable = path != NULL;
+            }
+          if (!usable)
+            continue;
+
+          theme = g_new0 (CursorTheme, 1);
+          theme->name = g_strdup (name);
+          theme->title = cursor_theme_index_value ((const char * const *) dirs, name, "Name");
+          if (theme->title == NULL)
+            theme->title = g_strdup (name);
+          for (guint i = 0; i < G_N_ELEMENTS (known_cursor_themes) && theme->detail == NULL; i++)
+            if (g_str_equal (name, known_cursor_themes[i].value))
+              theme->detail = g_strdup (_(known_cursor_themes[i].detail));
+          if (theme->detail == NULL)
+            theme->detail = g_strdup (d < 2 ? _("Installed for you") : _("Installed for everyone"));
+          for (guint i = 0; i < N_SHOWN; i++)
+            theme->cursors[i] = load_cursor ((const char * const *) dirs, name, shown_cursors[i]);
+          g_ptr_array_add (themes, theme);
+        }
+    }
+  g_ptr_array_sort (themes, compare_cursor_themes);
+  return themes;
+}
+
+/* The picture to draw at `size` pixels: the smallest at least twice that
+ * (scaled down, it stays sharp on a dense screen), or the biggest */
+static CursorImage *
+cursor_image_for (GPtrArray *cursor, double size)
+{
+  CursorImage *best = NULL, *biggest = NULL;
+
+  for (guint i = 0; cursor != NULL && i < cursor->len; i++)
+    {
+      CursorImage *image = g_ptr_array_index (cursor, i);
+
+      if (image->nominal >= size * 2 && (best == NULL || image->nominal < best->nominal))
+        best = image;
+      if (biggest == NULL || image->nominal > biggest->nominal)
+        biggest = image;
+    }
+  return best != NULL ? best : biggest;
+}
+
+/* A cursor's picture at `size` pixels, its hotspot at (x, y) */
+static void
+draw_cursor (cairo_t *cr, GPtrArray *cursor, double x, double y, double size)
+{
+  CursorImage *image = cursor_image_for (cursor, size);
+  double scale;
+
+  if (image == NULL)
+    return;
+  scale = size / image->nominal;
+  cairo_save (cr);
+  cairo_translate (cr, x - image->xhot * scale, y - image->yhot * scale);
+  cairo_scale (cr, scale, scale);
+  cairo_set_source_surface (cr, image->surface, 0, 0);
+  cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_GOOD);
+  cairo_paint (cr);
+  cairo_restore (cr);
+}
+
+static void
+set_color (cairo_t *cr, guint32 rgb, double alpha)
+{
+  cairo_set_source_rgba (cr, ((rgb >> 16) & 0xff) / 255.0, ((rgb >> 8) & 0xff) / 255.0,
+                         (rgb & 0xff) / 255.0, alpha);
+}
+
+static void
+fill_rounded (cairo_t *cr, double x, double y, double w, double h, double r, guint32 rgb)
+{
+  r = MIN (r, MIN (w, h) / 2);
+  cairo_new_sub_path (cr);
+  cairo_arc (cr, x + w - r, y + r, r, -G_PI / 2, 0);
+  cairo_arc (cr, x + w - r, y + h - r, r, 0, G_PI / 2);
+  cairo_arc (cr, x + r, y + h - r, r, G_PI / 2, G_PI);
+  cairo_arc (cr, x + r, y + r, r, G_PI, 1.5 * G_PI);
+  cairo_close_path (cr);
+  set_color (cr, rgb, 1.0);
+  cairo_fill (cr);
+}
+
+/* Patrone Settings' desktop: navy to black, with a streak of blue light */
+static void
+draw_desktop (cairo_t *cr, double w, double h)
+{
+  cairo_pattern_t *gradient = cairo_pattern_create_linear (0, 0, w, h);
+
+  cairo_new_sub_path (cr);
+  cairo_arc (cr, w - 8, 8, 8, -G_PI / 2, 0);
+  cairo_arc (cr, w - 8, h - 8, 8, 0, G_PI / 2);
+  cairo_arc (cr, 8, h - 8, 8, G_PI / 2, G_PI);
+  cairo_arc (cr, 8, 8, 8, G_PI, 1.5 * G_PI);
+  cairo_close_path (cr);
+  cairo_clip (cr);
+  cairo_pattern_add_color_stop_rgb (gradient, 0, 0.06, 0.12, 0.22);
+  cairo_pattern_add_color_stop_rgb (gradient, 1, 0.01, 0.01, 0.03);
+  cairo_set_source (cr, gradient);
+  cairo_paint (cr);
+  cairo_pattern_destroy (gradient);
+  cairo_move_to (cr, w * 0.58, 0);
+  cairo_line_to (cr, w * 0.70, 0);
+  cairo_line_to (cr, w * 0.32, h);
+  cairo_line_to (cr, w * 0.20, h);
+  cairo_close_path (cr);
+  set_color (cr, 0x288bfa, 0.22);
+  cairo_fill (cr);
+}
+
+/* A theme's pointers where they'd be (shown_cursors' order): the arrow and
+ * the busy one on the desktop, the hand over a window's button and the
+ * text cursor in its text. As Patrone Settings draws them */
+static void
+draw_pointer_theme (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer data)
+{
+  CursorTheme *theme = data;
+  double w = width, h = height;
+  double x = w * 0.42, y = h * 0.14, ww = w * 0.5, wh = h * 0.72, bar = wh * 0.22;
+  const double spots[N_SHOWN][2] = {
+    { w * 0.13, h * 0.2 },
+    { x + ww * 0.7, y + wh * 0.78 },
+    { x + ww * 0.36, y + wh * 0.38 },
+    { w * 0.2, h * 0.68 },
+  };
+
+  draw_desktop (cr, w, h);
+  fill_rounded (cr, x, y, ww, wh, 6, 0xffffff);
+  fill_rounded (cr, x, y, ww, bar, 6, 0xeceef2);
+  cairo_rectangle (cr, x, y + bar / 2, ww, bar / 2);
+  cairo_fill (cr);
+  fill_rounded (cr, x + ww * 0.12, y + wh * 0.36, ww * 0.72, 4, 2, 0xc4c9d2);
+  fill_rounded (cr, x + ww * 0.12, y + wh * 0.5, ww * 0.48, 4, 2, 0xc4c9d2);
+  fill_rounded (cr, x + ww * 0.46, y + wh * 0.68, ww * 0.42, wh * 0.18, 4, 0x288bfa);
+  for (guint i = 0; i < N_SHOWN; i++)
+    draw_cursor (cr, theme->cursors[i], spots[i][0], spots[i][1], 26);
+}
+
+/* The set theme's arrow at a size, as big as it'd be on the screen, in the
+ * middle of the picture */
+static void
+draw_pointer_size (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer data)
+{
+  CcPatronePanel *self = data;
+  double size = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (area), "patrone-size"));
+  CursorImage *image = cursor_image_for (self->size_arrow, size);
+  double scale;
+
+  draw_desktop (cr, width, height);
+  if (image == NULL)
+    return;
+  scale = size / image->nominal;
+  draw_cursor (cr, self->size_arrow,
+               (width - cairo_image_surface_get_width (image->surface) * scale) / 2 + image->xhot * scale,
+               (height - cairo_image_surface_get_height (image->surface) * scale) / 2 + image->yhot * scale,
+               size);
+}
+
+static gboolean
+restore_pointer (gpointer data)
+{
+  gtk_widget_set_cursor (GTK_WIDGET (data), NULL);
+  return G_SOURCE_REMOVE;
+}
+
+/* Shows the pointer that's over this window in the new theme or size at
+ * once. GNOME Shell drops its cursors when they change, but the one on
+ * screen stays until an app asks for another; so for a moment the window
+ * asks for the busy one, then for none of its own again */
+static void
+refresh_pointer (CcPatronePanel *self)
+{
+  GtkWidget *window = GTK_WIDGET (gtk_widget_get_root (GTK_WIDGET (self)));
+
+  if (window == NULL)
+    return;
+  gtk_widget_set_cursor_from_name (window, "progress");
+  g_timeout_add_full (G_PRIORITY_DEFAULT, 300, restore_pointer, g_object_ref (window), g_object_unref);
+}
+
+/* The theme changed, here or elsewhere: the sizes' pictures show its arrow */
+static void
+on_cursor_theme_changed (CcPatronePanel *self)
+{
+  g_auto(GStrv) dirs = cursor_search_dirs ();
+  g_autofree char *theme = g_settings_get_string (self->interface, CURSOR_THEME_KEY);
+
+  g_clear_pointer (&self->size_arrow, g_ptr_array_unref);
+  self->size_arrow = load_cursor ((const char * const *) dirs, theme, arrow_names);
+  for (guint i = 0; i < self->size_pictures->len; i++)
+    gtk_widget_queue_draw (g_ptr_array_index (self->size_pictures, i));
+  refresh_pointer (self);
+}
+
 /* Whether the settings have a key: an older Patrone Settings' schema may
  * not, and reading a missing key would end GNOME Settings */
 static gboolean
@@ -465,7 +973,40 @@ make_font_card (CcPatronePanel *self, const Choice *choice)
   return box;
 }
 
-/* A choice's card: a picture's, a Start icon's (no prefix) or a font's */
+/* A mouse pointer theme's card ("pointer") or a pointer size's
+ * ("pointer-size"): a picture drawn from the theme's own cursors, its name
+ * and a line about it */
+static GtkWidget *
+make_pointer_card (CcPatronePanel *self, const char *prefix, const Choice *choice)
+{
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+  GtkWidget *picture = gtk_drawing_area_new ();
+
+  /* As wide as the card, and as high as the other cards' pictures */
+  gtk_drawing_area_set_content_width (GTK_DRAWING_AREA (picture), 120);
+  gtk_widget_set_size_request (picture, -1, 104);
+  gtk_widget_set_hexpand (picture, TRUE);
+  if (g_str_equal (prefix, "pointer"))
+    {
+      gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (picture), draw_pointer_theme,
+                                      g_ptr_array_index (self->cursor_themes, choice - self->cursor_choices),
+                                      NULL);
+    }
+  else
+    {
+      g_object_set_data (G_OBJECT (picture), "patrone-size",
+                         GINT_TO_POINTER ((int) g_ascii_strtoll (choice->value, NULL, 10)));
+      gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (picture), draw_pointer_size, self, NULL);
+      g_ptr_array_add (self->size_pictures, picture);
+    }
+  gtk_box_append (GTK_BOX (box), picture);
+  gtk_box_append (GTK_BOX (box), make_label (_(choice->title), "heading"));
+  gtk_box_append (GTK_BOX (box), make_label (_(choice->detail), "dim-label"));
+  return box;
+}
+
+/* A choice's card: a picture's, a Start icon's (no prefix), a font's or a
+ * mouse pointer's */
 static GtkWidget *
 make_card (CcPatronePanel *self, const char *prefix, const Choice *choice)
 {
@@ -473,11 +1014,14 @@ make_card (CcPatronePanel *self, const char *prefix, const Choice *choice)
     return make_icon_card (self, choice);
   if (g_str_equal (prefix, "font"))
     return make_font_card (self, choice);
+  if (g_str_has_prefix (prefix, "pointer"))
+    return make_pointer_card (self, prefix, choice);
   return make_picture_card (prefix, choice);
 }
 
 /* A row of choices for one setting, in a group; `prefix` names their
- * pictures, or is NULL for Start button icons or "font" for fonts */
+ * pictures, or is NULL for Start button icons, "font" for fonts, or
+ * "pointer" or "pointer-size" for the mouse pointer's */
 static void
 add_choices (CcPatronePanel      *self,
              AdwPreferencesGroup *group,
@@ -517,6 +1061,16 @@ add_choices (CcPatronePanel      *self,
       gtk_button_set_child (GTK_BUTTON (button), card);
       gtk_widget_set_sensitive (button, g_object_get_data (G_OBJECT (card), "patrone-unavailable") == NULL);
       gtk_widget_add_css_class (button, "patrone-choice");
+      /* A name for screen readers, which otherwise hear a toggle button
+       * with none: GTK doesn't name a button by the labels in a box inside
+       * it (a Start icon's detail is its file, so it has no description) */
+      gtk_accessible_update_property (GTK_ACCESSIBLE (button),
+                                      GTK_ACCESSIBLE_PROPERTY_LABEL, _(choices[i].title),
+                                      -1);
+      if (prefix != NULL)
+        gtk_accessible_update_property (GTK_ACCESSIBLE (button),
+                                        GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, _(choices[i].detail),
+                                        -1);
       if (first != NULL)
         gtk_toggle_button_set_group (GTK_TOGGLE_BUTTON (button), first);
       else
@@ -589,6 +1143,11 @@ cc_patrone_panel_dispose (GObject *object)
       ChoiceSet *set = g_ptr_array_index (self->choice_sets, i);
       g_clear_signal_handler (&set->changed_id, set->settings);
     }
+  if (self->interface != NULL)
+    {
+      g_clear_signal_handler (&self->cursor_theme_id, self->interface);
+      g_clear_signal_handler (&self->cursor_size_id, self->interface);
+    }
   g_clear_object (&self->taskbar);
   g_clear_object (&self->desktop);
   g_clear_object (&self->wm);
@@ -604,6 +1163,11 @@ cc_patrone_panel_finalize (GObject *object)
   CcPatronePanel *self = CC_PATRONE_PANEL (object);
 
   g_clear_pointer (&self->choice_sets, g_ptr_array_unref);
+  /* After the cards, whose pictures drew from these */
+  g_clear_pointer (&self->cursor_choices, g_free);
+  g_clear_pointer (&self->cursor_themes, g_ptr_array_unref);
+  g_clear_pointer (&self->size_arrow, g_ptr_array_unref);
+  g_clear_pointer (&self->size_pictures, g_ptr_array_unref);
 
   G_OBJECT_CLASS (cc_patrone_panel_parent_class)->finalize (object);
 }
@@ -727,6 +1291,43 @@ cc_patrone_panel_init (CcPatronePanel *self)
                        "text keeps its own font."));
   add_choices (self, group, self->interface, "font-name", read_font, write_font,
                fonts, G_N_ELEMENTS (fonts), "font", 2);
+
+  group = add_group (page, _("Mouse Pointer"),
+                     _("The pointer's look. It changes at once, on the desktop and in apps. "
+                       "Themes made only for older X11 apps aren't listed: GNOME can't show "
+                       "their pointers."));
+  self->cursor_themes = find_cursor_themes ();
+  self->cursor_choices = g_new0 (Choice, MAX (self->cursor_themes->len, 1));
+  for (guint i = 0; i < self->cursor_themes->len; i++)
+    {
+      CursorTheme *theme = g_ptr_array_index (self->cursor_themes, i);
+
+      self->cursor_choices[i] = (Choice) { theme->name, theme->title, theme->detail };
+    }
+  if (self->cursor_themes->len > 0)
+    add_choices (self, group, self->interface, CURSOR_THEME_KEY, read_string, write_string,
+                 self->cursor_choices, self->cursor_themes->len, "pointer", 3);
+  else
+    add_note (group, _("No cursor themes are installed"),
+              _("Install the adwaita-icon-theme package"));
+
+  group = add_group (page, _("Pointer Size"),
+                     _("The same sizes as the Accessibility page's."));
+  self->size_pictures = g_ptr_array_new ();
+  add_choices (self, group, self->interface, CURSOR_SIZE_KEY, read_int, write_int,
+               pointer_sizes, G_N_ELEMENTS (pointer_sizes), "pointer-size", 3);
+  /* The sizes' pictures show the set theme's arrow, and the pointer over
+   * the window changes at once */
+  self->cursor_theme_id = g_signal_connect_swapped (self->interface, "changed::" CURSOR_THEME_KEY,
+                                                    G_CALLBACK (on_cursor_theme_changed), self);
+  self->cursor_size_id = g_signal_connect_swapped (self->interface, "changed::" CURSOR_SIZE_KEY,
+                                                   G_CALLBACK (refresh_pointer), self);
+  {
+    g_auto(GStrv) dirs = cursor_search_dirs ();
+    g_autofree char *theme = g_settings_get_string (self->interface, CURSOR_THEME_KEY);
+
+    self->size_arrow = load_cursor ((const char * const *) dirs, theme, arrow_names);
+  }
 
   adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (view), adw_header_bar_new ());
   adw_toolbar_view_set_content (ADW_TOOLBAR_VIEW (view), GTK_WIDGET (page));

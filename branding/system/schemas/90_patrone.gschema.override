@@ -42,21 +42,21 @@ titlebar-font='Patrone Sans SemiBold 11'
 [org.gnome.desktop.wm.preferences:ubuntu]
 titlebar-font='Patrone Sans SemiBold 11'
 
-# Wallpaper 01, light in the light style and dark in the dark one
+# Wallpaper 02, Neon Horizon, light in the light style and dark in the dark one
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-light.png'
-picture-uri-dark='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-02-light.png'
+picture-uri-dark='file:///usr/share/backgrounds/patrone/patrone-back-02-dark.png'
 picture-options='zoom'
 primary-color='#030303'
 
 [org.gnome.desktop.background:ubuntu]
-picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-light.png'
-picture-uri-dark='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-02-light.png'
+picture-uri-dark='file:///usr/share/backgrounds/patrone/patrone-back-02-dark.png'
 
 [org.gnome.desktop.screensaver]
-picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-02-dark.png'
 picture-options='zoom'
 primary-color='#030303'
 
 [org.gnome.desktop.screensaver:ubuntu]
-picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-01-8k.png'
+picture-uri='file:///usr/share/backgrounds/patrone/patrone-back-02-dark.png'

@@ -7,6 +7,29 @@ patrone-settings (0.3.10) resolute; urgency=medium
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
 
+patrone-settings (0.3.8) resolute; urgency=medium
+
+  * A Mouse pointer page (the user, 2026-10-29: "add a place where I can
+    choose my mouse theme"): the cursor themes installed, each card drawn
+    from the theme's own cursors, and five sizes (GNOME's cursor-theme and
+    cursor-size). Only themes with the cursor names GNOME asks for are
+    listed: GNOME Shell shows the default theme's pointers in place of
+    DMZ's and X.Org's, which have only the older X11 names. The pointer
+    over the window changes as soon as a card is clicked; other windows
+    show it as the pointer enters them.
+  * The launcher has actions for the Desktop and Mouse pointer pages too
+    (it had none for Desktop).
+  * The Color choice says it's for the Patrone, Modern and Studio themes:
+    in Classic and Sapphire a pick was saved but changed nothing, with no
+    word of why.
+  * Every card has a name and description for screen readers, which heard
+    unnamed toggle buttons.
+  * The window follows the dark style: it stayed light, because GTK 4.22's
+    Default theme (which plain GTK 4 apps get, Yaru not loading in them)
+    has to be asked for its dark variant, as Patrone's other apps do.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 10:00:00 -0500
+
 patrone-settings (0.3.7) resolute; urgency=medium
 
   * The Royal theme is called Sapphire, to lean less on Windows XP's look

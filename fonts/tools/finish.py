@@ -14,7 +14,7 @@
   does with any TrueType font.
 - Adds an avar table that maps the weight axis as it is.
 - Drops the Macintosh names (every system reads the Windows ones), and
-  checks that no name says Noto or Patrone Linux.
+  checks that no name says Noto, or Linux (the system was renamed).
 
     finish.py FONT.ttf
 """
@@ -68,7 +68,7 @@ def main():
         font["name"].names = [r for r in font["name"].names if r.platformID != 1]
         for record in font["name"].names:
             text = record.toUnicode()
-            if "Noto" in text or "Patrone Linux" in text:
+            if "Noto" in text or "Linux" in text:
                 print(f"{path}: name {record.nameID} says {text!r}")
                 status = 1
         font.save(path)

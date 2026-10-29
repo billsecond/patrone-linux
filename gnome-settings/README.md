@@ -7,10 +7,14 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 
 - **A Patrone page** in the sidebar, after Appearance and Ubuntu's Desktop
   page: the taskbar's size, layout, Start button icon, color and pin
-  icons, the title bar buttons' corner and style, the theme and the font
-  (Patrone Sans or Noto Sans). The same choices as Patrone Settings'
-  window (`settings/`), with its pictures; the font cards show text in
-  each font instead.
+  icons, the desktop bubble, the Recycle Bin and the terminal at sign-in,
+  the title bar buttons' corner and style, the theme, the font (Patrone
+  Sans or Noto Sans), and the mouse pointer's theme and size (revision 16;
+  GNOME's own pages have only the size, under Accessibility). The same
+  choices as Patrone Settings' window (`settings/`), with its pictures; the
+  font cards show text in each font instead, and the mouse pointer cards
+  are drawn from each theme's own cursors (`settings/README.md`, "Mouse
+  pointer").
 - **No Telemetry page** under Privacy & Security. Its switches send error
   reports and system information to Canonical, which Patrone doesn't do
   (`patrone-desktop` removes the programs that would), so they did nothing.
@@ -53,7 +57,7 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 
 | File | |
 | --- | --- |
-| `panels/patrone/cc-patrone-panel.c` | The page. It reads and writes the settings itself, shows Patrone Settings' pictures (`/usr/share/patrone/settings/previews`) and the taskbar's Start icons, applies a theme with `patrone-settings --set-theme`, which also restyles apps through the account's `gtk.css`, and sets the font's family in GNOME's font settings, keeping their sizes |
+| `panels/patrone/cc-patrone-panel.c` | The page. It reads and writes the settings itself, shows Patrone Settings' pictures (`/usr/share/patrone/settings/previews`) and the taskbar's Start icons, applies a theme with `patrone-settings --set-theme`, which also restyles apps through the account's `gtk.css`, sets the font's family in GNOME's font settings, keeping their sizes, and lists the cursor themes GNOME can show, drawing each card from the theme's own Xcursor files (as Patrone Settings' `src/cursor.rs` does) |
 | `panels/patrone/meson.build`, `gnome-patrone-panel.desktop.in`, `org.patrone.Settings-symbolic.svg` | Its build, its sidebar entry (and search keywords), and its icon, the one-color P |
 | `patches/patrone-register-patrone-panel.patch` | Adds the page to the panel list, the loader and the sidebar order |
 | `patches/patrone-hide-telemetry.patch` | Hides the Telemetry row |
@@ -86,7 +90,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone14_amd64.deb ./out/gnome-control-center-data_*patrone14_all.deb
+sudo apt install ./out/gnome-control-center_*patrone16_amd64.deb ./out/gnome-control-center-data_*patrone16_all.deb
 ```
 
 ## How it was checked
@@ -168,6 +172,27 @@ page without Patrone's taskbar, where it's Ubuntu's code as before.
 `1:50.3-0ubuntu0.2patrone14`: the Patrone page calls the Royal theme
 Sapphire, as Patrone Settings 0.3.7 does (`docs/COMPLIANCE.md`, item 15);
 its setting value is still `royal`.
+
+`1:50.3-0ubuntu0.2patrone16` (the mouse pointer), 2026-10-29: the Patrone
+page has Mouse Pointer (the cursor themes GNOME can show, each card drawn
+from the theme's own cursors) and Pointer Size (Default, Medium, Large,
+Larger and Largest, as the Accessibility page has them), and every card has
+a name and description for screen readers. Before it, revision 14 as built
+from `main` was checked the way a user meets it, in the throwaway shell
+with a virtual pointer: every card on the page set its setting and GNOME
+Shell's taskbar followed; the taskbar's "Taskbar settings" opened this
+page, and switched an open Settings to it; the Patrone menu's Settings and
+"Change account settings" opened Settings and Users; File Manager's
+desktop menu's "Display settings" opened Displays; every page in the
+sidebar opened, and System's and Privacy & Security's rows (Privacy &
+Security's "Security Center" row is Ubuntu's, shown only where Ubuntu's
+Security Center snap is installed, as on the dev VM, and its snap
+couldn't start in the throwaway shell); the Desktop page's Desktop Bubble
+and Recycle Bin switches set the taskbar's settings. Revision 16, built
+from this branch, compiled with no warnings, and every card on the page,
+the new ones included, set its setting (the theme's and size's cards
+GNOME's `cursor-theme` and `cursor-size`); the pointer over a card just
+clicked showed the new theme a second later, without moving.
 
 ## Keeping up with Ubuntu
 

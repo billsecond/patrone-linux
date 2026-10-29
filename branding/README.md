@@ -1,40 +1,76 @@
-# Patrone branding
+# PatroneOS branding
 
-## Logo concept 01
+## The logo
 
-![Logo concept 01](concepts/logo-concept-01.webp)
+![The PatroneOS logo](logos/patrone-logo-stacked.png)
 
-The concept has two forms.
+The PatroneOS logo (the user, 2026-10-29, naming the system PatroneOS:
+"Use the new branding"): a slanted geometric P in
+Patrone's blues over a wide PATRONEOS wordmark, PATRONE in white (navy on
+light backgrounds) and OS in Patrone Blue. The P is a band across the top
+that folds down round the bowl and tapers to a point, the bowl's lower half,
+and a stem split by a facet into a lit part and a shaded one. Every slanted
+edge leans the same way, about 57 degrees from level. The letters are wide,
+squared capitals with rounded corners; the A has no crossbar, and P, R and
+E have a notch under the top bar that echoes the slit in the P.
 
-**Primary logo (top).** A slanted geometric "P" with a blue gradient, the wide
-"PATRONE" wordmark in white (the A has no crossbar), and "LINUX" in thin,
-widely spaced blue capitals between two rules. Intended for:
+It comes from the user's two Neon Horizon pictures (wallpapers 02 and 03,
+below), which show it over a scene, and replaces the first logo's
+wordmark. The pictures' blues are a little more saturated, with a touch of
+cyan; the logo keeps Patrone's palette (below), which the user kept for the
+new branding ("Keep the colors the same").
 
-- the login screen and lock screen
-- the boot splash (Plymouth)
-- the installer and its slideshow
-- the About dialog, the website and the ISO's volume artwork
+### Drawn as vectors
 
-**Terminal logo (bottom).** The same mark drawn as dashed ASCII-style lines.
-Intended for:
+`tools/patrone_logo.py` holds the logo as geometry: straight lines and
+elliptical arcs, measured from the pictures at 1672×941 and tidied (one
+slant for every slanted edge, one stroke weight for the letters). It writes
+SVG and draws pictures of any size from the same shapes, so every logo file
+matches and stays sharp. No font is involved: the letters are outlines.
 
-- the logo shown by system-info tools such as `fastfetch` (see below)
-- the text-console login banner (`/etc/issue`)
-- text-mode boot and recovery screens
+`tools/make_logos.py` makes every logo file from it (about 3 seconds):
 
-The image here is a picture of ASCII art. The real terminal logo has to be
-written as actual text characters so terminals can print it.
+```
+python tools/make_logos.py
+```
 
-### Where it and wallpaper 01 come from
+| File (`logos/`) | Size | Use |
+| --- | --- | --- |
+| `patrone-mark.svg` | vector | The P |
+| `patrone-mark-mono.svg` | vector | The P in one color (`currentColor`: black unless the page sets another) |
+| `patrone-wordmark.svg`, `patrone-wordmark-dark.svg` | vector | PATRONEOS, navy and blue for light backgrounds, white and blue for dark ones |
+| `patrone-logo-text.svg`, `patrone-logo-text-dark.svg` | 524×72 | The P beside the wordmark, for light and dark backgrounds: Settings → About, which shows its logo at its own size (Ubuntu's is 72 tall), and the installer (`tools/make_installer_images.sh`, 66 tall) |
+| `patrone-logo-stacked.svg`, `patrone-logo-stacked-dark.svg` | vector | The P over the wordmark, as in the pictures |
+| `patrone-logo.png` | 420×420 | The P (`LOGO=` in `os-release`, Settings → About) |
+| `patrone-logo-text.png`, `patrone-logo-text-dark.png` | 1504×248 | The side-by-side logo; the dark one is the installer slides' |
+| `patrone-logo-stacked.png`, `patrone-logo-stacked-dark.png` | 840×370 | The stacked logo |
+| `patrone-splash.png` | 380×154 | The stacked logo on the boot splash |
+| `patrone-logo-login.png` | 306×42 | The side-by-side logo on the login screen, which GNOME shows at the file's own size |
 
-Both were made with an AI image generator. The original wallpaper
-(`wallpapers/patrone-back-01.png`) carries a C2PA manifest, signed by
-OpenAI: generated with ChatGPT (`gpt-image`) on 2026-10-25. The concept has
-no metadata left (WebP drops it), but it was made the same day the same
-way, and the wallpaper shows the same logo. Everything cut or drawn from
-them is Patrone's work on top: the logo files, the splash, the login and
-About pictures, the installer's and first-login setup's P, the logo icons,
-wallpaper 01's family and the fastfetch logo. The generated wallpapers are
+It also makes `icons/`: the P as Yaru's `start-here` icon at each of Yaru's
+sizes, and the one-color `start-here-symbolic` and
+`distributor-logo-symbolic`, 16 by 16, which GTK paints in the text's color.
+The `-dark` files are for dark backgrounds, as GNOME names them. The SVG
+masters are installed in `/usr/share/patrone/logos`.
+
+### Where the logo and the wallpapers come from
+
+The logo's design, and the wallpapers' pictures, were made with an AI image
+generator. Both Neon Horizon pictures (`wallpapers/patrone-back-02.png` and
+`patrone-back-03.png`, kept byte for byte as the user supplied them) carry
+C2PA manifests, signed by OpenAI: generated with ChatGPT (`gpt-image`) on
+2026-10-29 at 12:45 and 12:44 UTC. The first design was made the same way:
+wallpaper 01's original (`wallpapers/patrone-back-01.png`) carries a
+manifest from 2026-10-25, and the logo concept it shows
+(`concepts/logo-concept-01.webp`) has no metadata left (WebP drops it) but
+was made the same day. Both show the old name, so they left the tree on
+2026-10-29 (the user: "remove anything that says" it); they're in its git
+history, manifest and all.
+
+What Patrone did on top: the vector logo, measured from the pictures and
+drawn again as shapes in code; every logo file drawn from it; and the
+wallpapers enlarged to 8K with the logo painted out and drawn again, their
+light and dark versions and color schemes. The generated wallpapers are
 different (below): code draws every pixel.
 
 Material an AI generates without enough human authorship may not be
@@ -42,34 +78,9 @@ protected by copyright (the US Copyright Office's report on AI, Part 2,
 January 2025), so `patrone-branding`'s copyright file says so, and offers
 these files under GPL-3+ only as far as anyone holds copyright in them.
 The name and logo are also Patrone's trademarks (`legal/eula.md`, section
-3). A human-drawn vector master of the logo (below) would settle it, and is
-a lawyer's question with a trademark search for PATRONE
+3). Whether redrawing the logo in code gives enough authorship is a
+lawyer's question, with a trademark search for PATRONEOS
 (`docs/COMPLIANCE.md`, item 9).
-
-## Logo files
-
-`logos/` holds transparent PNGs cut from the concept by
-`tools/make_logos.py`:
-
-| File | Size | Use |
-| --- | --- | --- |
-| `patrone-logo.png` | 420×420 | The mark alone (Settings → About, `LOGO=` in `os-release`) |
-| `patrone-logo-text-dark.png` | 1146×248 | Mark beside the wordmark, light text, for dark backgrounds (login screen) |
-| `patrone-logo-text.png` | 1146×248 | The same with dark text, for light backgrounds |
-| `patrone-logo-text.svg`, `patrone-logo-text-dark.svg` | 333×72 | The two above inside SVGs 72 pixels tall, Ubuntu's logo's height on Settings → About, which shows its logo at its own size (Patrone's GNOME Settings, revision 8). Made by `tools/make_about_logos.sh`; sharp on HiDPI screens |
-| `patrone-logo-stacked.png` | 840×507 | The whole primary logo, as in the concept |
-| `patrone-splash.png` | 380×220 | The stacked logo at boot-splash size |
-
-The concept is drawn on near-black, so each pixel's brightest channel becomes
-its opacity and the color is recovered by undoing the blend with black. To
-regenerate them:
-
-```
-python tools/make_logos.py concepts/logo-concept-01.webp logos/
-```
-
-These are stopgaps cut from a raster image; the vector masters (below)
-replace them.
 
 ## In the system: the patrone-branding package
 
@@ -78,18 +89,18 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 
 | What you see | Patrone's version | How |
 | --- | --- | --- |
-| The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "Patrone Linux 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"` | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
+| The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "PatroneOS 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"`, `HOME_URL="https://patroneos.com"`, the code and issues at `github.com/billsecond/patroneos`; `system/lsb-release` says "PatroneOS" too | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
 | Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over Patrone's spinner (below) on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the password prompt's images are copied from Plymouth's spinner theme, its field recolored blue (`system/plymouth/prompt/`) |
-| Boot splash without graphics | `system/plymouth/patrone-text.plymouth`: "Patrone Linux 0.1" in Patrone's colors | Plymouth text theme, made the default |
-| Login screen | Patrone logo; a navy-to-black background; blue accents; Patrone Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
+| Boot splash without graphics | `system/plymouth/patrone-text.plymouth`: "PatroneOS 0.1" in Patrone's colors | Plymouth text theme, made the default |
+| Login screen | The PatroneOS logo; a navy-to-black background; blue accents; Patrone Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
 | Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
-| Welcome message at login (SSH, console) | `system/motd/00-header`: "Welcome to Patrone Linux 0.1 (...)" | Replaces Ubuntu's header; Ubuntu's help links, news and Ubuntu Pro ads are moved aside |
-| Desktop | The Patrone wallpaper (its light version in the light style, the dark one in the dark style), blue accent color, Yaru's blue GTK theme and icons (GTK 3 apps don't follow the accent color), Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
-| Wallpapers to choose from | Wallpaper 01's family and the generated wallpapers (below) in Settings → Appearance, and none of Ubuntu's | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties`. GNOME Shell depends on `ubuntu-wallpapers`, so the package provides it and replaces `ubuntu-wallpapers` and `ubuntu-wallpapers-resolute` (63 MB), which apt then removes |
+| Welcome message at login (SSH, console) | `system/motd/00-header`: "Welcome to PatroneOS 0.1 (...)" | Replaces Ubuntu's header; Ubuntu's help links, news and Ubuntu Pro ads are moved aside |
+| Desktop | The Neon Horizon wallpaper (its light version in the light style, the dark one in the dark style), blue accent color, Yaru's blue GTK theme and icons (GTK 3 apps don't follow the accent color), Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
+| Wallpapers to choose from | Neon Horizon's family, wallpaper 03 and the generated wallpapers (below) in Settings → Appearance, and none of Ubuntu's | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties`. GNOME Shell depends on `ubuntu-wallpapers`, so the package provides it and replaces `ubuntu-wallpapers` and `ubuntu-wallpapers-resolute` (63 MB), which apt then removes |
 | Typeface | Patrone Sans (`fonts-patrone-sans`, drawn and built in `fonts/`: PatroneOS's own humanist sans, six weights in one variable font, Latin only), also the stand-in for Microsoft's Segoe UI, which can't be redistributed: for the desktop, apps, window titles (semibold) and the login screen; web pages and documents that ask for sans-serif, system-ui or Segoe UI get it too, in Chromium and in Flatpak apps as well, with Noto Sans (from `fonts-noto-core`) behind it for scripts it doesn't cover. Patrone Settings' Theme page switches between Patrone Sans and Noto Sans, which was the typeface until 2026-10-26. Monospace stays Ubuntu Sans Mono | GNOME's font settings in the override above and `95-patrone-settings`; `system/fontconfig/05-patrone-fonts.conf` in `/etc/fonts/conf.d` and, for snaps (which don't read `conf.d`), `/etc/fonts/snap-override`; for Flatpak apps, which see neither, a copy in `/usr/share/fonts/patrone-fontconfig` with `system/fontconfig/flatpak-fonts.conf`, which their fontconfig finds through `FONTCONFIG_PATH` (`system/environment.d/60-patrone-fontconfig.conf`) |
 | Settings | Ubuntu's "Ubuntu Desktop" page is named "Desktop" | `system/settings/gnome-ubuntu-panel.desktop` replaces Ubuntu's (GNOME Settings names each page from its desktop file) |
 | Help | GNOME Help, with GNOME's own front page and pages about the guide and getting help, in GNOME's 45 languages, in place of Ubuntu's "Ubuntu Desktop Guide" with Ubuntu's logo | `help/`, copied from GNOME's release of `gnome-user-docs` 50.0 by `tools/make_help.sh`: the pages Ubuntu's `gnome-user-docs` leaves out for `ubuntu-docs`, which the package replaces (Provides, Conflicts, Replaces), as it does `ubuntu-wallpapers` |
-| The logo icons apps ask for (`start-here`, `distributor-logo`, and their symbolic versions) | Patrone's P, in every color of Yaru's icons and its dark style, in place of Ubuntu's logo | `icons/`, made by `tools/make_logo_icons.sh` (the P at each of Yaru's sizes, and a one-color P traced with potrace); installed over Yaru's, which are moved aside (Yaru's `distributor-logo` icons are links to `start-here`). `os-release`'s `LOGO`, `patrone-logo`, is in the `hicolor` theme too |
+| The logo icons apps ask for (`start-here`, `distributor-logo`, and their symbolic versions) | Patrone's P, in every color of Yaru's icons and its dark style, in place of Ubuntu's logo | `icons/`, made by `tools/make_logos.py` (the P at each of Yaru's sizes, and a one-color P from its vector shapes); installed over Yaru's, which are moved aside (Yaru's `distributor-logo` icons are links to `start-here`). `os-release`'s `LOGO`, `patrone-logo`, is in the `hicolor` theme too |
 | Cursors | Patrone's cursor theme (below) in place of Yaru's, on the desktop, in apps and on the login screen | Drawn by `tools/make_cursors.py` when the package is built, into `/usr/share/icons/Patrone`; made the default by `cursor-theme` in the override above (for GNOME's session, Ubuntu's and the login screen) and in `95-patrone-settings`, and made the system's default cursor theme (`x-cursor-theme`, priority 200 over Adwaita's 90) for programs that don't read GNOME's settings |
 
 The login-screen theme is built from the Yaru that's installed when the
@@ -192,16 +203,18 @@ height, so the gaps between them grow with the screen. In
 The title was at `.382`, Ubuntu's place for it with its logo at the bottom,
 which put it on the P (the user saw it while updates installed,
 2026-10-28). The update screen's text and bar now sit under the wordmark;
-the gaps between them, measured in screenshots of the real `plymouthd`:
+the gaps between them, measured in screenshots of the real `plymouthd`
+(again on 2026-10-29: the PatroneOS logo is shorter than the old one, so
+its wordmark ends higher):
 
 | Screen | Wordmark to title | Subtitle to bar |
 | --- | --- | --- |
-| 800×600 (`previews/modes-800x600.png`, the tightest) | 16 px | 24 px |
-| 1280×720 | 55 px | 34 px |
-| 1024×768, 1366×768 | 71 px | 38 px |
-| 1920×1080 | 174 px | 63 px |
-| 2560×1440 | 293 px | 92 px |
-| 3840×2160 (Plymouth draws at twice the size there, so 1920×1080's layout) | 349 px | 126 px |
+| 800×600 (`previews/modes-800x600.png`, the tightest) | 54 px | 24 px |
+| 1280×720 | 94 px | 34 px |
+| 1024×768, 1366×768 | 110 px | 38 px |
+| 1920×1080 | 213 px | 63 px |
+| 2560×1440 | 331 px | 92 px |
+| 3840×2160 (Plymouth draws at twice the size there, so 1920×1080's layout) | 428 px | 126 px |
 
 The other modes never come closer to the wordmark than 20 px (a message
 under the spinner at 800×600).
@@ -215,89 +228,100 @@ built, as root from a terminal (it draws in an invisible screen, so the
 real one is untouched):
 
 ```
-sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.18_all.deb /tmp/splash $(tty) 1920x1080 1024x768
+sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.23_all.deb /tmp/splash $(tty) 1920x1080 800x600
 python branding/tools/preview_splash_sheets.py /tmp/splash
 ```
 
-## Wallpaper 01
+## Wallpaper 02: Neon Horizon
 
-![Wallpaper 01](wallpapers/patrone-back-01-8k.png)
+![Neon Horizon](wallpapers/previews/patrone-back-02-dark.jpg)
 
-The default desktop and lock-screen wallpaper: the primary logo centered on a
-near-black field with blue light streaks and faint terminal details in the
-corners. It uses the same palette as the logo.
+The default desktop and lock-screen wallpaper (the user, 2026-10-29: "8k
+wallpapers"): the stacked logo over a dark horizon, a planet's glowing rim
+above, dunes lit from behind, reflective water, a rule of light under the
+wordmark and HUD details in two corners. Wallpaper 03 is the user's other
+picture of the same scene, with stars and distant mountains and no HUD.
 
-| File | Size | Use |
+| File (`wallpapers/`) | Size | What |
 | --- | --- | --- |
-| `wallpapers/patrone-back-01.png` | 1672×941 | Original artwork, kept as the source |
-| `wallpapers/patrone-back-01-8k.png` | 7680×4320 | The 8K wallpaper the OS ships |
+| `patrone-back-02.png` | 1672×941 | The user's picture, kept as the source (its C2PA manifest intact) |
+| `patrone-back-03.png` | 1672×941 | The other picture, the source of wallpaper 03 |
+| `patrone-back-02-dark.png` and the rest below | 7680×4320 | What the OS ships |
 
-The 8K version is a lossless PNG on purpose. JPEG, even at quality 98, leaves
-faint blotches in the dark blue gradients.
+`tools/make_wallpapers.py` makes them (Python with OpenCV and NumPy, on
+Windows, as the VM has no OpenCV). `tools/wallpaper_layers.py` takes a
+picture apart at its own size: the background with the graphics painted
+out, and the graphics as color and coverage. Then, at 8K:
 
-It was made from the original with `tools/upscale_wallpaper.py` (Python with
-OpenCV and NumPy).
-It enlarges the glows and gradients smoothly, rebuilds the logo, text and
-thin lines with sharp edges at full resolution, and adds fine grain so the
-dark gradients don't band. Re-run it if the original changes:
+- **The background** is enlarged with Lanczos, which suits glows and
+  gradients. The logo is painted out entirely and the hole filled from the
+  pixels round it (a pyramid "push-pull" fill), so no outline of it is left.
+- **The logo** is drawn again from its vector shapes, sharp, exactly where
+  the picture has it, with a soft glow of its own colors as the picture's
+  has (not on light versions, where it would be a grey smudge).
+- **The rule of light** under the wordmark is a line two pixels thick in
+  the picture: its rows become the glow alone, and the line is drawn again
+  sharp with the light it had, column by column.
+- **The HUD details** (crosses, dashes, bars and hairlines) are enlarged
+  as coverage with their edges sharpened, so they come out about 2 pixels
+  wide at 8K, in their own colors.
+
+They're lossless PNGs with an 8×8 ordered dither (`dithered8`), which stops
+the dark gradients banding with no grain of its own; JPEG, even at quality
+98, leaves blotches in them. They're 10 to 13 MB each, 156 MB for all 14
+(wallpaper 01's family, at 4K but for its default, was 66 MB). To make them again (about 35 minutes for all
+14):
 
 ```
-python tools/upscale_wallpaper.py wallpapers/patrone-back-01.png wallpapers/patrone-back-01-8k
+python tools/make_wallpapers.py wallpapers --preview wallpapers/previews
 ```
 
-An upscale can sharpen edges but can't invent detail the original never had.
-If the original design file, or a higher-resolution render of it, exists, a
-native 8K export from that would be better still.
+Add variant names (`02-dark`, `03-light`...) to make only those, and
+`--size W H` for another size. Each is defined in `VARIANTS` in the script:
+its picture, color scheme, whether it keeps the HUD, and its logo. An
+enlargement can sharpen edges but can't invent detail the picture never had:
+the dunes and water are as soft as a 1672-pixel picture enlarged 4.6 times.
 
 ### The family
 
-Variants of wallpaper 01, all in Settings → Appearance. Those with a light
-version are listed there as one wallpaper that follows the light or dark
-style.
+All in Settings → Appearance, which lists them by name. Those with a light
+version are one wallpaper there that follows the light or dark style.
 
-| Preview | File (`wallpapers/`) | In Settings |
-| --- | --- | --- |
-| ![](wallpapers/previews/patrone-back-01-light.jpg) | `patrone-back-01-light.png` | Patrone, light (the default in the light style) |
-| ![](wallpapers/previews/patrone-back-01-plain.jpg) | `patrone-back-01-plain.png` | Patrone, no logo |
-| ![](wallpapers/previews/patrone-back-01-plain-light.jpg) | `patrone-back-01-plain-light.png` | Patrone, no logo, light |
-| ![](wallpapers/previews/patrone-back-01-clean.jpg) | `patrone-back-01-clean.png` | Patrone Clean: the light streaks alone |
-| ![](wallpapers/previews/patrone-back-01-mark.jpg) | `patrone-back-01-mark.png` | Patrone Mark: a small P in the middle |
-| ![](wallpapers/previews/patrone-back-01-mark-light.jpg) | `patrone-back-01-mark-light.png` | Patrone Mark, light |
-| ![](wallpapers/previews/patrone-back-01-badge.jpg) | `patrone-back-01-badge.png` | Patrone Badge: a small logo at the bottom right |
-| ![](wallpapers/previews/patrone-back-01-midnight.jpg) | `patrone-back-01-midnight.png` | Patrone Midnight: navy in place of black |
-| ![](wallpapers/previews/patrone-back-01-blue.jpg) | `patrone-back-01-blue.png` | Patrone Blue: Patrone Blue, with white light and a white P |
-| ![](wallpapers/previews/patrone-back-01-graphite.jpg) | `patrone-back-01-graphite.png` | Patrone Graphite: grey and silver, with the blue P |
-| ![](wallpapers/previews/patrone-back-01-watermark.jpg) | `patrone-back-01-watermark.png` | Patrone Watermark: a giant, faint P of glass |
+| Preview | File (`wallpapers/`) | In Settings | Size |
+| --- | --- | --- | --- |
+| ![](wallpapers/previews/patrone-back-02-dark.jpg) | `patrone-back-02-dark.png` | Neon Horizon (the default in the dark style and on the lock screen) | 12.1 MB |
+| ![](wallpapers/previews/patrone-back-02-light.jpg) | `patrone-back-02-light.png` | Neon Horizon, light (the default in the light style): lightness inverted, hue kept, so the glows are blue ink on a pale field and the wordmark navy | 10.0 MB |
+| ![](wallpapers/previews/patrone-back-02-plain.jpg) | `patrone-back-02-plain.png` | Neon Horizon, no logo | 11.7 MB |
+| ![](wallpapers/previews/patrone-back-02-plain-light.jpg) | `patrone-back-02-plain-light.png` | Neon Horizon, no logo, light | 9.7 MB |
+| ![](wallpapers/previews/patrone-back-02-mark.jpg) | `patrone-back-02-mark.png` | Neon Horizon Mark: a small P in the middle | 11.8 MB |
+| ![](wallpapers/previews/patrone-back-02-mark-light.jpg) | `patrone-back-02-mark-light.png` | Neon Horizon Mark, light | 9.8 MB |
+| ![](wallpapers/previews/patrone-back-02-clean.jpg) | `patrone-back-02-clean.png` | Neon Horizon Clean: the scene alone | 11.6 MB |
+| ![](wallpapers/previews/patrone-back-02-badge.jpg) | `patrone-back-02-badge.png` | Neon Horizon Badge: a small logo at the bottom right | 11.6 MB |
+| ![](wallpapers/previews/patrone-back-02-midnight.jpg) | `patrone-back-02-midnight.png` | Neon Horizon Midnight: navy in place of black | 11.3 MB |
+| ![](wallpapers/previews/patrone-back-02-blue.jpg) | `patrone-back-02-blue.png` | Neon Horizon Blue: Patrone Blue, with white light and a white P | 11.8 MB |
+| ![](wallpapers/previews/patrone-back-02-graphite.jpg) | `patrone-back-02-graphite.png` | Neon Horizon Graphite: grey and silver, with the blue P | 9.8 MB |
+| ![](wallpapers/previews/patrone-back-02-watermark.jpg) | `patrone-back-02-watermark.png` | Neon Horizon Watermark: a giant, faint P of glass | 11.8 MB |
+| ![](wallpapers/previews/patrone-back-03-dark.jpg) | `patrone-back-03-dark.png` | Neon Horizon Starlit (wallpaper 03) | 12.7 MB |
+| ![](wallpapers/previews/patrone-back-03-light.jpg) | `patrone-back-03-light.png` | Neon Horizon Starlit, light | 10.5 MB |
 
-They're 3840×2160 PNGs of about 3 MB, made from the original by
-`tools/make_wallpapers.py`. It takes the original apart with
-`tools/wallpaper_layers.py` (the same steps `upscale_wallpaper.py` uses):
-the background with the logo and details painted out, the corner details,
-and the logo, each redrawn sharp at full size. Then a color scheme
-recolors the background and details, and the logo goes back at its own
-place, smaller, or not at all. The light scheme inverts lightness and keeps
-the hue, so the light streaks become blue ink on a pale field, and the
-wordmark turns navy.
+### Wallpaper 01, retired
 
-4K holds all the detail the original has. They're dithered with an 8×8
-ordered pattern instead of grain: it stops the dark gradients from banding
-as well as grain does, keeps their average brightness closer to the
-original's, and makes the files about a third the size. To make them again:
-
-```
-python tools/make_wallpapers.py wallpapers/patrone-back-01.png wallpapers --preview wallpapers/previews
-```
-
-Add variant names after the folder to make only those. Each is defined in
-`VARIANTS` in the script: its color scheme, whether it keeps the corner
-details, and its logo.
+Wallpaper 01 showed the old name in its logo. Its family is retired rather
+than redrawn, and its original is in git history (above):
+with the logo painted out it was another dark, centred scene beside Neon
+Horizon's, and its 66 MB of files went towards the 8K ones. The package
+still has its file names, as links to Neon Horizon's matching wallpapers
+(`patrone-back-01-8k.png` to `patrone-back-02-dark.png`), so a desktop set
+to one of them keeps a wallpaper. To bring it back, restore its original from git
+history and give `PICTURES` in `tools/make_wallpapers.py` an entry for it
+(where its logo, rules and corner details are) and variants that use it.
 
 ## Generated wallpapers
 
 ![Every generated wallpaper, light and dark](wallpapers/generated/contact-sheet.jpg)
 
 Eleven abstract designs, each a light and dark pair that follows the light or
-dark style, listed in Settings → Appearance after wallpaper 01's family.
+dark style, listed in Settings → Appearance after Neon Horizon's family.
 `tools/make_generated_wallpapers.py` draws every pixel from Patrone's colors
 and shapes, with no photos, downloaded art or image models, so Patrone owns
 them outright; they're GPL-3+ like the rest of the branding.
@@ -383,7 +407,8 @@ Patrone Terminal's background:
   colors are taken from just inside the logo's edge, which the picture draws
   darker.
 
-Below the mark are the wordmark and the ruled "LINUX". The colors are
+Below the mark is the wordmark, "P A T R O N E" in bold white and "O S" in
+bold Patrone Blue. The colors are
 written into the file as 24-bit color codes, which a `file` logo in
 `config.jsonc` passes through (a `file-raw` one would ask the terminal where
 the cursor is to find the logo's width, and waits when nothing answers). To
@@ -400,33 +425,28 @@ first trace (2026-10-25) came from the concept picture, whose soft edges
 left notches and stray blocks. It was redone from the logo on 2026-10-28
 (the user: "a bit nicer/cleaner"), then with the diagonal shapes ("smooth
 the edges out somehow"), then with shaded edges ("can you find a way to go
-smoother?").
+smoother?"), and on 2026-10-29 from the PatroneOS logo.
 
-## Colors measured from the concept
+## Colors
 
 | Role | Hex | Where it appears |
 | --- | --- | --- |
-| Patrone Blue (primary) | `#288BFA` | Main body of the P |
-| Highlight | `#4DA0FC` | Top-right of the P's bowl |
-| Mid | `#2372DD` | Transition across the P |
-| Deep | `#1851A8` | Lower stem of the P |
-| Shadow | `#134394` | Darkest end of the gradient |
-| Rule line / "LINUX" | `#3E91DE` | Thin rules and subtitle |
+| Patrone Blue (primary) | `#288BFA` | The P's band and stem, "OS" |
+| Highlight | `#4DA0FC` | The top right of the P's band, the top of "OS" |
+| Mid | `#2372DD` | Across the bowl and the stem |
+| Deep | `#1851A8` | The bowl's left end, the stem's shaded facet |
+| Shadow | `#134394` | The foot of the stem |
+| Rule | `#3E91DE` | Thin rules |
 | Background | `#030303` | Near-black backdrop |
-| Wordmark | `#FFFFFF` | "PATRONE" |
+| Wordmark | `#FFFFFF` | "PATRONE" on dark backgrounds |
+| Navy | `#14223A` | "PATRONE" on light backgrounds |
 
-These come from a raster image, so treat them as a starting point. The vector
-master becomes the source of truth once it exists.
+First measured from the logo concept; the user kept them for PatroneOS. The
+logo's gradients, from these colors, are in `tools/patrone_logo.py`.
 
 ## Still needed before release
 
-- Vector (SVG) masters of the mark and the full logo.
-- A mark-only version that stays readable at 16–32 px, for the app launcher
-  button, panel and favicon.
-- Single-color versions: white on dark, dark on light, and a GNOME-style
-  symbolic icon.
-- The wordmark typeface: identify a font whose license allows redistribution,
-  or draw the letters as outlines.
-- Name check: the word "Linux" in a product name is a trademark of Linus
-  Torvalds, administered by the Linux Foundation. Check whether a public release
-  needs their sublicense.
+- A trademark search for PATRONEOS, and a lawyer's view of the logo's
+  authorship (above, and `docs/COMPLIANCE.md`, item 9).
+- The P at 16 and 22 pixels is the whole mark shrunk; a simplified mark
+  drawn for those sizes would read better in panels and favicons.

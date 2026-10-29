@@ -1,3 +1,13 @@
+patrone-desktop (0.2.5) resolute; urgency=medium
+
+  * Recommends breeze-cursor-theme, KDE's Breeze cursors (LGPL-3+), so the
+    new Mouse pointer choice in Patrone Settings and GNOME Settings has a
+    white pointer (Breeze Light) and five themes in all; the DMZ and X.Org
+    themes Ubuntu's desktop brings can't be offered (docs/COMPLIANCE.md,
+    item 22).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 10:00:00 -0500
+
 patrone-desktop (0.2.4) resolute; urgency=medium
 
   * Patrone's build of Language Support (language-selector-common and
@@ -20,7 +30,7 @@ patrone-desktop (0.2.2) resolute; urgency=medium
 
   * Recommends patrone-hyperv-setup: at login in a Hyper-V VM, a dialog
     that offers to set up what's missing of Hyper-V support (the user,
-    2026-10-28: "When the Patrone Linux starts up, have it check for
+    2026-10-28: "When [PatroneOS] starts up, have it check for
     Hyper-V and if its using Hyper-V as its host, then provide a prompt
     with an option to install support for Hyper-V").
 

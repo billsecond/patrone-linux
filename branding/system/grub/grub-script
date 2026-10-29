@@ -1,9 +1,9 @@
 #! /bin/sh
-# Patrone Linux's /etc/grub.d/10_linux and 10_linux_zfs, copies of this
+# PatroneOS's /etc/grub.d/10_linux and 10_linux_zfs, copies of this
 # that patrone-branding's postinst makes. Each runs GRUB's own script of
 # its name, which patrone-branding moves aside to
 # /usr/share/patrone-branding/grub/, with one change: GRUB adds " GNU/Linux"
-# to any system's name but Ubuntu's, so the boot menu said "Patrone Linux
+# to any system's name but Ubuntu's, so the boot menu would say "PatroneOS
 # GNU/Linux". Here it's the name alone, as os-release gives it. If GRUB's
 # script no longer has that line, it runs as it is.
 set -e

@@ -6,9 +6,38 @@ patrone-branding (0.1.24) resolute; urgency=medium
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
 
+patrone-branding (0.1.23) resolute; urgency=medium
+
+  * The system is PatroneOS, as the user named it on 2026-10-29: os-release
+    (NAME, PRETTY_NAME, and HOME_URL https://patroneos.com), lsb-release,
+    the boot menu (GRUB takes os-release's NAME), the text boot screen,
+    /etc/issue, /etc/legal, the cursor theme's description and this
+    package's description. The links to the code and its issues go to the
+    repository's new name, github.com/billsecond/patroneos. Nothing here
+    says the old name any more, earlier entries of this changelog included
+    (the user: "remove anything that says" it).
+  * The PatroneOS logo, from the user's Neon Horizon pictures: the P beside
+    or over a PATRONEOS wordmark, OS in Patrone Blue, in place of the first
+    logo's wordmark. It's drawn as vector shapes in code
+    (tools/patrone_logo.py), and every logo file is drawn from them:
+    Settings > About, the login screen, the boot splash, the installer's and
+    first-login setup's pictures, the logo icons and fastfetch's logo. The
+    SVG masters are installed in /usr/share/patrone/logos. Patrone's colors
+    are unchanged.
+  * The Neon Horizon wallpaper (02), enlarged to 7680x4320 with its logo
+    drawn again sharp, is the default in both styles and on the lock
+    screen, with a family like wallpaper 01's (light, no logo, mark, clean,
+    badge, midnight, blue, graphite, watermark), and wallpaper 03 from the
+    user's other picture. Wallpaper 01's family is retired; its file names
+    are links to 02's, so a desktop set to one keeps a wallpaper.
+  * The copyright file records that both pictures were made with ChatGPT
+    (their C2PA manifests, signed by OpenAI).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 08:39:19 -0500
+
 patrone-branding (0.1.22) resolute; urgency=medium
 
-  * The boot menu says "Patrone Linux", not "Patrone Linux GNU/Linux": GRUB's
+  * The boot menu says "PatroneOS", not "PatroneOS GNU/Linux": GRUB's
     10_linux and 10_linux_zfs, which add " GNU/Linux" to any name but
     Ubuntu's, are moved aside, and Patrone's scripts in their place run them
     without it (docs/COMPLIANCE.md, item 18).
@@ -18,7 +47,7 @@ patrone-branding (0.1.22) resolute; urgency=medium
 patrone-branding (0.1.21) resolute; urgency=medium
 
   * /etc/legal says where the source code is: the disc's at
-    patronelinux.com/source, and Patrone's own on GitHub, now public
+    patroneos.com/source, and Patrone's own on GitHub, now public
     (docs/COMPLIANCE.md, item 1).
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Wed, 28 Oct 2026 15:00:00 -0500
@@ -140,7 +169,7 @@ patrone-branding (0.1.12) resolute; urgency=medium
 
 patrone-branding (0.1.11) resolute; urgency=medium
 
-  * /etc/lsb-release names the system Patrone Linux 0.1: the installer
+  * /etc/lsb-release names the system PatroneOS 0.1: the installer
     took an earlier Patrone install for "Ubuntu 26.04.1 LTS" (the user,
     2026-10-27). Its codename stays Ubuntu's, which tools need.
   * /etc/legal, shown at a text console's login, is Patrone's, and says

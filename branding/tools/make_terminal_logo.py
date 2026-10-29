@@ -38,9 +38,9 @@ TOOLS = Path(__file__).resolve().parent
 # Patrone Terminal's background (terminal/src/theme.rs), which the logo is
 # matched against
 BACKGROUND = np.array([0x07, 0x0A, 0x10], dtype=float)
-# The wordmark is bold white, and its rule the rule blue
+# The wordmark: PATRONE in bold white, OS in bold Patrone Blue
 WORDMARK = "1;97"
-RULE = "38;2;62;145;222"
+OS = "1;38;2;40;139;250"
 # A cell whose best color is this close to the background is left empty
 FAINT = 14
 # How far a cell's color may be dimmed below the mark's: blocks and other
@@ -253,11 +253,8 @@ def ansi(grid: list, width: int) -> list[str]:
                 current = rgb
             line += char
         lines.append(line + ("\x1b[0m" if current else ""))
-    lines += [
-        "",
-        f"\x1b[{WORDMARK}m" + centered("P A T R O N E", width) + "\x1b[0m",
-        f"\x1b[{RULE}m" + centered("── L I N U X ──", width) + "\x1b[0m",
-    ]
+    indent = centered("P A T R O N E O S", width)[:-len("P A T R O N E O S")]
+    lines += ["", f"{indent}\x1b[{WORDMARK}mP A T R O N E \x1b[{OS}mO S\x1b[0m"]
     return lines
 
 
