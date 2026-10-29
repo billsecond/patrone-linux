@@ -4,10 +4,11 @@ An Ubuntu 26.04.1 LTS-based OS with its own brand-new Wayland desktop,
 **Patrone Desktop**. Called Patrone Linux until 2026-10-29; its website is
 https://patroneos.com. The name is **PatroneOS**, one word, wherever users
 or the public see it; "Patrone" stays the short name (Patrone Terminal,
-`patrone-*` packages, app IDs, paths, `ID=patrone`). Public repo: `billsecond/patrone-linux`, public since
-2026-10-28. Its history before then, website included, is in the private
-`billsecond/patrone-linux-archive`. The website has its own private repo,
-`billsecond/patrone-website`.
+`patrone-*` packages, app IDs, paths, `ID=patrone`). Public repo:
+`billsecond/patroneos` (named `patrone-linux` until 2026-10-29; GitHub
+redirects the old name), public since 2026-10-28. Its history before then,
+website included, is in the private `billsecond/patroneos-archive`. The
+website has its own private repo, `billsecond/patrone-website`.
 
 Read these before starting work:
 

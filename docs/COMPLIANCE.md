@@ -19,7 +19,9 @@ so under **2026-10-29**.
 from Patrone LInux to PatroneOS ... The website will be
 https://patroneos.com"). This review was written when it was Patrone Linux;
 where it quotes or records what was seen then, it keeps that name. Items 4
-and 9 are brought up to date for the new name.
+and 9 are brought up to date for the new name. The repository is
+<https://github.com/billsecond/patroneos> since then (GitHub redirects
+`billsecond/patrone-linux`).
 
 **This is not legal advice.** Each finding is graded:
 

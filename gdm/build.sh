@@ -54,7 +54,7 @@ fi
 cat >> debian/copyright << 'EOF'
 
 PatroneOS's build of GDM (gdm/ in
-https://github.com/billsecond/patrone-linux) adds
+https://github.com/billsecond/patroneos) adds
 debian/patches/patrone-hyperv-boot-display.patch:
 
     Copyright © 2026  William Daugherty

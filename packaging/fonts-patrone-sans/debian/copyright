@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Patrone Sans
-Source: https://github.com/billsecond/patrone-linux
+Source: https://github.com/billsecond/patroneos
 Comment: Patrone Sans is a modified version of Noto Sans 2.015, from
  https://github.com/notofonts/latin-greek-cyrillic (tag NotoSans-v2.015).
  FONTLOG.txt lists the changes.

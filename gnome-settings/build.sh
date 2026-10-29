@@ -97,7 +97,7 @@ stanza="Files: panels/patrone/*
 Copyright: 2026 William Daugherty
 License: GPL-2+
 Comment: PatroneOS's own pages, added by Patrone's build (gnome-settings/
- in https://github.com/billsecond/patrone-linux)."
+ in https://github.com/billsecond/patroneos)."
 if ! stanza=$stanza awk '!done && previous == "" && /^License:/ { print ENVIRON["stanza"]; print ""; done = 1 }
         { print; previous = $0 }
         END { exit !done }' debian/copyright > debian/copyright.patrone; then

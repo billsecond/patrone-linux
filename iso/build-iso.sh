@@ -441,7 +441,7 @@ fi
 {
     echo "# The source of everything on PatroneOS 26.04.1's disc: KIND NAME VERSION"
     echo "# (deb: a source package; snap: a snap and its revision). Built from"
-    echo "# https://github.com/billsecond/patrone-linux at $commit"
+    echo "# https://github.com/billsecond/patroneos at $commit"
     {
         cat "$work/$install_layer.sources" "$work/$live_layer.sources"
         pool_sources
@@ -458,7 +458,7 @@ too. Their source code is published beside this disc image:
 Patrone's own code, its changes to Ubuntu's programs and the scripts that
 make this disc are also at
 
-    https://github.com/billsecond/patrone-linux
+    https://github.com/billsecond/patroneos
 
 at $commit.
 

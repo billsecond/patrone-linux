@@ -98,4 +98,4 @@ Noto Sans: the Noto Project Authors, the Monotype design team and Irene
 Vlachou (https://github.com/notofonts/latin-greek-cyrillic).
 
 Patrone Sans changes: William Daugherty, for PatroneOS
-(https://github.com/billsecond/patrone-linux).
+(https://github.com/billsecond/patroneos).
