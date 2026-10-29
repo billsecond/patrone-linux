@@ -144,7 +144,7 @@ with this package (`iso/build-iso.sh`, sha256 `63eff97a...`):
   folder; a checkpoint with `CheckpointType ProductionOnly` (which errors
   rather than fall back to a standard one) succeeded, with "op=FREEZE:
   succeeded" and "op=THAW: succeeded" in the guest's journal; the host's
-  KVP data said "Patrone Linux", 0.1, 7.0.0-42-generic, the computer's
+  KVP data said "PatroneOS", 0.1, 7.0.0-42-generic, the computer's
   name and address; memory grew from 4 GB to the 8 GB maximum;
   `chronyc sources` listed `PHC0`; `Stop-VM` shut it down cleanly in 4 s.
 - `patrone-vbox-users`, `virtualbox-guest-utils` and the VBoxClient user

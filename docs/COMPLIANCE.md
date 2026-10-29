@@ -1,6 +1,6 @@
 # Compliance review
 
-A review of Patrone Linux against Canonical's Ubuntu policies and everyone
+A review of PatroneOS against Canonical's Ubuntu policies and everyone
 else's licences, trademarks and terms, and the privacy laws that touch the
 website (the user, 2026-10-28: "makes sure this is complient with ubuntu
 and everyone else, be very through and make sure you find ways to double
@@ -15,11 +15,10 @@ there is anything we need to do to be more complaint and less risky for any
 of the microsoft or conicial things do it now". Each item that changed says
 so under **2026-10-29**.
 
-**The system is PatroneOS since 2026-10-29** (the user: "change the name
-from Patrone LInux to PatroneOS ... The website will be
-https://patroneos.com"). This review was written when it was Patrone Linux;
-where it quotes or records what was seen then, it keeps that name. Items 4
-and 9 are brought up to date for the new name. The repository is
+**The system is PatroneOS since 2026-10-29** (the user: "The website will
+be https://patroneos.com"). This review was written under the system's old
+name, which had "Linux" in it; it now uses the new name throughout, quotes
+included. Items 4 and 9 are brought up to date for the new name. The repository is
 <https://github.com/billsecond/patroneos> since then (GitHub redirects
 `billsecond/patrone-linux`).
 
@@ -348,7 +347,7 @@ page belongs to `patrone-branding` and is GNOME's ("GNOME Help"), and every
 language's parses as XML. **Seen in a fresh install** (2026-10-28, twice:
 the discs from `439e7a9` and `d0c19ce`, in throwaway Hyper-V VMs): Help
 opens as "GNOME Help" with no Ubuntu logo; Settings › About shows Patrone's
-logo and "Patrone Linux 0.1"; the logo icons are Patrone's files, diverted
+logo and "PatroneOS 0.1"; the logo icons are Patrone's files, diverted
 from Yaru's; none of Ubuntu's removed packages or snaps (Firefox, App
 Center, Security Center, Thunderbird, hwctl, Ubuntu Pro, Software Updater)
 are installed, and nothing is left to autoremove but the install engine's
@@ -380,10 +379,9 @@ alone as not. Linux Mint ("trademarked through the Linux Mark Institute")
 and AlmaLinux hold one. Only the website's footer carries the attribution
 today.
 
-**Fix** (the user applies; nobody else can): apply for PATRONE LINUX; use
-"Patrone Linux OS" or "the Patrone Linux operating system" in titles and
-first mentions, or ask the Foundation whether "Patrone Linux" alone is
-acceptable. Everyone, licensed or not, should mark the first prominent
+**Fix** (the user applies; nobody else can): apply for the name; follow
+"Linux" in it with "OS" or "operating system" in titles and first
+mentions, or ask the Foundation whether the name alone is acceptable. Everyone, licensed or not, should mark the first prominent
 "Linux" on a page "Linux®" and say "Linux® is the registered trademark of
 Linus Torvalds in the U.S. and other countries." (now in `/etc/legal`).
 Once licensed, add the sublicence's legend (its §3.1): "The registered
@@ -398,11 +396,11 @@ is now in `/etc/legal`, the licence agreement (section 4), the website's
 footer and the repository's README. When it's granted, add the §3.1 legend
 above beside each of them (`branding/system/legal`, `legal/eula.md` in a
 new version, the website's footer, `README.md`), and follow whatever the
-grant says about the name. **"Patrone Linux OS" until then?** Not needed
-yet: nothing is offered to the public under the name while the download is
-closed (it opens only with the source, item 1). If the download is to open
-before the Foundation answers, use "Patrone Linux OS" or "the Patrone Linux
-operating system" in titles and first mentions until it does.
+grant says about the name. **"OS" after the name until then?** Not
+needed yet: nothing is offered to the public under the name while the
+download is closed (it opens only with the source, item 1). If the download
+is to open before the Foundation answers, follow "Linux" in the name with
+"OS" or "operating system" in titles and first mentions until it does.
 
 **2026-10-29: not needed for PatroneOS.** The name has no "Linux" in it,
 and the sublicence is for marketing a product "using a trademark that
@@ -417,8 +415,8 @@ page, and "Linux® is the registered trademark of Linus Torvalds in the U.S.
 and other countries." (`/etc/legal`, the licence agreement, the website's
 footer, `README.md`). So **withdraw the request, or let it lapse**: the
 user's call. Nothing else is needed while "Linux" stays out of the name, the
-logo's wordmark and the website's address. Patrone Linux, the old name,
-should stay off anything new.
+logo's wordmark and the website's address. The old name, with "Linux" in
+it, should stay off anything new.
 
 ## 5. The website keeps full IP addresses for a year, and says it keeps none
 
@@ -824,7 +822,7 @@ the paragraph, and first-login setup's passes a strict DEP-5 parse.
   companies"), and ® on each page's first standalone "Linux"
   (`index.html:10`, `desktop.html:9`, `ubuntu.html:22`). Suggested footer:
 
-  > Patrone Linux is an independent project, not affiliated with, sponsored
+  > PatroneOS is an independent project, not affiliated with, sponsored
   > by or endorsed by Canonical Ltd., Microsoft, the GNOME Foundation, the
   > Debian project, Mozilla, Google or the Linux Foundation. Linux® is the
   > registered trademark of Linus Torvalds in the U.S. and other countries.
@@ -842,7 +840,7 @@ the paragraph, and first-login setup's passes a strict DEP-5 parse.
 **Since this review**, `fe30ef4` renamed `/ubuntu` to `/foundation`, widened
 the footer's notices, and made the download page show the source's address
 and stay closed until the source is published ("The download opens once
-Patrone Linux's source code is published alongside it"). Read in the code,
+PatroneOS's source code is published alongside it"). Read in the code,
 not tested.
 
 **2026-10-29** (website #7 and #8): the footer says Patrone isn't
@@ -1020,7 +1018,7 @@ AAC support, as in Ubuntu: low risk, not checked further.
 - **Text pointing at Ubuntu**: first-login setup's "View release notes"
   opens Ubuntu's notes for version 0.1; Language Support's "The recommended
   value for Ubuntu is IBus"; Settings › Desktop's "No Ubuntu settings found
-  ... report a bug in Launchpad"; the GRUB menu's "Patrone Linux GNU/Linux".
+  ... report a bug in Launchpad"; the GRUB menu's "PatroneOS GNU/Linux".
   §16 items 6, 8, 12 and 14. Likely problem (minor): they imply Ubuntu
   supports Patrone. **Fixed** (2026-10-29, #28):
   - First-login setup's release notes link is hidden until Patrone has
@@ -1029,7 +1027,7 @@ AAC support, as in Ubuntu: low risk, not checked further.
     Launchpad (`patrone15`).
   - Language Support is rebuilt with Patrone's words: its tip, its error
     message and its help (`language-selector/`, `patrone1`).
-  - The boot menu says "Patrone Linux": `patrone-branding` 0.1.22 moves
+  - The boot menu says "PatroneOS": `patrone-branding` 0.1.22 moves
     GRUB's `10_linux` and `10_linux_zfs` aside and runs them without "
     GNU/Linux".
   - Checked on the dev VM, and in a fresh install from a test disc.
@@ -1157,7 +1155,7 @@ to the website session.
   `Release` files and package names say Ubuntu, and must: changing them
   would break the signature. They're part of item 2 (Ubuntu's own
   binaries), not branding. The disc's volume name and `.disk/info` say
-  Patrone Linux.
+  PatroneOS.
 - **The `ubuntu` link at the disc's root** (Ubuntu's `ubuntu -> .`, a
   Debian-era convention that Windows shows as a 0 KB file named UBUNTU,
   found by the user) was used by nothing on Patrone's disc: apt and the

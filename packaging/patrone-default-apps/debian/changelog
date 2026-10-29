@@ -1,7 +1,7 @@
 patrone-default-apps (0.2.2) resolute; urgency=medium
 
-  * PatroneOS in place of Patrone Linux, the system's new name
-    (2026-10-29), in its settings' notes and its description.
+  * The system's new name, PatroneOS (2026-10-29), in its settings' notes
+    and its description.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
 
@@ -15,7 +15,7 @@ patrone-default-apps (0.2.1) resolute; urgency=medium
 
 patrone-default-apps (0.2.0) resolute; urgency=medium
 
-  * No web browser comes with Patrone Linux: drop the dependency on
+  * No web browser comes with PatroneOS: drop the dependency on
     chromium-browser (Chromium's snap). Until a browser's installed, web
     links open Patrone Browser Chooser, which asks which one to install;
     after that, whichever browser is installed (Flathub's, then the same

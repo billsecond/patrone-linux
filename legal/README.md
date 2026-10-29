@@ -32,8 +32,7 @@ every line of it.
 
 ## Versions
 
-- **1.0**, 28 October 2026, when the system was called Patrone Linux:
-  `eula-1.0.md`.
+- **1.0**, 28 October 2026, under the system's old name: `eula-1.0.md`.
 - **1.1**, 29 October 2026: the same terms, with the system's new name,
   PatroneOS, and the website's, patroneos.com.
 

@@ -1,9 +1,9 @@
 patrone-installer (0.1.5) resolute; urgency=medium
 
-  * PatroneOS in place of Patrone Linux, the system's new name
-    (2026-10-29), as the installer's flavor name ("Welcome to PatroneOS",
-    "Install PatroneOS"), its window title, the licence page and the
-    full-screen session, with the licence agreement's version 1.1.
+  * The system's new name, PatroneOS (2026-10-29), as the installer's flavor
+    name ("Welcome to PatroneOS", "Install PatroneOS"), its window title,
+    the licence page and the full-screen session, with the licence
+    agreement's version 1.1.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
 
@@ -27,7 +27,7 @@ patrone-installer (0.1.4) resolute; urgency=medium
 
 patrone-installer (0.1.3) resolute; urgency=medium
 
-  * A licence agreement page after "Try or install": Patrone Linux's
+  * A licence agreement page after "Try or install": PatroneOS's
     agreement (legal/eula.md, the one the website's download shows), with
     Next off until it's accepted. Accepting writes its version and time to
     /var/log/installer/patrone-licence-accepted, which the install engine
@@ -37,10 +37,10 @@ patrone-installer (0.1.3) resolute; urgency=medium
 
 patrone-installer (0.1.2) resolute; urgency=medium
 
-  * "Install Patrone Linux" (the ISO's first boot entry) logs in to a
+  * "Install PatroneOS" (the ISO's first boot entry) logs in to a
     session of its own: the installer, full screen, in GNOME Kiosk, with no
     desktop behind it (the user, 2026-10-27: "installer only"). "Try
-    Patrone Linux" keeps the live desktop.
+    PatroneOS" keeps the live desktop.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 19:30:00 -0500
 
@@ -58,9 +58,9 @@ patrone-installer (0.1.1) resolute; urgency=medium
 patrone-installer (0.1.0) resolute; urgency=medium
 
   * Patrone's build of Ubuntu's installer front end, ubuntu-desktop-provision
-    at 6623407 (the ubuntu-desktop-bootstrap 26.04.1 snap's), named Patrone
-    Linux: the live session's installer says "Welcome to Patrone Linux" and
-    "Install Patrone Linux" (the user, 2026-10-27: "IT SHOULDN'T SAY
+    at 6623407 (the ubuntu-desktop-bootstrap 26.04.1 snap's), named PatroneOS
+    : the live session's installer says "Welcome to PatroneOS" and
+    "Install PatroneOS" (the user, 2026-10-27: "IT SHOULDN'T SAY
     UBUNTU").
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Tue, 27 Oct 2026 15:00:00 -0500

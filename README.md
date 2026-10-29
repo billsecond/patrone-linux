@@ -9,7 +9,7 @@ settings) that replaces GNOME. The build produces an installable ISO.
 
 See [docs/PLAN.md](docs/PLAN.md) for the approach, repo layout and milestones.
 
-PatroneOS was called Patrone Linux until 2026-10-29. Its website is
+PatroneOS has had its name since 2026-10-29. Its website is
 <https://patroneos.com>.
 
 ## License

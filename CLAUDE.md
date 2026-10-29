@@ -1,7 +1,7 @@
 # PatroneOS
 
 An Ubuntu 26.04.1 LTS-based OS with its own brand-new Wayland desktop,
-**Patrone Desktop**. Called Patrone Linux until 2026-10-29; its website is
+**Patrone Desktop**. Renamed PatroneOS on 2026-10-29; its website is
 https://patroneos.com. The name is **PatroneOS**, one word, wherever users
 or the public see it; "Patrone" stays the short name (Patrone Terminal,
 `patrone-*` packages, app IDs, paths, `ID=patrone`). Public repo:
