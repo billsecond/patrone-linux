@@ -28,7 +28,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <freerdp/channels/channels.h>
 #include <freerdp/channels/disp.h>
+#include <freerdp/channels/drdynvc.h>
+#include <freerdp/channels/rdpsnd.h>
 #include <freerdp/freerdp.h>
 #include <freerdp/peer.h>
 #include <freerdp/server/proxy/proxy_config.h>
@@ -36,6 +39,7 @@
 #include <freerdp/server/proxy/proxy_modules_api.h>
 #include <freerdp/session.h>
 #include <freerdp/settings.h>
+#include <winpr/nt.h>
 #include <winpr/string.h>
 #include <winpr/synch.h>
 #include <winpr/wlog.h>
@@ -314,12 +318,57 @@ out:
 	return ok;
 }
 
-/* Each dynamic channel the desktop opens towards VMConnect, in the journal */
+/* Answers the desktop that VMConnect couldn't open a dynamic channel, as
+ * VMConnect itself answers: a Create Response PDU with STATUS_UNSUCCESSFUL,
+ * on the desktop's side of drdynvc */
+static BOOL refuse_channel(proxyData* pdata, UINT16 channel_id)
+{
+	freerdp* back = pdata->pc->instance;
+	const UINT16 drdynvc = freerdp_channels_get_id_by_name(back, DRDYNVC_SVC_CHANNEL_NAME);
+	const UINT32 status = (UINT32)STATUS_UNSUCCESSFUL;
+	BYTE response[7];
+	size_t length = 0;
+
+	if (drdynvc == 0 || drdynvc == UINT16_MAX)
+		return FALSE;
+	/* The header byte says the command and how many bytes the channel's id
+	 * takes: one or two */
+	response[length++] = (CREATE_REQUEST_PDU << 4) | (channel_id > UINT8_MAX ? 0x01 : 0x00);
+	response[length++] = channel_id & 0xff;
+	if (channel_id > UINT8_MAX)
+		response[length++] = channel_id >> 8;
+	for (int i = 0; i < 4; i++)
+		response[length++] = (status >> (8 * i)) & 0xff;
+	return back->SendChannelData(back, drdynvc, response, length);
+}
+
+/* Each dynamic channel the desktop opens towards VMConnect, in the journal.
+ *
+ * GNOME Remote Desktop's sound (FreeRDP's sound server) sends its first
+ * message, the formats it can send, right after asking for its channel,
+ * without waiting for the answer. The proxy drops anything on a channel that
+ * isn't open yet, so VMConnect never hears from it, and the desktop gives up
+ * on sound ten seconds later. So the plugin answers the desktop itself that
+ * the channel couldn't be opened, and the desktop sends its sound over the
+ * older static channel, rdpsnd, instead, which the proxy passes on as it
+ * comes. VMConnect never sees the request. */
 static BOOL dynamic_channel_create(proxyPlugin* plugin, proxyData* pdata, void* param)
 {
 	const proxyChannelDataEventInfo* channel = param;
 	WINPR_UNUSED(plugin);
-	WINPR_UNUSED(pdata);
+
+	if (strcmp(channel->channel_name, RDPSND_DVC_CHANNEL_NAME) == 0 ||
+	    strcmp(channel->channel_name, RDPSND_LOSSY_DVC_CHANNEL_NAME) == 0)
+	{
+		if (refuse_channel(pdata, channel->channel_id))
+		{
+			WLog_INFO(TAG, "the desktop opens the channel %s: told it to send sound over %s instead",
+			          channel->channel_name, RDPSND_CHANNEL_NAME);
+			return FALSE; /* the proxy drops the request */
+		}
+		WLog_WARN(TAG, "couldn't turn the desktop's sound to %s; VMConnect may get no sound",
+		          RDPSND_CHANNEL_NAME);
+	}
 	WLog_INFO(TAG, "the desktop opens the channel %s", channel->channel_name);
 	return TRUE;
 }

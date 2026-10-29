@@ -11,6 +11,11 @@
  * and the server offers display control, asks for that size, the way a
  * client asks when its window is resized; it says what it got.
  *
+ * With TEST_CLIENT_SOUND=1 it takes sound, as VMConnect does, on both of
+ * sound's channels (AUDIO_PLAYBACK_DVC and rdpsnd), into FreeRDP's fake
+ * sound device; with WLOG_FILTER=com.freerdp.channels.rdpsnd.client:DEBUG
+ * FreeRDP's log says what arrives.
+ *
  *   test-client HOST PORT SECONDS TEXT...
  *
  * Copyright 2026 William Daugherty
@@ -23,6 +28,7 @@
 #include <time.h>
 
 #include <freerdp/channels/disp.h>
+#include <freerdp/channels/rdpsnd.h>
 #include <freerdp/addin.h>
 #include <freerdp/client/channels.h>
 #include <freerdp/client/cmdline.h>
@@ -185,20 +191,34 @@ int main(int argc, char** argv)
 
 	unsigned int resize_width = 0, resize_height = 0;
 	const char* resize = getenv("TEST_CLIENT_RESIZE");
-	if (resize && sscanf(resize, "%ux%u", &resize_width, &resize_height) == 2)
+	if (resize && sscanf(resize, "%ux%u", &resize_width, &resize_height) != 2)
+		resize = NULL;
+	const BOOL sound = getenv("TEST_CLIENT_SOUND") != NULL;
+	if (resize || sound)
 	{
 		/* FreeRDP's own channels, built into its client library */
 		if (freerdp_register_addin_provider(freerdp_channels_load_static_addin_entry, 0) !=
 		    CHANNEL_RC_OK)
 			return 1;
 		instance->LoadChannels = load_channels;
-		/* Only what resizing needs: other channels want a whole client's callbacks */
+		/* Only what's tested: other channels want a whole client's callbacks */
 		if (!freerdp_settings_set_bool(settings, FreeRDP_RedirectClipboard, FALSE) ||
-		    !freerdp_settings_set_bool(settings, FreeRDP_AudioPlayback, FALSE) ||
+		    !freerdp_settings_set_bool(settings, FreeRDP_AudioPlayback, sound) ||
 		    !freerdp_settings_set_bool(settings, FreeRDP_AudioCapture, FALSE) ||
 		    !freerdp_settings_set_bool(settings, FreeRDP_DeviceRedirection, FALSE) ||
-		    !freerdp_settings_set_bool(settings, FreeRDP_SupportDynamicChannels, TRUE) ||
-		    !freerdp_settings_set_bool(settings, FreeRDP_SupportGraphicsPipeline, TRUE) ||
+		    !freerdp_settings_set_bool(settings, FreeRDP_SupportDynamicChannels, TRUE))
+			return 1;
+	}
+	if (sound)
+	{
+		const char* params[] = { RDPSND_CHANNEL_NAME, "sys:fake" };
+		if (!freerdp_client_add_static_channel(settings, ARRAYSIZE(params), params) ||
+		    !freerdp_client_add_dynamic_channel(settings, ARRAYSIZE(params), params))
+			return 1;
+	}
+	if (resize)
+	{
+		if (!freerdp_settings_set_bool(settings, FreeRDP_SupportGraphicsPipeline, TRUE) ||
 		    !freerdp_settings_set_bool(settings, FreeRDP_SupportDisplayControl, TRUE) ||
 		    !freerdp_settings_set_bool(settings, FreeRDP_DynamicResolutionUpdate, TRUE) ||
 		    PubSub_SubscribeChannelConnected(context->pubSub, on_channel_connected) < 0 ||

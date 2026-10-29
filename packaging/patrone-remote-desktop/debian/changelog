@@ -1,3 +1,18 @@
+patrone-remote-desktop (0.5.2) resolute; urgency=medium
+
+  * Sound in Hyper-V's enhanced session. GNOME Remote Desktop sends its
+    first sound message, the formats it can play, right after asking
+    VMConnect to open the sound channel (AUDIO_PLAYBACK_DVC), without
+    waiting for the answer, and FreeRDP's proxy drops anything on a dynamic
+    channel that isn't open yet. VMConnect never heard the formats, and the
+    desktop gave up on sound ten seconds later, every session. The plugin
+    now answers the desktop itself that the channel can't be opened, and
+    the desktop sends sound over the older static channel (rdpsnd), which
+    the proxy passes on as it comes. The microphone's channel waits for its
+    answer, so it isn't affected.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 05:30:00 -0500
+
 patrone-remote-desktop (0.5.1) resolute; urgency=medium
 
   * Patrone's desktops mount drives as a desktop at the screen does
