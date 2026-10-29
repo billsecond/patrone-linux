@@ -1,0 +1,6 @@
+Start ... running 127 individual check executions.
+PatroneSans[wght].ttf: superfamily/list: INFO [family-path]
+PatroneSans[wght].ttf: hinting_impact: INFO [size-impact]
+PatroneSans[wght].ttf: required_tables: INFO [optional-tables, None]
+
+ ERROR: 0 FATAL: 0 FAIL: 0 WARN: 0 INFO: 3 SKIP: 20 PASS: 104
