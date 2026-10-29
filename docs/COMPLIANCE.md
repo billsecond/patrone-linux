@@ -1266,7 +1266,7 @@ versioned dismissal; the rest was sent before its next redeploy.
 The user asked for "a strong EULA in the website for the software that the
 user must click before downloading, and ... that same one up on the install
 page", and chose Texas law. It's [legal/eula.md](../legal/eula.md), version
-1.0 of 28 October 2026: one file for the website's click-through and the
+1.0 of 29 October 2026: one file for the website's click-through and the
 installer's page, in the website renderer's Markdown, its version on the
 first line. [legal/README.md](../legal/README.md) has its format, what it
 may and may not say, and the points a lawyer must check.

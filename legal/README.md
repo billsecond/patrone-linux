@@ -32,9 +32,9 @@ every line of it.
 
 ## Versions
 
-- **1.0**, 28 October 2026, under the system's old name: `eula-1.0.md`.
-- **1.1**, 29 October 2026: the same terms, with the system's new name,
-  PatroneOS, and the website's, patroneos.com.
+- **1.0**, 29 October 2026: the first version anyone sees. The drafts
+  before it were never published ("Nobody has seen this yet", the user,
+  2026-10-29), so none is kept and the website lists no earlier versions.
 
 ## What it may and may not say
 
