@@ -1,3 +1,16 @@
+fonts-patrone-sans (2.0.0) resolute; urgency=medium
+
+  * Patrone Sans 2.000, a typeface of PatroneOS's own, drawn from scratch
+    (with AI help) in place of Patrone Sans 1, which was Noto Sans with a
+    tailed l and a slashed zero. Nothing of Noto Sans is left in it. Six
+    weights in one variable font (Light, Regular, Medium, SemiBold, Bold,
+    Black), a plain zero told from O by its narrow oval, a tailed l and a
+    1 with a foot, and Patrone Sans 1's line spacing. Latin only: Greek
+    and Cyrillic come from Noto Sans, after it. No italic. Under the OFL
+    1.1, with only PatroneOS's copyright.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
+
 fonts-patrone-sans (1.0.0) resolute; urgency=medium
 
   * Patrone Sans 1.000: Noto Sans 2.015 with a tailed l and a slashed zero,

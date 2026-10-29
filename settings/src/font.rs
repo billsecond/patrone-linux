@@ -1,7 +1,7 @@
-//! The desktop's font: Patrone Sans, Patrone's own (the default since
-//! patrone-branding 0.1.6), Noto Sans with a tailed l and a slashed zero
-//! (`fonts/` in Patrone's repository, the fonts-patrone-sans package), or
-//! Noto Sans itself, the font it's based on.
+//! The desktop's font: Patrone Sans, PatroneOS's own typeface (the default
+//! since patrone-branding 0.1.6; `fonts/` in Patrone's repository, the
+//! fonts-patrone-sans package), or Noto Sans, the widely used open font
+//! Patrone Sans leaves Greek and Cyrillic to.
 //! Picking one changes the family of GNOME's interface and document fonts
 //! and of the title bar font, and keeps their sizes and styles; the
 //! monospace font stays as it is.
@@ -18,13 +18,13 @@ pub const FONTS: [(&str, &str, &str, &str); 2] = [
     (
         "Patrone Sans",
         "Patrone Sans",
-        "Patrone's font: Noto Sans with a tailed l and a slashed zero",
+        "PatroneOS's own typeface, drawn from scratch for screens",
         "fonts-patrone-sans",
     ),
     (
         "Noto Sans",
         "Noto Sans",
-        "The font Patrone Sans is based on, without those changes",
+        "A widely used open font, with Greek and Cyrillic too",
         "fonts-noto-core",
     ),
 ];

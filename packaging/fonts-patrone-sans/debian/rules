@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
-# The fonts are built from Noto Sans's sources by fonts/build.sh, which needs
-# the network for its tools; the package installs the fonts it built
-# (in ttf/), as they're kept in the repository.
+# The font is drawn by fonts/source and built by fonts/build.sh, which needs
+# the network for its tools; the package installs the font it built (in
+# ttf/), as it's kept in the repository.
 
 pkg = debian/fonts-patrone-sans
 

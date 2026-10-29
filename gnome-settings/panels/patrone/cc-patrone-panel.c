@@ -128,8 +128,8 @@ static const Choice themes[] = {
 /* The desktop's fonts, by family, the default first, and the packages that
  * install them */
 static const Choice fonts[] = {
-  { "Patrone Sans", N_("Patrone Sans"), N_("Patrone's font: Noto Sans with a tailed l and a slashed zero") },
-  { "Noto Sans", N_("Noto Sans"), N_("The font Patrone Sans is based on, without those changes") },
+  { "Patrone Sans", N_("Patrone Sans"), N_("PatroneOS's own typeface, drawn from scratch for screens") },
+  { "Noto Sans", N_("Noto Sans"), N_("A widely used open font, with Greek and Cyrillic too") },
 };
 static const char * const font_packages[] = { "fonts-patrone-sans", "fonts-noto-core" };
 

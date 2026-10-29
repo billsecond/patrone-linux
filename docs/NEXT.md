@@ -1966,6 +1966,43 @@ Findings:
 
 ## 14. Patrone Sans (fonts-patrone-sans)
 
+### Patrone Sans 2, drawn from scratch (2026-10-29)
+
+Asked for 2026-10-29: a typeface "fully our own", like Noto Sans and
+Microsoft's interface fonts but copying none, six weights, no slashed
+zero. Done in `fonts/` (README and FONTLOG say how):
+
+- **Drawn by code**: every letter is a skeleton swept by an oval pen
+  (`fonts/source/engine.py`), outlined; no outline, point or metric from
+  Noto Sans, Segoe UI or any other font. Only Patrone Sans 1's line
+  spacing (1069/293/0) is kept, so nothing moves on screen.
+- **Six weights** in one variable font (Light 300 to Black 900); a plain
+  zero, narrow beside the round O; l tailed, I plain, 1 with a flag and a
+  foot. 404 glyphs: Latin-1, Latin Extended-A, Ș ș Ț ț and the desktop's
+  signs. Greek and Cyrillic now come from Noto Sans (second in fontconfig's
+  lists); there's no italic (fontconfig slants it).
+- **Packages**: `fonts-patrone-sans` 2.0.0; `patrone-settings` 0.3.10 and
+  GNOME Settings revision 18 (the Font cards' descriptions);
+  `patrone-branding` 0.1.24 (the fontconfig file's notes). The numbers skip
+  the ones other branches hold (0.3.8, 0.3.9, revisions 16 and 17, branding
+  0.1.23): renumber if those merge later.
+- **Notice and licence**: the FONTLOG and the copyright file say it was
+  drawn with AI help, as `docs/COMPLIANCE.md` item 9 does for the logo. It's
+  under the OFL 1.1 with only PatroneOS's copyright; **the licence is the
+  user's to choose**, and this is a draft.
+
+Checked on PatroneDev: fontbakery 1.1.0 universal (104 passed, nothing
+else), the comparison sheet against Patrone Sans 1 at 9 to 11 pt
+(`fonts/comparison.png`), shaping through Pango (kerning, combining
+accents, dotless i), and PatroneOS's apps in a throwaway GNOME Shell with
+only the new font: taskbar, Start menu, Patrone Settings, GNOME Settings'
+Patrone page, File Manager, Task Manager. Every character the apps' sources
+use is in the font except the terminal prompts' box drawing and symbols
+(the monospace font's). Not installed on PatroneDev or tried in a fresh
+install; `docs/COMPLIANCE.md`'s inventory still describes Patrone Sans 1.
+
+### Patrone Sans 1 (2026-10-26)
+
 Asked for 2026-10-26: a font that looks and feels mostly like the current
 one (Noto Sans), changed by best practice for a system font, with a choice
 between the two in Patrone Settings. Done:

@@ -1,3 +1,11 @@
+patrone-branding (0.1.24) resolute; urgency=medium
+
+  * The font settings' notes say what Patrone Sans is now: PatroneOS's own
+    typeface, Latin only (fonts-patrone-sans 2.0.0), so Noto Sans, second
+    in every list, gives Greek and Cyrillic. The settings are unchanged.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
+
 patrone-branding (0.1.22) resolute; urgency=medium
 
   * The boot menu says "Patrone Linux", not "Patrone Linux GNU/Linux": GRUB's

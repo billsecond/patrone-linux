@@ -1,17 +1,23 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Patrone Sans
-Source: https://github.com/billsecond/patrone-linux
-Comment: Patrone Sans is a modified version of Noto Sans 2.015, from
- https://github.com/notofonts/latin-greek-cyrillic (tag NotoSans-v2.015).
- FONTLOG.txt lists the changes.
+Source: https://github.com/billsecond/patroneos
+Comment: Patrone Sans 2 was drawn from scratch with AI help: an AI coding
+ assistant wrote the drawing code (fonts/source in the source) to William
+ Daugherty's brief, and he directed and accepted the design, as with
+ PatroneOS's logo. No outline, point, measurement or metric comes from
+ another font, and no image model was used; FONTLOG.txt says how it was
+ made. Material an AI generates without enough human authorship may not be
+ protected by copyright (US Copyright Office, "Copyright and Artificial
+ Intelligence, Part 2", January 2025), so the font and its sources are
+ offered under the licences below only as far as anyone holds copyright in
+ them.
 
 Files: *
 Copyright: 2026 William Daugherty
 License: GPL-3+
 
-Files: ttf/* OFL.txt FONTLOG.txt comparison.png
-Copyright: 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)
-           2026 William Daugherty
+Files: ttf/* source/* OFL.txt FONTLOG.txt comparison.png
+Copyright: 2026 William Daugherty
 License: OFL-1.1
 
 License: GPL-3+
