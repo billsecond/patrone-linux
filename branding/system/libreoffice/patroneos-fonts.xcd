@@ -10,7 +10,12 @@
     serif: PatroneOS Serif. Its monospace: PatroneOS Mono.
 
   Each with Noto behind it. A user's own choices still win. Documents that
-  name their fonts keep them (with 05-patrone-fonts.conf's stand-ins).
+  name their fonts keep them, through fontconfig's stand-ins
+  (05-patrone-fonts.conf): Calibri is drawn in PatroneOS Document and
+  Helvetica in PatroneOS Classic. Arial is the exception: LibreOffice
+  matches it itself, before fontconfig, with the metric-compatible font it
+  knows for it, whose letters have the same widths as PatroneOS Classic's,
+  so the layout is the same.
 -->
 <oor:data xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oor="http://openoffice.org/2001/registry">
   <dependency file="main"/>
@@ -25,19 +30,21 @@
   </oor:component-data>
   <oor:component-data oor:package="org.openoffice" oor:name="VCL">
     <node oor:name="DefaultFonts">
-      <node oor:name="en">
-        <prop oor:name="LATIN_TEXT"><value>PatroneOS Document;Noto Sans</value></prop>
-        <prop oor:name="LATIN_HEADING"><value>PatroneOS Document;Noto Sans</value></prop>
-        <prop oor:name="LATIN_SPREADSHEET"><value>PatroneOS Document;Noto Sans</value></prop>
-        <prop oor:name="LATIN_PRESENTATION"><value>PatroneOS Sans;Noto Sans</value></prop>
-        <prop oor:name="LATIN_DISPLAY"><value>PatroneOS Sans;Noto Sans</value></prop>
-        <prop oor:name="LATIN_FIXED"><value>PatroneOS Mono;Noto Sans Mono</value></prop>
-        <prop oor:name="SANS"><value>PatroneOS Sans;Noto Sans</value></prop>
-        <prop oor:name="SANS_UNICODE"><value>PatroneOS Sans;Noto Sans</value></prop>
-        <prop oor:name="SERIF"><value>PatroneOS Serif;Noto Serif</value></prop>
-        <prop oor:name="FIXED"><value>PatroneOS Mono;Noto Sans Mono</value></prop>
-        <prop oor:name="UI_SANS"><value>PatroneOS Sans;Noto Sans</value></prop>
-        <prop oor:name="UI_FIXED"><value>PatroneOS Mono;Noto Sans Mono</value></prop>
+      <!-- (a set member LibreOffice defines: "fuse" changes it; and each of
+           its values is typed, the group being extensible) -->
+      <node oor:name="en" oor:op="fuse">
+        <prop oor:name="LATIN_TEXT" oor:type="xs:string" oor:op="replace"><value>PatroneOS Document;Noto Sans</value></prop>
+        <prop oor:name="LATIN_HEADING" oor:type="xs:string" oor:op="replace"><value>PatroneOS Document;Noto Sans</value></prop>
+        <prop oor:name="LATIN_SPREADSHEET" oor:type="xs:string" oor:op="replace"><value>PatroneOS Document;Noto Sans</value></prop>
+        <prop oor:name="LATIN_PRESENTATION" oor:type="xs:string" oor:op="replace"><value>PatroneOS Sans;Noto Sans</value></prop>
+        <prop oor:name="LATIN_DISPLAY" oor:type="xs:string" oor:op="replace"><value>PatroneOS Sans;Noto Sans</value></prop>
+        <prop oor:name="LATIN_FIXED" oor:type="xs:string" oor:op="replace"><value>PatroneOS Mono;Noto Sans Mono</value></prop>
+        <prop oor:name="SANS" oor:type="xs:string" oor:op="replace"><value>PatroneOS Sans;Noto Sans</value></prop>
+        <prop oor:name="SANS_UNICODE" oor:type="xs:string" oor:op="replace"><value>PatroneOS Sans;Noto Sans</value></prop>
+        <prop oor:name="SERIF" oor:type="xs:string" oor:op="replace"><value>PatroneOS Serif;Noto Serif</value></prop>
+        <prop oor:name="FIXED" oor:type="xs:string" oor:op="replace"><value>PatroneOS Mono;Noto Sans Mono</value></prop>
+        <prop oor:name="UI_SANS" oor:type="xs:string" oor:op="replace"><value>PatroneOS Sans;Noto Sans</value></prop>
+        <prop oor:name="UI_FIXED" oor:type="xs:string" oor:op="replace"><value>PatroneOS Mono;Noto Sans Mono</value></prop>
       </node>
     </node>
   </oor:component-data>
