@@ -1,3 +1,11 @@
+patrone-desktop (0.2.4) resolute; urgency=medium
+
+  * Patrone's build of Language Support (language-selector-common and
+    language-selector-gnome, language-selector/) is kept over Ubuntu's, as
+    GDM's, GNOME Settings' and first-login setup's are (apt/patrone.pref).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 08:00:00 -0500
+
 patrone-desktop (0.2.3) resolute; urgency=medium
 
   * Recommends showtime, GNOME's Video Player, so every install has a

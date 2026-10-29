@@ -7,6 +7,10 @@
 # to Patrone's (rules), not configuration files, so installing asks nothing.
 # Yaru's start-here icons are Ubuntu's logo, and its distributor-logo icons
 # links to them: Patrone's P takes their place.
+# GRUB's scripts that put the system in the boot menu go to
+# /usr/share/patrone-branding/grub/, and postinst puts Patrone's in their
+# place, which run them without " GNU/Linux" after the name
+# (system/grub/grub-script).
 set -e
 
 diverted="
@@ -33,6 +37,11 @@ done
 if [ "$1" = install ] || [ "$1" = upgrade ]; then
     for file in $diverted; do
         dpkg-divert --package patrone-branding --add --rename --divert "$file.ubuntu" "$file"
+    done
+    mkdir -p /usr/share/patrone-branding/grub
+    for file in /etc/grub.d/10_linux /etc/grub.d/10_linux_zfs; do
+        dpkg-divert --package patrone-branding --add --rename \
+            --divert "/usr/share/patrone-branding/grub/${file##*/}" "$file"
     done
 fi
 

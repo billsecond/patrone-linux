@@ -28,12 +28,28 @@ case "$1" in
         for file in $diverted; do
             dpkg-divert --package patrone-branding --remove --rename --divert "$file.ubuntu" "$file"
         done
+        for file in /etc/grub.d/10_linux /etc/grub.d/10_linux_zfs; do
+            rm -f "$file"
+            dpkg-divert --package patrone-branding --remove --rename \
+                --divert "/usr/share/patrone-branding/grub/${file##*/}" "$file"
+        done
+        rmdir --ignore-fail-on-non-empty /usr/share/patrone-branding/grub 2>/dev/null || true
         if command -v update-initramfs > /dev/null; then
             update-initramfs -u
         fi
         if command -v update-grub > /dev/null; then
             update-grub
         fi
+        ;;
+    abort-upgrade)
+        # An upgrade from a version before 0.1.22 that failed after preinst
+        # moved GRUB's scripts aside and before postinst put Patrone's in
+        # their place: GRUB's come back, or the next update-grub would leave
+        # the boot menu without the system
+        for file in /etc/grub.d/10_linux /etc/grub.d/10_linux_zfs; do
+            [ -e "$file" ] || dpkg-divert --package patrone-branding --remove --rename \
+                --divert "/usr/share/patrone-branding/grub/${file##*/}" "$file"
+        done
         ;;
 esac
 

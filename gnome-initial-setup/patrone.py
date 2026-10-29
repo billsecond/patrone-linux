@@ -14,6 +14,7 @@
 #   in Patrone's blue where it's in Ubuntu's orange (the same rule as the
 #   installer's, installer/patch_source.py).
 # - No calls to the crash reporter's settings, which asked for a password.
+# - No "View release notes" link, which opened Ubuntu's.
 import colorsys
 import re
 import sys
@@ -34,6 +35,12 @@ edit(pages / 'appearance/gis-appearance-page.blp',
      '_("Choose how Ubuntu looks")', '_("Choose how Patrone Linux looks")')
 edit(pages / 'welcome/gis-welcome-page.c', 'g_strdup ("Ubuntu")', 'g_strdup ("Patrone Linux")')
 edit(pages / 'welcome/gis-welcome-page.ui', 'Welcome to Ubuntu 24.04 LTS', 'Welcome to Patrone Linux')
+# "View release notes" opened Ubuntu's release notes for the system's
+# version (Ubuntu's notes for "0.1"): hidden until Patrone has its own
+# (docs/COMPLIANCE.md, item 18)
+edit(pages / 'welcome/gis-welcome-page.c',
+     'gtk_widget_set_visible (priv->release_notes, !!version);',
+     'gtk_widget_set_visible (priv->release_notes, FALSE);')
 edit(pages / 'apps/gis-apps-page.blp',
      '''_("Ubuntu's App Center has a range of apps you can get started with.")''',
      '''_("Patrone Software has the Craft apps, and thousands more from Flathub.")''')
