@@ -3,17 +3,19 @@
 #
 #   sudo iso/build-iso.sh UBUNTU-ISO DEB-DIR OUT-ISO
 #
-# Ubuntu's disc is made of stacked layers (casper/*.squashfs). This adds two,
-# each with Patrone's packages installed (the newest build of each in
-# DEB-DIR, as packaging/build.sh leaves them in out/), Ptyxis taken out, and
-# a snap seed without Firefox and App Center. There's no web browser: each
-# account picks its first one (patrone-browser-chooser).
+# Ubuntu's disc is made of stacked layers (casper/*.squashfs). This makes
+# Patrone's two from them, each with Patrone's packages installed (the newest
+# build of each in DEB-DIR, as packaging/build.sh leaves them in out/),
+# Ptyxis taken out, and a snap seed without Firefox and App Center. There's
+# no web browser: each account picks its first one (patrone-browser-chooser).
+# They take the place of all of Ubuntu's (docs/COMPLIANCE.md, item 3).
 #
-# - minimal.patrone, what the installer installs: Ubuntu's English layer
-#   with Patrone's packages, on the base. It's the installer's only choice,
-#   "Patrone Linux".
-# - minimal.standard.live.patrone, on Ubuntu's live session, which the disc
-#   now boots: the live desktop, its splash and the installer (whose name,
+# - patrone, what the installer installs: Ubuntu's base and English layers
+#   with Patrone's packages, as one whole system. It's the installer's only
+#   choice, "Patrone Linux".
+# - patrone.live, on it, the live session the disc boots: made from Ubuntu's
+#   live session with Patrone's packages, it holds only how that differs from
+#   patrone. The live desktop, its splash and the installer (whose name,
 #   colors and pictures patrone-branding sets) are Patrone's.
 #
 # Run on Ubuntu 26.04 as root; needs squashfs-tools, xorriso, cpio,
@@ -36,8 +38,10 @@ ubuntu_iso=$(realpath "$1")
 debs=$(realpath "$2")
 out=$(realpath -m "$3")
 work=${WORK:-/var/tmp/patrone-iso}
-install_layer=minimal.patrone
-live_layer=minimal.standard.live.patrone
+# Casper and the installer stack a layer on the ones its name starts with
+# (patrone.live on patrone), and nothing of Ubuntu's is under either
+install_layer=patrone
+live_layer=patrone.live
 
 mounts=()
 mnt() { mount "$@"; mounts+=("${*: -1}"); }
@@ -200,6 +204,15 @@ open_layer() {
     # package too)
     seed_drop "$root/var/lib/snapd/seed" firefox chromium snap-store desktop-security-center \
         thunderbird hwctl
+    # Ubuntu's live layer also has a seed system of its own, for installs
+    # with TPM-backed encryption (systems/enhanced-secureboot-desktop), and
+    # its pc and pc-kernel snaps. Patrone's installer doesn't offer those
+    # installs (install-sources.yaml names no snapd_system_label), and the
+    # system's model asks for App Center, Firefox and Security Center, which
+    # aren't on Patrone's disc. So it goes, with its two snaps: one fewer
+    # kernel on the disc, and no source owed for it.
+    rm -rf "$root/var/lib/snapd/seed/systems"
+    seed_drop "$root/var/lib/snapd/seed" pc pc-kernel
     snap debug validate-seed "$root/var/lib/snapd/seed/seed.yaml"
     check_no_browser "$name"
 }
@@ -254,9 +267,14 @@ pool_sources() {
         END { flush() }' "$work"/cd/dists/*/*/binary-*/Packages
 }
 
-# close_layer NAME: tidies the open layer, closes it and compresses it.
+# close_layer NAME [BASE]: tidies the open layer, closes it and compresses
+# it: the whole system it makes, Ubuntu's layers under it included, or, with
+# BASE (the squashfs of Patrone's layer it's to stand on), only how it
+# differs from BASE. Either way none of Ubuntu's layers goes on the disc, so
+# what Patrone takes out of them (Ubuntu's logo, Firefox's, App Center's and
+# Thunderbird's snaps) isn't on it, hidden (docs/COMPLIANCE.md, item 3).
 close_layer() {
-    local name=$1 size
+    local name=$1 base=${2:-} size diff mounted
     rm -rf "$root/tmp/patrone-debs" "$root/usr/sbin/policy-rc.d" "$root/usr/sbin/update-grub"
     in_root dpkg-divert --local --rename --remove /usr/sbin/update-grub >/dev/null
     in_root apt-get clean
@@ -276,16 +294,39 @@ close_layer() {
     fi
     size=$(du -sbx "$root" | cut -f1)
     echo "$size" >"$work/iso/$name.size"
-    unmount_to "$layer_mounts"
+    # All that's mounted in the layer goes, but the layer itself, which is
+    # read whole. mksquashfs can't be told to stay on it (an overlay's files
+    # report their own layers' devices), so nothing else may be mounted.
+    unmount_to "$((layer_mounts + 1))"
+    mounted=$(findmnt -rn -o TARGET -R "$root" | tail -n +2)
+    if [ -n "$mounted" ]; then
+        echo "build-iso.sh: still mounted in $name: $mounted" >&2
+        exit 1
+    fi
     # The disc's mount point, made for the build: the installer makes /cdrom
-    # in the new system itself, and stops if it's there already.
-    rmdir "$layer/upper/cdrom"
-    mksquashfs "$layer/upper" "$work/iso/$name.squashfs" -noappend -comp xz -b 131072 -xattrs -quiet
+    # in the new system itself, and stops if it's there already. None of
+    # Ubuntu's layers has one, so it goes from this layer alone.
+    rmdir "$root/cdrom"
+    if [ -z "$base" ]; then
+        mksquashfs "$root" "$work/iso/$name.squashfs" -noappend -comp xz -b 131072 -xattrs -quiet
+    else
+        # BASE, with an empty layer on it made the same as this one: the empty
+        # layer ends up with just the differences, and whiteouts for what
+        # this one hasn't got. Files are compared by their contents.
+        diff=$work/$name.diff
+        mkdir -p "$diff"/{base,upper,ovl,root}
+        mnt -o loop,ro "$base" "$diff/base"
+        mnt -t overlay overlay -o "lowerdir=$diff/base,upperdir=$diff/upper,workdir=$diff/ovl,redirect_dir=off,metacopy=off,index=off,xino=off" "$diff/root"
+        rsync -aHX --one-file-system --numeric-ids --checksum --delete "$root/" "$diff/root/"
+        unmount_to "$((layer_mounts + 1))"
+        mksquashfs "$diff/upper" "$work/iso/$name.squashfs" -noappend -comp xz -b 131072 -xattrs -quiet
+    fi
+    unmount_to "$layer_mounts"
 }
 
 step "What the installer installs ($install_layer)"
-# Ubuntu's English layer and Patrone's packages: the installer puts no
-# language layer of its own on it.
+# Ubuntu's base and English layers and Patrone's packages, as one whole
+# system: the installer puts no language layer of its own on it.
 # Patrone's installer is for the live session only.
 leave_out=patrone-installer
 open_layer "$install_layer" minimal.en minimal
@@ -332,7 +373,8 @@ ln -sfn /usr/share/plymouth/themes/patrone/patrone.plymouth "$themes/default.ply
 ln -sfn /usr/share/plymouth/themes/patrone-text/patrone-text.plymouth "$themes/text.plymouth"
 echo "LAYERFS_PATH=$live_layer.squashfs" >"$initrd/conf/conf.d/default-layer.conf"
 (cd "$initrd" && find . -print0 | sort -z | cpio --null -o -H newc -R 0:0 --quiet) >"$work/iso/initrd"
-close_layer "$live_layer"
+# Only how the live session differs from what the installer installs
+close_layer "$live_layer" "$work/iso/$install_layer.squashfs"
 
 step "The ISO"
 # The ID is Ubuntu's default choice's, which the installer's page of app
@@ -385,10 +427,9 @@ echo "Patrone Linux 26.04.1 \"Patrone Linux\" - Release amd64 ($(date -u +%Y%m%d
 
 # Where the source code is (docs/COMPLIANCE.md, item 1): SOURCE.txt at the
 # disc's root, and casper/sources.manifest, every source package (name and
-# exact version) of what's on the disc: Patrone's two layers, the three of
-# Ubuntu's they stand on (whose removed files are still on the disc, hidden),
-# the package pool, and the snaps in the seeds. iso/build-source.sh fetches
-# them all, to publish beside the disc image.
+# exact version) of what's on the disc: Patrone's two layers, the package
+# pool, and the snaps in the seeds. iso/build-source.sh fetches them all, to
+# publish beside the disc image.
 commit=$(git -c safe.directory='*' -C "$(dirname "$(realpath "$0")")" rev-parse HEAD 2>/dev/null || echo unknown)
 if [ "$commit" != unknown ] &&
     [ -n "$(git -c safe.directory='*' -C "$(dirname "$(realpath "$0")")" status --porcelain --untracked-files=no)" ]; then
@@ -400,9 +441,6 @@ fi
     echo "# https://github.com/billsecond/patrone-linux at $commit"
     {
         cat "$work/$install_layer.sources" "$work/$live_layer.sources"
-        for l in minimal minimal.standard minimal.standard.live; do
-            sources_of "$work/layers/$l"
-        done
         pool_sources
     } | sort -u
 } >"$work/iso/sources.manifest"
@@ -435,15 +473,14 @@ for l in "$install_layer" "$live_layer"; do
         put[/casper/$l.$ext]=$l.$ext
     done
 done
-# Ubuntu's layers that nothing uses any more go: the live session still
-# stands on the base, the standard layer and Ubuntu's live layer.
+# All of Ubuntu's layers go: Patrone's two stand on nothing of Ubuntu's, so
+# what Patrone takes out isn't left on the disc, hidden, as it was when
+# Patrone's layers stood on Ubuntu's base, standard and live layers
+# (docs/COMPLIANCE.md, item 3).
 remove=()
 for f in $casper_files; do
     case $f in
         initrd | vmlinuz | install-sources.yaml) ;;
-        minimal.squashfs | minimal.manifest* | minimal.size) ;;
-        minimal.standard.squashfs | minimal.standard.manifest* | minimal.standard.size) ;;
-        minimal.standard.live.*) ;;
         *) remove+=("/casper/$f") ;;
     esac
 done
