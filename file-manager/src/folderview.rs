@@ -97,6 +97,11 @@ pub struct FolderView {
     pending: RefCell<Option<Pending>>,
     search: RefCell<Option<gio::Cancellable>>,
     searching: Cell<bool>,
+    /// Counts folder loads, so a network folder GVfs answers late isn't
+    /// shown after the view has moved on (`load`).
+    loads: Cell<u64>,
+    /// Waiting for GVfs before listing a network folder (`load`).
+    waiting: Cell<bool>,
     typed: RefCell<String>,
     typed_timer: RefCell<Option<glib::SourceId>>,
     events: crate::util::Handler<ViewEvent>,
@@ -229,6 +234,8 @@ impl FolderView {
             pending: RefCell::default(),
             search: RefCell::default(),
             searching: Cell::new(false),
+            loads: Cell::new(0),
+            waiting: Cell::new(false),
             typed: RefCell::default(),
             typed_timer: RefCell::default(),
             events: RefCell::default(),
@@ -334,7 +341,7 @@ impl FolderView {
             self.filter_model.set_model(Some(&self.dir));
         }
         self.filter_state.folder.replace(Some(file.clone()));
-        self.dir.set_file(Some(file));
+        self.load(file);
         if self.desktop.get() {
             if let Some(grid) = self.desktop_grid() {
                 grid.set_folder(file);
@@ -364,7 +371,7 @@ impl FolderView {
         self.banner.show(None);
         self.filter_state.folder.replace(None);
         self.filter_model.set_model(Some(&self.results));
-        self.dir.set_file(None::<&gio::File>);
+        self.unload();
         self.empty.set_label("Searching…");
         self.set_state(ViewState::for_location(location), false);
         let cancellable = gio::Cancellable::new();
@@ -410,8 +417,56 @@ impl FolderView {
     /// Stops loading and watching, when the tab leaves this view.
     pub fn release(&self) {
         self.stop_search();
-        self.dir.set_file(None::<&gio::File>);
+        self.unload();
         self.location.replace(None);
+    }
+
+    /// Lists `file` and watches it. GVfs answers GtkDirectoryList's watch
+    /// on a folder synchronously, and the first time a network place is
+    /// used (the Network page after signing in) it starts the place's
+    /// backend before answering: seconds with the window frozen. So for
+    /// anything not on a local disk, an asynchronous question comes first;
+    /// GVfs keeps its answer, and the watch then returns at once.
+    fn load(&self, file: &gio::File) {
+        if file.is_native() {
+            self.loads.set(self.loads.get() + 1);
+            self.waiting.set(false);
+            self.dir.set_file(Some(file));
+            return;
+        }
+        if !self.waiting.get() && self.dir.file().is_some_and(|shown| shown.equal(file)) {
+            return;
+        }
+        self.unload();
+        self.waiting.set(true);
+        let generation = self.loads.get();
+        let weak = self.weak();
+        let file = file.clone();
+        glib::spawn_future_local(async move {
+            // Errors are left to the listing, which shows them.
+            let _ = file
+                .query_info_future(
+                    gio::FILE_ATTRIBUTE_STANDARD_TYPE,
+                    gio::FileQueryInfoFlags::NONE,
+                    glib::Priority::DEFAULT,
+                )
+                .await;
+            let Some(view) = weak.upgrade() else { return };
+            if view.loads.get() != generation {
+                return;
+            }
+            view.waiting.set(false);
+            view.dir.set_file(Some(&file));
+            view.update_empty();
+        });
+        self.update_empty();
+    }
+
+    /// Stops listing, and any load still waiting for GVfs.
+    fn unload(&self) {
+        self.loads.set(self.loads.get() + 1);
+        self.waiting.set(false);
+        self.dir.set_file(None::<&gio::File>);
     }
 
     pub fn is_searching(&self) -> bool {
@@ -532,6 +587,20 @@ impl FolderView {
     fn update_empty(&self) {
         if self.desktop.get() {
             self.empty.set_visible(false);
+            return;
+        }
+        if self.waiting.get() {
+            let network = matches!(
+                self.location.borrow().as_ref(),
+                Some(Location::Folder(file))
+                    if places::special_of(file) == Some(places::Special::Network)
+            );
+            self.empty.set_label(if network {
+                "Looking for computers and devices on the network…"
+            } else {
+                "Loading…"
+            });
+            self.empty.set_visible(true);
             return;
         }
         let loading = self.dir.is_loading()
@@ -1439,8 +1508,8 @@ impl FolderView {
     pub fn refresh(&self) {
         match self.location.borrow().clone() {
             Some(Location::Folder(file)) => {
-                self.dir.set_file(None::<&gio::File>);
-                self.dir.set_file(Some(&file));
+                self.unload();
+                self.load(&file);
             }
             Some(location @ Location::Search { .. }) => self.show_search(&location),
             _ => {}

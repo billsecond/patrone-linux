@@ -116,6 +116,15 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   after them, answers "unhandled" at once. Unmounting still uses GTK's
   operation, for its list of the apps keeping a drive busy. Computers on
   the Network page (GVfs's shortcuts) show as computers, not blank files.
+- **Network places without freezing** (`FolderView::load`): GVfs answers
+  GtkDirectoryList's watch on a folder synchronously, and the first time a
+  place's backend is used (the Network page after signing in: about 10
+  seconds on PatroneDev) it starts the backend before answering, with the
+  window frozen meanwhile. So a folder that isn't on a local disk is asked
+  about asynchronously first, with "Looking for computers and devices on
+  the network..." (or "Loading...") showing; GVfs keeps the answer, and the
+  watch then returns at once. A location given on the command line is
+  checked asynchronously too.
 - **Views:** Extra large, Large, Medium and Small icons, List, Details,
   Tiles and Content, plus Compact view. Details has sortable, resizable,
   reorderable columns (right-click a header for more columns). Sort and
