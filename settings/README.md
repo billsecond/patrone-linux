@@ -32,7 +32,7 @@ Until 0.3.8 it stayed light in the dark style.
 | Desktop | Desktop bubble: On (the default: the desktop's files in a bubble, which a pill at the screen's left edge opens, over any window) or Off (the files across the desktop); it changes at once. GNOME Settings' Desktop page has the same as a switch. Recycle Bin: On the desktop (the default) or Hidden. Terminal at sign-in: Over the logo (the default: large, over the wallpaper's logo, at any screen size) or Centered (at its own size, in the middle of the screen) | `org.gnome.shell.extensions.patrone-taskbar` `desktop-bubble` and `show-recycle-bin`, both yes-or-no, and `sign-in-terminal` (`logo` or `center`) (the taskbar's own schema; each is left out for a taskbar too old to have it). See `shell/gnome/README.md`, "The desktop bubble" and "The terminal at sign-in" |
 | Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps |
 | Theme | Themes: Patrone, Modern, Classic, Sapphire, Studio. Font: PatroneOS Sans (the default, the `fonts-patroneos` package), with PatroneOS Document for documents, or Noto Sans | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, and of `document-font-name` with them (PatroneOS Document with PatroneOS Sans), their sizes and styles kept (`src/font.rs`); a desktop still set to Patrone Sans, the font before, shows PatroneOS Sans picked; the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
-| Mouse pointer | Pointer: each cursor theme installed that GNOME can show (below), Patrone's first. Size: Default (24 pixels), Medium (32), Large (48), Larger (64), Largest (96), as GNOME Settings' Accessibility page has them | GNOME's `org.gnome.desktop.interface cursor-theme` and `cursor-size` (`src/cursor.rs`). The pointer changes at once (below) |
+| Mouse pointer | Pointer: each cursor theme installed that GNOME can show (below), Patrone's first: Patrone Blue (the default), Patrone Black, Patrone White. Size: Default (24 pixels), Medium (32), Large (48), Larger (64), Largest (96), as GNOME Settings' Accessibility page has them | GNOME's `org.gnome.desktop.interface cursor-theme` and `cursor-size` (`src/cursor.rs`). The pointer changes at once (below) |
 
 The taskbar's layout, and the title bar buttons' corner and style, are the
 account's own choices: no theme changes them (the user's decisions,
@@ -126,20 +126,29 @@ and only then by its old X11 name (`left_ptr`, `hand2`, `xterm`). So DMZ
 White and DMZ Black (`dmz-cursor-theme`) and X.Org's whiteglass, redglass
 and handhelds (`xcursor-themes`), which have only the old names, show
 Patrone's pointers in GNOME, and picking one would seem to do nothing
-(checked in the throwaway shell, 2026-10-29). A fresh install has Patrone's,
-Adwaita (GNOME's), Yaru, and, with `patrone-desktop` 0.2.5, Breeze Dark and
-Breeze Light (`desktop/README.md`).
+(checked in the throwaway shell, 2026-10-29). A fresh install has Patrone's
+three (`patrone-branding` 0.1.25: Patrone Blue, the default, Patrone Black
+and Patrone White; `branding/README.md`, "Cursors"), Adwaita (GNOME's),
+Yaru, and, with `patrone-desktop` 0.2.5, Breeze Dark and Breeze Light
+(`desktop/README.md`). Patrone's come first, in that order (since 0.3.11),
+then the others by name. Patrone Blue's folder is still `Patrone`, the
+name the setting holds.
 
 GNOME Shell drops its cursors when the theme or size changes, but a pointer
 already on screen keeps its picture until the app under it asks for another
-(a size change shows at once). So after a change, this window asks for the
-busy pointer for 300 milliseconds and then for none of its own, and the
-pointer over it shows the new theme at once; GNOME Settings' Patrone page
-does the same. Other windows, and the taskbar, show it as soon as the
+(a new size shows at once, but as the old picture scaled, blurred at 48
+pixels). So after a change, this window asks for the busy pointer for 300
+milliseconds and then for none of its own, and the pointer over it shows
+the new theme at once; GNOME Settings' Patrone page does the same. From
+then on other windows, the desktop and the taskbar show it as soon as the
 pointer enters them: GTK 4 and GTK 3 apps (Disks, checked) ask GNOME Shell
 for pointers by name (the cursor-shape protocol), so GNOME Shell draws them.
-Not checked: X11 apps running through Xwayland, which load their pointers
-themselves and may keep the old one until they're opened again.
+A change made elsewhere, with `gsettings` in a terminal, has no window to
+ask: in the throwaway shell (2026-10-29) the arrow stayed in the old theme
+over a window and the desktop, scaled to the new size, until something
+asked for a different pointer. Not checked: X11 apps running through
+Xwayland, which load their pointers themselves and may keep the old one
+until they're opened again.
 
 ## Pictures
 
@@ -206,3 +215,12 @@ in a screenshot taken a second later (Adwaita, Yaru and Patrone; Breeze was
 tried from the test's own folder, which GNOME Shell doesn't search, so only
 its cards and setting). In the dark style the window was light with 0.3.7
 and dark with 0.3.8, and it followed a switch to light and back at once.
+
+For 0.3.11 (2026-10-29), built on the dev VM from its branch (18 tests,
+one for the order), with `patrone-branding` 0.1.25's themes in the
+throwaway shell: the Pointer cards came Patrone Blue, Black, White, then
+Adwaita and Yaru. Each of the three, at each of Default, Medium and Large,
+was picked with its cards, and the pointer was screenshotted over the
+window (light, and in the dark style), over a card's dark picture and over
+the desktop: each time in the theme and at the size picked, sharp at 48,
+its shadow plain on all but the near-black picture.

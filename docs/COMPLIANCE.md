@@ -1195,8 +1195,10 @@ to the website session.
 - **Microsoft's Segoe UI** alias, **cookies**, **children** (16+ and no
   commercial site).
 - **Cursor themes** (2026-10-29), which the new Mouse pointer choice lists
-  (Patrone Settings 0.3.8, GNOME Settings revision 16): Patrone's own
-  (GPL-3+, `branding/tools/make_cursors.py`), Adwaita (`adwaita-icon-theme`,
+  (Patrone Settings 0.3.8, GNOME Settings revision 16): Patrone's own,
+  Patrone Blue and, since `patrone-branding` 0.1.25, Patrone Black and
+  Patrone White (GPL-3+, all three drawn by `branding/tools/make_cursors.py`
+  from the same shapes, Patrone's own design), Adwaita (`adwaita-icon-theme`,
   CC-BY-SA-3.0 or LGPL-3), Yaru (`yaru-theme-icon`, CC-BY-SA-4.0), and KDE's
   Breeze Dark and Breeze Light (`breeze-cursor-theme`, universe, LGPL-3+,
   by Uri Herrera and the KDE VDG), which `patrone-desktop` 0.2.5 recommends

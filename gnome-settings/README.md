@@ -90,7 +90,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone16_amd64.deb ./out/gnome-control-center-data_*patrone16_all.deb
+sudo apt install ./out/gnome-control-center_*patrone19_amd64.deb ./out/gnome-control-center-data_*patrone19_all.deb
 ```
 
 ## How it was checked
@@ -193,6 +193,16 @@ from this branch, compiled with no warnings, and every card on the page,
 the new ones included, set its setting (the theme's and size's cards
 GNOME's `cursor-theme` and `cursor-size`); the pointer over a card just
 clicked showed the new theme a second later, without moving.
+
+`1:50.3-0ubuntu0.2patrone19` (Patrone's three pointers), 2026-10-29:
+Mouse Pointer lists Patrone Blue, Patrone Black and Patrone White first, in
+that order (`patrone-branding` 0.1.25), then the others by name. Built on
+the dev VM from its branch with no warnings from the page, and checked in
+the throwaway shell with `patrone-branding` 0.1.25's themes: the cards came
+in that order, then Adwaita and Yaru; clicking Black, White and Blue set
+`cursor-theme` to `Patrone-Black`, `Patrone-White` and `Patrone`, and the
+pointer over the card was the new one a second later. (Revision 18 is the
+fonts change.)
 
 ## Keeping up with Ubuntu
 

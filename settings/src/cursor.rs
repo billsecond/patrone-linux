@@ -45,10 +45,17 @@ const NEEDED: [&str; 3] = ["default", "pointer", "text"];
 /// How deep Inherits chains are followed, as libXcursor does.
 const MAX_INHERITS: usize = 4;
 
+/// Patrone's own themes, listed first and in this order: Patrone Blue, the
+/// default, which kept the folder it had as the only one, then Black and
+/// White.
+const PATRONE: [&str; 3] = ["Patrone", "Patrone-Black", "Patrone-White"];
+
 /// Patrone's words for the themes it ships or knows; others say where
 /// they're installed.
-const KNOWN: [(&str, &str); 5] = [
-    ("Patrone", "Patrone's own: blue, with a white edge"),
+const KNOWN: [(&str, &str); 7] = [
+    ("Patrone", "Patrone's own, the default: blue, with a white edge"),
+    ("Patrone-Black", "Patrone's own: black, with a white edge"),
+    ("Patrone-White", "Patrone's own: white, with a dark edge"),
     ("Adwaita", "GNOME's own: black, with a white edge"),
     ("Yaru", "Yaru's: dark grey, with a white edge"),
     ("breeze_cursors", "KDE's Breeze: black, with a white edge"),
@@ -244,8 +251,14 @@ pub fn installed() -> Vec<Theme> {
             Theme { name, title, detail, cursors }
         })
         .collect();
-    themes.sort_by_key(|theme| (theme.name != "Patrone", theme.title.to_lowercase()));
+    themes.sort_by_key(|theme| (place(&theme.name), theme.title.to_lowercase()));
     themes
+}
+
+/// Where a theme goes in the list: Patrone's in their order, then the
+/// others (by title).
+fn place(name: &str) -> usize {
+    PATRONE.iter().position(|ours| *ours == name).unwrap_or(PATRONE.len())
 }
 
 /// Shows the pointer that's over `widget`'s window in the new theme at once.
@@ -357,5 +370,12 @@ mod tests {
     #[test]
     fn the_sizes_are_gnomes() {
         assert_eq!(SIZES.map(|(size, _, _)| size), [24, 32, 48, 64, 96]);
+    }
+
+    #[test]
+    fn patrones_themes_come_first_blue_black_white() {
+        let mut names = ["Adwaita", "Patrone-White", "breeze_cursors", "Patrone", "Yaru", "Patrone-Black"];
+        names.sort_by_key(|name| (place(name), name.to_lowercase()));
+        assert_eq!(names, ["Patrone", "Patrone-Black", "Patrone-White", "Adwaita", "breeze_cursors", "Yaru"]);
     }
 }
