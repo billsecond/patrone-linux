@@ -83,14 +83,15 @@ Done:
   has a newer version than the repository (`packaging/main-updates.sh`,
   section 18). Section 18 also has the plan for moving to 28.04.
 - **Patrone taskbar** (section 7, `shell/gnome/README.md`, package
-  `patrone-gnome-taskbar`): a compact Windows 11-style taskbar at the bottom
-  in place of GNOME's top bar, with the Start menu (type to search), role
-  slots, jump lists and the tray. Built, and tried in a headless GNOME Shell
-  on the VM; not installed yet.
+  `patrone-gnome-taskbar`): a compact taskbar at the bottom, laid out the
+  way Windows users expect, in place of GNOME's top bar, with the Patrone
+  menu (type to search), role slots, jump lists and the tray. Built, and
+  tried in a headless GNOME Shell on the VM; not installed yet.
 - **Patrone File Manager** (`file-manager/`, package `patrone-file-manager`,
-  section 8): Windows 11's File Explorer rebuilt in Rust and GTK4, with
-  Patrone-drawn icons. `patrone-default-apps` 0.1.2 makes it the app for
-  folders and puts it in Files' place in the favorites. The user installed
+  section 8): a file manager in Rust and GTK4 that works the way Windows
+  users expect, with Patrone-drawn icons. `patrone-default-apps` 0.1.2
+  makes it the app for folders and puts it in Files' place in the
+  favorites. The user installed
   0.1.0 and asked for changes; 0.2.0 (tab dragging between windows, typed
   commands, system folder hints, a new Permissions tab) is built and tried
   with real input in a headless GNOME Shell, not installed yet.
@@ -196,8 +197,8 @@ Waiting on the user:
   then sign out from inside the desktop and back in. Ubuntu's desktop
   icons go (the taskbar turns them off); the bubble and, with it off
   (Patrone Settings → Desktop), the desktop itself show File Manager's
-  icons. Right-click the desktop for Windows' menu (View, Sort by, New,
-  Paste, Undo...); drag icons about the bubble or the desktop, onto the
+  icons. Right-click the desktop for the menu Windows users know (View,
+  Sort by, New, Paste, Undo...); drag icons about the bubble or the desktop, onto the
   Recycle Bin, into File Manager or another app, with Ctrl (copy) or
   Shift (move); hold files from File Manager over the pill to open the
   bubble. 0.3.1 has 0.2.10's fixes too. Checked only in a throwaway shell.
@@ -1061,14 +1062,15 @@ blue accent), and a Patrone-made avatar set for Settings → Users.
 ## 7. Patrone taskbar (patrone-gnome-taskbar)
 
 The user's taskbar decisions (2026-10-26) and how it works are in
-`shell/gnome/README.md`. In short: Windows 11's taskbar, left-aligned and
-compact ("smaller, not taking up so much real estate"; built at 32 pixels,
-then made a third larger, 42, once the user had used it), in place
-of GNOME's top bar; the logo's "P" opens Start, where typing searches at
-once (GNOME's search providers, then the web); a search button; pinned slots
-that open the default web browser, terminal, file manager and mail app, with
-that app's windows under the slot; running apps, pinnable; Windows 11-style
-right-click jump lists that also hold the configuration. Built as a GNOME
+`shell/gnome/README.md`. In short: a taskbar that works the way Windows
+users expect, left-aligned and compact ("smaller, not taking up so much
+real estate"; built at 32 pixels, then made a third larger, 42, once the
+user had used it), in place of GNOME's top bar; the logo's "P" opens the
+Patrone menu, where typing searches at once (GNOME's search providers, then
+the web); a search button; pinned slots that open the default web browser,
+terminal, file manager and mail app, with that app's windows under the
+slot; running apps, pinnable; right-click jump lists that also hold the
+configuration. Built as a GNOME
 Shell extension for now (the user said "Build it out"); the design carries
 over to Patrone's own shell.
 
@@ -1196,16 +1198,16 @@ Findings:
 
 ## 8. Patrone File Manager (patrone-file-manager)
 
-Built 2026-10-26 at the user's request: an exact replica of Windows 11's
-File Explorer, configurable the same way, with its right-click menus, "All
-RUST if it makes sense". The user named it **File Manager** ("Patrone File
-Manager"): app ID `org.patrone.FileManager`, command
-`patrone-file-manager`. Rust and gtk4-rs without libadwaita; GTK's Default
-theme restyled by `data/style.css`, light and dark. For icons the user chose
-Fluent-style chrome with Windows-style file icons, then asked for "nice
-versions of what Microsoft uses ... professional, but not exact copies", so
-every icon is drawn for Patrone (`tools/make_icons.py` for the color icons,
-`src/glyph.rs` for the line glyphs) and none of Microsoft's files are used.
+Built 2026-10-26 at the user's request: a file manager that works the way
+Windows users expect, with the options and right-click menus they know, in
+Patrone's own look, "All RUST if it makes sense". The user named it **File
+Manager** ("Patrone File Manager"): app ID `org.patrone.FileManager`,
+command `patrone-file-manager`. Rust and gtk4-rs without libadwaita; GTK's
+Default theme restyled by `data/style.css`, light and dark. For icons the
+user asked for "nice versions of what Microsoft uses ... professional, but
+not exact copies", so every icon is drawn for Patrone (`tools/make_icons.py`
+for the color icons, `src/glyph.rs` for the line glyphs) and none of
+Microsoft's files are used.
 `file-manager/README.md` lists what it does.
 
 Verified on the dev VM:
@@ -1560,8 +1562,9 @@ account's real setting.)
 
 The user, 2026-10-27: "The desktop and the roll out menu must be an
 extension of the file explorer app, while supporting the desktop and all it
-can do", with Windows' desktop menu ("all of the items that windows would
-have such as creating a new file, folder, and other things"), File
+can do", with a desktop menu that has what Windows users look for ("all
+of the items that windows would have such as creating a new file, folder,
+and other things"), File
 Manager's look for the files, and "From the file explorer app, I can't copy
 and drag items to copy/move them to the desktop (shift/control-whatever)".
 
@@ -1577,7 +1580,7 @@ and drag items to copy/move them to the desktop (shift/control-whatever)".
   places (`src/bubble.rs`), drawing the bubble behind them. Selection by
   click, Ctrl, Shift, rubber band and arrow keys; moving icons by
   dragging; drops from elsewhere land where they're let go.
-- Windows' desktop menu (`menus::desktop_menu`): View, Sort by, Refresh,
+- The desktop menu (`menus::desktop_menu`): View, Sort by, Refresh,
   Paste, Paste shortcut, Undo/Redo, New with Templates, Show Recycle Bin,
   Display settings, Personalize, Open in Terminal. Launchers: Allow
   Launching, and an untrusted one asks before it runs.
@@ -1618,10 +1621,9 @@ Asked for 2026-10-26: Patrone's own settings, first the taskbar's size
 (small, medium or large; medium was the size then), then where the
 minimize, maximize and close buttons go, shown in pictures (top right or
 top left, "a user option" that themes don't change), and themes: "a
-handful of options" with an Apple-like feel, the current one, an XP-like
-and a Windows 11-like one, not named after either. `settings/README.md`
-has the pages, the four themes (Patrone, Modern, Classic, Studio) and how
-they reach apps. It's a window of its own, GTK 4 in Rust without
+handful of options", each in Patrone's own design and with a name of its
+own. `settings/README.md` has the pages, the four themes (Patrone, Modern,
+Classic, Studio) and how they reach apps. It's a window of its own, GTK 4 in Rust without
 libadwaita (the VM has no libadwaita headers): GNOME Settings takes no
 pages from other programs.
 
@@ -1662,7 +1664,7 @@ desktop.
 buttons are inconsistent". In the throwaway shell, five apps under each
 theme showed why: libadwaita apps (Text Editor, Calculator), plain GTK 4
 apps that Ubuntu's Yaru styles (Patrone Settings, Patrone Terminal), GTK 3
-apps (Disks) and File Manager (its own Windows 11 buttons) each kept parts
+apps (Disks) and File Manager (its own buttons) each kept parts
 of their own look; under Classic and Modern Patrone Settings' buttons
 vanished, and under Studio Terminal's were big grey circles and Disks'
 disappeared. Asked which look the Patrone theme should have, the user said
