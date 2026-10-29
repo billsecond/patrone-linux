@@ -1,3 +1,20 @@
+patrone-branding (0.1.25) resolute; urgency=medium
+
+  * Two more cursor themes, the same shapes in other colors (the user,
+    2026-10-29): Patrone Black, near-black with a white edge, and Patrone
+    White, white with a dark edge, in /usr/share/icons/Patrone-Black and
+    /usr/share/icons/Patrone-White. Patrone's first theme is now called
+    Patrone Blue. It keeps its folder, Patrone, so it stays the default and
+    every setting that names it keeps working. The badges (copy, link, help
+    and the rest) are Patrone Blue in all three, and the busy cursors keep
+    the boot spinner's comet, in darker blues on Patrone White's white ring.
+  * Every cursor has a shadow you can see, down and to the right (the user:
+    "set a shadow on the mouse"). It's darker, further out and softer than
+    the faint one before, and fades out at the image's edge rather than
+    ending in a line.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:30:00 -0500
+
 patrone-branding (0.1.23) resolute; urgency=medium
 
   * The system is PatroneOS, as the user named it on 2026-10-29: os-release

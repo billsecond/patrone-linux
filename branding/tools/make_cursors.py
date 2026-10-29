@@ -1,12 +1,16 @@
-"""Draws Patrone's cursor theme: every cursor in Patrone's blues with a white
-edge, and the busy cursors with the boot splash's spinner.
+"""Draws Patrone's three cursor themes, the same shapes in three colors:
+Patrone Blue (Patrone's blues with a white edge, the default), Patrone Black
+(near-black with a white edge) and Patrone White (white with a dark edge).
+The busy cursors have the boot splash's spinner.
 
     python3 tools/make_cursors.py build/cursors --preview system/cursors/previews
 
-Writes, in OUTPUT:
-  index.theme     names the theme, Patrone, and falls back to Adwaita
-  cursor.theme    the system's default cursor theme (x-cursor-theme) points
-                  here; it says only "use Patrone"
+Writes a folder for each theme in OUTPUT: Patrone, Patrone-Black and
+Patrone-White. Patrone Blue keeps the folder, and so the name in settings,
+that it had as the only theme. Each has:
+  index.theme     names the theme and falls back to Adwaita
+  cursor.theme    Patrone's only: the system's default cursor theme
+                  (x-cursor-theme) points here; it says only "use Patrone"
   cursors/        an Xcursor file for each shape, at 24, 30, 32, 36, 48, 64,
                   72 and 96 pixels, and links for the other names programs
                   ask for (ALIASES)
@@ -16,21 +20,27 @@ screens and at fractional scales. A name the theme lacks falls back to
 Adwaita's.
 
 Each shape is drawn from geometry on a 24-unit grid (one unit is a pixel at
-24), at four times the size and scaled down, which smooths the edges: a body
-shaded from Patrone Blue's mid tone down to its shadow, a white edge, and a
-soft shadow under it. Where parts of a shape overlap, the fingers of a hand
-for one, a thin white seam shows where one ends. Badges (copy, help, link,
-menu, no drop) are discs in Patrone Blue.
+24), at four times the size and scaled down, which smooths the edges: a
+shaded body, an edge, and a shadow down and to the right. The shadow shows on
+light and mid-toned backgrounds; on near-black, the edge does that job.
+Where parts of a shape overlap, the fingers of a hand for one, a thin seam in
+the edge's color shows where one ends. Badges (copy, help, link, menu, no
+drop) are discs in Patrone Blue in every theme.
 
 The busy cursors, "wait" (the spinner alone) and "progress" (the arrow with
-a small one), are the boot splash's spinner on Patrone's near-black: a dim
-ring with a comet of light running round it, its head sprinting ahead and
-its tail catching up (make_spinner.py). They loop in 1.5 seconds, 60
-frames of 25 milliseconds.
+a small one), are the boot splash's spinner: a ring (Patrone's near-black;
+white in Patrone White) with a comet of light running round it, its head
+sprinting ahead and its tail catching up (make_spinner.py). On the white
+ring the comet is in darker blues, so it shows. They loop in 1.5 seconds,
+60 frames of 25 milliseconds.
 
 Needs NumPy; --preview also needs Pillow. With only --preview, it writes the
-previews and no theme: cursors-sheet.png (every cursor at 24 and 48 pixels,
-on light and dark, with its hotspot) and busy-preview.gif.
+previews and no theme. For each theme, a sheet of every cursor at 24 and 48
+pixels, on light and dark, with its hotspot (cursors-sheet.png, then
+cursors-sheet-black.png and -white.png), and its busy cursors
+(busy-preview.gif, -black.gif and -white.gif). Also shadow-sheet.png: the
+three themes at 24, 32 and 48 pixels, at their real size and enlarged, on
+light, mid-toned and dark backgrounds. --theme draws only one theme.
 """
 import argparse
 import math
@@ -52,15 +62,16 @@ MID = (0x23, 0x72, 0xDD)
 DEEP = (0x18, 0x51, 0xA8)
 SHADOW = (0x13, 0x43, 0x94)
 WHITE = (0xFF, 0xFF, 0xFF)
+INK = (0x1A, 0x1A, 0x1E)  # Patrone White's edge
 
-BODY_TOP = MID         # the body's shading, top of the canvas to bottom
-BODY_BOTTOM = SHADOW
-BADGE = PATRONE_BLUE
-EDGE = 1.5             # the white edge, in units
-SEAM = 0.7             # the white line where overlapping parts meet
-DROP_OFFSET = 0.8      # the shadow, down and to the right, in units
-DROP_BLUR = 0.8
-DROP_OPACITY = 0.4
+EDGE = 1.5             # the edge, in units
+SEAM = 0.7             # the line where overlapping parts meet
+DROP_X = 0.8           # the shadow, right and down, in units
+DROP_Y = 1.3
+DROP_BLUR = 1.1
+DROP_OPACITY = 0.8
+DROP_FADE = 1.2        # it fades out this close to the image's edge, so it
+                       # never ends in a line where a shape comes near it
 
 # The busy cursors' spinner: the boot splash's comet (make_spinner.py)
 LOOP_FRAMES = 60
@@ -75,8 +86,39 @@ COMET_STOPS = [
     (1.00, MID),
 ]
 SOLID = 0.3
-TRACK_COLOR = SHADOW
-TRACK_OPACITY = 0.4
+
+
+class Look:
+    """One theme's colors. body: its shading, top of the canvas to bottom.
+    edge: the edge round each cursor, the seams where parts overlap, and a
+    magnifier's glass. badge: the discs on the arrow (their glyphs are
+    white). accent: a pencil's wood. ring, track (color, opacity) and comet
+    (stops, head to tail): the busy spinner. suffix: its previews' names."""
+
+    def __init__(self, folder, name, comment, suffix, body, edge, badge, accent, ring, track, comet):
+        self.folder, self.name, self.comment, self.suffix = folder, name, comment, suffix
+        self.body, self.edge, self.badge, self.accent = body, edge, badge, accent
+        self.ring, self.track, self.comet = ring, track, comet
+
+    def comet_color(self, position):
+        stops = [s for s, _ in self.comet]
+        return np.stack([np.interp(position, stops, [c[i] for _, c in self.comet]) for i in range(3)], -1)
+
+
+# Patrone Blue first: the default, and the system's default cursor theme
+LOOKS = {
+    "blue": Look("Patrone", "Patrone Blue", "PatroneOS's cursors: blue, with a white edge", "",
+                 body=(MID, SHADOW), edge=WHITE, badge=PATRONE_BLUE, accent=HIGHLIGHT,
+                 ring=BACKGROUND, track=(SHADOW, 0.4), comet=COMET_STOPS),
+    "black": Look("Patrone-Black", "Patrone Black", "PatroneOS's cursors: black, with a white edge", "-black",
+                  body=((0x3A, 0x3A, 0x40), (0x08, 0x08, 0x0A)), edge=WHITE, badge=PATRONE_BLUE,
+                  accent=(0x74, 0x74, 0x7C), ring=BACKGROUND, track=((0x60, 0x60, 0x68), 0.5),
+                  comet=COMET_STOPS),
+    "white": Look("Patrone-White", "Patrone White", "PatroneOS's cursors: white, with a dark edge", "-white",
+                  body=(WHITE, (0xDC, 0xE0, 0xE8)), edge=INK, badge=PATRONE_BLUE,
+                  accent=(0xB4, 0xBA, 0xC6), ring=WHITE, track=((0xB0, 0xB6, 0xC2), 0.6),
+                  comet=[(0.00, PATRONE_BLUE), (0.35, MID), (1.00, DEEP)]),
+}
 
 
 # Distances, in units: negative inside a shape, positive outside
@@ -149,10 +191,12 @@ def turned_point(point, degrees, cx=GRID / 2, cy=GRID / 2):
 
 
 class Part:
-    """One piece of a cursor, painted in order. fill is "body" (the blue
-    shading), an RGB color or an (RGB array, opacity array) pair. edge: it
-    takes part in the white edge round the cursor. seam: a white line is
-    drawn round it over the parts painted before it."""
+    """One piece of a cursor, painted in order. fill is an RGB color, one of
+    the theme's colors by name ("body", the shading, "edge", "badge",
+    "accent", "ring" or "track") or ("comet", position, opacity), the
+    spinner's comet. edge: it takes part in the edge round the cursor. seam:
+    a line in the edge's color is drawn round it over the parts painted
+    before it."""
 
     def __init__(self, distance, fill="body", edge=True, seam=False, opacity=1.0):
         self.distance, self.fill, self.edge, self.seam, self.opacity = distance, fill, edge, seam, opacity
@@ -182,7 +226,7 @@ def with_badge(glyph):
     white."""
     def shape(x, y, t=None):
         bx, by = BADGE_AT
-        return arrow(x, y) + [Part(circle(x, y, bx, by, BADGE_RADIUS), fill=BADGE, seam=True),
+        return arrow(x, y) + [Part(circle(x, y, bx, by, BADGE_RADIUS), fill="badge", seam=True),
                               Part(glyph(x, y, bx, by), fill=WHITE, edge=False)]
     return shape
 
@@ -346,7 +390,7 @@ def x_cursor(x, y, t=None):
 def zoom(sign):
     def shape(x, y, t=None):
         lens = Part(union(circle(x, y, 10, 10, 6.9), segment(x, y, 14.6, 14.6, 20.0, 20.0, 1.75)))
-        glass = Part(circle(x, y, 10, 10, 4.5), fill=WHITE, edge=False)
+        glass = Part(circle(x, y, 10, 10, 4.5), fill="edge", edge=False)
         glyph = box(x, y, 10, 10, 2.6, 0.78, 0.3)
         if sign == "+":
             glyph = union(glyph, box(x, y, 10, 10, 0.78, 2.6, 0.3))
@@ -368,7 +412,7 @@ def pencil(x, y, t=None):
     s, w = along_tool(x, y)
     return [Part(box(s, w, 10.4, 0, 4.6, 2.2)),
             Part(box(s, w, 17.0, 0, 1.9, 2.2, 0.8), seam=True),
-            Part(polygon(s, w, [(0, 0), (5.6, 2.2), (5.6, -2.2)]), fill=HIGHLIGHT, seam=True),
+            Part(polygon(s, w, [(0, 0), (5.6, 2.2), (5.6, -2.2)]), fill="accent", seam=True),
             Part(polygon(s, w, [(0, 0), (2.0, 0.8), (2.0, -0.8)]), edge=False)]
 
 
@@ -396,15 +440,9 @@ def smoothstep(x):
     return x * x * (3 - 2 * x)
 
 
-def comet_color(position):
-    stops = [s for s, _ in COMET_STOPS]
-    return np.stack([np.interp(position, stops, [c[i] for _, c in COMET_STOPS]) for i in range(3)], -1)
-
-
 def spinner(x, y, t, cx, cy, radius, band, stroke):
-    """The boot splash's spinner on a ring of Patrone's near-black, band
-    wide: a dim track and the comet, its head at the top when t is a whole
-    loop."""
+    """The boot splash's spinner on a ring, band wide: a dim track and the
+    comet, its head at the top when t is a whole loop."""
     head = REST_ANGLE + 2 * math.pi * float(eased(t))
     length = 2 * math.pi * float(eased(t) - eased(t - LAG))
     track = ring(x, y, cx, cy, radius, stroke)
@@ -413,10 +451,10 @@ def spinner(x, y, t, cx, cy, radius, band, stroke):
     opacity = np.where(behind <= length, 1 - smoothstep((position - SOLID) / (1 - SOLID)), 0.0)
     hx, hy = cx + radius * math.cos(head), cy + radius * math.sin(head)
     cap = circle(x, y, hx, hy, stroke / 2)
-    return [Part(ring(x, y, cx, cy, radius, band), fill=BACKGROUND),
-            Part(track, fill=TRACK_COLOR, edge=False, opacity=TRACK_OPACITY),
-            Part(track, fill=(comet_color(position), opacity), edge=False),
-            Part(cap, fill=comet_color(0.0)[None, None], edge=False)]
+    return [Part(ring(x, y, cx, cy, radius, band), fill="ring"),
+            Part(track, fill="track", edge=False),
+            Part(track, fill=("comet", position, opacity), edge=False),
+            Part(cap, fill=("comet", 0.0, 1.0), edge=False)]
 
 
 def wait(x, y, t):
@@ -533,8 +571,7 @@ class Canvas:
         n = size * SUPERSAMPLE
         coords = (np.arange(n) + 0.5) / (SUPERSAMPLE * self.unit)
         self.x, self.y = np.meshgrid(coords, coords)
-        shade = np.clip(self.y / GRID, 0, 1)[..., None]
-        self.body = (np.array(BODY_TOP) * (1 - shade) + np.array(BODY_BOTTOM) * shade) / 255
+        self.shade = np.clip(self.y / GRID, 0, 1)[..., None]
 
     def coverage(self, distance):
         return np.clip(0.5 - distance * self.unit * SUPERSAMPLE, 0, 1)
@@ -543,30 +580,38 @@ class Canvas:
         n = self.size
         return image.reshape(n, SUPERSAMPLE, n, SUPERSAMPLE, *image.shape[2:]).mean(axis=(1, 3))
 
-    def render(self, parts):
-        """Paints the parts; returns premultiplied RGBA, 0 to 1, size x size."""
+    def render(self, parts, look):
+        """Paints the parts in the look's colors; returns premultiplied RGBA,
+        0 to 1, size x size."""
         color = np.zeros(self.x.shape + (3,))
         alpha = np.zeros(self.x.shape)
 
         def paint(distance, fill, opacity=1.0):
             nonlocal color, alpha
-            if isinstance(fill, str):
-                rgb = self.body
-            elif isinstance(fill, tuple) and len(fill) == 2:
-                rgb, extra = fill
-                rgb = np.asarray(rgb) / 255
+            if fill == "body":
+                top, bottom = look.body
+                rgb = np.array(top) * (1 - self.shade) + np.array(bottom) * self.shade
+            elif fill == "track":
+                rgb, extra = look.track
                 opacity = opacity * extra
+            elif isinstance(fill, tuple) and fill[0] == "comet":
+                _, position, extra = fill
+                rgb = look.comet_color(position)
+                opacity = opacity * extra
+            elif isinstance(fill, str):
+                rgb = getattr(look, fill)
             else:
-                rgb = np.asarray(fill, dtype=float) / 255
+                rgb = fill
+            rgb = np.asarray(rgb, dtype=float) / 255
             a = self.coverage(distance) * opacity
             color = rgb * a[..., None] + color * (1 - a[..., None])
             alpha = a + alpha * (1 - a)
 
         outline = union(*[p.distance for p in parts if p.edge]) - EDGE
-        paint(outline, WHITE)
+        paint(outline, "edge")
         for part in parts:
             if part.seam:
-                paint(part.distance - SEAM, WHITE)
+                paint(part.distance - SEAM, "edge")
             paint(part.distance, part.fill, part.opacity)
 
         color, alpha = self.shrink(color), self.shrink(alpha)
@@ -575,26 +620,31 @@ class Canvas:
         return np.dstack([color, alpha])
 
     def drop_shadow(self, silhouette):
-        offset = DROP_OFFSET * self.unit
         sigma = DROP_BLUR * self.unit
-        radius = int(math.ceil(3 * sigma + offset))
+        radius = int(math.ceil(3 * sigma + max(DROP_X, DROP_Y) * self.unit))
         taps = np.arange(-radius, radius + 1)
-        kernel = np.exp(-0.5 * ((taps - offset) / sigma) ** 2)
-        kernel /= kernel.sum()
+
+        def kernel(offset):
+            weights = np.exp(-0.5 * ((taps - offset * self.unit) / sigma) ** 2)
+            return weights / weights.sum()
+
+        across, down = kernel(DROP_X), kernel(DROP_Y)
         padded = np.pad(silhouette, radius)
-        rows = np.apply_along_axis(lambda r: np.convolve(r, kernel, mode="same"), 1, padded)
-        both = np.apply_along_axis(lambda c: np.convolve(c, kernel, mode="same"), 0, rows)
-        return both[radius:-radius, radius:-radius] * DROP_OPACITY
+        rows = np.apply_along_axis(lambda r: np.convolve(r, across, mode="same"), 1, padded)
+        both = np.apply_along_axis(lambda c: np.convolve(c, down, mode="same"), 0, rows)
+        middles = np.arange(self.size) + 0.5
+        fade = np.clip(np.minimum(middles, self.size - middles) / (DROP_FADE * self.unit), 0, 1)
+        return both[radius:-radius, radius:-radius] * DROP_OPACITY * np.minimum(fade[None, :], fade[:, None])
 
 
-def draw(name, size):
+def draw(name, size, look):
     """Every frame of one cursor at one size: [(rgba, xhot, yhot, delay)]."""
     shape, (hx, hy), animated = SHAPES[name]
     canvas = Canvas(size)
     hot = (min(size - 1, int(hx * canvas.unit)), min(size - 1, int(hy * canvas.unit)))
     if not animated:
-        return [(canvas.render(shape(canvas.x, canvas.y)), *hot, 0)]
-    return [(canvas.render(shape(canvas.x, canvas.y, n / LOOP_FRAMES)), *hot, FRAME_MS)
+        return [(canvas.render(shape(canvas.x, canvas.y), look), *hot, 0)]
+    return [(canvas.render(shape(canvas.x, canvas.y, n / LOOP_FRAMES), look), *hot, FRAME_MS)
             for n in range(LOOP_FRAMES)]
 
 
@@ -617,16 +667,18 @@ def write_xcursor(path, images):
     path.write_bytes(struct.pack("<4sIII", b"Xcur", 16, 0x10000, count) + b"".join(toc) + b"".join(chunks))
 
 
-def write_theme(folder: Path):
+def write_theme(output: Path, look):
+    folder = output / look.folder
     cursors = folder / "cursors"
     cursors.mkdir(parents=True, exist_ok=True)
     for old in cursors.iterdir():
         old.unlink()
     (folder / "index.theme").write_text(
-        "[Icon Theme]\nName=Patrone\nComment=PatroneOS's cursors\nInherits=Adwaita\n")
-    (folder / "cursor.theme").write_text("[Icon Theme]\nInherits=Patrone\n")
+        f"[Icon Theme]\nName={look.name}\nComment={look.comment}\nInherits=Adwaita\n")
+    if look is LOOKS["blue"]:
+        (folder / "cursor.theme").write_text(f"[Icon Theme]\nInherits={look.folder}\n")
     for name in SHAPES:
-        images = [(size, *frame) for size in SIZES for frame in draw(name, size)]
+        images = [(size, *frame) for size in SIZES for frame in draw(name, size, look)]
         write_xcursor(cursors / name, images)
     links = 0
     for target, names in ALIASES.items():
@@ -637,7 +689,7 @@ def write_theme(folder: Path):
     print(f"{folder}: {len(SHAPES)} cursors at {', '.join(map(str, SIZES))} pixels, {links} links")
 
 
-def write_previews(folder: Path):
+def write_previews(folder: Path, looks):
     from PIL import Image, ImageDraw, ImageFont
 
     folder.mkdir(parents=True, exist_ok=True)
@@ -651,6 +703,47 @@ def write_previews(folder: Path):
         color = rgba[..., :3] + (1 - rgba[..., 3:]) * np.array(background) / 255
         return Image.fromarray((np.clip(color, 0, 1) * 255).round().astype(np.uint8), "RGB")
 
+    for look in looks:
+        write_sheets(folder, look, flat, font, light, dark)
+    if len(looks) == len(LOOKS):
+        write_shadow_sheet(folder, looks, flat, font, light, dark)
+
+
+def write_shadow_sheet(folder: Path, looks, flat, font, light, dark):
+    """Each theme's arrow, hand, text cursor and busy cursor at 24, 32 and 48
+    pixels at their real size, then the arrow and hand at 24 enlarged three
+    times, on light, mid-toned (a blue-grey like a wallpaper's) and dark."""
+    from PIL import Image, ImageDraw
+
+    names, sizes, zoom = ("default", "pointer", "text", "wait"), (24, 32, 48), 3
+    backgrounds = (light, (0x6E, 0x80, 0xA0), dark)
+    label_w, row_h = 104, 24 * zoom + 8 + 4
+    width = label_w + sum(len(names) * (size + 8) for size in sizes) + 2 * (24 * zoom + 8)
+    sheet = Image.new("RGB", (width, len(looks) * len(backgrounds) * row_h), (0x80, 0x80, 0x80))
+    pen = ImageDraw.Draw(sheet)
+    for i, look in enumerate(looks):
+        images = {(name, size): draw(name, size, look)[0][0] for name in names for size in sizes}
+        for j, background in enumerate(backgrounds):
+            y0 = (i * len(backgrounds) + j) * row_h
+            sheet.paste(Image.new("RGB", (width - label_w, row_h - 4), background), (label_w, y0))
+            if j == 0:
+                pen.text((6, y0 + 6), look.name, fill=(0, 0, 0), font=font)
+            x = label_w + 8
+            for size in sizes:
+                for name in names:
+                    sheet.paste(flat(images[name, size], background), (x, y0 + (row_h - 4 - size) // 2))
+                    x += size + 8
+            for name in names[:2]:
+                big = flat(images[name, 24], background).resize((24 * zoom, 24 * zoom), Image.NEAREST)
+                sheet.paste(big, (x, y0 + (row_h - 4 - 24 * zoom) // 2))
+                x += 24 * zoom + 8
+    sheet.save(folder / "shadow-sheet.png", optimize=True)
+    print(f"{folder}: shadow-sheet.png")
+
+
+def write_sheets(folder: Path, look, flat, font, light, dark):
+    from PIL import Image, ImageDraw
+
     # Every cursor at 24 (shown twice the size) and 48 pixels, on light and
     # dark, its hotspot a red dot
     columns = 4
@@ -662,7 +755,7 @@ def write_previews(folder: Path):
     for i, name in enumerate(names):
         x0, y0 = (i % columns) * tile_w, (i // columns) * (tile_h + label_h)
         pen.text((x0 + 4, y0 + 2), name, fill=(0, 0, 0), font=font)
-        frames = {size: draw(name, size) for size in (24, 48)}
+        frames = {size: draw(name, size, look) for size in (24, 48)}
         for j, (size, background) in enumerate([(24, light), (24, dark), (48, light), (48, dark)]):
             rgba, xhot, yhot, _ = frames[size][len(frames[size]) // 4]
             zoom = 2 if size == 24 else 1
@@ -672,13 +765,13 @@ def write_previews(folder: Path):
                                             4 + xhot * zoom + zoom - 1, 4 + yhot * zoom + zoom - 1],
                                            fill=(0xE0, 0x20, 0x20))
             sheet.paste(tile, (x0 + j * 56, y0 + label_h))
-    sheet.save(folder / "cursors-sheet.png", optimize=True)
+    sheet.save(folder / f"cursors-sheet{look.suffix}.png", optimize=True)
 
     # The busy cursors at 48 pixels, shown twice the size, on light and dark.
     # GIF frame times are in hundredths of a second: 20 and 30 alternate to
     # average 25 milliseconds.
     size, zoom = 48, 2
-    frames = {name: draw(name, size) for name in ("wait", "progress")}
+    frames = {name: draw(name, size, look) for name in ("wait", "progress")}
     gif = []
     for n in range(LOOP_FRAMES):
         frame = Image.new("RGB", (4 * size * zoom, size * zoom))
@@ -689,22 +782,25 @@ def write_previews(folder: Path):
         gif.append(frame)
     palette = gif[LOOP_FRAMES // 4].quantize(255, method=Image.Quantize.MEDIANCUT)
     gif = [f.quantize(palette=palette, dither=Image.Dither.NONE) for f in gif]
-    gif[0].save(folder / "busy-preview.gif", save_all=True, append_images=gif[1:],
+    gif[0].save(folder / f"busy-preview{look.suffix}.gif", save_all=True, append_images=gif[1:],
                 duration=[20 if n % 2 else 30 for n in range(LOOP_FRAMES)], loop=0, optimize=True)
-    print(f"{folder}: cursors-sheet.png, busy-preview.gif")
+    print(f"{folder}: cursors-sheet{look.suffix}.png, busy-preview{look.suffix}.gif")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("output", type=Path, nargs="?", help="folder for the theme")
-    parser.add_argument("--preview", type=Path, help="folder for a contact sheet and a GIF")
+    parser.add_argument("output", type=Path, nargs="?", help="folder for the themes' folders")
+    parser.add_argument("--preview", type=Path, help="folder for the contact sheets and GIFs")
+    parser.add_argument("--theme", choices=list(LOOKS), help="draw only this theme")
     args = parser.parse_args()
     if not args.output and not args.preview:
-        parser.error("give a folder for the theme, --preview, or both")
+        parser.error("give a folder for the themes, --preview, or both")
+    looks = [LOOKS[args.theme]] if args.theme else list(LOOKS.values())
     if args.output:
-        write_theme(args.output)
+        for look in looks:
+            write_theme(args.output, look)
     if args.preview:
-        write_previews(args.preview)
+        write_previews(args.preview, looks)
 
 
 if __name__ == "__main__":
