@@ -1,5 +1,5 @@
 #!/bin/bash
-# Patrone Hyper-V Setup's "Set Up" button runs this through pkexec, with
+# Virtual Machine Setup's "Set Up" button runs this through pkexec, with
 # what's missing; polkit's action for it is in
 # /usr/share/polkit-1/actions/org.patrone.hyperv-setup.policy.
 #
@@ -34,7 +34,7 @@ for part; do
 done
 
 if [[ -z $dry_run && $EUID -ne 0 ]]; then
-    echo "Patrone Hyper-V Setup runs this through pkexec." >&2
+    echo "Virtual Machine Setup runs this through pkexec." >&2
     exit 1
 fi
 

@@ -86,7 +86,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone13_amd64.deb ./out/gnome-control-center-data_*patrone13_all.deb
+sudo apt install ./out/gnome-control-center_*patrone14_amd64.deb ./out/gnome-control-center-data_*patrone14_all.deb
 ```
 
 ## How it was checked
@@ -164,6 +164,10 @@ Shell, Settings › Desktop showed Desktop Bubble and Recycle Bin on the
 Desktop, then Enhanced Tiling, and no Dock group, though Ubuntu's dock
 schema is installed (`gnome-shell-ubuntu-extensions`). Not tried: the
 page without Patrone's taskbar, where it's Ubuntu's code as before.
+
+`1:50.3-0ubuntu0.2patrone14`: the Patrone page calls the Royal theme
+Sapphire, as Patrone Settings 0.3.7 does (`docs/COMPLIANCE.md`, item 15);
+its setting value is still `royal`.
 
 ## Keeping up with Ubuntu
 

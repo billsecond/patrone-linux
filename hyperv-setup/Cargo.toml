@@ -1,10 +1,10 @@
 [package]
 name = "patrone-hyperv-setup"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 # Ubuntu 26.04's rustc, which builds the package
 rust-version = "1.93"
-description = "Patrone Hyper-V Setup: offers, at login, to set up what Patrone Linux needs in a Hyper-V virtual machine"
+description = "Patrone Virtual Machine Setup: offers, at login, to set up what Patrone Linux needs in a Hyper-V virtual machine"
 license = "GPL-3.0-or-later"
 publish = false
 

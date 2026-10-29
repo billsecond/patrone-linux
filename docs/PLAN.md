@@ -25,7 +25,7 @@ run on it unchanged, and X11 apps run through Xwayland.
 | Session | Starts everything at login | A session entry the login screen can pick, plus systemd user units |
 | Portals | Screenshots, screen sharing, file pickers for sandboxed apps | Start from the existing GTK portal; add our own backend where needed |
 | Terminal | Patrone Terminal, the default terminal | GTK4 + VTE; Kali-style look, copy on select, paste on right-click, zsh with a two-line prompt (see `docs/NEXT.md`) |
-| File manager | Patrone File Manager ("File Manager"), the default file manager | GTK4 in Rust, in the image of Windows 11's File Explorer: tabs, command bar, right-click menus, Folder Options (see `file-manager/README.md`) |
+| File manager | Patrone File Manager ("File Manager"), the default file manager | GTK4 in Rust, working the way Windows users expect, in Patrone's own look: tabs, command bar, right-click menus, Folder Options (see `file-manager/README.md`) |
 | Remote desktop | RDP access, including Hyper-V enhanced sessions | Clipboard sharing and desktop resizing when Patrone runs as a Hyper-V guest (see `docs/NEXT.md`) |
 
 At first the login screen is GDM, Ubuntu's own, which can start any Wayland

@@ -3,8 +3,7 @@
 
     python3 tools/make_icons.py data/icons
 
-Every icon is original artwork in the spirit of Windows 11's Fluent style:
-soft gradients, rounded corners and a consistent light source. The large
+Every icon is original artwork drawn for Patrone: soft gradients, rounded corners and a consistent light source. The large
 icons are drawn on a 64-unit grid and scale to every view size; the
 navigation pane gets its own simpler drawings on a 16-unit grid, which stay
 readable at 16 pixels. Nothing here is copied from Microsoft's icons.

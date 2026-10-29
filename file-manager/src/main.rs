@@ -1,5 +1,5 @@
-//! Patrone File Manager: the file manager of Patrone Linux, in the image
-//! of Windows 11's File Explorer. GTK4, written in Rust.
+//! Patrone File Manager: the file manager of Patrone Linux, which works
+//! the way Windows users expect. GTK4, written in Rust.
 
 mod addressbar;
 mod archive;

@@ -1,10 +1,15 @@
-//! Patrone Hyper-V Setup. At each desktop login in a Hyper-V virtual
+//! Patrone Virtual Machine Setup. At each desktop login in a Hyper-V virtual
 //! machine (patrone-hyperv-setup.service), this checks what Patrone Linux
 //! needs there and offers to set up whatever isn't: Hyper-V's integration
 //! services (patrone-guest-tools) and VMConnect's enhanced session
 //! (patrone-remote-desktop), with one password, and the PowerShell command
 //! for what has to change on Windows. With everything set up, or "Don't
 //! show this again" ticked, it shows nothing.
+//!
+//! Microsoft's trademark guidelines bar its marks, Hyper-V among them, from
+//! product names (docs/COMPLIANCE.md, item 15), so the name the user sees
+//! is "Virtual Machine Setup". The package, binary, units and app ID keep
+//! "hyperv": renaming those would need a migration.
 
 mod checks;
 
@@ -35,11 +40,15 @@ const HOST_GRACE: Duration = Duration::from_secs(30);
 /// What --pretend-missing takes
 const PARTS: [&str; 4] = ["guest-tools", "enhanced-session", "transport", "services"];
 
+/// Shown wherever the dialog names them
+const TRADEMARKS: &str = "Hyper-V and Windows are trademarks of the Microsoft group of companies.";
+
 const USAGE: &str = "\
 Usage: patrone-hyperv-setup [OPTION...]
 
-Shows what Patrone Linux needs in a Hyper-V virtual machine, and sets up
-what's missing. It runs at each desktop login with --at-login.
+Virtual Machine Setup: shows what Patrone Linux needs in a Hyper-V virtual
+machine, and sets up what's missing. It runs at each desktop login with
+--at-login.
 
       --at-login              Show only if something's missing, and not in
                               the installer's live session or with \"Don't
@@ -245,7 +254,7 @@ fn show(app: &gtk::Application, options: &Rc<Options>) {
 fn build(app: &gtk::Application, options: &Rc<Options>, status: Status) -> Rc<Setup> {
     let window = gtk::ApplicationWindow::builder()
         .application(app)
-        .title("Hyper-V Support")
+        .title("Virtual Machine Setup")
         .resizable(false)
         .build();
     // Escape closes it, as it would a dialog
@@ -301,6 +310,20 @@ fn label(text: &str, class: &str) -> gtk::Label {
         label.add_css_class(class);
     }
     label
+}
+
+/// The small print above the buttons: `note`, then the trademarks the
+/// dialog names
+fn notes(note: Option<&str>) -> gtk::Box {
+    let notes = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(2)
+        .build();
+    if let Some(note) = note {
+        notes.append(&label(note, "setup-dim"));
+    }
+    notes.append(&label(TRADEMARKS, "setup-legal"));
+    notes
 }
 
 fn button(text: &str, suggested: bool) -> gtk::Button {
@@ -381,8 +404,8 @@ fn add_row(list: &gtk::ListBox, icon: &str, name: &str, about: &str, state: &str
     let row = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
         .spacing(14)
-        .margin_top(8)
-        .margin_bottom(8)
+        .margin_top(6)
+        .margin_bottom(6)
         .margin_start(12)
         .margin_end(12)
         .build();
@@ -405,6 +428,7 @@ fn show_check(this: &Rc<Setup>) {
             "Patrone Linux isn't running in Hyper-V here, so there's nothing to set up.",
             "",
         ));
+        page.append(&notes(None));
         let close = button("Close", true);
         let window = this.window.clone();
         close.connect_clicked(move |_| window.close());
@@ -413,18 +437,18 @@ fn show_check(this: &Rc<Setup>) {
         return;
     }
 
+    // A line each, to leave room for the rest at 1024 by 768, the size of
+    // Hyper-V's basic window, where this mostly shows
     if status.set_up() {
-        page.append(&label("Hyper-V support is set up", "setup-title"));
+        page.append(&label("This virtual machine is set up", "setup-title"));
         page.append(&label(
-            "Patrone Linux is running in a Hyper-V virtual machine, and everything it \
-             needs there is set up.",
+            "Everything Patrone Linux needs in Hyper-V is set up.",
             "",
         ));
     } else {
-        page.append(&label("Set up Hyper-V support", "setup-title"));
+        page.append(&label("Set up this virtual machine", "setup-title"));
         page.append(&label(
-            "Patrone Linux is running in a Hyper-V virtual machine, and some of what it \
-             needs there isn't set up yet.",
+            "Some of what Patrone Linux needs in Hyper-V isn't set up yet.",
             "",
         ));
     }
@@ -484,15 +508,13 @@ fn show_check(this: &Rc<Setup>) {
 
     let parts = status.to_set_up();
     if parts.is_empty() {
+        page.append(&notes(None));
         let close = button("Close", true);
         let window = this.window.clone();
         close.connect_clicked(move |_| window.close());
         page.append(&bottom(this, true, &[&close]));
     } else {
-        page.append(&label(
-            "Setting up asks for your password once.",
-            "setup-dim",
-        ));
+        page.append(&notes(Some("Setting up asks for your password once.")));
         let not_now = button("Not Now", false);
         let set_up = button("Set Up", true);
         let window = this.window.clone();
@@ -601,7 +623,7 @@ fn windows_box(status: &Status, command: &str) -> gtk::Box {
 
     let mut notes = Vec::new();
     if status.vm_name.is_none() {
-        notes.push("Put the VM's name, as Hyper-V Manager shows it, in place of NAME.");
+        notes.push("Put the VM's name in place of NAME.");
     }
     if !status.transport {
         // No enhanced session yet means, most likely, VMConnect's basic
@@ -725,7 +747,7 @@ fn show_working(this: &Setup, status: &Status) {
         .halign(gtk::Align::Center)
         .build();
     page.append(&spinner);
-    let title = label("Setting up Hyper-V support", "setup-title");
+    let title = label("Setting up this virtual machine", "setup-title");
     title.set_xalign(0.5);
     page.append(&title);
     let text = label(
@@ -758,7 +780,7 @@ fn show_done(this: &Rc<Setup>, fresh: Status, restart: bool) {
         ));
         page.append(&windows_box(&fresh, command));
     } else {
-        page.append(&label("Hyper-V support is set up", "setup-title"));
+        page.append(&label("This virtual machine is set up", "setup-title"));
         page.append(&label(
             if restart {
                 "Restart Patrone Linux to finish setting it up."
@@ -769,6 +791,7 @@ fn show_done(this: &Rc<Setup>, fresh: Status, restart: bool) {
             "",
         ));
     }
+    page.append(&notes(None));
 
     let mut buttons = Vec::new();
     let power = if command.is_some() && shutdown {
@@ -873,8 +896,8 @@ fn save_dont_show(hidden: bool) {
         .and_then(|()| {
             fs::write(
                 &file,
-                "# Patrone Hyper-V Setup's \"Don't show this again\": while this file is\n\
-                 # here, it doesn't show at login. Delete it, or untick the box in\n\
+                "# Virtual Machine Setup's \"Don't show this again\": while this file\n\
+                 # is here, it doesn't show at login. Delete it, or untick the box in\n\
                  # patrone-hyperv-setup, to see it again.\n",
             )
         });

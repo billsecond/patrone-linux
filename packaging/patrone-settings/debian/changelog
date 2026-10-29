@@ -1,3 +1,13 @@
+patrone-settings (0.3.7) resolute; urgency=medium
+
+  * The Royal theme is called Sapphire, to lean less on Windows XP's look
+    (docs/COMPLIANCE.md, item 15; the user, 2026-10-29: "if there is
+    anything we need to do to be more complaint and less risky for any of
+    the microsoft or conicial things do it now"). Its setting value is
+    still "royal", so anyone who chose it keeps it.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 12:30:00 -0500
+
 patrone-settings (0.3.6) resolute; urgency=medium
 
   * The Desktop page calls its first choice what it is: Desktop bubble, On
