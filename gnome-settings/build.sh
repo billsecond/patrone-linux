@@ -17,9 +17,9 @@ set -euo pipefail
 
 # Patrone's revision of the page and patches: one more with each change to
 # them, so a new build of the same Ubuntu version installs as an upgrade
-revision=13
+revision=15
 # What changed in it, for the package's changelog
-changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons and dock settings, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pages."
+changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons and dock settings, and its error message without Ubuntu's name or Launchpad, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pages."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -61,6 +61,7 @@ added_remote_login=patrone-add-remote-login.patch
 cp "$here"/patches/*.patch debian/patches/
 printf '%s\n' "$added" patrone-register-patrone-panel.patch patrone-hide-telemetry.patch \
     "$added_remote_login" patrone-remote-login.patch patrone-desktop-switches.patch \
+    patrone-desktop-error-wording.patch \
     >> debian/patches/series
 QUILT_PATCHES=debian/patches quilt push -a
 

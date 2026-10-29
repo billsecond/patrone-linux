@@ -1,0 +1,26 @@
+Description: The Desktop page's error state without Ubuntu's name
+ Ubuntu's page, which Patrone calls Desktop, said "No Ubuntu settings
+ found" and asked for a bug report in Launchpad, Ubuntu's bug tracker, when
+ it couldn't read the desktop's settings. Patrone's words don't point at
+ Ubuntu (docs/COMPLIANCE.md, item 18).
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: not-needed
+---
+--- a/panels/ubuntu/cc-ubuntu-panel.blp
++++ b/panels/ubuntu/cc-ubuntu-panel.blp
+@@ -33,13 +33,13 @@
+         Label {
+           margin-top: 12;
+           wrap: true;
+-          label: _("No Ubuntu settings found");
++          label: _("No desktop settings found");
+         }
+
+         [end]
+         Label {
+           wrap: true;
+-          label: _("Oops, something has gone wrong. Please report a bug in Launchpad.");
++          label: _("Something has gone wrong: the desktop's settings couldn't be read.");
+
+           attributes: "scale 1.42";
+         }
