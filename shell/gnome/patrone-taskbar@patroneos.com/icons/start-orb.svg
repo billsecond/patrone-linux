@@ -1,23 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- A glossy blue orb with the Patrone P in white -->
-  <defs>
-    <radialGradient id="orb" cx="0.38" cy="0.32" r="0.75">
-      <stop offset="0" stop-color="#8cc4ff"/>
-      <stop offset="0.45" stop-color="#2f80f4"/>
-      <stop offset="1" stop-color="#123f8f"/>
-    </radialGradient>
-    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <circle cx="32" cy="32" r="30" fill="url(#orb)"/>
-  <circle cx="32" cy="32" r="29.5" fill="none" stroke="#0b2f6e" stroke-opacity="0.6"/>
-  <ellipse cx="32" cy="17" rx="20" ry="11" fill="url(#gloss)"/>
-  <!-- The P (patrone-start.svg's paths), scaled into the orb -->
-  <g fill="#ffffff" transform="translate(14.3 14.2) scale(0.085)">
-    <path d="M86 68 H306 C356 68 393 106 393 150 C393 156 392 162 391 167 H140 Z"/>
-    <path d="M262 180 H379 C368 228 330 262 288 262 H213 Z"/>
-    <path d="M133 180 H237 L131 352 H28 Z"/>
-  </g>
+<!-- Drawn by branding/tools/make_logos.py from the PatroneOS P: change that, not this. A glossy blue orb with the P in white -->
+<defs>
+<radialGradient id="orb" cx="0.38" cy="0.32" r="0.75"><stop offset="0" stop-color="#8cc4ff"/><stop offset="0.45" stop-color="#2f80f4"/><stop offset="1" stop-color="#123f8f"/></radialGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+</defs>
+<circle cx="32" cy="32" r="30" fill="url(#orb)"/>
+<circle cx="32" cy="32" r="29.5" fill="none" stroke="#0b2f6e" stroke-opacity="0.6"/>
+<ellipse cx="32" cy="17" rx="20" ry="11" fill="url(#gloss)"/>
+<g fill="#ffffff"><path d="M37.08 30.48L49.9 30.48A6.44 8.51 0 0 1 43.56 37.51L32.45 37.51Z"/><path d="M23.34 30.48L33.29 30.48L23.95 44.63L14 44.63L23.34 30.48Z"/><path d="M19.81 19.37L43.56 19.37A6.44 8.51 0 0 1 50 27.88L50 28.99A6.44 8.51 0 0 1 49.42 32.54A7.43 7.43 0 0 0 42.22 26.95L24.81 26.95Z"/></g>
 </svg>

@@ -27,6 +27,13 @@ and in icons/, laid out as Yaru's folders, the P in place of Ubuntu's logo:
 start-here.png at each of Yaru's sizes (Yaru's distributor-logo icons link
 to it), and start-here-symbolic.svg and distributor-logo-symbolic.svg, the P
 in one color, 16 by 16, which GTK paints in the text's color.
+
+And the taskbar's Start button icons, in
+shell/gnome/patrone-taskbar@patroneos.com/icons/, which it draws 20 to 32
+pixels across: the P opened up for those sizes (patrone_logo.mark's small),
+in color (patrone-start.svg), in light tones for the Royal theme's green
+button (patrone-start-light.svg), in one color (start-mono-symbolic.svg) and
+in white on a glossy orb (start-orb.svg).
 """
 import argparse
 from pathlib import Path
@@ -42,6 +49,8 @@ SPLASH_WIDTH = 380
 LOGIN_HEIGHT = 42
 ABOUT_HEIGHT = 72
 ICON_SIZES = (16, 22, 24, 32, 48, 256)
+TASKBAR_ICONS = BRANDING.parent / "shell" / "gnome" / "patrone-taskbar@patroneos.com" / "icons"
+GENERATED = "Drawn by branding/tools/make_logos.py from the PatroneOS P: change that, not this"
 
 
 def write_svg(path, pieces, height=None, title="PatroneOS"):
@@ -85,6 +94,38 @@ def symbolic(path):
     print(path.relative_to(BRANDING).as_posix())
 
 
+def taskbar_icons(out):
+    """The Start button's icons: the P, opened up for 20 to 32 pixels."""
+    pad = 0.03 * pl.MARK_SIZE[0]
+    for name, pieces in (("patrone-start.svg", pl.mark(small=True)),
+                         ("patrone-start-light.svg", pl.mark(small=True, light=True))):
+        (out / name).write_text(pl.svg(pieces, size=(64, 64), pad=pad, square=True, comment=GENERATED),
+                                encoding="utf-8", newline="\n")
+    # Symbolic: GNOME Shell paints it in the taskbar's text color
+    mono = pl.svg(pl.mark(small=True, mono="#2e3436"), size=(16, 16), pad=pad, square=True, comment=GENERATED)
+    (out / "start-mono-symbolic.svg").write_text(mono, encoding="utf-8", newline="\n")
+    # The P in white, 36 of the orb's 64 across
+    pieces = pl.mark(small=True, mono="#ffffff")
+    k = 36 / pl.MARK_SIZE[0]
+    pieces = pl.transformed(pieces, k, 32 - pl.MARK_SIZE[0] * k / 2, 32 - pl.MARK_SIZE[1] * k / 2)
+    paths = "".join(f'<path d="{"".join(c.svg() for c in p.contours)}"/>' for p in pieces)
+    orb = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<!-- {GENERATED}. A glossy blue orb with the P in white -->
+<defs>
+<radialGradient id="orb" cx="0.38" cy="0.32" r="0.75"><stop offset="0" stop-color="#8cc4ff"/><stop offset="0.45" stop-color="#2f80f4"/><stop offset="1" stop-color="#123f8f"/></radialGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+</defs>
+<circle cx="32" cy="32" r="30" fill="url(#orb)"/>
+<circle cx="32" cy="32" r="29.5" fill="none" stroke="#0b2f6e" stroke-opacity="0.6"/>
+<ellipse cx="32" cy="17" rx="20" ry="11" fill="url(#gloss)"/>
+<g fill="#ffffff">{paths}</g>
+</svg>
+"""
+    (out / "start-orb.svg").write_text(orb, encoding="utf-8", newline="\n")
+    for name in ("patrone-start.svg", "patrone-start-light.svg", "start-mono-symbolic.svg", "start-orb.svg"):
+        print((out / name).relative_to(BRANDING.parent).as_posix())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.parse_args()
@@ -122,6 +163,7 @@ def main():
     print(f"icons/*/places/start-here.png: {', '.join(map(str, ICON_SIZES))} and @2x")
     for name in ("start-here-symbolic.svg", "distributor-logo-symbolic.svg"):
         symbolic(icons / "scalable" / "places" / name)
+    taskbar_icons(TASKBAR_ICONS)
 
 
 if __name__ == "__main__":
