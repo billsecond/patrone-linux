@@ -174,13 +174,15 @@ gzip -9nkf "$repo/$index/Packages"
 xz -kf "$repo/$index/Packages"
 
 rm -f "$repo/$dists/Release" "$repo/$dists/InRelease" "$repo/$dists/Release.gpg"
-# Origin and Label stay as installs first saw them, whatever the system is
-# called (PatroneOS since 2026-10-29): apt stops updating from a repository
-# whose Origin or Label changes until it's told to accept it, and
-# desktop/apt/patrone.pref matches on the Origin
+# The Origin stays as installs first saw it: apt stops updating from a
+# repository whose Origin changes until it's told to accept it, and
+# desktop/apt/patrone.pref matches on it. The Label is the system's name,
+# PatroneOS since 2026-10-29; installs accept that change since
+# patrone-desktop 0.2.6 (apt/51patrone-release-label), which had to reach
+# them first.
 (cd "$repo/$dists" && apt-ftparchive \
     -o APT::FTPArchive::Release::Origin=Patrone \
-    -o "APT::FTPArchive::Release::Label=Patrone Linux" \
+    -o APT::FTPArchive::Release::Label=PatroneOS \
     -o APT::FTPArchive::Release::Suite=$suite \
     -o APT::FTPArchive::Release::Codename=$suite \
     -o APT::FTPArchive::Release::Architectures=amd64 \
