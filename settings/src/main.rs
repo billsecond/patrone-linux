@@ -2,18 +2,20 @@
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
 //! Desktop (the desktop's files in a bubble or across the desktop, the
 //! Recycle Bin, and where the terminal opens at sign-in), Title bar buttons (where minimize, maximize and close go,
-//! and their style) and Theme (the theme, and the desktop's font: Patrone
-//! Sans or Noto Sans). Patrone's build of GNOME Settings has the same
-//! settings on its Patrone page, and uses this program to apply a theme or
-//! button style and for its pictures.
+//! and their style), Theme (the theme, and the desktop's font: Patrone
+//! Sans or Noto Sans) and Mouse pointer (the cursor theme and size).
+//! Patrone's build of GNOME Settings has the same settings on its Patrone
+//! page, and uses this program to apply a theme or button style and for
+//! its pictures.
 //!
-//!   patrone-settings [--page taskbar|desktop|buttons|theme]
+//!   patrone-settings [--page taskbar|desktop|buttons|theme|pointer]
 //!   patrone-settings --set-theme THEME          apply a theme, and quit
 //!   patrone-settings --set-title-buttons STYLE  apply a button style, and quit
 //!   patrone-settings --apply                    write the account's GTK styles
 //!                                               for the settings as they are
 //!   patrone-settings --export-previews DIR      save the choices' pictures as PNGs
 
+mod cursor;
 mod font;
 mod preview;
 mod theme;
@@ -31,11 +33,12 @@ const APP_ID: &str = "org.patrone.Settings";
 const TASKBAR_SCHEMA: &str = "org.gnome.shell.extensions.patrone-taskbar";
 const DESKTOP_SCHEMA: &str = "org.patrone.desktop";
 const WINDOW_MANAGER_SCHEMA: &str = "org.gnome.desktop.wm.preferences";
-const PAGES: [(&str, &str, &str); 4] = [
+const PAGES: [(&str, &str, &str); 5] = [
     ("taskbar", "Taskbar", "user-desktop-symbolic"),
     ("desktop", "Desktop", "view-grid-symbolic"),
     ("buttons", "Title bar buttons", "window-maximize-symbolic"),
     ("theme", "Theme", "applications-graphics-symbolic"),
+    ("pointer", "Mouse pointer", "input-mouse-symbolic"),
 ];
 
 /// The taskbar's sizes: setting value, name, description, and the bar's
@@ -344,6 +347,7 @@ fn build_window(app: &gtk::Application) -> gtk::ApplicationWindow {
     stack.add_named(&desktop_page(), Some("desktop"));
     stack.add_named(&buttons_page(), Some("buttons"));
     stack.add_named(&theme_page(), Some("theme"));
+    stack.add_named(&pointer_page(), Some("pointer"));
 
     let sidebar = gtk::ListBox::new();
     sidebar.add_css_class("patrone-nav");
@@ -426,10 +430,16 @@ type Draw = Rc<dyn Fn(&gtk::cairo::Context, f64, f64)>;
 
 /// One choice: its setting value, name, description and picture.
 struct Choice {
-    value: &'static str,
-    title: &'static str,
-    detail: &'static str,
+    value: String,
+    title: String,
+    detail: String,
     draw: Draw,
+}
+
+impl Choice {
+    fn new(value: impl Into<String>, title: impl Into<String>, detail: impl Into<String>, draw: Draw) -> Self {
+        Choice { value: value.into(), title: title.into(), detail: detail.into(), draw }
+    }
 }
 
 fn drawing(draw: impl Fn(&gtk::cairo::Context, f64, f64) + 'static) -> Draw {
@@ -439,9 +449,9 @@ fn drawing(draw: impl Fn(&gtk::cairo::Context, f64, f64) + 'static) -> Draw {
 /// A row of choices, one of them picked. `pick` runs when one is picked;
 /// `refresh`, given the setting's value, shows it picked.
 fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(&str) + 'static) -> Box<dyn Fn(&str)> {
-    // Three choices in a row, and five in rows of three; four in two rows
+    // Rows of three for three, five or more choices; two and four in rows
     // of two
-    let per_line = if items.len() == 3 || items.len() == 5 { 3 } else { 2 };
+    let per_line = if items.len() == 3 || items.len() >= 5 { 3 } else { 2 };
     let flow = gtk::FlowBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .column_spacing(12)
@@ -451,7 +461,7 @@ fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(
         .homogeneous(true)
         .build();
     let pick = Rc::new(pick);
-    let mut buttons: Vec<(gtk::ToggleButton, &'static str)> = Vec::new();
+    let mut buttons: Vec<(gtk::ToggleButton, String)> = Vec::new();
     for item in items {
         let picture = gtk::DrawingArea::builder().content_width(188).content_height(118).build();
         let draw = item.draw.clone();
@@ -459,10 +469,10 @@ fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(
 
         let card = gtk::Box::new(gtk::Orientation::Vertical, 6);
         card.append(&picture);
-        card.append(&gtk::Label::builder().label(item.title).xalign(0.0).css_classes(["patrone-choice-title"]).build());
+        card.append(&gtk::Label::builder().label(&item.title).xalign(0.0).css_classes(["patrone-choice-title"]).build());
         card.append(
             &gtk::Label::builder()
-                .label(item.detail)
+                .label(&item.detail)
                 .xalign(0.0)
                 .wrap(true)
                 .max_width_chars(24)
@@ -474,14 +484,15 @@ fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(
             .css_classes(["patrone-choice"])
             .active(item.value == current)
             .build();
+        name_for_screen_readers(&button, &item.title, Some(&item.detail));
         if let Some((first, _)) = buttons.first() {
             button.set_group(Some(first));
         }
         let pick = pick.clone();
-        let value = item.value;
+        let value = item.value.clone();
         button.connect_toggled(move |button| {
             if button.is_active() {
-                pick(value);
+                pick(&value);
             }
         });
         flow.append(&button);
@@ -491,11 +502,21 @@ fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(
 
     Box::new(move |value: &str| {
         for (button, choice) in &buttons {
-            if *choice == value && !button.is_active() {
+            if choice == value && !button.is_active() {
                 button.set_active(true);
             }
         }
     })
+}
+
+/// A card's name and description for screen readers, which otherwise hear
+/// a toggle button with no name: GTK doesn't name a button by the labels
+/// in a box inside it.
+fn name_for_screen_readers(button: &gtk::ToggleButton, title: &str, detail: Option<&str>) {
+    button.update_property(&[gtk::accessible::Property::Label(title)]);
+    if let Some(detail) = detail {
+        button.update_property(&[gtk::accessible::Property::Description(detail)]);
+    }
 }
 
 /// Keeps the choices that `refresh` updates showing `key`'s value whenever
@@ -540,6 +561,7 @@ fn icon_choices(content: &gtk::Box, current: &str, pick: impl Fn(&str) + 'static
             .css_classes(["patrone-choice", "patrone-icon-choice"])
             .active(value == current)
             .build();
+        name_for_screen_readers(&button, title, None);
         if let Some((first, _)) = buttons.first() {
             button.set_group(Some(first));
         }
@@ -578,11 +600,8 @@ fn taskbar_page() -> gtk::ScrolledWindow {
     section_title(&content, "Size");
     let items = SIZES
         .iter()
-        .map(|&(value, title, detail, bar, icon)| Choice {
-            value,
-            title,
-            detail,
-            draw: drawing(move |cr, w, h| preview::taskbar_size(cr, w, h, bar, icon)),
+        .map(|&(value, title, detail, bar, icon)| {
+            Choice::new(value, title, detail, drawing(move |cr, w, h| preview::taskbar_size(cr, w, h, bar, icon)))
         })
         .collect();
     let refresh = choices(&content, items, &taskbar.string("size"), setter(&taskbar, "size"));
@@ -591,11 +610,8 @@ fn taskbar_page() -> gtk::ScrolledWindow {
     section_title(&content, "Layout");
     let items = LAYOUTS
         .iter()
-        .map(|&(value, title, detail)| Choice {
-            value,
-            title,
-            detail,
-            draw: drawing(move |cr, w, h| preview::taskbar_layout(cr, w, h, value)),
+        .map(|&(value, title, detail)| {
+            Choice::new(value, title, detail, drawing(move |cr, w, h| preview::taskbar_layout(cr, w, h, value)))
         })
         .collect();
     let refresh = choices(&content, items, &taskbar.string("layout"), setter(&taskbar, "layout"));
@@ -610,13 +626,13 @@ fn taskbar_page() -> gtk::ScrolledWindow {
     let has_key = |key: &str| taskbar.settings_schema().is_some_and(|schema| schema.has_key(key));
     if has_key("color") {
         section_title(&content, "Color");
+        // The taskbar takes the wallpaper's color only in these themes
+        // (tint.js), so in the others a pick seemed to do nothing
+        note(&content, "In the Patrone, Modern and Studio themes. Classic and Sapphire keep their own colors.");
         let items = COLORS
             .iter()
-            .map(|&(value, title, detail)| Choice {
-                value,
-                title,
-                detail,
-                draw: drawing(move |cr, w, h| preview::taskbar_color(cr, w, h, value)),
+            .map(|&(value, title, detail)| {
+                Choice::new(value, title, detail, drawing(move |cr, w, h| preview::taskbar_color(cr, w, h, value)))
             })
             .collect();
         let refresh = choices(&content, items, &taskbar.string("color"), setter(&taskbar, "color"));
@@ -626,11 +642,8 @@ fn taskbar_page() -> gtk::ScrolledWindow {
         section_title(&content, "Pin icons");
         let items = PIN_ICONS
             .iter()
-            .map(|&(value, title, detail)| Choice {
-                value,
-                title,
-                detail,
-                draw: drawing(move |cr, w, h| preview::pin_icons(cr, w, h, value)),
+            .map(|&(value, title, detail)| {
+                Choice::new(value, title, detail, drawing(move |cr, w, h| preview::pin_icons(cr, w, h, value)))
             })
             .collect();
         let refresh = choices(&content, items, &taskbar.string("pin-icons"), setter(&taskbar, "pin-icons"));
@@ -676,11 +689,8 @@ fn desktop_page() -> gtk::ScrolledWindow {
         );
         let items = DESKTOP_FILES
             .iter()
-            .map(|&(value, title, detail)| Choice {
-                value,
-                title,
-                detail,
-                draw: drawing(move |cr, w, h| preview::desktop_files(cr, w, h, value)),
+            .map(|&(value, title, detail)| {
+                Choice::new(value, title, detail, drawing(move |cr, w, h| preview::desktop_files(cr, w, h, value)))
             })
             .collect();
         yes_no_choices(&content, &taskbar, "desktop-bubble", items, "bubble", "desktop");
@@ -689,11 +699,8 @@ fn desktop_page() -> gtk::ScrolledWindow {
         section_title(&content, "Recycle Bin");
         let items = RECYCLE_BIN
             .iter()
-            .map(|&(value, title, detail)| Choice {
-                value,
-                title,
-                detail,
-                draw: drawing(move |cr, w, h| preview::recycle_bin(cr, w, h, value)),
+            .map(|&(value, title, detail)| {
+                Choice::new(value, title, detail, drawing(move |cr, w, h| preview::recycle_bin(cr, w, h, value)))
             })
             .collect();
         yes_no_choices(&content, &taskbar, "show-recycle-bin", items, "shown", "hidden");
@@ -707,11 +714,8 @@ fn desktop_page() -> gtk::ScrolledWindow {
         );
         let items = SIGN_IN_TERMINAL
             .iter()
-            .map(|&(value, title, detail)| Choice {
-                value,
-                title,
-                detail,
-                draw: drawing(move |cr, w, h| preview::sign_in_terminal(cr, w, h, value)),
+            .map(|&(value, title, detail)| {
+                Choice::new(value, title, detail, drawing(move |cr, w, h| preview::sign_in_terminal(cr, w, h, value)))
             })
             .collect();
         let refresh = choices(&content, items, &taskbar.string("sign-in-terminal"), setter(&taskbar, "sign-in-terminal"));
@@ -743,11 +747,8 @@ fn buttons_page() -> gtk::ScrolledWindow {
     };
 
     section_title(&content, "Position");
-    let position = |value: &'static str, title: &'static str, detail: &'static str, layout: Layout| Choice {
-        value,
-        title,
-        detail,
-        draw: drawing(move |cr, w, h| preview::buttons(cr, w, h, layout)),
+    let position = |value: &'static str, title: &'static str, detail: &'static str, layout: Layout| {
+        Choice::new(value, title, detail, drawing(move |cr, w, h| preview::buttons(cr, w, h, layout)))
     };
     let current = side_of(&window_manager.string("button-layout"));
     let target = window_manager.clone();
@@ -780,11 +781,8 @@ fn buttons_page() -> gtk::ScrolledWindow {
     );
     let items = theme::BUTTON_STYLES
         .iter()
-        .map(|&(value, title, detail)| Choice {
-            value,
-            title,
-            detail,
-            draw: drawing(move |cr, w, h| preview::button_style(cr, w, h, value)),
+        .map(|&(value, title, detail)| {
+            Choice::new(value, title, detail, drawing(move |cr, w, h| preview::button_style(cr, w, h, value)))
         })
         .collect();
     let target = desktop.clone();
@@ -815,11 +813,8 @@ fn theme_page() -> gtk::ScrolledWindow {
     section_title(&content, "Themes");
     let items = theme::THEMES
         .iter()
-        .map(|&(value, title, detail)| Choice {
-            value,
-            title,
-            detail,
-            draw: drawing(move |cr, w, h| preview::theme(cr, w, h, value)),
+        .map(|&(value, title, detail)| {
+            Choice::new(value, title, detail, drawing(move |cr, w, h| preview::theme(cr, w, h, value)))
         })
         .collect();
     let current = desktop.string("theme");
@@ -918,6 +913,7 @@ fn font_choices(content: &gtk::Box, current: &str, installed: &[String], pick: i
             .active(family == current)
             .sensitive(is_installed)
             .build();
+        name_for_screen_readers(&button, title, Some(if is_installed { detail } else { missing.as_str() }));
         if let Some((first, _)) = buttons.first() {
             button.set_group(Some(first));
         }
@@ -941,6 +937,108 @@ fn font_choices(content: &gtk::Box, current: &str, installed: &[String], pick: i
     })
 }
 
+/// The drawings inside `widget`, to redraw.
+fn drawings_in(widget: &gtk::Widget) -> Vec<gtk::DrawingArea> {
+    let mut found = Vec::new();
+    let mut child = widget.first_child();
+    while let Some(current) = child {
+        match current.downcast_ref::<gtk::DrawingArea>() {
+            Some(drawing) => found.push(drawing.clone()),
+            None => found.extend(drawings_in(&current)),
+        }
+        child = current.next_sibling();
+    }
+    found
+}
+
+fn pointer_page() -> gtk::ScrolledWindow {
+    let (scrolled, content) = page(
+        "Mouse pointer",
+        "The pointer's look and size. Both change at once, on the desktop and in apps.",
+    );
+    let Some(interface) = settings(font::INTERFACE_SCHEMA) else {
+        note(&content, "GNOME's interface settings aren't installed.");
+        return scrolled;
+    };
+    let themes = Rc::new(cursor::installed());
+
+    section_title(&content, "Pointer");
+    note(
+        &content,
+        "The cursor themes installed, for everyone or just for you (in ~/.local/share/icons). \
+         Themes made only for older X11 apps aren't listed: GNOME can't show their pointers.",
+    );
+    if themes.is_empty() {
+        note(&content, "No cursor themes are installed: install the adwaita-icon-theme package.");
+    }
+    let items = themes
+        .iter()
+        .enumerate()
+        .map(|(index, theme)| {
+            let themes = themes.clone();
+            Choice::new(
+                &theme.name,
+                &theme.title,
+                &theme.detail,
+                drawing(move |cr, w, h| preview::pointer_theme(cr, w, h, &themes[index].cursors)),
+            )
+        })
+        .collect();
+    let target = interface.clone();
+    let refresh_themes = choices(&content, items, &interface.string(cursor::THEME_KEY), move |name| {
+        if target.string(cursor::THEME_KEY) != name {
+            let _ = target.set_string(cursor::THEME_KEY, name);
+        }
+    });
+
+    section_title(&content, "Size");
+    // The arrow of the theme that's set, for the sizes' pictures, whether
+    // or not it's one of those listed
+    let arrow = Rc::new(RefCell::new(cursor::load(
+        &cursor::search_dirs(),
+        &interface.string(cursor::THEME_KEY),
+        cursor::SHOWN[0],
+    )));
+    let items = cursor::SIZES
+        .iter()
+        .map(|&(size, title, detail)| {
+            let arrow = arrow.clone();
+            Choice::new(
+                size.to_string(),
+                title,
+                detail,
+                drawing(move |cr, w, h| preview::pointer_size(cr, w, h, arrow.borrow().as_ref(), f64::from(size))),
+            )
+        })
+        .collect();
+    let target = interface.clone();
+    let refresh_sizes = choices(&content, items, &interface.int(cursor::SIZE_KEY).to_string(), move |size| {
+        let size: i32 = size.parse().unwrap_or(24);
+        if target.int(cursor::SIZE_KEY) != size {
+            let _ = target.set_int(cursor::SIZE_KEY, size);
+        }
+    });
+    let size_pictures = content.last_child().map(|flow| drawings_in(&flow)).unwrap_or_default();
+    note(&content, "GNOME Settings' Accessibility page has the same sizes.");
+
+    // The setting changed, here or elsewhere: show it picked, redraw the
+    // sizes in the new theme, and show the pointer over this window in it
+    let page = content.clone();
+    interface.connect_changed(Some(cursor::THEME_KEY), move |settings, key| {
+        let name = settings.string(key);
+        refresh_themes(&name);
+        *arrow.borrow_mut() = cursor::load(&cursor::search_dirs(), &name, cursor::SHOWN[0]);
+        size_pictures.iter().for_each(|picture| picture.queue_draw());
+        cursor::refresh_pointer(&page);
+    });
+    let page = content.clone();
+    interface.connect_changed(Some(cursor::SIZE_KEY), move |settings, key| {
+        refresh_sizes(&settings.int(key).to_string());
+        cursor::refresh_pointer(&page);
+    });
+    scrolled
+}
+
 #[cfg(test)]
 mod tests {
     use super::side_of;
@@ -960,6 +1058,7 @@ mod tests {
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page", "theme"])).as_deref(), Some("theme"));
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page=buttons"])).as_deref(), Some("buttons"));
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page", "desktop"])).as_deref(), Some("desktop"));
+        assert_eq!(super::requested_page(&args(&["patrone-settings", "--page=pointer"])).as_deref(), Some("pointer"));
         assert_eq!(super::requested_page(&args(&["patrone-settings"])), None);
     }
 
