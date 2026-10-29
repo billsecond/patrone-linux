@@ -24,7 +24,8 @@ Comment: The PatroneOS logo and the Neon Horizon wallpapers (02 and 03), and
  recording that they were generated with ChatGPT (gpt-image) on 2026-10-29.
  So was the logo's first design: wallpaper 01 (patrone-back-01.png, whose
  manifest records 2026-10-25) and the concept it shows
- (branding/concepts/logo-concept-01.webp). William Daugherty measured the
+ (branding/concepts/logo-concept-01.webp), both now in the source's git
+ history only, as they show the old name. William Daugherty measured the
  logo from the pictures and drew it again as vector shapes in code
  (branding/tools/patrone_logo.py), from which every logo file here is drawn;
  the wallpapers are the pictures enlarged, with the logo painted out and

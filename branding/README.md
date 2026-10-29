@@ -4,8 +4,8 @@
 
 ![The PatroneOS logo](logos/patrone-logo-stacked.png)
 
-The PatroneOS logo (the user, 2026-10-29: "change the name from Patrone
-LInux to PatroneOS. Use the new branding"): a slanted geometric P in
+The PatroneOS logo (the user, 2026-10-29, naming the system PatroneOS:
+"Use the new branding"): a slanted geometric P in
 Patrone's blues over a wide PATRONEOS wordmark, PATRONE in white (navy on
 light backgrounds) and OS in Patrone Blue. The P is a band across the top
 that folds down round the bowl and tapers to a point, the bowl's lower half,
@@ -15,8 +15,8 @@ squared capitals with rounded corners; the A has no crossbar, and P, R and
 E have a notch under the top bar that echoes the slit in the P.
 
 It comes from the user's two Neon Horizon pictures (wallpapers 02 and 03,
-below), which show it over a scene, and replaces "PATRONE" over a ruled
-"LINUX". The pictures' blues are a little more saturated, with a touch of
+below), which show it over a scene, and replaces the first logo's
+wordmark. The pictures' blues are a little more saturated, with a touch of
 cyan; the logo keeps Patrone's palette (below), which the user kept for the
 new branding ("Keep the colors the same").
 
@@ -61,9 +61,11 @@ generator. Both Neon Horizon pictures (`wallpapers/patrone-back-02.png` and
 C2PA manifests, signed by OpenAI: generated with ChatGPT (`gpt-image`) on
 2026-10-29 at 12:45 and 12:44 UTC. The first design was made the same way:
 wallpaper 01's original (`wallpapers/patrone-back-01.png`) carries a
-manifest from 2026-10-25, and the concept it shows
-(`concepts/logo-concept-01.webp`, "PATRONE" over "LINUX") has no metadata
-left (WebP drops it) but was made the same day.
+manifest from 2026-10-25, and the logo concept it shows
+(`concepts/logo-concept-01.webp`) has no metadata left (WebP drops it) but
+was made the same day. Both show the old name, so they left the tree on
+2026-10-29 (the user: "remove anything that says" it); they're in its git
+history, manifest and all.
 
 What Patrone did on top: the vector logo, measured from the pictures and
 drawn again as shapes in code; every logo file drawn from it; and the
@@ -304,15 +306,15 @@ version are one wallpaper there that follows the light or dark style.
 
 ### Wallpaper 01, retired
 
-Wallpaper 01 (`wallpapers/patrone-back-01.png`, kept for its provenance)
-showed "PATRONE" over "LINUX". Its family is retired rather than redrawn:
+Wallpaper 01 showed the old name in its logo. Its family is retired rather
+than redrawn, and its original is in git history (above):
 with the logo painted out it was another dark, centred scene beside Neon
 Horizon's, and its 66 MB of files went towards the 8K ones. The package
 still has its file names, as links to Neon Horizon's matching wallpapers
 (`patrone-back-01-8k.png` to `patrone-back-02-dark.png`), so a desktop set
-to one of them keeps a wallpaper. To bring it back, give `PICTURES` in
-`tools/make_wallpapers.py` an entry for it (where its logo, rules and
-corner details are) and variants that use it.
+to one of them keeps a wallpaper. To bring it back, restore its original from git
+history and give `PICTURES` in `tools/make_wallpapers.py` an entry for it
+(where its logo, rules and corner details are) and variants that use it.
 
 ## Generated wallpapers
 
