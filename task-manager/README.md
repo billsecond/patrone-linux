@@ -28,10 +28,10 @@ it first (`TASK_MANAGERS` in the taskbar's `taskbar.js`).
 | Details | Every process, kernel threads too: name, PID, status, account, CPU, private memory, threads, command line | `/proc` |
 | Services | System services or your own (a list to choose from): name, main PID, description, status, and how each starts (Automatically, Manually, When needed, Never) | systemd's `ListUnitsByPatterns` and `ListUnitFilesByPatterns` over D-Bus |
 
-Commands: Run new task (a program, folder, document or web address,
-optionally as an administrator through pkexec), End task, End process tree,
-Set priority (Details), Open file location (selects the program's file in
-File Manager through `org.freedesktop.FileManager1`), Go to details,
+Commands: Run a program (a program or command, or a folder, file or web
+address, optionally as an administrator through pkexec), End, End process
+and its children, Set priority (Details), Show in File Manager (selects the
+program's file through `org.freedesktop.FileManager1`), Show details,
 Properties, and Start, Stop and Restart for services. The search box in the
 title bar filters every list by name, command line or PID. The menu sets the
 update speed (twice a second, once a second, every 4 seconds, paused). The
@@ -92,7 +92,7 @@ desktop starts an app and then moves it into its scope.
 
 ## Ending tasks
 
-End task on an app ends it at once, as people expect: each process gets
+End on an app ends it at once, as people expect: each process gets
 SIGTERM, and SIGKILL three seconds later if it's still running (checked by
 PID and start time, so a new process that got the same PID is left alone).
 Anything else (a background or system process, or any process tree) asks

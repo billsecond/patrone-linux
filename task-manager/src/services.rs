@@ -156,7 +156,7 @@ impl Page {
         section.append(Some("Restart"), Some("win.service::RestartUnit"));
         menu.append_section(None, &section);
         let more = gio::Menu::new();
-        more.append(Some("Go to details"), Some("win.go-to-details"));
+        more.append(Some("Show details"), Some("win.go-to-details"));
         menu.append_section(None, &more);
         let menu_context = context.clone();
         let popover = table::context_menu(&menu, &page.table.view);

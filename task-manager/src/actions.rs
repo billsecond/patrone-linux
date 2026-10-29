@@ -16,7 +16,7 @@ use crate::{Context, format, model, procs, sample};
 /// How long ended processes get to close before they're stopped.
 const GRACE_SECONDS: u32 = 3;
 
-/// "End task" and "End process tree". Apps end at once, as people expect;
+/// "End" and "End process and its children". Apps end at once, as people expect;
 /// anything else asks first, since ending it can upset the desktop.
 pub fn end_task(context: &Rc<Context>, row: &Row, tree: bool) {
     let mut targets = row.processes();
@@ -47,7 +47,7 @@ pub fn end_task(context: &Rc<Context>, row: &Row, tree: bool) {
                 "This ends {name} and every process it started, {} in all. Anything they haven't saved is lost, and ending a background or system process can stop the desktop or the computer from working properly.",
                 targets.len()
             ),
-            "End process tree",
+            "End them all",
         )
     } else {
         (
@@ -205,7 +205,7 @@ fn program_path(pid: i32, command: &str) -> Option<PathBuf> {
     glib::find_program_in_path(program)
 }
 
-/// "Open file location": shows the program's file in the file manager,
+/// "Show in File Manager": shows the program's file in the file manager,
 /// or opens its folder.
 pub fn open_location(context: &Rc<Context>, row: &Row) {
     let Some(path) = program_path(row.pid(), &row.command()) else {
@@ -390,12 +390,13 @@ pub fn properties(context: &Rc<Context>, row: &Row) {
     window.present();
 }
 
-/// "Run new task": a program, a folder, a file or a web address.
+/// "Run a program": a program or a command, or a folder, a file or a web
+/// address to open.
 pub fn run_new_task(context: &Rc<Context>) {
     let window = gtk::Window::builder()
         .transient_for(&context.window)
         .modal(true)
-        .title("Run new task")
+        .title("Run a program")
         .resizable(false)
         .default_width(460)
         .build();
@@ -406,7 +407,7 @@ pub fn run_new_task(context: &Rc<Context>) {
         .build();
     content.append(
         &gtk::Label::builder()
-            .label("Type the name of a program, folder, document or web address, and it opens.")
+            .label("Type a program's name or a command to run, or a folder, a file or a web address to open.")
             .xalign(0.0)
             .wrap(true)
             .max_width_chars(50)
@@ -417,7 +418,7 @@ pub fn run_new_task(context: &Rc<Context>) {
         .activates_default(true)
         .build();
     let line = gtk::Box::new(gtk::Orientation::Horizontal, 10);
-    line.append(&gtk::Label::new(Some("Open:")));
+    line.append(&gtk::Label::new(Some("Run:")));
     line.append(&entry);
     content.append(&line);
     let admin = gtk::CheckButton::with_label("Run it as an administrator");

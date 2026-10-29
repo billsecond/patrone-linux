@@ -308,7 +308,7 @@ Waiting on the user:
 - **Install Patrone Task Manager 0.2.0** (section 15). The user has 0.1.0
   and `patrone-desktop` 0.1.2 installed already (Resources is gone):
   `sudo apt install ~/src/patrone-linux/out/patrone-task-manager_0.2.0_amd64.deb`,
-  then close Task Manager so the new version starts. Try Ctrl+Shift+Esc, the taskbar's right-click "Task Manager", End task
+  then close Task Manager so the new version starts. Try Ctrl+Shift+Esc, the taskbar's right-click "Task Manager", End
   on an app, and Start or Stop on a system service (asks for the password).
   On the Users page, select Base and choose Sign out: the password dialog
   should appear (cancel it, or give the password to really sign Base out).
