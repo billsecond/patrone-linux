@@ -76,7 +76,7 @@
       <description>
         "wallpaper": the wallpaper's own hue, dark or light with the style,
         in the Patrone, Modern and Studio themes. "theme": the theme's own
-        grey. Classic and Royal always keep their own colors. Patrone
+        grey. Classic and Sapphire ("royal") always keep their own colors. Patrone
         Settings sets it.
       </description>
     </key>
