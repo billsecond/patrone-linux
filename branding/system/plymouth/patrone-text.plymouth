@@ -1,10 +1,10 @@
 [Plymouth Theme]
 Name=Patrone Text
-Description=Text mode boot screen for Patrone Linux, when graphics aren't available
+Description=Text mode boot screen for PatroneOS, when graphics aren't available
 ModuleName=ubuntu-text
 
 [ubuntu-text]
-title=Patrone Linux 0.1
+title=PatroneOS 0.1
 black=0x030303
 white=0xffffff
 brown=0x288bfa
