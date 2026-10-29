@@ -2320,16 +2320,19 @@ rebuild; recommendations first):
    Patrone Software lists snaps first.
 6. **Settings › Desktop** (Ubuntu's page, renamed): its Dock section, for
    the dock Patrone turns off, is hidden while Patrone's taskbar is
-   installed (GNOME Settings `patrone13`, the user's OK, 2026-10-28). Left:
-   "No Ubuntu settings found" in its error state, which shows only without
-   Patrone's taskbar. A patch in the GNOME Settings rebuild.
+   installed (GNOME Settings `patrone13`, the user's OK, 2026-10-28). Its error
+   state (shown only without Patrone's taskbar) said "No Ubuntu settings
+   found" and asked for a bug report in Launchpad: Patrone's words since
+   GNOME Settings `patrone15` (`gnome-settings/README.md`).
 7. **Fonts:** the monospace default is Ubuntu Sans Mono (Ubuntu's setting,
    which `90_patrone` keeps), and `fonts-ubuntu` puts four Ubuntu families
    in every font list. The user's call which monospace font is Patrone's
    (JetBrains Mono is installed already, for the terminal).
-8. **Boot names:** GRUB's menu says "Patrone Linux GNU/Linux" (Ubuntu's
-   `10_linux` adds "GNU/Linux" to any name but Ubuntu's: a one-line patch,
-   or a diverted copy). The firmware's boot entry is already Patrone's: the
+8. **Boot names:** **done** (`patrone-branding` 0.1.22): GRUB's menu says
+   "Patrone Linux", not "Patrone Linux GNU/Linux". GRUB's `10_linux` and
+   `10_linux_zfs`, which add "GNU/Linux" to any name but Ubuntu's, are moved
+   aside and run by Patrone's scripts without it
+   (`branding/system/grub/grub-script`). The firmware's boot entry is already Patrone's: the
    installer named it "Patrone Linux", in `\EFI\patrone\` (Hyper-V's boot
    order after the install of 2026-10-27). Only shim's fallback list
    (`BOOTX64.CSV`, "This is the boot entry for ubuntu") still says ubuntu;
@@ -2356,16 +2359,17 @@ rebuild; recommendations first):
     (`https://www.ubuntu.com/getubuntu/releasenotes?os=ubuntu&ver=0.1`,
     `pages/welcome/gis-welcome-page.c`), and os-release's home, support and
     bug links (Settings › About) are this repository, which users couldn't
-    open while it was private (it's public since 2026-10-28). Recommended:
-    hide the release notes link until Patrone has release notes, and point
-    os-release at Patrone's website once it's public.
+    open while it was private (it's public since 2026-10-28). The release
+    notes link is hidden until Patrone has release notes (first-login setup
+    `patrone4`). Left: point os-release at Patrone's website.
 13. **First-login setup runs under the taskbar:** its last page's "Open
     Patrone Software" button, and "You can change this later in the
     Settings app" on the others, are hidden behind the taskbar at the
     bottom of the screen. The setup window should keep clear of it (or the
     taskbar stay out of the first login).
 14. **Smaller:** Language Support's tooltip "The recommended value for
-    Ubuntu is IBus" (hide its launcher or patch it); translations (`.mo`
+    Ubuntu is IBus" is **done**: Patrone builds Language Support with its
+    own words (`language-selector/`). Translations (`.mo`
     files, en_GB and others) carry their own Ubuntu strings, not searched;
     the kernel says `#30-Ubuntu` in `uname -a`, which is accurate (it's
     Ubuntu's kernel) and stays.
