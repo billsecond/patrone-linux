@@ -1,3 +1,12 @@
+patrone-remote-desktop (0.5.3) resolute; urgency=medium
+
+  * The README describes the package in Patrone's own words instead of
+    calling it "Windows-style", and it and the package description say
+    that Windows and Hyper-V are Microsoft's trademarks (the compliance
+    review, item 15).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 07:00:00 -0500
+
 patrone-remote-desktop (0.5.2) resolute; urgency=medium
 
   * Sound in Hyper-V's enhanced session. GNOME Remote Desktop sends its
