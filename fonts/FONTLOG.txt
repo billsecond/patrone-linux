@@ -1,101 +1,101 @@
 FONTLOG for Patrone Sans
 ========================
 
-This file records how Patrone Sans differs from the font it comes from, as
-the SIL Open Font License's FAQ asks of a derivative font.
+This file records how Patrone Sans was made and how it changes, as the SIL
+Open Font License's FAQ suggests.
 
 
 Basic font information
 ----------------------
 
-Patrone Sans is the interface font of Patrone Linux. It is Noto Sans,
-version 2.015 (the NotoSans-v2.015 tag of
-https://github.com/notofonts/latin-greek-cyrillic, commit c4a321e1), with
-a few changes that make letters and figures easier to tell apart on screen.
-It keeps Noto Sans's look, spacing, kerning, vertical metrics, features and
-language support (Latin, Greek and Cyrillic).
+Patrone Sans is the interface typeface of PatroneOS: a humanist sans for
+screens, with open apertures, a large x-height and a little contrast. It
+comes as one variable font with one axis, weight, from 300 to 900, and six
+named weights: Light, Regular, Medium, SemiBold, Bold and Black.
 
-It comes as two variable fonts with one axis, weight, from 100 (Thin) to
-900 (Black), with named instances at every hundred:
+    PatroneSans[wght].ttf
 
-    PatroneSans[wght].ttf          upright
-    PatroneSans-Italic[wght].ttf   italic
+It covers Basic Latin, Latin-1 and Latin Extended-A, Romanian's letters
+with a comma below, and the punctuation and signs the desktop uses: 404
+glyphs. Greek, Cyrillic and other scripts come from Noto Sans, which the
+system's font settings put after it.
 
-Noto Sans was designed by the Monotype design team and Irene Vlachou.
-"Noto" is a trademark of Google LLC; Patrone Sans has a name of its own,
-as a modified version should.
+License: SIL Open Font License, Version 1.1 (OFL.txt), with no Reserved
+Font Name.
 
-License: SIL Open Font License, Version 1.1 (OFL.txt). Noto Sans's
-license names no Reserved Font Name.
+
+How it was made, and with AI help
+---------------------------------
+
+Patrone Sans 2 was drawn from scratch with AI help: an AI coding
+assistant wrote the drawing code in source/ to William Daugherty's brief
+(a humanist sans like the interface fonts PatroneOS has used, six
+weights, a plain zero, I, l and 1 easy to tell apart, Patrone Sans 1's
+line spacing), and he directed the design and accepted it, as with
+PatroneOS's logo (docs/COMPLIANCE.md, item 9). Material an AI generates
+without enough human authorship may not be protected by copyright, so the
+font is offered under the OFL only as far as anyone holds copyright in it.
+
+No outline, point, measurement or metric was traced, copied, converted,
+interpolated or taken from Noto Sans, Segoe UI or any other font, and no
+image model was used. Every letter is a skeleton (straight lines and
+curves through points chosen for that letter, written as code) drawn with
+an oval pen, wider than it is tall, whose size each point can scale; the
+engine (source/engine.py) outlines each stroke, fitting both of its sides
+with curves, and the variable font keeps the strokes overlapping where they
+meet. The numbers the letters are drawn with (stem weights, x-height,
+counters, sidebearings) were chosen for this font. The one thing kept from
+Patrone Sans 1 is its line spacing (ascender 1069, descender 293, no line
+gap), so that switching fonts moves nothing on screen.
+
+The shapes avoid the distinctive letters of other interface fonts, Segoe
+UI's above all: its name is Microsoft's trademark, and some countries
+protect typeface designs.
 
 
 ChangeLog
 ---------
 
+2026-10-29 (William Daugherty) Patrone Sans 2.000
+
+- A new typeface, drawn from scratch (see above), in place of Patrone
+  Sans 1, which was Noto Sans 2.015 with a tailed l and a slashed zero.
+  Nothing of Noto Sans is left in it.
+
+- Six weights in one variable font: Light, Regular, Medium, SemiBold,
+  Bold and Black (300 to 900). Patrone Sans 1's thin and extra light
+  weights and its italic are gone: apps that ask for an italic get a
+  slanted Patrone Sans from fontconfig.
+
+- A plain zero, told from O by its shape: a narrow oval, where O is a wide
+  round, about half as wide again. Patrone Sans 1's zero had a slash.
+
+- I, l, 1 and | are four different shapes: l has a tail, I is a plain
+  stroke shorter than l, 1 has a flag and a foot, and | runs from below the
+  baseline to above the capitals. The foot also fills the tabular 1's
+  width, so "10" doesn't gape.
+
+- Latin only: Basic Latin, Latin-1, Latin Extended-A, Ș ș Ț ț, and the
+  desktop's punctuation and signs. Greek and Cyrillic, which Patrone Sans 1
+  had from Noto Sans, now come from Noto Sans itself.
+
+- Tabular figures by default, as before; no proportional or oldstyle
+  figures, superscripts beyond ¹ ² ³, or other OpenType features beyond
+  kerning, accents (mark and mkmk), capitals' flatter accents and dotless
+  i and j under accents (ccmp).
+
+- No hinting, as before, and a gasp table asking for smoothing at every
+  size; a prep program sets dropout control only, for rasterizers that run
+  TrueType programs. GNOME's default hinting ("slight") hints every
+  TrueType font with FreeType's autohinter.
+
 2026-10-26 (William Daugherty) Patrone Sans 1.000
 
-- l has a tail. In Noto Sans, l, capital I and the vertical bar are all
-  plain upright strokes, and 1 differs only by its small flag, so "Il1|"
-  and words like "Illinois" can be misread, worst of all in passwords,
-  keys and file names, where no context helps. A tailed l is the usual
-  answer in fonts drawn for legibility: DIN 1450, the German standard on
-  legible lettering, asks that easily confused characters such as I, l
-  and 1 be made distinct, and Source Sans, Fira Sans, IBM Plex Sans and
-  Atkinson Hyperlegible all give l a tail. The tail is Noto Sans's own: it is
-  the foot of Noto Sans's t, taken from each master, set on l's own stem
-  and made 62% as long, since l has no crossbar to balance it. l is wider
-  by its tail (258 to 290 units in the regular weight), and glyphs made
-  from l (ľ, ļ, ŀ, ĺ, ł, the ﬂ ligature, the lj digraph and the like) are
-  wider by the same amount. Capital I stays as it was: with l tailed, the
-  three are distinct, and serifs on I would change the font's look the
-  most of any change, in every capitalized word.
-
-- 0 has a slash. Noto Sans's zero is only a little narrower than its O,
-  which is not enough at small sizes, in serial numbers, codes and times.
-  The slash is the one Noto Sans already has for its slashed zero (the
-  "zero" feature); it is now the default, for the tabular figures (the
-  default ones) and the proportional ones. The slash stays inside the
-  zero's outline, so it isn't mistaken for Ø, whose stroke crosses it.
-  Oldstyle figures, superscripts, subscripts and fractions keep the plain
-  zero: they're small, and a slash in them is more smudge than help.
-
-- One axis, weight. Noto Sans's width axis (condensed to normal) is left
-  out: the desktop uses normal width, and leaving it out makes the font
-  smaller. The weights the desktop uses (regular, medium, semibold and
-  bold) are all there, where Ubuntu's Noto Sans package has only regular
-  and bold.
-
-- Names and notices: the family is Patrone Sans, the vendor ID PTRN, the
-  version 1.000; the copyright keeps Noto's notice and adds one for these
-  changes, and the license fields name the OFL 1.1. Noto's trademark
-  notice is gone, since the font no longer has Noto's name.
-
-- Finishing: a gasp table that asks for smoothing at every size, and no
-  TrueType instructions. GNOME's default font hinting ("slight") makes
-  FreeType hint every TrueType font with its own autohinter, ignoring the
-  font's instructions, so Noto Sans's (made by ttfautohint) do nothing
-  there; without instructions, FreeType's autohinter also hints Patrone
-  Sans at the "full" setting, where a font with instructions would be left
-  to them. (Checked on Ubuntu 26.04: Ubuntu's Noto Sans and a copy of it
-  with its instructions removed draw the same pixels at "slight", and
-  different ones at "full".) The Macintosh copies of some feature names
-  are dropped.
-
-Kept as they are, on purpose: everything else. The x-height (536 of 1000
-units), the open apertures (c, e, s, a) and the spacing were drawn for
-screen text and are already what a UI font wants at 9 to 11 points. The
-vertical metrics (ascender 1069, descender 293, no line gap) are exactly
-Noto Sans's, so switching between the two fonts doesn't move anything on
-screen. Default figures were already tabular (all ten one width, so
-numbers that change, like a clock or a progress count, don't shift), with
-proportional figures in the "pnum" feature.
+- Noto Sans 2.015 with a tailed l and a slashed zero.
 
 
 Acknowledgements
 ----------------
 
-Noto Sans: the Noto Project Authors, the Monotype design team and Irene
-Vlachou (https://github.com/notofonts/latin-greek-cyrillic).
-
-Patrone Sans changes: William Daugherty, for Patrone Linux
-(https://github.com/billsecond/patrone-linux).
+Patrone Sans: William Daugherty, for PatroneOS
+(https://github.com/billsecond/patroneos).

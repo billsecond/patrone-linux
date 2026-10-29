@@ -1,5 +1,4 @@
-Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)
-Copyright 2026 William Daugherty (the Patrone Sans changes)
+Copyright 2026 William Daugherty (https://github.com/billsecond/patroneos)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

@@ -1,119 +1,126 @@
 # Patrone Sans
 
-Patrone's interface typeface: Noto Sans 2.015 with a tailed **l** and a
-slashed **0**, so that I, l, 1, | and O, 0 can't be mistaken for one
-another in passwords, keys, codes and file names. Everything else is Noto
-Sans's: its look, spacing, kerning, line height, features and its Latin,
-Greek and Cyrillic. `FONTLOG.txt` lists each change and why.
+PatroneOS's interface typeface, a humanist sans of its own: open, clear
+letters drawn for screens, in the family of styles Noto Sans and other
+interface fonts belong to, with nothing taken from any of them. Every
+letter is drawn by code in `source/`: a pen stroke along a skeleton,
+outlined. `FONTLOG.txt` says how it was made and why it looks as it does.
 
-![Noto Sans and Patrone Sans at 9, 10 and 11 pt](comparison.png)
+![Patrone Sans 1 and 2 at 9, 10 and 11 pt](comparison.png)
 
 | File | What |
 | --- | --- |
-| `ttf/PatroneSans[wght].ttf` | Upright, a variable font with one axis, weight, 100 to 900, and named instances at every hundred |
-| `ttf/PatroneSans-Italic[wght].ttf` | Italic, the same |
-| `OFL.txt` | The license, SIL Open Font License 1.1, with Noto's copyright and this one |
-| `FONTLOG.txt` | The changes from Noto Sans, and the reasons |
-| `build.sh` | Builds `ttf/` from Noto Sans's sources |
+| `ttf/PatroneSans[wght].ttf` | The font: a variable font with one axis, weight, 300 to 900, and six named weights: Light, Regular, Medium, SemiBold, Bold, Black |
+| `OFL.txt` | The licence, SIL Open Font License 1.1 |
+| `FONTLOG.txt` | How the font was made, what it covers, its changes |
+| `source/` | The drawing: `engine.py` (strokes and their outlines), `glyph.py` (the weights' numbers, spacing), `parts.py` (arches, bowls, diagonals), `lower.py`, `upper.py`, `figures.py`, `punct.py`, `marks.py`, `composites.py` (accented letters), `kerning.py`, and `make_ufos.py`, which writes the UFO sources |
+| `build.sh` | Builds `ttf/` from `source/` |
 | `requirements.txt` | The build tools' versions |
-| `tools/patrone_sans.py` | The changes, made to Noto Sans's masters |
-| `tools/finish.py` | The last step: gasp table, names checked |
+| `tools/finish.py` | The last step: overlap flags, STAT, gasp, names checked |
+| `tools/preview.py` | Draws the masters big, straight from the code, while drawing |
 | `tools/comparison_sheet.py` | Draws `comparison.png` |
-| `tools/proof.py` | Draws text big, to look at letters |
-| `fontbakery-report.md` | fontbakery's report on the fonts in `ttf/` |
+| `tools/proof.py` | Draws text big through Pango, to look at letters |
+| `fontbakery-report.txt` | fontbakery's report on `ttf/` |
 
-The package is `fonts-patrone-sans`
-(`packaging/fonts-patrone-sans`), which installs the fonts in
-`/usr/share/fonts/truetype/patrone-sans/`. Patrone Settings (Theme →
-Font) and GNOME Settings' Patrone page switch the desktop between Noto Sans
-and Patrone Sans.
+The package is `fonts-patrone-sans` (`packaging/fonts-patrone-sans`),
+which installs the font in `/usr/share/fonts/truetype/patrone-sans/`.
+Patrone Settings (Theme → Font) and GNOME Settings' Patrone page switch
+the desktop between Patrone Sans and Noto Sans.
 
-## The changes
+## The design
 
-- **l has a tail**, the foot of Noto Sans's own t, in every weight and in
-  the italic. l gets wider by the tail (258 to 290 units in the regular
-  weight), and so do the letters made from it (ł, ľ, ŀ, ĺ, ļ, ﬂ, lj...).
-- **0 has a slash**, Noto Sans's own (it was the `zero` feature), in the
-  default (tabular) and proportional figures. Superscripts, fractions and
-  oldstyle figures keep the plain zero.
-- **One axis, weight**: Noto Sans's width axis is left out. Every weight is
-  there, medium and semibold too (Ubuntu's Noto Sans package has only
-  regular and bold, so its window titles had to be bold).
-- **Names and notices**: Patrone Sans, version 1.000, vendor PTRN, Noto's
-  copyright kept and its trademark notice dropped (the name isn't Noto).
-- **Hinting**: none in the font, on purpose, and a gasp table asking for
-  smoothing at every size. With GNOME's default hinting ("slight"),
-  FreeType hints every TrueType font with its own autohinter and ignores
-  the font's instructions; checked on the VM, where Ubuntu's Noto Sans
-  and a copy with its instructions removed drew the same pixels at
-  "slight" (and different ones at "full"). With no instructions, FreeType
-  autohints Patrone Sans at "full" too.
+- **Humanist, for screens**: a large x-height (530 of 1000 units, capitals
+  710, ascenders 760), open apertures in a, c, e and s, round dots, and a
+  little contrast: the pen is an oval wider than it is tall, so upright
+  strokes are a little heavier than level ones, and strokes thin where
+  they leave a stem.
+- **Letters that can't be mistaken**: l has a tail, I is a plain stroke
+  shorter than l, and 1 has a flag and a foot, so I, l, 1 and | are four
+  different shapes. The zero is plain, no slash: it's a narrow oval, O a
+  wide round one, about half as wide again.
+- **Six weights** in one variable font, Light (300) to Black (900). Heavy
+  weights widen their letters and tighten their counters, and some letters
+  (s, a, e, ß) change shape a little so their curves stay rounder than the
+  pen.
+- **Figures** are tabular, every one the same width, so clocks and columns
+  of numbers don't shift.
+- **The same line spacing as Patrone Sans 1** (ascender 1069, descender
+  293, no line gap), so switching fonts moves nothing on screen.
 
-Unchanged on purpose: the x-height, apertures and spacing (Noto Sans was
-drawn for screens), the vertical metrics (ascender 1069, descender 293, no
-line gap, exactly Noto Sans's, so switching fonts moves nothing on screen)
-and the figures, which were already tabular by default, with proportional
-ones in `pnum`.
+## What it covers
 
-Noto Sans's license (OFL 1.1) names no Reserved Font Name, so a modified
-version may keep any name but Noto (Google's trademark). Patrone Sans
-stays under the OFL; the fonts can't be sold by themselves.
+404 glyphs: Basic Latin, Latin-1 and Latin Extended-A in full (Western,
+Central and Eastern European languages: Polish, Czech, Slovak, Hungarian,
+Romanian, Croatian, Slovenian, the Baltic languages, Turkish and others),
+Romanian's Ș ș Ț ț with a comma below, and the punctuation and signs
+the desktop uses: dashes, quotes, ellipsis, bullets, ●, ∶ (the clock's
+ratio), arrows, math signs, currency (€ £ ¥ ¢ ¤ ƒ), © ® ™, superscripts and
+fractions. Accents also combine with any letter (mark positioning), and
+capitals take flatter accents.
+
+Not covered, so they come from Noto Sans, which fontconfig puts right after
+Patrone Sans (`branding/system/fontconfig/05-patrone-fonts.conf`): Greek,
+Cyrillic, Vietnamese's extra letters and everything else. No italic either:
+apps that ask for one get a slanted Patrone Sans from fontconfig.
 
 ## Building
 
-On the dev VM (or any Linux with python3, git and curl):
+On the dev VM (or any Linux with python3 and curl):
 
 ```
 fonts/build.sh
 ```
 
-It makes a venv and clones Noto Sans's sources at the `NotoSans-v2.015`
-tag (commit `c4a321e1`) into `~/.cache/patrone-sans` (the first run needs
-the network; no sudo: Ubuntu's python3 has no pip, so pip comes from
-`get-pip.py`), then, for upright and italic:
+It makes a venv in `~/.cache/patrone-sans` (the first run needs the
+network; no sudo), then:
 
-1. `glyphs2ufo` turns the Glyphs sources into UFO masters and a
-   designspace (with Noto's GDEF categories and unexported glyphs, as
-   `fontmake -g` would);
-2. `tools/patrone_sans.py` drops the width axis and its masters, makes the
-   changes in every master (and the intermediate SemiBold masters some
-   glyphs have) and renames the family;
-3. `fontmake` compiles the variable font;
+1. `source/make_ufos.py` draws the three masters (Light, Regular, Black)
+   and writes them as UFO sources with a designspace;
+2. `fontmake` compiles the variable font, the six weights as named
+   instances;
+3. `tools/finish.py` finishes it;
 
-then `gftools gen-stat` writes the STAT table for both,
-`tools/finish.py` finishes them, and fontbakery's universal checks run
-(`--no-check` skips them). It takes about 90 seconds. Dates in the fonts
-come from the sources' commit (`SOURCE_DATE_EPOCH`), so a rebuild gives
-the same bytes: two builds in a row had the same SHA-256.
+and fontbakery's universal checks run (`--no-check` skips them). It takes
+about a minute. Dates in the font come from the last commit to `source/`
+(`SOURCE_DATE_EPOCH`), so a rebuild gives the same bytes.
 
-`ttf/` is kept in the repository, since a package build can't fetch Noto
-Sans's 117 MB of sources or the tools.
+`ttf/` is kept in the repository, since a package build can't fetch the
+tools.
 
-The comparison sheet needs the system's python3 (for PyGObject):
+While drawing, `tools/preview.py` compiles the masters straight from the
+code and draws them with FreeType (it needs freetype-py and Pillow too):
 
 ```
-python3 fonts/tools/comparison_sheet.py comparison.png fonts/ttf/*.ttf
+python3 fonts/tools/preview.py proof.png --big "aegs Rk" --text "minimum handgloves"
+```
+
+The comparison sheet needs the system's python3 (PyGObject and
+fontTools), with Patrone Sans 1 installed:
+
+```
+python3 fonts/tools/comparison_sheet.py comparison.png fonts/ttf/PatroneSans[wght].ttf
 ```
 
 ## What was checked
 
-- **fontbakery 1.1.0** (`check-universal`): no errors, 5 fails, 13 warnings
-  (`fontbakery-report.md`). Unmodified Noto Sans 2.015, built from the same
-  sources with `fontmake -g`, has every one of them too (and more): the
-  case mapping of a few letters, a zero-width base character (U+2E3C),
-  `smart_dropout` (which is about Windows; Patrone Sans has no
-  instructions on purpose, see above), overlapping segments in three
-  Cyrillic and Latin glyphs, unreachable glyphs and long glyph names.
-- The glyph set and the GDEF classes are exactly Noto Sans 2.015's (3884
-  glyphs upright, 3895 italic).
-- The vertical metrics are exactly Ubuntu's Noto Sans's (2.004).
-- Looked at, drawn big: l, ł, ŀ, ľ, ļ, ﬂ, lj, 0 and the proportional 0 in
-  light, regular and bold, upright and italic.
-- `comparison.png`: Ubuntu's Noto Sans (2.004, what Patrone has used) and
-  Patrone Sans at 9, 10 and 11 pt, light and dark, through Pango and cairo
-  at 96 dpi with GNOME's defaults. A line of text comes out the same width
-  to within a pixel or so.
+- **fontbakery 1.1.0** (`check-universal`): 104 checks passed, no errors,
+  fails or warnings (`fontbakery-report.txt`).
+- The engine measures how far each outline strays from its stroke and
+  splits the curves that stray more than 1.5 units, in every weight alike;
+  a handful stay within 3 units, in tight turns.
+- `comparison.png`: Patrone Sans 1 and 2 at 9, 10 and 11 pt, the six
+  weights and tabular figures, light and dark, through Pango and cairo at
+  96 dpi with GNOME's defaults, on the dev VM. Lines of text come out
+  about 3% shorter than in Patrone Sans 1.
+- Through Pango (`pango-view`): kerning, accents combined with letters
+  (é, Á with the capital accent, ï and í on a dotless i, ș, ą, Ě), and
+  every sign above.
+- PatroneOS's own apps in a throwaway GNOME Shell on the dev VM, with only
+  the new font as Patrone Sans: the taskbar, Start menu, Patrone
+  Settings, GNOME Settings' Patrone page, File Manager and Task Manager.
+  Every character the apps' sources use is in the font, apart from box
+  drawing, ✗, ⚙ and ㉿ in the shell prompts and READMEs (the terminal's
+  monospace font draws those) and two blocks in a test of Unpack's.
 
-Not checked: Chromium and other apps that read fonts themselves, Windows or
-macOS rendering, and every language Noto Sans covers (the changes touch
-only l and its letters, and 0).
+Not checked: Windows and macOS rendering, every language Latin Extended-A
+serves, and Chromium and other apps that read fonts themselves.

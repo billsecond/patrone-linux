@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
-# Builds Patrone Sans from Noto Sans's own sources, the same bytes every time.
+# Builds Patrone Sans from its drawing code (source/), the same bytes every
+# time.
 #
 #   fonts/build.sh             build ttf/, then check it with fontbakery
 #   fonts/build.sh --no-check  build ttf/ only
 #
-# Needs python3, git and curl, and the network the first time: the tools go
-# into a venv and Noto Sans's sources into a cache folder
-# ($PATRONE_SANS_CACHE, by default ~/.cache/patrone-sans). No sudo.
+# Needs python3 and curl, and the network the first time: the tools go
+# into a venv in a cache folder ($PATRONE_SANS_CACHE, by default
+# ~/.cache/patrone-sans). No sudo.
 set -euo pipefail
 
 here=$(cd "$(dirname "$0")" && pwd)
 cache=${PATRONE_SANS_CACHE:-$HOME/.cache/patrone-sans}
-upstream_url=https://github.com/notofonts/latin-greek-cyrillic
-upstream_tag=NotoSans-v2.015
-upstream_commit=c4a321e123e4d4ff315f57f4e0adf294fe3a95be
 check=1
 [[ ${1:-} == --no-check ]] && check=0
 
@@ -28,17 +26,9 @@ if [[ ! -x $venv/bin/pip ]]; then
 fi
 "$venv/bin/pip" install --quiet -r "$here/requirements.txt"
 
-upstream=$cache/upstream
-if [[ ! -d $upstream/.git ]]; then
-    git clone --quiet --depth 1 --branch "$upstream_tag" "$upstream_url" "$upstream"
-fi
-if [[ $(git -C "$upstream" rev-parse HEAD) != "$upstream_commit" ]]; then
-    echo "$upstream isn't Noto Sans $upstream_tag ($upstream_commit)" >&2
-    exit 1
-fi
-
-# The fonts' dates are the sources' date, so a rebuild gives the same bytes
-SOURCE_DATE_EPOCH=$(git -C "$upstream" log -1 --format=%ct)
+# The font's dates are the drawing code's last commit's, so a rebuild gives
+# the same bytes
+SOURCE_DATE_EPOCH=$(git -C "$here" log -1 --format=%ct -- source tools/finish.py 2>/dev/null || date +%s)
 export SOURCE_DATE_EPOCH
 
 work=$cache/build
@@ -55,31 +45,22 @@ run() {
     fi
 }
 
-for style in NotoSans NotoSans-Italic; do
-    patrone=${style/NotoSans/PatroneSans}
-    echo "$patrone: sources"
-    run "$work/$style-glyphs2ufo.log" \
-        "$venv/bin/glyphs2ufo" -m "$work/$style" \
-        --generate-GDEF --write-public-skip-export-glyphs \
-        "$upstream/sources/$style.glyphspackage"
-    "$venv/bin/python" "$here/tools/patrone_sans.py" "$work/$style/$style.designspace"
-    echo "$patrone: compiling"
-    run "$work/$style-fontmake.log" \
-        "$venv/bin/fontmake" -m "$work/$style/$patrone.designspace" \
-        -o variable --flatten-components \
-        --filter DecomposeTransformedComponentsFilter \
-        --output-path "$here/ttf/$patrone[wght].ttf"
-done
-
-roman="$here/ttf/PatroneSans[wght].ttf"
-italic="$here/ttf/PatroneSans-Italic[wght].ttf"
-run "$work/gen-stat.log" "$venv/bin/gftools" gen-stat --inplace "$roman" "$italic"
-"$venv/bin/python" "$here/tools/finish.py" "$roman" "$italic"
+font="$here/ttf/PatroneSans[wght].ttf"
+echo "Patrone Sans: drawing"
+run "$work/draw.log" "$venv/bin/python" "$here/source/make_ufos.py" "$work/ufo"
+echo "Patrone Sans: compiling"
+run "$work/fontmake.log" \
+    "$venv/bin/fontmake" -m "$work/ufo/PatroneSans.designspace" -o variable \
+    --output-path "$font"
+"$venv/bin/python" "$here/tools/finish.py" "$font"
 
 if (( check )); then
-    echo "Checking with fontbakery (report in $work/fontbakery.md)"
-    "$venv/bin/fontbakery" check-universal --succinct --loglevel WARN \
-        --ghmarkdown "$work/fontbakery.md" "$roman" "$italic" || true
+    # The report is fontbakery's own text (its markdown writer fails on a
+    # font with nothing to warn about)
+    echo "Checking with fontbakery (report in fontbakery-report.txt)"
+    "$venv/bin/fontbakery" check-universal --succinct --no-colors --loglevel INFO "$font" \
+        2> /dev/null | sed "s|$here/||" > "$here/fontbakery-report.txt" || true
+    tail -2 "$here/fontbakery-report.txt"
 fi
 
 cd "$here/ttf"
