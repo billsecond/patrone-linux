@@ -13,6 +13,8 @@ patrone-file-manager (0.3.6) resolute; urgency=medium
     of the yellow folder with a blue band.
   * The package description and the README lead with Patrone's own words:
     a file manager that works the way Windows users expect.
+  * System folder hints call the autostart folders "Startup applications",
+    as Task Manager's page is now named.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 12:00:00 -0500
 

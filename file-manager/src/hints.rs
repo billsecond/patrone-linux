@@ -454,7 +454,7 @@ const SYSTEM: &[(&[&str], Hint)] = &[
     (
         &["/etc/xdg/autostart"],
         hint(
-            "Startup apps (everyone)",
+            "Startup applications (everyone)",
             "Apps that start when anyone signs in.",
             r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp",
         ),
@@ -612,7 +612,7 @@ const PERSONAL: &[(&str, Hint)] = &[
     (
         ".config/autostart",
         hint(
-            "Startup apps",
+            "Startup applications",
             "Apps that start when you sign in.",
             r"shell:startup (Start Menu\Programs\Startup)",
         ),
