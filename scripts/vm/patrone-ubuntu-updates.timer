@@ -1,6 +1,6 @@
 # Runs patrone-ubuntu-updates.service once a day (see there).
 [Unit]
-Description=Rebuild Patrone's builds of Ubuntu's updated packages daily
+Description=Publish what's merged into main, and rebuild Ubuntu's updates to Patrone's builds, daily
 
 [Timer]
 OnCalendar=*-*-* 05:30

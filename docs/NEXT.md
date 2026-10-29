@@ -76,10 +76,10 @@ Done:
   `packaging/publish.sh`. `patrone-desktop` 0.2.1 installs its source, key
   and pins (Patrone's builds of GDM, GNOME Settings and first-login setup
   win over Ubuntu's newer ones), and the dev VM rebuilds those three daily
-  when Ubuntu updates them (`packaging/ubuntu-updates.sh`). Merges aren't
-  published by themselves: publish each one right after merging (section
-  18, `packaging/README.md`, "Publishing"). Section 18 also has the plan for
-  moving to 28.04.
+  when Ubuntu updates them (`packaging/ubuntu-updates.sh`). Merges publish
+  themselves within a day: the VM builds and publishes whatever on `main`
+  has a newer version than the repository (`packaging/main-updates.sh`,
+  section 18). Section 18 also has the plan for moving to 28.04.
 - **Patrone taskbar** (section 7, `shell/gnome/README.md`, package
   `patrone-gnome-taskbar`): a compact Windows 11-style taskbar at the bottom
   in place of GNOME's top bar, with the Start menu (type to search), role
@@ -2508,18 +2508,41 @@ build dependencies; a daily GitHub Actions check in billsecond/patrone-apt
 opens an issue for each package Ubuntu has updated, and closes it when the
 rebuild is published, so one that's behind shows even while the VM is off.
 
-**Merges aren't published by themselves.** Nothing builds `main` and
-publishes it: the daily job covers only Ubuntu's updates to those three
-packages. So after each merge that bumps a package's version, build that
-package from `main` on the VM and publish it by name (`packaging/README.md`,
-"Publishing"; `CLAUDE.md` says so too). By the evening of 2026-10-28 the
-repository had fallen behind `main` this way, `patrone-desktop` 0.2.1
-against main's 0.2.3 and five packages more, and a fresh install found it.
+**At first, merges weren't published by themselves.** Nothing built `main`
+and published it: the daily job covered only Ubuntu's updates to those
+three packages, so each merge that bumped a package's version had to be
+built from `main` on the VM and published by hand. By the evening of
+2026-10-28 the repository had fallen behind `main` this way,
+`patrone-desktop` 0.2.1 against main's 0.2.3 and five packages more, and a
+fresh install found it.
 They're published since, built from a clean checkout of `main` at
 `d0c19ce`: Desktop 0.2.3, Default Apps 0.2.1, File Manager 0.3.3, Hyper-V
 Setup 0.1.1 (new), Remote Desktop 0.5.1 and Branding 0.1.21. PatroneDev's
 apt read them from the live repository as the candidates and downloaded
 them with their sums checked.
+
+**Since 2026-10-29, merges publish themselves**, the user's choice ("Yes,
+daily"). `packaging/main-updates.sh`, run first by the daily job, builds
+each package whose version on `main` is newer than the published one, and a
+new `revision=` of Patrone's GDM, Settings or first-login changes (built
+from the Ubuntu version already published), and publishes only what it has
+just built, only from a checkout of `main` as it is on GitHub. A failure is
+in the journal, fails the run, and becomes an issue in billsecond/patrone-apt
+that closes once that version is published. `patrone-installer` stays by
+hand (an issue says so). Checked on PatroneDev (2026-10-29), against a
+local copy of patrone-apt with a stand-in for `gh`, and a copy of
+patrone-linux whose `main` was this change: three packages made to look
+behind (Default Apps, first-login setup by revision, the installer) were
+built and published as one signed commit, and the installer got its issue,
+in 55 seconds. A version bump with a missing build dependency published
+nothing, opened an issue, failed the run, and Ubuntu's part still ran. Its
+fixed version was published and the issue closed by itself. A changed
+checkout was refused. A Rust package (Unpack) built from a shell without
+cargo on its `PATH`. Then a full run against the live repository and
+GitHub's issues: everything on `main` was published already, so it
+published nothing and changed nothing. Not checked: a run started by the
+timer itself with this change, which happens at the first daily run after
+the merge.
 
 **Checked on PatroneDev** (2026-10-28), first with a local copy of the
 repository served on the VM and a stand-in for `gh`: `publish.sh --all`
