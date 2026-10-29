@@ -9,7 +9,7 @@ any connection does: the computer's network address, and what it asks for.
 
 This is the list for PatroneOS 0.1, based on Ubuntu 26.04.1 LTS. The
 website keeps the same list, with what Ubuntu does differently:
-https://patroneos.com/privacy/patrone-linux
+https://patroneos.com/privacy/patroneos
 
 
 Keeping it up to date

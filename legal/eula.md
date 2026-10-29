@@ -78,7 +78,7 @@ PatroneOS includes encryption software. You're responsible for following the exp
 
 ## 10. Privacy
 
-What the website records when you download, and why, is in our privacy policy: https://patroneos.com/privacy. PatroneOS itself sends nothing to us. It does use services that others run, for updates, apps, the clock and more, described at https://patroneos.com/privacy/patrone-linux.
+What the website records when you download, and why, is in our privacy policy: https://patroneos.com/privacy. PatroneOS itself sends nothing to us. It does use services that others run, for updates, apps, the clock and more, described at https://patroneos.com/privacy/patroneos.
 
 ## 11. Services and apps from others
 
