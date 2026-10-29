@@ -6,7 +6,7 @@
 # Each L10N-DIR has the app's translations as ARB files, English
 # (*_en.arb) the one the others follow. Nearly all of the installer's text
 # names the system as {DISTRO}, the flavor's name; this changes the English
-# messages that say "Ubuntu" themselves to say "Patrone Linux" and drops
+# messages that say "Ubuntu" themselves to say "PatroneOS" and drops
 # their translations, which then show the English. A translation that says
 # "Ubuntu" where the English doesn't is dropped too. Ubuntu Pro's pages,
 # Canonical's product, keep their text: Patrone's installer doesn't show
@@ -16,7 +16,7 @@ import json
 import sys
 from pathlib import Path
 
-# The Applications page's choices promised a web browser; Patrone Linux
+# The Applications page's choices promised a web browser; PatroneOS
 # installs none, and each account picks its first one (browser-chooser/).
 # Only the first is offered (iso/build-iso.sh, install-sources.yaml).
 REWORDED = {
@@ -39,8 +39,8 @@ for directory in map(Path, sys.argv[1:]):
         if key.startswith('@') or not isinstance(value, str):
             continue
         if 'Ubuntu' in value and not is_pro(key, value):
-            english[key] = value.replace('Ubuntu Desktop Installer', 'Patrone Linux Installer') \
-                .replace('Ubuntu', 'Patrone Linux')
+            english[key] = value.replace('Ubuntu Desktop Installer', 'PatroneOS Installer') \
+                .replace('Ubuntu', 'PatroneOS')
             changed.add(key)
     for key, value in REWORDED.items():
         if key in english:

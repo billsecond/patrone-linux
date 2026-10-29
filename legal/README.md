@@ -1,6 +1,6 @@
-# Patrone Linux's licence agreement
+# PatroneOS's licence agreement
 
-`eula.md` is Patrone Linux's End User Licence Agreement: the one text the
+`eula.md` is PatroneOS's End User Licence Agreement: the one text the
 website shows before a download (`src/licence.rs` in the website's private
 repo, `billsecond/patrone-website`, whose build reads this folder) and the installer
 shows on its licence page. The user asked for it on 2026-10-28 ("a strong
@@ -30,9 +30,16 @@ everything:
 Notes for reviewers stay here, not in `eula.md`, because the website shows
 every line of it.
 
+## Versions
+
+- **1.0**, 28 October 2026, when the system was called Patrone Linux:
+  `eula-1.0.md`.
+- **1.1**, 29 October 2026: the same terms, with the system's new name,
+  PatroneOS, and the website's, patroneos.com.
+
 ## What it may and may not say
 
-Almost everything in Patrone Linux is free software under its own licence,
+Almost everything in PatroneOS is free software under its own licence,
 and those licences forbid adding restrictions: GPL-3 section 10 ("You may
 not impose any further restrictions on the exercise of the rights granted
 or affirmed under this License"), GPL-2 section 6, LGPL, MPL-2.0 section

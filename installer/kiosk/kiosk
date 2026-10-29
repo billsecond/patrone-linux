@@ -1,5 +1,5 @@
 #!/bin/sh
-# The "Install Patrone Linux" session's one app (patrone-installer-kiosk
+# The "Install PatroneOS" session's one app (patrone-installer-kiosk
 # .service): the installer, started again whenever it's closed, since there's
 # nothing else on the screen. It restarts the computer itself when it's done.
 while :; do

@@ -1,12 +1,12 @@
 # Patrone's ISO
 
-`build-iso.sh` makes Patrone Linux's installer ISO from Ubuntu's 26.04.1
+`build-iso.sh` makes PatroneOS's installer ISO from Ubuntu's 26.04.1
 desktop ISO (PLAN.md, "Build pipeline": remaster Ubuntu's, keep its
 installer). Build Patrone's packages first (`packaging/build.sh`, into
 `out/`), then, on the dev VM:
 
 ```sh
-sudo iso/build-iso.sh ~/iso/ubuntu-26.04.1-desktop-amd64.iso out /var/tmp/patrone-linux-26.04.1-amd64.iso
+sudo iso/build-iso.sh ~/iso/ubuntu-26.04.1-desktop-amd64.iso out /var/tmp/patroneos-26.04.1-amd64.iso
 ```
 
 Try it in a new Hyper-V VM with `scripts/hyperv/new-test-vm.ps1`.
@@ -22,11 +22,11 @@ software on it, and GPL-2 asks for it from "the same place"
 source beside it:
 
 ```sh
-iso/build-source.sh /var/tmp/patrone-linux-26.04.1-amd64.iso /var/tmp/patrone-linux-26.04.1-source
+iso/build-source.sh /var/tmp/patroneos-26.04.1-amd64.iso /var/tmp/patroneos-26.04.1-source
 ```
 
 `build-iso.sh` writes two files onto the disc for it: `SOURCE.txt` at the
-root, saying where the source is (`https://patronelinux.com/source`, and
+root, saying where the source is (`https://patroneos.com/source`, and
 Patrone's own on GitHub, at the disc's commit), and `casper/sources.manifest`,
 every source package of what's on the disc, name and exact version: what
 Patrone's two layers have installed, the package pool's, and the snaps in
@@ -58,7 +58,7 @@ archive, as on the dev VM, including the rebuilt GDM and GNOME Settings):
   language packs, and the installer puts no language layer on it (the entry
   lists no `preinstalled_langs`); other languages' packs come from the
   network during the install. It's the installer's only choice, named
-  "Patrone Linux"; its ID is Ubuntu's default choice's
+  "PatroneOS"; its ID is Ubuntu's default choice's
   (`ubuntu-desktop-minimal`), which the installer's page of app choices
   knows.
 - **`patrone.live`, the live session**, on `patrone` (casper and the
@@ -140,11 +140,11 @@ which stayed on the disc with what Patrone's layers hid in them: Ubuntu's
 logo pixmaps and the Firefox, App Center, Security Center and Thunderbird
 snaps in their seeds. Now nothing Patrone takes out is on the disc, and
 its list of sources (`casper/sources.manifest`) is only what's on it. The
-boot menu starts with "Install Patrone
-Linux", the installer alone, full screen, then "Try Patrone Linux", the live
+boot menu starts with "Install PatroneOS", the installer alone, full
+screen, then "Try PatroneOS", the live
 desktop (`installer/README.md`, "Installing with nothing else"); the disc's
-name is "Patrone Linux 26.04.1 amd64", `.disk/info` says
-Patrone Linux (the live session's user and computer are named `patrone`
+name is "PatroneOS 26.04.1 amd64", `.disk/info` says
+PatroneOS (the live session's user and computer are named `patrone`
 after it), and `md5sum.txt` (which the live session checks) is brought up to
 date. Ubuntu's `ubuntu` link at the disc's root, back to the disc itself,
 goes: nothing uses it (apt and the installer read `file:///cdrom`), and

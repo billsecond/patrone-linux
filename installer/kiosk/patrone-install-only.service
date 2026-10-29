@@ -1,5 +1,5 @@
 [Unit]
-Description=Log in to Patrone Linux's installer alone ("Install Patrone Linux")
+Description=Log in to PatroneOS's installer alone ("Install PatroneOS")
 ConditionKernelCommandLine=patrone-install-only
 Before=display-manager.service
 Before=accounts-daemon.service
