@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# The fonts are a release of PatroneOS's fonts (release.txt), which
+# packaging/build.sh fetches, checks and unpacks into the source tree before
+# the build (PatroneOS-Fonts-VERSION/), so the build itself runs offline.
+
+pkg = debian/fonts-patroneos
+release = $(wildcard PatroneOS-Fonts-*)
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	test -d "$(release)" || { echo "No PatroneOS-Fonts-* release here: build with packaging/build.sh" >&2; exit 1; }
+	for font in $(release)/PatroneOS-*/*.ttf; do \
+	    install -Dm644 "$$font" "$(pkg)/usr/share/fonts/truetype/patroneos/$$(basename "$$font")"; \
+	done
+	install -Dm644 $(release)/OFL.txt $(pkg)/usr/share/doc/fonts-patroneos/OFL.txt
+	install -Dm644 $(release)/FONTLOG.txt $(pkg)/usr/share/doc/fonts-patroneos/FONTLOG.txt

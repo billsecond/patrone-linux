@@ -1,0 +1,29 @@
+Source: fonts-patroneos
+Section: fonts
+Priority: optional
+Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/billsecond/patroneos-fonts
+Vcs-Git: https://github.com/billsecond/patroneos.git
+
+Package: fonts-patroneos
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Recommends: fonts-noto-core, fonts-liberation, fonts-crosextra-caladea
+Breaks: fonts-patrone-sans (<< 2.0.0)
+Replaces: fonts-patrone-sans (<< 2.0.0)
+Description: PatroneOS's fonts: Sans, Mono, Document, Serif and Classic
+ PatroneOS's own five font families, drawn from scratch: PatroneOS Sans, the
+ desktop's font; PatroneOS Mono, the terminal's, one width throughout, with
+ box-drawing characters; PatroneOS Document, for documents; PatroneOS Serif;
+ and PatroneOS Classic, a plain sans. Each has a tailed l, so I, l, 1 and |
+ all differ, and no slashed zero.
+ .
+ PatroneOS Document and PatroneOS Classic give each letter the width of the
+ fonts documents most often ask for (patrone-branding's fontconfig sends
+ Calibri to Document, and Arial and Helvetica to Classic), so those documents
+ keep their layout. Noto Sans covers the scripts the fonts don't; Liberation
+ Serif and Caladea stand in for the classic serif fonts.

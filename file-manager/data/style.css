@@ -27,8 +27,8 @@ window, tooltip, popover, dnd {
   --shadow: rgba(0, 0, 0, 0.16);
   --danger: #c42b1c;
   --progress: #13a10e;
-  /* The desktop's font (Patrone Settings → Theme → Font: Noto Sans or
-     Patrone Sans), at Windows' 9 points. */
+  /* The desktop's font (Patrone Settings → Theme → Font: PatroneOS Sans or
+     Noto Sans), at 9 points. */
   font-size: 9pt;
   color: var(--text);
 }
@@ -579,7 +579,7 @@ listview.content-view > row:not(:last-child) {
 
 .hint-path {
   color: var(--text-secondary);
-  font-family: "Ubuntu Sans Mono", "Noto Sans Mono", monospace;
+  font-family: "PatroneOS Mono", "Noto Sans Mono", monospace;
   font-size: 9pt;
 }
 
@@ -1054,7 +1054,7 @@ notebook.property-tabs > header tab:checked {
 
 .permission-mode {
   color: var(--text-secondary);
-  font-family: "Ubuntu Sans Mono", "Noto Sans Mono", monospace;
+  font-family: "PatroneOS Mono", "Noto Sans Mono", monospace;
   font-size: 9pt;
 }
 
@@ -1072,7 +1072,7 @@ notebook.property-tabs > header tab:checked {
 }
 
 .command-text {
-  font-family: "Ubuntu Sans Mono", "Noto Sans Mono", monospace;
+  font-family: "PatroneOS Mono", "Noto Sans Mono", monospace;
   font-size: 9pt;
 }
 

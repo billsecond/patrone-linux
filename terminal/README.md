@@ -19,8 +19,8 @@ The default terminal of PatroneOS: GTK4 and VTE, written in Rust.
   it off, for a shell's vi mode or Escape as Alt (Escape then `.`).
 - **Asks before closing** a tab or window where a program other than the
   shell is still running, and names the program.
-- **Patrone Dark:** a near-black theme with the Patrone blues, in JetBrains
-  Mono.
+- **Patrone Dark:** a near-black theme with the Patrone blues, in PatroneOS
+  Mono, PatroneOS's own monospace font.
 - **See-through background**, as in Kali's terminal: the desktop shows
   faintly behind the text, 15% by default (the user asked for it,
   2026-10-26). The title bar and tab bar stay solid. GTK's built-in theme

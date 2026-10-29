@@ -16,31 +16,33 @@ accent-color='blue'
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
 cursor-theme='Patrone'
-font-name='Patrone Sans 11'
-document-font-name='Patrone Sans 11'
+font-name='PatroneOS Sans 11'
+document-font-name='PatroneOS Document 11'
+monospace-font-name='PatroneOS Mono 11'
 
 [org.gnome.desktop.interface:ubuntu]
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
 cursor-theme='Patrone'
-font-name='Patrone Sans 11'
-document-font-name='Patrone Sans 11'
+font-name='PatroneOS Sans 11'
+document-font-name='PatroneOS Document 11'
+monospace-font-name='PatroneOS Mono 11'
 
 # Ubuntu sets the login screen's cursors too ([schema:GNOME-Greeter])
 [org.gnome.desktop.interface:GNOME-Greeter]
 cursor-theme='Patrone'
 
-# Patrone Sans, Patrone's typeface (fonts-patrone-sans: Noto Sans with a
-# tailed l and a slashed zero), for the desktop, apps and window titles,
-# which are semibold now that the typeface has one. Web pages and apps that
-# ask for sans-serif or Segoe UI get it through 05-patrone-fonts.conf, with
-# Noto Sans behind it for scripts it doesn't cover. Patrone Settings' Theme
-# page switches between the two. Monospace stays Ubuntu Sans Mono.
+# PatroneOS's fonts (fonts-patroneos): PatroneOS Sans for the desktop, apps
+# and window titles (semibold), PatroneOS Document for documents and
+# PatroneOS Mono for monospace text (above). Apps and pages that ask for
+# sans-serif, serif or monospace get them through 05-patrone-fonts.conf,
+# with Noto behind them for scripts they don't cover. Patrone Settings'
+# Theme page can switch the desktop to Noto Sans instead.
 [org.gnome.desktop.wm.preferences]
-titlebar-font='Patrone Sans SemiBold 11'
+titlebar-font='PatroneOS Sans SemiBold 11'
 
 [org.gnome.desktop.wm.preferences:ubuntu]
-titlebar-font='Patrone Sans SemiBold 11'
+titlebar-font='PatroneOS Sans SemiBold 11'
 
 # Wallpaper 02, Neon Horizon, light in the light style and dark in the dark one
 [org.gnome.desktop.background]

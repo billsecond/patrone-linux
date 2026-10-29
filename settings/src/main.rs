@@ -864,12 +864,12 @@ fn font_section(content: &gtk::Box) {
         .map(|family| family.name().to_string())
         .collect();
     let target = interface.clone();
-    let current = font::family_of(&interface.string("font-name"));
+    let current = font::choice_of(&font::family_of(&interface.string("font-name")));
     let refresh = font_choices(content, &current, &installed, move |family| {
         font::apply(family, &target, window_manager.as_ref());
     });
     interface.connect_changed(Some("font-name"), move |settings, key| {
-        refresh(&font::family_of(&settings.string(key)));
+        refresh(&font::choice_of(&font::family_of(&settings.string(key))));
     });
 }
 

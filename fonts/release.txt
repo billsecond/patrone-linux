@@ -1,0 +1,7 @@
+# The fonts fonts-patroneos installs: a release of PatroneOS's fonts,
+# https://github.com/billsecond/patroneos-fonts, pinned by its checksum.
+# packaging/build.sh fetches it and checks it before the package is built,
+# so the build itself runs offline.
+version=1.0.0
+url=https://github.com/billsecond/patroneos-fonts/releases/download/v1.0.0/PatroneOS-Fonts-1.0.0.zip
+sha256=bda793b67c2ea4fae6bd027ef54031998de191bf9cf00bde0df33f09112f378e
