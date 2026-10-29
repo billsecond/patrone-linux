@@ -94,7 +94,7 @@ step_check() {
         dh:debhelper dch:devscripts pull-lp-source:ubuntu-dev-tools quilt:quilt \
         python3:python3 perl:perl clang:clang cmake:cmake ninja:ninja-build \
         pkg-config:pkgconf xorriso:xorriso mksquashfs:squashfs-tools cpio:cpio \
-        unmkinitramfs:initramfs-tools-core snap:snapd rsync:rsync sudo:sudo; do
+        unmkinitramfs:initramfs-tools-core snap:snapd rsync:rsync unzip:unzip sudo:sudo; do
         command -v "${need%%:*}" >/dev/null || missing+=("${need#*:}")
     done
     # Flutter's Linux build, for the installer app
