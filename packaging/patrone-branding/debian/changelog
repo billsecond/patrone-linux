@@ -4,7 +4,8 @@ patrone-branding (0.1.23) resolute; urgency=medium
     Patrone LInux to PatroneOS"): os-release (NAME, PRETTY_NAME, and
     HOME_URL https://patroneos.com), lsb-release, the boot menu (GRUB takes
     os-release's NAME), the text boot screen, /etc/issue, /etc/legal and
-    this package's description.
+    this package's description. The links to the code and its issues go to
+    the repository's new name, github.com/billsecond/patroneos.
   * The PatroneOS logo, from the user's Neon Horizon pictures: the P beside
     or over a PATRONEOS wordmark, OS in Patrone Blue, in place of PATRONE
     over a ruled LINUX. It's drawn as vector shapes in code

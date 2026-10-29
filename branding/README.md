@@ -87,7 +87,7 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 
 | What you see | Patrone's version | How |
 | --- | --- | --- |
-| The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "PatroneOS 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"`, `HOME_URL="https://patroneos.com"`; `system/lsb-release` says "PatroneOS" too | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
+| The system's name (Settings → About, `fastfetch`, the boot menu, tools that read `os-release`) | `system/os-release`: "PatroneOS 0.1", `ID=patrone`, `ID_LIKE="ubuntu debian"`, `HOME_URL="https://patroneos.com"`, the code and issues at `github.com/billsecond/patroneos`; `system/lsb-release` says "PatroneOS" too | Replaces `/usr/lib/os-release` (Ubuntu's kept as `os-release.ubuntu`) |
 | Boot splash | `system/plymouth/patrone.plymouth`: the stacked logo over Patrone's spinner (below) on black, a Patrone-blue progress bar for updates | Plymouth theme, made the default; the password prompt's images are copied from Plymouth's spinner theme, its field recolored blue (`system/plymouth/prompt/`) |
 | Boot splash without graphics | `system/plymouth/patrone-text.plymouth`: "PatroneOS 0.1" in Patrone's colors | Plymouth text theme, made the default |
 | Login screen | The PatroneOS logo; a navy-to-black background; blue accents; Patrone Sans; a blue default avatar | `system/gdm/95-patrone-settings` (logo, accent, font) and a login-screen theme: Yaru's with `system/gdm/patrone-gdm.css` added, built by `tools/make_gdm_theme.sh` and made the default `gdm-theme.gresource` |
