@@ -34,6 +34,11 @@ which their makers (the ArtCraft Team and the contributors of each, and
 MailCraft's) license as MIT OR Apache-2.0, used here under MIT, whose
 notice the file carries (`docs/COMPLIANCE.md`, item 13).
 
+From revision 4 the welcome page has no "View release notes" link: it opened
+Ubuntu's release notes for the system's version (Ubuntu's notes for "0.1").
+It comes back when Patrone has release notes of its own
+(`docs/COMPLIANCE.md`, item 18).
+
 ```sh
 gnome-initial-setup/build.sh      # on the dev VM; the package lands in out/
 ```
