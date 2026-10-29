@@ -201,16 +201,18 @@ height, so the gaps between them grow with the screen. In
 The title was at `.382`, Ubuntu's place for it with its logo at the bottom,
 which put it on the P (the user saw it while updates installed,
 2026-10-28). The update screen's text and bar now sit under the wordmark;
-the gaps between them, measured in screenshots of the real `plymouthd`:
+the gaps between them, measured in screenshots of the real `plymouthd`
+(again on 2026-10-29: the PatroneOS logo is shorter than the old one, so
+its wordmark ends higher):
 
 | Screen | Wordmark to title | Subtitle to bar |
 | --- | --- | --- |
-| 800×600 (`previews/modes-800x600.png`, the tightest) | 16 px | 24 px |
-| 1280×720 | 55 px | 34 px |
-| 1024×768, 1366×768 | 71 px | 38 px |
-| 1920×1080 | 174 px | 63 px |
-| 2560×1440 | 293 px | 92 px |
-| 3840×2160 (Plymouth draws at twice the size there, so 1920×1080's layout) | 349 px | 126 px |
+| 800×600 (`previews/modes-800x600.png`, the tightest) | 54 px | 24 px |
+| 1280×720 | 94 px | 34 px |
+| 1024×768, 1366×768 | 110 px | 38 px |
+| 1920×1080 | 213 px | 63 px |
+| 2560×1440 | 331 px | 92 px |
+| 3840×2160 (Plymouth draws at twice the size there, so 1920×1080's layout) | 428 px | 126 px |
 
 The other modes never come closer to the wordmark than 20 px (a message
 under the spinner at 800×600).
@@ -224,7 +226,7 @@ built, as root from a terminal (it draws in an invisible screen, so the
 real one is untouched):
 
 ```
-sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.18_all.deb /tmp/splash $(tty) 1920x1080 1024x768
+sudo branding/tools/preview_splash.sh out/patrone-branding_0.1.23_all.deb /tmp/splash $(tty) 1920x1080 800x600
 python branding/tools/preview_splash_sheets.py /tmp/splash
 ```
 
