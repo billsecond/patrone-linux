@@ -378,7 +378,7 @@ function makeButton(taskbar, styleClass, icon, tooltipText) {
     return button;
 }
 
-/** The clock, Windows-style: the time over the date. */
+/** The clock: the time over the date, the way Windows users expect. */
 class Clock {
     constructor() {
         this.actor = new St.BoxLayout({
@@ -440,7 +440,7 @@ export class Taskbar {
 
         this._iconsDir = extension.dir.get_child('icons');
         this._startIcon = new St.Icon();
-        this._startButton = makeButton(this, 'patrone-taskbar-start', this._startIcon, 'Start');
+        this._startButton = makeButton(this, 'patrone-taskbar-start', this._startIcon, 'Menu');
         this.actor.add_child(this._startButton);
 
         this._searchIcon = new St.Icon({icon_name: 'system-search-symbolic'});

@@ -14,12 +14,13 @@ Recommends: patrone-settings, patrone-file-manager (>= 0.3.0)
 Breaks: patrone-file-manager (<< 0.3.0)
 Description: Patrone Desktop's taskbar, for its GNOME-based desktop
  A compact taskbar along the bottom of the screen, in place of GNOME's top
- bar, as on Windows 11: the Start menu, where typing searches apps, settings
- and files at once, with "Search the web" for anything else; pinned apps and
- slots for the default web browser, terminal, file manager and mail app;
- running apps; right-click jump lists with recent files and tasks; and the
- system tray, clock and notifications. It hosts Patrone File Manager's
- desktop and the desktop bubble, and draws the Recycle Bin.
+ bar, that works the way Windows users expect: the Patrone menu, where typing
+ searches apps, settings and files at once, with "Search the web" for
+ anything else; pinned apps and slots for the default web browser, terminal,
+ file manager and mail app; running apps; right-click jump lists with recent
+ files and tasks; and the system tray, clock and notifications. It hosts
+ Patrone File Manager's desktop and the desktop bubble, and draws the
+ Recycle Bin.
  .
  A GNOME Shell extension (patrone-taskbar@patrone-linux), on by default for
  every account, until Patrone's own shell replaces GNOME Shell.

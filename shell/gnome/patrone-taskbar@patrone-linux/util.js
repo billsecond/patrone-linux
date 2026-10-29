@@ -14,8 +14,8 @@ export function taskbarWindows(app) {
 }
 
 /**
- * Opens an app the way Windows' Start menu does: a new window when it's
- * running and can open one, else starts it (or shows it, if it can't).
+ * Opens an app the way Windows users expect from a menu: a new window when
+ * it's running and can open one, else starts it (or shows it, if it can't).
  *
  * @param {Shell.App} app
  * @param {boolean} newWindow - open a new window of a running app

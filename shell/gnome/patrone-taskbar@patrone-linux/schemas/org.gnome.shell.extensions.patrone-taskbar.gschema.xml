@@ -37,11 +37,12 @@
       <default>'left'</default>
       <summary>Where the taskbar and its buttons go</summary>
       <description>
-        "left": along the bottom, Start and the apps on the left. "center":
-        Start and the apps in the middle. "split": Start on the left, the
-        apps in the middle. "top": along the top of the screen, Start and
-        the apps on the left, menus opening downward. The theme doesn't
-        change it. Patrone Settings sets it.
+        "left": along the bottom, the menu button and the apps on the left.
+        "center": the menu button and the apps in the middle. "split": the
+        menu button on the left, the apps in the middle. "top": along the
+        top of the screen, the menu button and the apps on the left, menus
+        opening downward. The theme doesn't change it. Patrone Settings
+        sets it.
       </description>
     </key>
     <key name="start-icon" type="s">
@@ -56,7 +57,7 @@
         <choice value="terminal"/>
       </choices>
       <default>'patrone'</default>
-      <summary>The Start button's icon</summary>
+      <summary>The menu button's icon</summary>
       <description>
         "patrone" is the Patrone P in its colors, "orb" a blue orb with a
         white P. The others take the taskbar's text color: "mono" (the P),
@@ -175,7 +176,7 @@
     </key>
     <key name="web-search-url" type="s">
       <default>'https://www.google.com/search?q=%s'</default>
-      <summary>Where web searches from the Start menu go</summary>
+      <summary>Where web searches from the Patrone menu go</summary>
       <description>
         "%s" is replaced with the search terms. Opened with the default web
         browser.
@@ -199,9 +200,9 @@
     </key>
     <key name="suggested-apps" type="as">
       <default>['org.gnome.Software.desktop']</default>
-      <summary>Apps the Start menu suggests among the recent files</summary>
+      <summary>Apps the Patrone menu suggests among the recent files</summary>
       <description>
-        Desktop file IDs. Each shows in the Start menu's Recommended (and
+        Desktop file IDs. Each shows in the Patrone menu's Recent (and
         the search button's Recent) as if it had just been opened when it
         was first suggested, so it starts at the top and moves down as
         files are opened, then drops off like any recent file. Software,

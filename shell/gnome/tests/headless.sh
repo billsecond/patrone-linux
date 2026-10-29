@@ -67,7 +67,7 @@ install_extensions() {
 }
 
 # A few files in the recent files list, as if opened in GTK apps, for the
-# Start menu's "Recommended" and the taskbar's jump lists
+# Patrone menu's "Recent" and the taskbar's jump lists
 sample_files() {
     local files=$base/files now
     mkdir -p "$files"
