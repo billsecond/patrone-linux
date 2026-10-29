@@ -14,6 +14,64 @@ Try it in a new Hyper-V VM with `scripts/hyperv/new-test-vm.ps1`.
 Build it from a commit that's pushed, with nothing uncommitted: the disc
 records the commit, and its source is that commit (below).
 
+## A release, start to finish
+
+`make-release.sh` makes the disc and its source from a clean checkout of
+main, on Ubuntu 26.04, with one command:
+
+```sh
+iso/make-release.sh
+```
+
+Run it as yourself; it asks for sudo for the disc only. It does five steps
+in turn, and stops at the first that fails, with the end of its log:
+
+1. `check`: the tools and build dependencies it needs, with the
+   `apt-get install` line for any that are missing; Rust from rustup, as
+   new as the packages ask; 30 GB free; and that the checkout is main as it
+   is on GitHub, with nothing changed. Without Ubuntu's source repositories
+   (`deb-src`) it can't check what GDM, GNOME Settings, first-login setup
+   and Language Support need, and says so; their build says what's missing
+   instead.
+2. `ubuntu`: Ubuntu's 26.04.1 desktop ISO, checked against its SHA256,
+   which the script has (from Ubuntu's `SHA256SUMS`). It's downloaded from
+   releases.ubuntu.com only if `UBUNTU_ISO` (default
+   `~/iso/ubuntu-26.04.1-desktop-amd64.iso`) isn't there.
+3. `packages`: every one of Patrone's packages from this checkout: the
+   installer app (`installer/build.sh`) and its package, each package in
+   `packaging/`, and Patrone's builds of GDM, GNOME Settings, first-login
+   setup and Language Support, from Ubuntu's newest version of each.
+4. `disc`: `build-iso.sh`, with the packages this run built and nothing
+   else in `out/`, and a `SHA256SUMS` for the disc.
+5. `source`: `build-source.sh`.
+
+Everything goes in `OUT` (default `/var/tmp/patroneos-26.04.1`): `debs/`,
+`logs/`, `patroneos-26.04.1-amd64.iso`, `SHA256SUMS` and
+`patroneos-26.04.1-source/`. At the end it says what to copy to the
+website: the disc and its line in `SHA256SUMS` to its ISO folder, the
+source folder to its source folder. It needs a network, and takes about
+an hour; longer the first time on a machine, when it fetches Flutter and
+the Rust crates too.
+
+To run some steps only, name them, as in `iso/make-release.sh disc
+source`; they run in the order above. Run again after a failure, `source`
+keeps what it has fetched, but a new disc takes the place of the one in
+`OUT`, and that disc's source goes with it.
+
+On the dev VM, use a checkout of main of its own, such as
+`~/src/patrone-os`, not the one you work in, which may be on a branch.
+`wdaugherty` has no passwordless sudo there, so the disc step runs from the
+`claude` account (`ssh patronedev-claude`), with the checkout's full path:
+
+```sh
+iso/make-release.sh check ubuntu packages
+sudo /home/wdaugherty/src/patrone-os/iso/make-release.sh disc
+iso/make-release.sh source
+```
+
+The first and last as `wdaugherty`, in the checkout, and the second as
+`claude`.
+
 ## Its source code
 
 Whoever passes on the disc image has to offer the source of the free
