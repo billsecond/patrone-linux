@@ -1,3 +1,13 @@
+patrone-remote-desktop (0.5.6) resolute; urgency=medium
+
+  * Upgrading compiles GDM's settings again, as GDM's own reload does. They
+    were compiled only when GDM started, so a login screen started after
+    the upgrade to 0.5.5 looked for the login screen's extension by its old
+    ID, found nothing, and offered to end the desktop that signing in on the
+    screen should join, until the next restart.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 11:30:00 -0500
+
 patrone-remote-desktop (0.5.5) resolute; urgency=medium
 
   * The login screen's extension is patrone-login@patroneos.com, with no

@@ -166,7 +166,12 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    would end the very desktop the screen is about to join, so the
    `patrone-login@patroneos.com` extension (`login-screen/`, for the login
    screen only, switched on by `/usr/share/gdm/dconf/96-patrone-remote-desktop`)
-   leaves desktops without a seat out of that check. Ubuntu's own session
+   leaves desktops without a seat out of that check. GDM compiles that
+   folder into its settings when it starts, and so does the package's
+   postinst (`/usr/share/gdm/generate-config`, as GDM's own reload does):
+   otherwise a login screen started after an upgrade read the settings from
+   before it, and after 0.5.5 renamed the extension, those named an ID that
+   was gone. Ubuntu's own session
    (`ubuntu.desktop`) is moved aside, since a plain GNOME session started on
    the screen would end the account's desktop. Patrone Desktop is
    `gnome.desktop`, because `gnome` is the session GDM falls back to for an
