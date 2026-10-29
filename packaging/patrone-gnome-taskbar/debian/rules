@@ -3,6 +3,7 @@
 pkg = debian/patrone-gnome-taskbar
 uuid = patrone-taskbar@patroneos.com
 extension = $(pkg)/usr/share/gnome-shell/extensions/$(uuid)
+old = $(pkg)/usr/share/gnome-shell/extensions/patrone-taskbar@patrone-linux
 schemas = $(pkg)/usr/share/glib-2.0/schemas
 
 %:
@@ -16,6 +17,18 @@ override_dh_auto_install:
 	install -d $(extension)/icons
 	install -m644 $(uuid)/metadata.json $(uuid)/*.js $(uuid)/*.css $(extension)/
 	install -m644 $(uuid)/icons/*.svg $(extension)/icons/
+	# Before 0.4.8 the folder was patrone-taskbar@patrone-linux. A desktop
+	# started then runs that version until its next sign-in, and reads the
+	# old folder: GNOME Shell reloads the stylesheet from it whenever the
+	# light or dark style may have changed, and the taskbar its icons and
+	# its drop target. Removed, the taskbar lost its look on the first reload
+	# (2026-10-29). So the old folder keeps those files, replaced in place
+	# on upgrade, without metadata.json: GNOME Shell skips it as no extension
+	# (and logs that), and the old taskbar still sees its metadata.json go
+	# and asks to sign out. Drop it once installs have moved past 0.4.7.
+	install -d $(old)/icons
+	install -m644 $(uuid)/*.css $(uuid)/dropTarget.js $(old)/
+	install -m644 $(uuid)/icons/*.svg $(old)/icons/
 	# The schema goes with the system's, where GNOME Shell finds it
 	install -Dm644 $(uuid)/schemas/org.gnome.shell.extensions.patrone-taskbar.gschema.xml \
 	    $(schemas)/org.gnome.shell.extensions.patrone-taskbar.gschema.xml
