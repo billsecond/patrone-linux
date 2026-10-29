@@ -10,7 +10,7 @@
 # stays the default when another player is installed. Ubuntu's own list
 # puts Totem ("Videos") first for some of them.
 #
-# Web links and pages: Patrone Linux comes with no browser, so the default
+# Web links and pages: PatroneOS comes with no browser, so the default
 # is whichever one is installed: Flathub's, in Patrone Browser Chooser's
 # order, then the same browsers as snaps or their makers' own packages
 # (browser-chooser/src/browsers.rs has the same IDs). With none installed,

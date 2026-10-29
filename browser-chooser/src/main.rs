@@ -1,4 +1,4 @@
-//! Patrone Browser Chooser. Patrone Linux comes with no web browser, so the
+//! Patrone Browser Chooser. PatroneOS comes with no web browser, so the
 //! first time one's needed, from the taskbar's Web browser button or a link
 //! opened in Help, first-login setup or any other app, this asks which one
 //! to install. Patrone Software installs it from Flathub; it then becomes
@@ -199,7 +199,7 @@ fn build(app: &gtk::Application) -> Rc<Chooser> {
         .build();
     page.append(&label("Choose a web browser", "chooser-title"));
     page.append(&label(
-        "Patrone Linux comes without a web browser, so the one you use is up to you. \
+        "PatroneOS comes without a web browser, so the one you use is up to you. \
          Pick one, and Patrone Software installs it from Flathub and makes it your \
          default browser.",
         "",
@@ -473,7 +473,7 @@ fn open_in_software(this: &Chooser, browser: &Browser) {
         this.spinner.set_visible(false);
         this.waiting_title.set_text("Patrone Software didn't open");
         this.waiting_text.set_text(&format!(
-            "{error}\n\nPatrone Linux's browsers come from Patrone Software. If it's been \
+            "{error}\n\nPatroneOS's browsers come from Patrone Software. If it's been \
              removed, an administrator can put it back with “sudo apt install patrone-software”."
         ));
     }

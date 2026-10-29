@@ -1,6 +1,6 @@
 # Patrone Browser Chooser
 
-Patrone Linux comes with no web browser. The first time one's needed,
+PatroneOS comes with no web browser. The first time one's needed,
 Patrone Browser Chooser asks which to install, has Patrone Software install
 it, makes it the default for the web and opens it, with the link that was
 waiting. Packaged as `patrone-browser-chooser` (Rust and GTK 4, app ID
@@ -18,7 +18,7 @@ patrone-browser-chooser --list      the browsers it offers, and which are instal
 
 - **The taskbar's Web browser button.** The slot opens the default app for
   web links; with no browser installed, that's the chooser, and the slot
-  still shows (`fallback` in `shell/gnome/patrone-taskbar@patrone-linux/roles.js`).
+  still shows (`fallback` in `shell/gnome/patrone-taskbar@patroneos.com/roles.js`).
 - **Any link opened with no browser installed**, from Help, first-login
   setup or any app. `patrone-default-apps` makes the chooser the last
   choice in `/etc/xdg/mimeapps.list` for `x-scheme-handler/http`, `https`,

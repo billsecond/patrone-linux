@@ -32,7 +32,7 @@ const MARGIN = 12;
 // dock uses the same, desktopIconsIntegration.js)
 const DING_UUID = 'ding@rastersoft.com';
 const DING_AREA_ID = '130cbc66-235c-4bd6-8571-98d2d8bba5e2';
-const OWN_UUID = 'patrone-taskbar@patrone-linux';
+const OWN_UUID = 'patrone-taskbar@patroneos.com';
 // Before the drop target starts again, if it ends on its own
 const RESTART_DELAY = 3; // seconds
 // How often it makes sure it's still right above the desktop icons

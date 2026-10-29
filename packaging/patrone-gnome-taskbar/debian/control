@@ -5,13 +5,17 @@ Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13), libglib2.0-bin
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
-Vcs-Git: https://github.com/billsecond/patrone-linux.git
+Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: patrone-gnome-taskbar
 Architecture: all
 Depends: ${misc:Depends}, gnome-shell (>= 50~), gnome-shell (<< 51~), gjs, gir1.2-gtk-4.0
 Recommends: patrone-settings, patrone-file-manager (>= 0.3.0)
-Breaks: patrone-file-manager (<< 0.3.0)
+# Its ID, and so its folder, is patrone-taskbar@patroneos.com from 0.4.8:
+# the session mode (patrone-desktop) and both Settings apps' pictures of its
+# icons find it by that name
+Breaks: patrone-file-manager (<< 0.3.0), patrone-desktop (<< 0.2.6),
+ patrone-settings (<< 0.3.9), gnome-control-center (<< 1:50.3-0ubuntu0.2patrone17)
 Description: Patrone Desktop's taskbar, for its GNOME-based desktop
  A compact taskbar along the bottom of the screen, in place of GNOME's top
  bar, that works the way Windows users expect: the Patrone menu, where typing
@@ -22,5 +26,5 @@ Description: Patrone Desktop's taskbar, for its GNOME-based desktop
  Patrone File Manager's desktop and the desktop bubble, and draws the
  Recycle Bin.
  .
- A GNOME Shell extension (patrone-taskbar@patrone-linux), on by default for
+ A GNOME Shell extension (patrone-taskbar@patroneos.com), on by default for
  every account, until Patrone's own shell replaces GNOME Shell.

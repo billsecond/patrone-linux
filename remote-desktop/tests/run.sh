@@ -152,7 +152,7 @@ if command -v gjs > /dev/null; then
     {
         cat "$here/login-screen-stubs.js"
         sed -e '/^import /d' -e 's/^export default class/class/' \
-            "$here/../login-screen/patrone-login@patrone-linux/extension.js"
+            "$here/../login-screen/patrone-login@patroneos.com/extension.js"
         cat "$here/login-screen-test.js"
     } > "$extension_test"
     gjs -m "$extension_test" 2>&1 | grep -v "^Gjs-Message" || failures=$((failures + 1))

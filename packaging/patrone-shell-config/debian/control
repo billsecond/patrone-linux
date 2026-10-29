@@ -5,13 +5,13 @@ Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
-Vcs-Git: https://github.com/billsecond/patrone-linux.git
+Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: patrone-shell-config
 Architecture: all
 Depends: ${misc:Depends}
 Recommends: zsh, zsh-syntax-highlighting, zsh-autosuggestions
-Description: shell setup for Patrone Linux users
+Description: shell setup for PatroneOS users
  Gives bash, the default shell, Patrone's two-line prompt (blue for normal
  users, red for root), through a ~/.bash_aliases that new users get from
  /etc/skel, and root gets when the package is installed. For users who

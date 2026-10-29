@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: patrone-settings
-Source: https://github.com/billsecond/patrone-linux
+Source: https://github.com/billsecond/patroneos
 
 Files: *
 Copyright: 2026 William Daugherty

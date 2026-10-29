@@ -1,18 +1,22 @@
 #!/bin/sh
 # Makes GNOME Shell's Ubuntu session mode Patrone's: Ubuntu's own
 # (/usr/share/gnome-shell/modes/ubuntu.json, which patrone-desktop's preinst
-# moves aside to ubuntu.json.ubuntu) with Patrone's taskbar among the
-# session's own extensions. Those always load: GNOME's safety switch after a
-# crash (disable-user-extensions) only turns the others off, and with the
-# taskbar off GNOME's top bar came back (the user: "I should never see that
-# bar", 2026-10-27). Run by postinst, and again when gnome-shell-common
-# brings a new ubuntu.json (a dpkg trigger on the modes folder).
+# moves aside to /usr/share/patrone-desktop/ubuntu.json.ubuntu) with
+# Patrone's taskbar among the session's own extensions. Those always load:
+# GNOME's safety switch after a crash (disable-user-extensions) only turns
+# the others off, and with the taskbar off GNOME's top bar came back (the
+# user: "I should never see that bar", 2026-10-27). Ubuntu's file is kept
+# out of the modes folder: GNOME Shell names a mode by what comes before
+# ".json", so ubuntu.json.ubuntu there was the "ubuntu" mode too, and when
+# GNOME Shell found it first, it used Ubuntu's mode, without the taskbar
+# (2026-10-29). Run by postinst, and again when gnome-shell-common brings a
+# new ubuntu.json (dpkg triggers on both folders).
 set -e
 
 modes=/usr/share/gnome-shell/modes
-ubuntu=$modes/ubuntu.json.ubuntu
+ubuntu=/usr/share/patrone-desktop/ubuntu.json.ubuntu
 mode=$modes/ubuntu.json
-uuid=patrone-taskbar@patrone-linux
+uuid=patrone-taskbar@patroneos.com
 
 [ -f "$ubuntu" ] || exit 0
 

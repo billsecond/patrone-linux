@@ -4,7 +4,7 @@
 <!-- Patrone Unpack installs a .deb package by running its helper as root
      through pkexec. An administrator's password is asked for every time. -->
 <policyconfig>
-  <vendor>Patrone Linux</vendor>
+  <vendor>PatroneOS</vendor>
   <icon_name>org.patrone.Unpack</icon_name>
 
   <action id="org.patrone.unpack.install-deb">

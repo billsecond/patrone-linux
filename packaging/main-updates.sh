@@ -5,11 +5,12 @@
 #
 # - Patrone's own (packaging/*/debian/changelog): each whose version on main
 #   is newer than the published one is built (packaging/build.sh).
-# - Patrone's builds of Ubuntu's GDM, GNOME Settings and first-login setup: a
-#   newer revision of Patrone's changes in gdm/build.sh,
-#   gnome-settings/build.sh or gnome-initial-setup/build.sh is built again
-#   from the Ubuntu version already published (Ubuntu's own updates to them
-#   are ubuntu-updates.sh's).
+# - Patrone's builds of Ubuntu's GDM, GNOME Settings, first-login setup and
+#   Language Support: a newer revision of Patrone's changes in gdm/build.sh,
+#   gnome-settings/build.sh, gnome-initial-setup/build.sh or
+#   language-selector/build.sh is built again from the Ubuntu version already
+#   published, or Ubuntu's newest for one never published (Ubuntu's own
+#   updates to them are ubuntu-updates.sh's).
 #
 # Then it publishes what built, all at once, and only the debs it has just
 # built, never another build in out/ (packaging/publish.sh).
@@ -87,14 +88,23 @@ behind=0
 debs=()
 built=()
 # Builds SOURCE at VERSION with the command that follows, and keeps its deb
-# to publish; a build that fails is said and flagged
+# to publish; a build that fails is said and flagged. With no VERSION (a
+# rebuild never published before), it's the newest build of SOURCE in out/.
+# The deb may be named after the source (gdm3) or start with it
+# (language-selector-common).
 build() {
     local source=$1 version=$2 deb
     shift 2
     local log=$logs/$source-${version#*:}.log
-    echo "Building $source $version (log: $log)"
+    [ -n "$version" ] || log=$logs/$source-new.log
+    echo "Building $source ${version:-at the newest Ubuntu version} (log: $log)"
     if "$@" >"$log" 2>&1; then
-        for deb in "$root/out/${source}_${version#*:}_"*.deb; do
+        if [ -z "$version" ]; then
+            version=$(for deb in "$root"/out/"$source"*.deb; do
+                dpkg-deb --showformat='${source:Package}\t${Version}\n' -W "$deb"
+            done | awk -F'\t' -v s="$source" '$1 == s {print $2}' | sort -V | tail -n 1)
+        fi
+        for deb in "$root/out/${source}_${version#*:}_"*.deb "$root/out/${source}-"*"_${version#*:}_"*.deb; do
             if [ -f "$deb" ]; then
                 debs+=("$deb")
                 built+=("$source $version")
@@ -146,11 +156,22 @@ declare -A rebuild=(
     [gdm3]=gdm/build.sh
     [gnome-control-center]=gnome-settings/build.sh
     [gnome-initial-setup]=gnome-initial-setup/build.sh
+    [language-selector]=language-selector/build.sh
 )
 for source in "${!rebuild[@]}"; do
     have=${published[$source]:-}
-    [[ $have == *patrone* ]] || continue
     revision=$(sed -n 's/^revision=//p' "$root/${rebuild[$source]}")
+    if [ -z "$have" ]; then
+        # Never published (Language Support, before its first): built from
+        # Ubuntu's newest version for resolute, as its build script does by
+        # itself
+        echo "$source: main has revision $revision of Patrone's changes, the repository none"
+        behind=$((behind + 1))
+        [ -z "$check_only" ] || continue
+        build "$source" "" nice -n 19 "$root/${rebuild[$source]}"
+        continue
+    fi
+    [[ $have == *patrone* ]] || continue
     [ "$revision" -gt "${have##*patrone}" ] || continue
     version=${have%patrone*}patrone$revision
     echo "$source: main has revision $revision of Patrone's changes, the repository $have"

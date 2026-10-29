@@ -1,14 +1,25 @@
 #!/bin/sh
-# GNOME Shell's Ubuntu session mode is moved aside (ubuntu.json.ubuntu) so
-# that postinst can put Patrone's in its place: Ubuntu's, with Patrone's
-# taskbar among the session's own extensions (make-session-mode). postrm
-# puts it back.
+# GNOME Shell's Ubuntu session mode is moved aside, to
+# /usr/share/patrone-desktop/ubuntu.json.ubuntu, so that postinst can put
+# Patrone's in its place: Ubuntu's, with Patrone's taskbar among the
+# session's own extensions (make-session-mode). postrm puts it back.
 set -e
 
 mode=/usr/share/gnome-shell/modes/ubuntu.json
+aside=/usr/share/patrone-desktop/ubuntu.json.ubuntu
+# Where versions before 0.2.6 moved it: beside Patrone's, where GNOME Shell
+# takes it for the same mode ("ubuntu", the name before ".json") and, when
+# it finds it first, uses it in place of Patrone's, taskbar and all
+old_aside=$mode.ubuntu
 
 if [ "$1" = install ] || [ "$1" = upgrade ]; then
-    dpkg-divert --package patrone-desktop --add --rename --divert "$mode.ubuntu" "$mode"
+    if [ "$(dpkg-divert --truename "$mode")" = "$old_aside" ]; then
+        # Patrone's mode, which postinst made, isn't a package's file
+        rm -f "$mode"
+        dpkg-divert --package patrone-desktop --remove --rename --divert "$old_aside" "$mode"
+    fi
+    mkdir -p "${aside%/*}"
+    dpkg-divert --package patrone-desktop --add --rename --divert "$aside" "$mode"
 fi
 
 #DEBHELPER#

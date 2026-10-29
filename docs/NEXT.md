@@ -1,5 +1,22 @@
 # Next steps
 
+**PatroneOS since 2026-10-29.** The user renamed the system PatroneOS: "The
+website will be https://patroneos.com." The name is one word wherever it
+appears; "Patrone" stays the short name (Patrone Terminal, `patrone-*`
+packages, app IDs, paths, `ID=patrone`). Entries below from before then
+use the new name too, quotes included (the user: "I want to be sure we
+remove anything that says" the old name).
+
+**A second EFI folder on PatroneDev.** GRUB's updates (`grub-install`, run
+by `grub-efi-amd64-signed`'s postinst) name the EFI folder after the first
+word of os-release's NAME, now PatroneOS. So the next GRUB update on an
+existing install puts GRUB in `\EFI\patroneos\`, with a boot entry of its
+own, beside the folder it was installed in: `\EFI\ubuntu\` on PatroneDev
+(from before it was Patrone), `\EFI\patrone\` on earlier test installs. Both
+boot, so it's left as it is (the main session, 2026-10-29: the only
+existing installs are PatroneDev and throwaway VMs). Which folder a fresh
+install starts in is for the next fresh install to show.
+
 Last updated 2026-10-27, after the ISO's installer, first-login setup and a
 search of the installed system for Ubuntu's name (section 16 lists what's
 left of it).
@@ -40,7 +57,7 @@ Done:
   0.1.0, `patrone-terminal` 0.1.1, `patrone-default-apps` 0.1.0 with the
   Chromium 156 snap; Firefox's snap removed and its stub held. Checked:
   `default.plymouth` and `gdm-theme.gresource` point at Patrone's,
-  `/etc/os-release` says Patrone Linux. Not rebooted since, so the login
+  `/etc/os-release` says PatroneOS. Not rebooted since, so the login
   screen and the user's session still showed Ubuntu's look.
 - **Branding** (section 6): `patrone-branding` replaces Ubuntu's name and
   logos (boot splash, boot menu, login screen, About, console banner, login
@@ -221,8 +238,8 @@ Waiting on the user:
     package `patrone-installer`, live session only). Ubuntu's front end
     takes its name from a fixed list of Ubuntu's flavors
     (`UbuntuFlavor.fromName`), so the user chose rebuilding it with Ubuntu's
-    flavor named Patrone Linux; checked in QEMU: "Welcome to Patrone
-    Linux". Its look and slides are `patrone-branding`'s
+    flavor named PatroneOS; checked in QEMU: "Welcome to PatroneOS
+    ". Its look and slides are `patrone-branding`'s
     (`branding/system/desktop-provision/`). A new Ubuntu ISO means
     rebuilding it at that snap's commit.
   - **Swapping the ISO in Hyper-V:** inserting it right after replacing
@@ -248,13 +265,13 @@ Waiting on the user:
     takes Ubuntu's copy, moved aside by the diversion, as deleted by the
     user. The ISO build answers with `--force-confnew`; an install with apt
     on a running system asks.
-  - **"Install Patrone Linux" boots to the installer alone**, full screen
+  - **"Install PatroneOS" boots to the installer alone**, full screen
     in a GNOME Kiosk session with no desktop behind it (`installer/README.md`,
-    "Installing with nothing else"); "Try Patrone Linux" is the live
+    "Installing with nothing else"); "Try PatroneOS" is the live
     desktop. The kiosk session doesn't switch to a text console with
     Ctrl+Alt+F3.
   - **First-login setup is Patrone's build of Ubuntu's**
-    (`gnome-initial-setup/README.md`): "Choose how Patrone Linux looks",
+    (`gnome-initial-setup/README.md`): "Choose how PatroneOS looks",
     Patrone Software in place of App Center, Patrone's pictures. Patrone
     Terminal waits for it to finish before it opens at the first login, so
     it no longer covers the setup's pages.
@@ -264,7 +281,7 @@ Waiting on the user:
   - **A search of the installed system for Ubuntu's name** (the user,
     2026-10-27: "a full search on the name and references across the OS")
     found the snaps and notices fixed in `98c51cd` and the bigger pieces in
-    section 16. The user's rule for it: saying Patrone Linux is based on
+    section 16. The user's rule for it: saying PatroneOS is based on
     Ubuntu is welcome where it explains what's different ("don't dog
     ubuntu, just explain the differences").
 - **The Craft apps show and install in Patrone Software** (done
@@ -883,7 +900,7 @@ Plan:
 
 ## 4. The web browser: none preinstalled, the user picks one
 
-**Since 2026-10-28** Patrone Linux comes with no browser (the user: "Ask
+**Since 2026-10-28** PatroneOS comes with no browser (the user: "Ask
 the user when they click on the browser with a modal if they want to
 install Chromium, Fire Fox, Brave, etc, then use the current patrone apps
 to open that up and set up the install"). **Patrone Browser Chooser**
@@ -1011,7 +1028,7 @@ were inspected; the settings override compiles with `glib-compile-schemas
 settings: the Patrone wallpaper, the dock in `disabled-extensions`); the
 login theme has all 11 of Yaru's resources plus Patrone's rules at the end of
 `gdm.css`; `agetty --show-issue` renders the console banner as
-"Patrone Linux 0.1" over "DevDistro-PatroneLinux (10.0.0.61) on tty1". Not
+"PatroneOS 0.1" over "DevDistro-PatroneLinux (10.0.0.61) on tty1". Not
 checked until the user installs it and reboots: the boot splash, the boot
 menu name, the login screen's look, Settings → About, the login message, and
 that the dock goes away.
@@ -1096,9 +1113,9 @@ with GNOME's top bar, its power menu, top right, → Log Out.
 With Patrone's Windows-style sessions, disconnecting Remote Desktop or
 signing out of the screen's session only disconnects, and the desktop, with
 its old shell, keeps running; until it's restarted, `gnome-extensions info
-patrone-taskbar@patrone-linux` in it says the extension "doesn't exist". An
+patrone-taskbar@patroneos.com` in it says the extension "doesn't exist". An
 account that has its own `enabled-extensions` list keeps it;
-`gnome-extensions enable patrone-taskbar@patrone-linux` adds the taskbar.
+`gnome-extensions enable patrone-taskbar@patroneos.com` adds the taskbar.
 
 Findings:
 
@@ -2276,7 +2293,7 @@ The user, 2026-10-27, after a fresh install from the ISO: "a full search on
 the name and references across the OS". A subagent searched the installed
 system's files (the ISO's layers, mounted read-only: text, binaries'
 strings, GNOME's settings as the session reads them). The user's rule for
-the fixes: saying Patrone Linux is based on Ubuntu is welcome where it
+the fixes: saying PatroneOS is based on Ubuntu is welcome where it
 explains what's different ("don't dog ubuntu, just explain the
 differences"); `os-release` already says "0.1 (based on Ubuntu 26.04.1
 LTS)" and `/etc/legal` now does too.
@@ -2293,7 +2310,7 @@ patrone2, patrone-remote-desktop 0.4.6):
   settings) too.
 - `/etc/lsb-release` said Ubuntu 26.04.1 LTS, which is why the installer
   took an earlier install for Ubuntu (os-prober reads it before
-  os-release); now Patrone Linux 0.1, codename `resolute` kept for tools.
+  os-release); now PatroneOS 0.1, codename `resolute` kept for tools.
 - "Ubuntu Pro is available" at login (`update-notifier`), Ubuntu Pro's
   desktop service and password prompts, its advert in `apt upgrade` (the
   ESM hook, moved aside), the ESM notes in the text console's login
@@ -2322,8 +2339,8 @@ patrone2, patrone-remote-desktop 0.4.6):
 **Checked** in a fresh install of the last ISO (sha256 `0576b0fd...`) in
 Hyper-V, in `PatroneTest2` (the user had Remote Desktop open on
 `PatroneTest`), 2026-10-27, with the test account and "Erase disk": the
-installer called the earlier install "Patrone Linux (0.1)"; the firmware
-boot entry is "Patrone Linux", in `\EFI\patrone\`; `snap list` has Chromium
+installer called the earlier install "PatroneOS (0.1)"; the firmware
+boot entry is "PatroneOS", in `\EFI\patrone\`; `snap list` has Chromium
 and no App Center, Firefox or Security Center; `/etc/lsb-release` and
 `/etc/legal` are Patrone's; `update-notifier`, Ubuntu Pro's desktop service
 and `whoopsie` aren't installed, and GNOME's Package Updater didn't come
@@ -2370,11 +2387,11 @@ rebuild; recommendations first):
    in every font list. The user's call which monospace font is Patrone's
    (JetBrains Mono is installed already, for the terminal).
 8. **Boot names:** **done** (`patrone-branding` 0.1.22): GRUB's menu says
-   "Patrone Linux", not "Patrone Linux GNU/Linux". GRUB's `10_linux` and
+   "PatroneOS", not "PatroneOS GNU/Linux". GRUB's `10_linux` and
    `10_linux_zfs`, which add "GNU/Linux" to any name but Ubuntu's, are moved
    aside and run by Patrone's scripts without it
    (`branding/system/grub/grub-script`). The firmware's boot entry is already Patrone's: the
-   installer named it "Patrone Linux", in `\EFI\patrone\` (Hyper-V's boot
+   installer named it "PatroneOS", in `\EFI\patrone\` (Hyper-V's boot
    order after the install of 2026-10-27). Only shim's fallback list
    (`BOOTX64.CSV`, "This is the boot entry for ubuntu") still says ubuntu;
    the firmware uses it only if that entry is lost.
@@ -2428,7 +2445,7 @@ checked; in short:
 
 - **Hyper-V, checked from the host** in a fresh install (`PatroneGuestTools`,
   a new VM; its live session too): shutdown, heartbeat, time sync, KVP
-  (the host sees "Patrone Linux" and the IP addresses), VSS (a
+  (the host sees "PatroneOS" and the IP addresses), VSS (a
   `ProductionOnly` checkpoint with someone signed in), the Guest Service
   Interface (`Copy-VMFile`; on Linux the destination is a folder) and
   dynamic memory. The daemons are Ubuntu's (`linux-cloud-tools-generic-hwe-26.04`,
@@ -2476,7 +2493,7 @@ checked; in short:
 product names (`docs/COMPLIANCE.md`, item 15). The package, program, units
 and app ID keep "hyperv", which a rename would have to migrate.
 
-The user, 2026-10-28: "When the Patrone Linux starts up, have it check for
+The user, 2026-10-28: "When the PatroneOS starts up, have it check for
 Hyper-V and if its using Hyper-V as its host, then provide a prompt with an
 option to install support for Hyper-V, also allow a disable future
 notifications on this dialog box." `hyperv-setup/`, package
@@ -2586,7 +2603,7 @@ in the journal, fails the run, and becomes an issue in billsecond/patrone-apt
 that closes once that version is published. `patrone-installer` stays by
 hand (an issue says so). Checked on PatroneDev (2026-10-29), against a
 local copy of patrone-apt with a stand-in for `gh`, and a copy of
-patrone-linux whose `main` was this change: three packages made to look
+this repository whose `main` was this change: three packages made to look
 behind (Default Apps, first-login setup by revision, the installer) were
 built and published as one signed commit, and the installer got its issue,
 in 55 seconds. A version bump with a missing build dependency published

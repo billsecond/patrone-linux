@@ -1,3 +1,17 @@
+patrone-desktop (0.2.6) resolute; urgency=medium
+
+  * The system's new name, PatroneOS (2026-10-29), in its description, the
+    list of what it connects to (connections.txt, with the website's new
+    address, patroneos.com) and its apt source's note.
+  * The session mode names the taskbar by its new ID (patrone-gnome-taskbar
+    0.4.8), and Ubuntu's session mode is kept out of the modes folder, where
+    GNOME Shell took it for the same mode.
+  * Accepts a change of the apt repository's Label
+    (apt.conf.d/51patrone-release-label), which is about to take the system's
+    new name: without it, apt and Patrone Software would stop updating from it.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 12:00:00 -0500
+
 patrone-desktop (0.2.5) resolute; urgency=medium
 
   * Recommends breeze-cursor-theme, KDE's Breeze cursors (LGPL-3+), so the

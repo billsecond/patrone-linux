@@ -1,3 +1,18 @@
+patrone-remote-desktop (0.5.5) resolute; urgency=medium
+
+  * The login screen's extension is patrone-login@patroneos.com, with no
+    trace of the system's old name. GDM's settings, which turn it on, name the
+    new ID.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 11:00:00 -0500
+
+patrone-remote-desktop (0.5.4) resolute; urgency=medium
+
+  * The system's new name, PatroneOS (2026-10-29), as the login screen's
+    fallback computer name and in its password prompt.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+
 patrone-remote-desktop (0.5.3) resolute; urgency=medium
 
   * The README describes the package in Patrone's own words instead of
@@ -163,7 +178,7 @@ patrone-remote-desktop (0.4.0) resolute; urgency=medium
   * Signing in on the screen joins the account's desktop instead of ending
     it: GNOME's login screen called the desktop (which runs with no seat) a
     conflicting session and ended it. A login-screen extension
-    (patrone-login@patrone-linux, enabled through GDM's settings) leaves
+    (patrone-login@patroneos.com, enabled through GDM's settings) leaves
     seatless sessions out of that check.
   * Patrone Desktop is the screen's only session: Ubuntu's ubuntu.desktop is
     moved aside (a plain GNOME session on the screen would end the account's

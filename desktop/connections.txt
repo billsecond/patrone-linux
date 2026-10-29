@@ -1,15 +1,15 @@
-What Patrone Linux connects to
+What PatroneOS connects to
 ==============================
 
-Patrone Linux runs no servers of its own, and sends nothing to the person
+PatroneOS runs no servers of its own, and sends nothing to the person
 who makes it. Like Ubuntu, which it's based on, it reaches a few outside
 services to stay up to date and keep its clock right. Each is run by someone
 else, under its own terms and privacy policy. Every connection sends what
 any connection does: the computer's network address, and what it asks for.
 
-This is the list for Patrone Linux 0.1, based on Ubuntu 26.04.1 LTS. The
+This is the list for PatroneOS 0.1, based on Ubuntu 26.04.1 LTS. The
 website keeps the same list, with what Ubuntu does differently:
-https://patronelinux.com/privacy/patrone-linux
+https://patroneos.com/privacy/patroneos
 
 
 Keeping it up to date
@@ -35,7 +35,7 @@ Apps
 ----
 
 - Flathub (flathub.org), run by the Flathub project: lists of apps, and the
-  apps and runtimes you install from Patrone Software. Patrone Linux comes
+  apps and runtimes you install from Patrone Software. PatroneOS comes
   with no web browser: the first time you need one, Patrone Browser Chooser
   asks which to install, from Flathub. A browser has its own settings for
   what it sends, under its maker's privacy policy.

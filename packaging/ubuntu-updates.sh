@@ -94,7 +94,7 @@ while read -r state source built_from newest pocket; do
 $(tail -n 40 "$log")
 \`\`\`
 
-Patrone Linux installs keep Patrone's build from $built_from until this is fixed and published. If Patrone's patches no longer apply, update them in Patrone Linux's repository; if the build needs new packages, install Ubuntu's build dependencies on the VM."
+PatroneOS installs keep Patrone's build from $built_from until this is fixed and published. If Patrone's patches no longer apply, update them in PatroneOS's repository; if the build needs new packages, install Ubuntu's build dependencies on the VM."
         continue
     fi
     # The build's binary packages, published together

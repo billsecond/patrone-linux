@@ -1,5 +1,5 @@
 //! Patrone Virtual Machine Setup. At each desktop login in a Hyper-V virtual
-//! machine (patrone-hyperv-setup.service), this checks what Patrone Linux
+//! machine (patrone-hyperv-setup.service), this checks what PatroneOS
 //! needs there and offers to set up whatever isn't: Hyper-V's integration
 //! services (patrone-guest-tools) and VMConnect's enhanced session
 //! (patrone-remote-desktop), with one password, and the PowerShell command
@@ -46,7 +46,7 @@ const TRADEMARKS: &str = "Hyper-V and Windows are trademarks of the Microsoft gr
 const USAGE: &str = "\
 Usage: patrone-hyperv-setup [OPTION...]
 
-Virtual Machine Setup: shows what Patrone Linux needs in a Hyper-V virtual
+Virtual Machine Setup: shows what PatroneOS needs in a Hyper-V virtual
 machine, and sets up what's missing. It runs at each desktop login with
 --at-login.
 
@@ -425,7 +425,7 @@ fn show_check(this: &Rc<Setup>) {
             "setup-title",
         ));
         page.append(&label(
-            "Patrone Linux isn't running in Hyper-V here, so there's nothing to set up.",
+            "PatroneOS isn't running in Hyper-V here, so there's nothing to set up.",
             "",
         ));
         page.append(&notes(None));
@@ -442,13 +442,13 @@ fn show_check(this: &Rc<Setup>) {
     if status.set_up() {
         page.append(&label("This virtual machine is set up", "setup-title"));
         page.append(&label(
-            "Everything Patrone Linux needs in Hyper-V is set up.",
+            "Everything PatroneOS needs in Hyper-V is set up.",
             "",
         ));
     } else {
         page.append(&label("Set up this virtual machine", "setup-title"));
         page.append(&label(
-            "Some of what Patrone Linux needs in Hyper-V isn't set up yet.",
+            "Some of what PatroneOS needs in Hyper-V isn't set up yet.",
             "",
         ));
     }
@@ -674,7 +674,7 @@ fn set_up_parts(this: &Rc<Setup>) {
             Some(127) => {
                 show_failed(
                     &this,
-                    "Patrone Linux couldn't get permission to set it up. It needs an \
+                    "PatroneOS couldn't get permission to set it up. It needs an \
                      administrator's password.",
                     &output,
                 );
@@ -771,10 +771,10 @@ fn show_done(this: &Rc<Setup>, fresh: Status, restart: bool) {
         page.append(&label("One more step, on Windows", "setup-title"));
         page.append(&label(
             if restart && !shutdown {
-                "Patrone Linux's side is set up: restart it to finish. What's left is on \
+                "PatroneOS's side is set up: restart it to finish. What's left is on \
                  Windows' side."
             } else {
-                "Patrone Linux's side is set up. What's left is on Windows' side."
+                "PatroneOS's side is set up. What's left is on Windows' side."
             },
             "",
         ));
@@ -783,9 +783,9 @@ fn show_done(this: &Rc<Setup>, fresh: Status, restart: bool) {
         page.append(&label("This virtual machine is set up", "setup-title"));
         page.append(&label(
             if restart {
-                "Restart Patrone Linux to finish setting it up."
+                "Restart PatroneOS to finish setting it up."
             } else {
-                "Everything Patrone Linux needs in Hyper-V is set up. In VMConnect, the \
+                "Everything PatroneOS needs in Hyper-V is set up. In VMConnect, the \
                  enhanced session is on the View menu."
             },
             "",

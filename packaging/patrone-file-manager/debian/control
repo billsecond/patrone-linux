@@ -11,14 +11,14 @@ Build-Depends: debhelper-compat (= 13),
                pkgconf
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
-Vcs-Git: https://github.com/billsecond/patrone-linux.git
+Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: patrone-file-manager
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, gvfs, fonts-inter | fonts-noto-core
 Recommends: gvfs-backends, xdg-user-dirs, xdg-utils, pkexec, acl
-Description: file manager for Patrone Linux
- Patrone File Manager is the file manager of Patrone Linux, and it works
+Description: file manager for PatroneOS
+ Patrone File Manager is the file manager of PatroneOS, and it works
  the way Windows users expect: tabs, the command bar, breadcrumbs, the
  navigation pane with Quick access, Home, Gallery and Computer, eight views,
  the details and preview panes, full right-click menus, Folder Options and

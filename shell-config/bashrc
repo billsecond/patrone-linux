@@ -1,4 +1,4 @@
-# Patrone Linux's bash prompt, loaded from ~/.bash_aliases (see bash_aliases).
+# PatroneOS's bash prompt, loaded from ~/.bash_aliases (see bash_aliases).
 #
 # The prompt takes two lines:
 #   ┌──(user㉿host)-[~/src]

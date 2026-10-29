@@ -1,8 +1,8 @@
 [Desktop Entry]
-# The "Install Patrone Linux" session (README.md, "Installing with nothing
+# The "Install PatroneOS" session (README.md, "Installing with nothing
 # else"): Patrone's installer full screen, in GNOME Kiosk, with no desktop.
-Name=Patrone Linux Installer
-Comment=Install Patrone Linux
+Name=PatroneOS Installer
+Comment=Install PatroneOS
 Exec=gnome-session --session patrone-installer
 TryExec=gnome-session
 Type=Application

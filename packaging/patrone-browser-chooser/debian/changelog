@@ -1,3 +1,10 @@
+patrone-browser-chooser (0.1.1) resolute; urgency=medium
+
+  * The system's new name, PatroneOS (2026-10-29), in its messages and its
+    description.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+
 patrone-browser-chooser (0.1.0) resolute; urgency=medium
 
   * First package: asks which web browser to install (Chromium, Firefox,

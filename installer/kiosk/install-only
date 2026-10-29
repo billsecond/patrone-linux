@@ -1,5 +1,5 @@
 #!/bin/sh
-# "Install Patrone Linux" (patrone-install-only on the kernel's command line,
+# "Install PatroneOS" (patrone-install-only on the kernel's command line,
 # iso/build-iso.sh's boot menu): the live session's user, whom casper has set
 # GDM to log in by itself, gets the installer's own session in place of the
 # desktop. Runs before GDM (patrone-install-only.service).

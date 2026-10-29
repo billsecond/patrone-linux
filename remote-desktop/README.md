@@ -164,7 +164,7 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
 6. **The login screen**: GNOME's login screen treats any other running
    desktop of the account as a conflict, and offers to end it. Here that
    would end the very desktop the screen is about to join, so the
-   `patrone-login@patrone-linux` extension (`login-screen/`, for the login
+   `patrone-login@patroneos.com` extension (`login-screen/`, for the login
    screen only, switched on by `/usr/share/gdm/dconf/96-patrone-remote-desktop`)
    leaves desktops without a seat out of that check. Ubuntu's own session
    (`ubuntu.desktop`) is moved aside, since a plain GNOME session started on

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Builds Patrone's installer: Ubuntu's installer front end (the Flutter app
 # ubuntu_bootstrap, from canonical/ubuntu-desktop-provision), at the commit
-# the ISO's installer snap was built from, with "Patrone Linux" as its
+# the ISO's installer snap was built from, with "PatroneOS" as its
 # flavor's name and in its own text, where Ubuntu's says "Ubuntu".
 # Everything else, the install engine included, stays the snap's
 # (installer/README.md).
@@ -44,14 +44,14 @@ export PATH="$work/flutter/bin:$PATH"
 flutter config --no-analytics >/dev/null
 dart --disable-analytics >/dev/null
 
-# Ubuntu's flavor, named Patrone Linux: the installer shows the flavor's
+# Ubuntu's flavor, named PatroneOS: the installer shows the flavor's
 # name wherever its text says {DISTRO} ("Welcome to {DISTRO}", "Install
 # {DISTRO}"), and knows only Ubuntu's flavors (flavor_service.dart).
 rm -rf "$flavor"
 mkdir -p "$flavor"
 curl -fsSL "https://pub.dev/api/archives/ubuntu_flavor-$flavor_version.tar.gz" | tar -xz -C "$flavor"
-sed -i "s/^  ubuntu('Ubuntu'),\$/  ubuntu('Patrone Linux'),/" "$flavor/lib/src/ubuntu_flavor.dart"
-grep -q "^  ubuntu('Patrone Linux'),\$" "$flavor/lib/src/ubuntu_flavor.dart"
+sed -i "s/^  ubuntu('Ubuntu'),\$/  ubuntu('PatroneOS'),/" "$flavor/lib/src/ubuntu_flavor.dart"
+grep -q "^  ubuntu('PatroneOS'),\$" "$flavor/lib/src/ubuntu_flavor.dart"
 
 cd "$src"
 # Ubuntu's own lock files, as the snap's build uses them

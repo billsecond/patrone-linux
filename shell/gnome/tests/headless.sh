@@ -19,13 +19,13 @@
 #   tests/headless.sh log                    the shell's output
 #   tests/headless.sh stop
 #
-# A helper extension (tests/unsafe@patrone-linux) turns on GNOME Shell's
+# A helper extension (tests/unsafe@patroneos.com) turns on GNOME Shell's
 # "unsafe mode" there, which is what lets eval and shot work.
 set -euo pipefail
 
 here=$(cd "$(dirname "$0")" && pwd)
-extension=$here/../patrone-taskbar@patrone-linux
-uuid=patrone-taskbar@patrone-linux
+extension=$here/../patrone-taskbar@patroneos.com
+uuid=patrone-taskbar@patroneos.com
 base=/tmp/patrone-taskbar-test
 display=wayland-patrone-test
 
@@ -49,11 +49,11 @@ environment() {
 
 install_extensions() {
     local extensions=$XDG_DATA_HOME/gnome-shell/extensions
-    rm -rf "${extensions:?}/$uuid" "$extensions/unsafe@patrone-linux"
+    rm -rf "${extensions:?}/$uuid" "$extensions/unsafe@patroneos.com"
     mkdir -p "$extensions"
     cp -r "$extension" "$extensions/$uuid"
     glib-compile-schemas "$extensions/$uuid/schemas"
-    cp -r "$here/unsafe@patrone-linux" "$extensions/"
+    cp -r "$here/unsafe@patroneos.com" "$extensions/"
 
     # The taskbar's settings and Patrone Settings' theme setting, where
     # other programs (Patrone Settings) find them too
@@ -143,7 +143,7 @@ start)
     dbus-daemon --session --fork --print-address=3 --print-pid=4 \
         3> "$base/bus" 4> "$base/bus.pid"
     environment
-    gsettings set org.gnome.shell enabled-extensions "['$uuid', 'unsafe@patrone-linux']"
+    gsettings set org.gnome.shell enabled-extensions "['$uuid', 'unsafe@patroneos.com']"
     # Not Ubuntu's snap permission prompts, which deal with the system's
     # snapd, nor its dock
     gsettings set org.gnome.shell disabled-extensions \
@@ -169,10 +169,11 @@ start)
     # own extensions, and Ubuntu's GNOME Shell won't load those from the
     # account's folder, where this shell's copy (the one under test) is:
     # it would run the installed taskbar instead. Ubuntu's own mode here.
+    # (patrone-desktop moves it aside, to /usr/share/patrone-desktop)
     mode=/usr/share/gnome-shell/modes/ubuntu.json
     ubuntu_mode=()
-    if [[ -f $mode.ubuntu ]]; then
-        ubuntu_mode=(--ro-bind "$mode.ubuntu" "$mode")
+    if [[ -f /usr/share/patrone-desktop/ubuntu.json.ubuntu ]]; then
+        ubuntu_mode=(--ro-bind /usr/share/patrone-desktop/ubuntu.json.ubuntu "$mode")
     fi
     nohup bwrap --dev-bind / / \
         --bind "$base/empty" /usr/share/gnome-shell/extensions/ding@rastersoft.com \

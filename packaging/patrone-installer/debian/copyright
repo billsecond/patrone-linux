@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: patrone-installer
-Source: https://github.com/billsecond/patrone-linux
+Source: https://github.com/billsecond/patroneos
 Comment: usr/lib/patrone-installer is built from ubuntu-desktop-provision
  (https://github.com/canonical/ubuntu-desktop-provision, GPL-3) with
  ubuntu_flavor (https://pub.dev/packages/ubuntu_flavor, MPL-2.0) and the
@@ -23,7 +23,7 @@ Comment: Built by installer/build.sh from ubuntu-desktop-provision at the
  spinner, the suggested username, the licence agreement's page; without
  the Landscape choice, Ubuntu's slides or the Windows logo) and
  installer/debrand_l10n.py (its messages). ubuntu_flavor (MPL-2.0, its
- notice in NOTICES.Z) has its Ubuntu flavor's name changed to Patrone Linux.
+ notice in NOTICES.Z) has its Ubuntu flavor's name changed to PatroneOS.
  Patrone's wordmark and P in it come from Patrone's logo, which was made
  with an AI image generator, so they're Patrone's only as far as anyone
  holds copyright in them (patrone-branding's copyright file says more).

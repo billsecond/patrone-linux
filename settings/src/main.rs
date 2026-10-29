@@ -106,7 +106,7 @@ const SIGN_IN_TERMINAL: [(&str, &str, &str); 2] = [
 
 /// The taskbar's icons folder: in the account's extensions, or the system's.
 fn taskbar_icons() -> Option<PathBuf> {
-    let relative = Path::new("gnome-shell/extensions/patrone-taskbar@patrone-linux/icons");
+    let relative = Path::new("gnome-shell/extensions/patrone-taskbar@patroneos.com/icons");
     std::iter::once(glib::user_data_dir())
         .chain(glib::system_data_dirs())
         .map(|dir| dir.join(relative))

@@ -8,7 +8,7 @@ files (`branding/system/desktop-provision/`, in `patrone-branding`), but its
 name doesn't: the front end knows only Ubuntu's flavors (`ubuntu_flavor`'s
 `UbuntuFlavor`) and says "Welcome to Ubuntu" and "Install Ubuntu". The
 user, 2026-10-27: "IT SHOULDN'T SAY UBUNTU"; they chose rebuilding Ubuntu's
-front end with a Patrone Linux flavor.
+front end with a PatroneOS flavor.
 
 `patrone-installer` is that build. It's the front end at the commit the
 ISO's snap was built from (`6623407`, ubuntu-desktop-bootstrap 26.04.1,
@@ -51,19 +51,19 @@ snap revision 665), with these changes, all made by `build.sh`:
   fonts' licence and Yaru's icon font's notice are copied beside them
   (`build.sh`).
 
-- **Ubuntu's flavor is named Patrone Linux** (`ubuntu_flavor` 0.5.0+1, from
-  pub.dev, with `ubuntu('Ubuntu')` made `ubuntu('Patrone Linux')`). The
+- **Ubuntu's flavor is named PatroneOS** (`ubuntu_flavor` 0.5.0+1, from
+  pub.dev, with `ubuntu('Ubuntu')` made `ubuntu('PatroneOS')`). The
   installer's text names the system as `{DISTRO}`, the flavor's name, so
-  it says "Welcome to Patrone Linux" and "Install Patrone Linux"; it still
+  it says "Welcome to PatroneOS" and "Install PatroneOS"; it still
   behaves as Ubuntu's flavor does.
-- **The few messages that say "Ubuntu" themselves** say Patrone Linux
-  (`debrand_l10n.py`; the window's title, "Patrone Linux Installer", among
+- **The few messages that say "Ubuntu" themselves** say PatroneOS
+  (`debrand_l10n.py`; the window's title, "PatroneOS Installer", among
   them), and their translations, which say Ubuntu, give way to the English.
   Ubuntu Pro's pages keep their text; the installer doesn't show them.
 - **The Applications page** (`debrand_l10n.py`): its one choice, "Default
   selection", says "Patrone's desktop, apps and everyday tools. You choose a
   web browser the first time you need one." Ubuntu's promised a web
-  browser, and Patrone Linux installs none.
+  browser, and PatroneOS installs none.
 
 The installer has no telemetry page: that page, and Ubuntu Pro's, belong to
 Ubuntu's first-boot setup (`ubuntu_init`, in the same source), which Patrone
@@ -85,16 +85,16 @@ In the live session (the ISO's live layer has the package):
   Ubuntu's (`LIVE_RUN=1`, drives kept from mounting by themselves).
 - `ubuntu-desktop-bootstrap_ubuntu-desktop-bootstrap.desktop` hides the
   snap's "Install Ubuntu" launcher; `patrone-installer.desktop` is "Install
-  Patrone Linux".
+  PatroneOS".
 - `patrone-branding` hides the page that offers an update of the snap,
   which would bring back Ubuntu's front end.
 
 ## Installing with nothing else
 
-The ISO's boot menu (`iso/build-iso.sh`) starts with **"Install Patrone
-Linux"**: the installer alone, full screen, with no desktop behind it, as a
-computer's own setup shows (the user, 2026-10-27, "installer only"). **"Try
-Patrone Linux"** is the live desktop, with the installer on it. The first
+The ISO's boot menu (`iso/build-iso.sh`) starts with **"Install
+PatroneOS"**: the installer alone, full screen, with no desktop behind it,
+as a computer's own setup shows (the user, 2026-10-27, "installer only"). **"Try
+PatroneOS"** is the live desktop, with the installer on it. The first
 adds `patrone-install-only` to the kernel's command line, and `kiosk/` does
 the rest:
 

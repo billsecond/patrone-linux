@@ -1,4 +1,4 @@
-// Patrone Linux's licence agreement, shown before installing, with a box to
+// PatroneOS's licence agreement, shown before installing, with a box to
 // accept it. Patrone's own page: installer/patch_source.py copies it into the
 // installer's source and adds it after "Try or install". The agreement is
 // legal/eula.md, which installer/build.sh puts beside the installer
@@ -60,7 +60,7 @@ class PatroneLicencePage extends ConsumerWidget with ProvisioningPage {
               style: theme.textTheme.titleLarge),
           const SizedBox(height: kWizardSpacing / 2),
           const Text(
-            'Each program in Patrone Linux keeps its own free software '
+            'Each program in PatroneOS keeps its own free software '
             'licence. Accepting this agreement doesn\'t change what those '
             'licences let you do.',
           ),
@@ -115,7 +115,7 @@ class PatroneLicencePage extends ConsumerWidget with ProvisioningPage {
             ?.group(1)
             ?.trim() ??
         'unknown';
-    final line = 'Patrone Linux End User Licence Agreement, version $version, '
+    final line = 'PatroneOS End User Licence Agreement, version $version, '
         'accepted ${DateTime.now().toUtc().toIso8601String()}';
     _log.info(line);
     try {

@@ -5,14 +5,14 @@ Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
-Vcs-Git: https://github.com/billsecond/patrone-linux.git
+Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: patrone-installer
 Architecture: amd64
 Depends: ${misc:Depends}, ${shlibs:Depends}, sudo, gnome-kiosk, gnome-session-bin
-Description: Patrone Linux's installer, for its live session
+Description: PatroneOS's installer, for its live session
  Ubuntu's installer front end (ubuntu-desktop-provision's ubuntu_bootstrap),
- built from the commit the ISO's installer snap was built from, with Patrone
- Linux as its name. It works with the ubuntu-desktop-bootstrap snap's install
+ built from the commit the ISO's installer snap was built from, with PatroneOS
+  as its name. It works with the ubuntu-desktop-bootstrap snap's install
  engine, and Patrone's ISO starts it in place of the snap's own front end.
  patrone-branding gives it Patrone's colors, pictures and slides.

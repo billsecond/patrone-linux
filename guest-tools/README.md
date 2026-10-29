@@ -1,6 +1,6 @@
 # Patrone's guest tools (Hyper-V and VirtualBox)
 
-`patrone-guest-tools` gives Patrone Linux, running as a virtual machine,
+`patrone-guest-tools` gives PatroneOS, running as a virtual machine,
 what a Windows guest gets from Hyper-V's integration services and
 VirtualBox's Guest Additions. It's in the ISO (the installer's live session
 and every install), and `patrone-desktop` recommends it. Each part runs only
@@ -24,7 +24,7 @@ VirtualBox's guest utilities from `virtualbox` (GPL-3.0, in multiverse).
 | Shutdown | the kernel (`hv_utils`) | `Stop-VM` shuts the guest down cleanly. |
 | Heartbeat | the kernel (`hv_utils`) | |
 | Time Synchronization | the kernel (`hv_utils`), and chrony | The host sets the clock at boot and after a saved VM is restored or checkpointed. The host's clock (`/dev/ptp_hyperv`) is also one of chrony's sources, with the NTS servers (below). |
-| Key-Value Pair Exchange | `hv_kvp_daemon` (Ubuntu's `linux-cloud-tools`) | Hyper-V Manager and `Get-VMNetworkAdapter` show the guest's IP addresses, and the host sees its name, "Patrone Linux", version and kernel. |
+| Key-Value Pair Exchange | `hv_kvp_daemon` (Ubuntu's `linux-cloud-tools`) | Hyper-V Manager and `Get-VMNetworkAdapter` show the guest's IP addresses, and the host sees its name, "PatroneOS", version and kernel. |
 | VSS | `hv_vss_daemon` (Ubuntu's `linux-cloud-tools`) | Production checkpoints and host backups freeze the file systems first, so they're consistent. |
 | Guest Service Interface | `hv_fcopy_uio_daemon`, started by Patrone's `patrone-hv-fcopy.service` | `Copy-VMFile` from the host. |
 | Dynamic memory | the kernel (`hv_balloon`) | Memory the host adds is brought online by Ubuntu's `40-vm-hotadd.rules`. |
@@ -144,7 +144,7 @@ with this package (`iso/build-iso.sh`, sha256 `63eff97a...`):
   folder; a checkpoint with `CheckpointType ProductionOnly` (which errors
   rather than fall back to a standard one) succeeded, with "op=FREEZE:
   succeeded" and "op=THAW: succeeded" in the guest's journal; the host's
-  KVP data said "Patrone Linux", 0.1, 7.0.0-42-generic, the computer's
+  KVP data said "PatroneOS", 0.1, 7.0.0-42-generic, the computer's
   name and address; memory grew from 4 GB to the 8 GB maximum;
   `chronyc sources` listed `PHC0`; `Stop-VM` shut it down cleanly in 4 s.
 - `patrone-vbox-users`, `virtualbox-guest-utils` and the VBoxClient user

@@ -1,12 +1,12 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: patrone-remote-desktop
-Source: https://github.com/billsecond/patrone-linux
+Source: https://github.com/billsecond/patroneos
 
 Files: *
 Copyright: 2026 William Daugherty
 License: GPL-3+
 
-Files: login-screen/patrone-login@patrone-linux/extension.js
+Files: login-screen/patrone-login@patroneos.com/extension.js
 Copyright: 2026 William Daugherty
            The GNOME Shell authors
 License: GPL-3+

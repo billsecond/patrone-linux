@@ -1,4 +1,4 @@
-# Patrone Linux's default zsh setup, installed as /etc/skel/.zshrc.
+# PatroneOS's default zsh setup, installed as /etc/skel/.zshrc.
 #
 # The prompt takes two lines:
 #   ┌──(user㉿host)-[~/src]

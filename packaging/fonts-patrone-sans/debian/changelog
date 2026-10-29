@@ -11,6 +11,14 @@ fonts-patrone-sans (2.0.0) resolute; urgency=medium
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
 
+fonts-patrone-sans (1.0.1) resolute; urgency=medium
+
+  * The system's new name, PatroneOS (2026-10-29), as the fonts'
+    manufacturer and in their description (name IDs 8 and 10). The outlines
+    are unchanged.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+
 fonts-patrone-sans (1.0.0) resolute; urgency=medium
 
   * Patrone Sans 1.000: Noto Sans 2.015 with a tailed l and a slashed zero,

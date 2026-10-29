@@ -894,7 +894,7 @@ static BOOL context_new(freerdp_peer* peer, rdpContext* context)
 	g->scale = 1.0;
 	g->last_input = time(NULL);
 	if (gethostname(g->hostname, sizeof(g->hostname) - 1) != 0)
-		snprintf(g->hostname, sizeof(g->hostname), "Patrone Linux");
+		snprintf(g->hostname, sizeof(g->hostname), "PatroneOS");
 	g->planar = freerdp_bitmap_planar_context_new(PLANAR_FORMAT_HEADER_NA | PLANAR_FORMAT_HEADER_RLE,
 	                                              TILE, TILE);
 	g->xkb = xkb_context_new(XKB_CONTEXT_NO_FLAGS);

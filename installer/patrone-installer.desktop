@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Install Patrone Linux
-Comment=Install Patrone Linux on this computer
+Name=Install PatroneOS
+Comment=Install PatroneOS on this computer
 Exec=patrone-installer
 Icon=/usr/share/desktop-provision/patrone-mark.svg
 Terminal=false

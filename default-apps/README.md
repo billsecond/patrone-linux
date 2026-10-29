@@ -10,7 +10,7 @@ Which apps Patrone uses by default, packaged as `patrone-default-apps`
 
 ## The web browser
 
-Patrone Linux comes with no web browser (the user, 2026-10-28: "Ask the
+PatroneOS comes with no web browser (the user, 2026-10-28: "Ask the
 user when they click on the browser with a modal if they want to install
 Chromium, Fire Fox, Brave, etc, then use the current patrone apps to open
 that up and set up the install"). The first time one's needed, **Patrone
