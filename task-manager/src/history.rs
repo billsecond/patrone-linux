@@ -1,4 +1,4 @@
-//! The App history page: how much processor time each app has used since
+//! The Usage history page: how much processor time each app has used since
 //! the computer started. Apps opened from the desktop run in a systemd
 //! scope of their own, and when a scope ends systemd writes what it used to
 //! your journal ("Consumed 2.3s CPU time, 120M memory peak"). Those

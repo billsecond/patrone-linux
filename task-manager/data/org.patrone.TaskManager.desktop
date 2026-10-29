@@ -17,7 +17,7 @@ Name=Performance
 Exec=patrone-task-manager --page performance
 
 [Desktop Action startup]
-Name=Startup apps
+Name=Startup applications
 Exec=patrone-task-manager --page startup
 
 [Desktop Action services]

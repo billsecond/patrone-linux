@@ -1,5 +1,5 @@
 //! The rows of Task Manager's lists. One GObject class serves every page
-//! (apps, processes, users, services, startup apps, app history); each
+//! (apps, processes, users, services, startup applications, usage history); each
 //! column's value is a property the cells bind to, so a row that changes
 //! updates its cells without the list being rebuilt.
 

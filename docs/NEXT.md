@@ -2125,10 +2125,10 @@ variable until they sign in again.
 
 The user asked (2026-10-26) for "a more windows like task manager,
 replacing the current one", which was Ubuntu's Resources. `task-manager/`
-is a Rust and GTK 4 app laid out like Windows 11's Task Manager: Processes
-(apps, background processes, system processes, each with its processes
-under it), Performance, App history, Startup apps, Users, Details and
-Services. `task-manager/README.md` has how it works and what was learned.
+is a Rust and GTK 4 app that works the way Windows users expect:
+Processes (apps, background processes, system processes, each with its
+processes under it), Performance, Usage history, Startup applications,
+Users, Details and Services. `task-manager/README.md` has how it works and what was learned.
 
 - **Replacing Resources:** `patrone-task-manager` has `Conflicts` and
   `Replaces: resources`. Resources is only recommended by

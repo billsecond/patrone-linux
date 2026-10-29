@@ -1,10 +1,10 @@
 # Patrone Task Manager
 
 Patrone's task manager, packaged as `patrone-task-manager`: a Rust and GTK 4
-app laid out like the task manager people know from Windows 11, in
-Patrone's own words. It takes the place of Ubuntu's Resources app
-(`net.nokyan.Resources`), which the package conflicts with, and
-Ctrl+Shift+Esc opens it.
+app that shows what's running and how hard the computer is working, and
+works the way people who have used Windows expect. It takes the place of
+Ubuntu's Resources app (`net.nokyan.Resources`), which the package
+conflicts with, and Ctrl+Shift+Esc opens it.
 
 ```
 patrone-task-manager [--page processes|performance|history|startup|users|details|services]
@@ -12,9 +12,9 @@ patrone-task-manager [--page processes|performance|history|startup|users|details
 
 It's a single-instance app (`org.patrone.TaskManager`): opening it again,
 or pressing Ctrl+Shift+Esc, brings the open window forward and shows the
-page asked for. The launcher's actions open Performance, Startup apps and
-Services. The taskbar's right-click "Task Manager" opens it first
-(`TASK_MANAGERS` in the taskbar's `taskbar.js`).
+page asked for. The launcher's actions open Performance, Startup
+applications and Services. The taskbar's right-click "Task Manager" opens
+it first (`TASK_MANAGERS` in the taskbar's `taskbar.js`).
 
 ## Pages
 
@@ -22,8 +22,8 @@ Services. The taskbar's right-click "Task Manager" opens it first
 | --- | --- | --- |
 | Processes | Apps, then Background processes, then System processes, each a row with its processes under it; Status (Suspended, Ended), CPU, Memory, Disk and Network, sortable, cells shaded pale yellow to orange as they get busier. The column headers carry the whole computer's figures ("12%" above "CPU") | `/proc` (below) |
 | Performance | CPU (overall, or each processor), Memory (with its composition: in use, modified, cached, free), each disk, each network adapter, and graphics cards that say how busy they are; each with a minute's graph and figures like Windows' | `/proc/stat`, `/proc/meminfo`, `/proc/diskstats`, `/proc/net/dev`, `/sys` (cpufreq, caches, block devices, adapters, `gpu_busy_percent`), `getifaddrs` |
-| App history | Processor time, peak memory and times opened for each app since the computer started | systemd's "Consumed … CPU time" records for each app's scope in your journal (`journalctl --user --boot`), plus the scopes still running (`cpu.stat`, `memory.peak`) |
-| Startup apps | Each autostart entry with a switch, the package it came from, whether it's everyone's or yours, and its command | `/etc/xdg/autostart`, `~/.config/autostart`, `dpkg-query -S` |
+| Usage history | Processor time, peak memory and times opened for each app since the computer started | systemd's "Consumed … CPU time" records for each app's scope in your journal (`journalctl --user --boot`), plus the scopes still running (`cpu.stat`, `memory.peak`) |
+| Startup applications | Each autostart entry with a switch, the package it came from, whether it's everyone's or yours, and its command | `/etc/xdg/autostart`, `~/.config/autostart`, `dpkg-query -S` |
 | Users | Each signed-in account, its state and sessions (its desktop, whether it's shown on the screen, terminal sign-ins), what its processes use, and its apps and processes under it. Sign out and Disconnect (below) | logind's `ListSessions` over D-Bus |
 | Details | Every process, kernel threads too: name, PID, status, account, CPU, private memory, threads, command line | `/proc` |
 | Services | System services or your own (a list to choose from): name, main PID, description, status, and how each starts (Automatically, Manually, When needed, Never) | systemd's `ListUnitsByPatterns` and `ListUnitFilesByPatterns` over D-Bus |
@@ -37,6 +37,12 @@ title bar filters every list by name, command line or PID. The menu sets the
 update speed (twice a second, once a second, every 4 seconds, paused). The
 window keeps its size, page and update speed in
 `~/.config/patrone-task-manager/state.ini`.
+
+The pages' names are plain words of Patrone's own. Usage history and
+Startup applications (GNOME's own term) were renamed on 2026-10-29, after
+the compliance review (`docs/COMPLIANCE.md`, item 15) found their earlier
+names copied from Windows 11; `--page history` and `--page startup` still
+open them.
 
 ## How processes are grouped
 
@@ -129,7 +135,7 @@ Sign out.
   password is needed, and it wasn't given. Nothing was changed.") and
   changes nothing.
 
-## Startup apps
+## Startup applications
 
 Turning an entry off writes your own copy of it in `~/.config/autostart`
 with `Hidden=true` (and `X-Patrone-Turned-Off=true`, so Task Manager knows
