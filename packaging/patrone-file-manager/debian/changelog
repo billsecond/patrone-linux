@@ -1,3 +1,18 @@
+patrone-file-manager (0.3.5) resolute; urgency=medium
+
+  * The Network page no longer freezes File Manager the first time it's
+    opened after signing in (about 10 seconds on PatroneDev, "Not
+    Responding"). GVfs answers the folder list's watch on a folder
+    synchronously, and starts the network browser before answering; the
+    folder view now asks GVfs asynchronously first and shows "Looking for
+    computers and devices on the network..." until it's ready, then the
+    computers appear. Other network places (shares, the Recycle Bin) load
+    the same way.
+  * Opening a network place from the command line (patrone-file-manager
+    network:///) no longer waits on GVfs before the window shows.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 06:00:00 -0500
+
 patrone-file-manager (0.3.4) resolute; urgency=medium
 
   * Mount folders (the user, 2026-10-28: "also show /media too, making it

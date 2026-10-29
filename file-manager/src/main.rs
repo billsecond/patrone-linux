@@ -205,19 +205,46 @@ fn command_line(
         return glib::ExitCode::SUCCESS;
     }
     for file in locations {
-        let file_type = file.query_file_type(gio::FileQueryInfoFlags::NONE, gio::Cancellable::NONE);
-        if file_type == gio::FileType::Regular {
-            let launched =
-                gio::AppInfo::launch_default_for_uri(&file.uri(), None::<&gio::AppLaunchContext>);
-            if launched.is_ok() {
-                continue;
-            }
+        if file.is_native() {
+            let file_type =
+                file.query_file_type(gio::FileQueryInfoFlags::NONE, gio::Cancellable::NONE);
+            open_location(app, file, file_type);
+        } else if places::special_of(&file).is_some() {
+            // Network and the Recycle Bin are folders: shown at once.
+            open_location(app, file, gio::FileType::Directory);
+        } else {
+            // Asked without waiting: GVfs can take seconds to answer for a
+            // network place it hasn't started yet, and the app would freeze.
+            let hold = app.hold();
+            let app = app.clone();
+            glib::spawn_future_local(async move {
+                let file_type = file
+                    .query_info_future(
+                        gio::FILE_ATTRIBUTE_STANDARD_TYPE,
+                        gio::FileQueryInfoFlags::NONE,
+                        glib::Priority::DEFAULT,
+                    )
+                    .await
+                    .map_or(gio::FileType::Unknown, |info| info.file_type());
+                open_location(&app, file, file_type);
+                drop(hold);
+            });
         }
-        let window = Window::new(app, Location::Folder(file));
-        window.present();
-        take_screenshot_if_asked(&window);
     }
     glib::ExitCode::SUCCESS
+}
+
+/// Opens a location given on the command line: a file in its app, anything
+/// else (or a file no app opens) in a window.
+fn open_location(app: &gtk::Application, file: gio::File, file_type: gio::FileType) {
+    if file_type == gio::FileType::Regular
+        && gio::AppInfo::launch_default_for_uri(&file.uri(), None::<&gio::AppLaunchContext>).is_ok()
+    {
+        return;
+    }
+    let window = Window::new(app, Location::Folder(file));
+    window.present();
+    take_screenshot_if_asked(&window);
 }
 
 /// For testing: with `PATRONE_FM_SCREENSHOT=file.png`, the first window is

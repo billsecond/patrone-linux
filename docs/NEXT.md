@@ -121,7 +121,10 @@ Waiting on the user:
   page can be mounted or mapped from its right-click menu (the user:
   "Allow me to right click on a network folder and mount it"); a network
   drive then shows under This PC with a folder path every app can open.
-  `patrone-file-manager` 0.3.4 is installed on PatroneDev: close every
+  Since 0.3.5 the first visit to the Network page after signing in no
+  longer freezes File Manager for about 10 seconds: it says "Looking for
+  computers and devices on the network..." until GVfs is ready.
+  `patrone-file-manager` 0.3.5 is installed on PatroneDev: close every
   File Manager window to start using it (the desktop's icons switch at
   the next sign-in). `patrone-remote-desktop` 0.5.1 lets Patrone's
   seat-less desktops mount USB drives and disk images with no password
