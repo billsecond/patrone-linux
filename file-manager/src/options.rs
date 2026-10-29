@@ -197,7 +197,7 @@ pub fn show(window: &Window) {
     general.add_css_class("property-page");
     let open_to_row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
     open_to_row.append(&gtk::Label::new(Some("Open File Manager to:")));
-    let open_to = gtk::DropDown::from_strings(&["Home", "This PC"]);
+    let open_to = gtk::DropDown::from_strings(&["Home", "Computer"]);
     open_to.set_selected(if config::string("open-to") == "this-pc" {
         1
     } else {

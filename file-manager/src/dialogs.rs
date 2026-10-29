@@ -1,4 +1,4 @@
-//! Windows-style dialogs: a title bar with the title and GTK's own close
+//! Patrone's dialogs: a title bar with the title and GTK's own close
 //! button (in the corner and style the account chose), a white body, and
 //! the buttons on the right of a gray footer.
 

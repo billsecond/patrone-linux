@@ -1,8 +1,9 @@
 # Patrone File Manager
 
-The file manager of Patrone Linux ("File Manager" in menus): Windows 11's
-File Explorer, rebuilt in Rust with GTK4. Same layout, same right-click
-menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
+The file manager of Patrone Linux ("File Manager" in menus), written in
+Rust with GTK4. It works the way Windows users expect, with the layout,
+right-click menus, options and keyboard shortcuts they know, in Patrone's
+own look and colors. App ID
 `org.patrone.FileManager`, command `patrone-file-manager`, package
 `patrone-file-manager`.
 
@@ -21,7 +22,7 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   keeps the tabs readable on any style. Back, Forward, Up and
   Refresh (and the mouse's own Back and Forward buttons); going back or up
   by any route selects the folder you came out of, scrolled into view and
-  with the keyboard focus, as on Windows; breadcrumbs of the whole path from This PC (This PC › Local Disk
+  with the keyboard focus, as on Windows; breadcrumbs of the whole path from Computer (Computer › System drive
   (/) › home › you › folder), any of which goes there when clicked, with
   chevrons listing each folder's subfolders; when the path doesn't fit, its
   start folds into a « button that lists it, as on Windows. Clicking the
@@ -51,16 +52,16 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   access, Copy path, Select all/none, Invert selection, Open in Terminal,
   Properties, Options); and Details.
 - **Navigation pane:** Home, Gallery, your home folder; the folders pinned to
-  Quick access; This PC with its drives, Network and the Recycle Bin. Folders
+  Quick access; Computer with its drives, Network and the Recycle Bin. Folders
   expand (chevrons appear on hover); middle-click opens a new tab; files can
   be dropped on any folder or drive.
 - **Pages:** Home (Quick access tiles of pinned and frequent folders,
   Favorites, Recent files), Gallery (every picture and video in Pictures,
-  newest first), This PC (drives with usage bars, network locations), the
+  newest first), Computer (drives with usage bars, network drives), the
   Recycle Bin (Original location and Date deleted columns, Restore, Empty).
 - **Drives and mounts** (`src/drives.rs`, `src/thispc.rs`): Linux has no
   drive letters; each drive's files appear in a folder of the one tree
-  under `/`, its mount. This PC lists every drive, mounted or not: a tile
+  under `/`, its mount. Computer lists every drive, mounted or not: a tile
   says where the drive is mounted ("Mounted at /run/media/..."; the
   system drive at `/`), or its size and "Not mounted". Opening one mounts
   it, as does Mount in its menus, the command bar and the navigation pane;
@@ -68,7 +69,7 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   it away. Internal drives ask for an administrator's password once
   (udisks' `filesystem-mount-system`; Patrone Remote Desktop's polkit rule
   gives Patrone's seat-less desktops the same as a desktop at the screen).
-  This PC and the navigation pane follow GIO's volume monitor, which
+  Computer and the navigation pane follow GIO's volume monitor, which
   `drives::monitor()` keeps for the app's life: GIO frees it, and the
   signals connected to it, with its last reference.
   **Map network drive** takes `\\server\share` (a Windows share,
@@ -76,15 +77,15 @@ menus, same options, same keyboard shortcuts, in Patrone's colors. App ID
   `nfs://`...), signs in when the server asks (the password can be
   remembered in the keyring), and with "Reconnect at sign-in" keeps the
   address in `mapped-drives`: `--restore`, run at each sign-in, connects
-  it again. A mapped drive keeps its own name and address in This PC's
-  Network locations, connected or not, and opens to the folder mapped.
+  it again. A mapped drive keeps its own name and address in Computer's
+  Network drives, connected or not, and opens to the folder mapped.
   Disconnect unmounts a network drive and forgets it. **Disk images**
   (`.iso`, `.img`): Mount (right-click, or the command bar) sets the image
   up read-only with `udisksctl loop-setup`, mounts its file system and
   opens it; Eject unmounts it, and udisks detaches the image then (it
   sets loop devices to clear themselves). Not done: VHD/VHDX images, and
   mounting internal drives at sign-in.
-  **Mount folders**: This PC and the navigation pane show "Drive mounts",
+  **Mount folders**: Computer and the navigation pane show "Drive mounts",
   the folder the account's drives are mounted in (`/run/media/USER`, as
   Ubuntu 26.04's udisks builds it; `/media/USER` where udisks is built the
   older way; `/media` until the first drive makes it), always, so it's
@@ -354,13 +355,16 @@ desktop's View and Sort by are `desktop-icon-size`, `desktop-auto-arrange`,
 
 ## Icons
 
-Every icon is original artwork drawn for Patrone in the style of Windows 11's
-Fluent design; nothing is copied from Microsoft. The color icons (folders,
+Every icon is original artwork drawn for Patrone; nothing is copied from
+Microsoft. The color icons (folders,
 file types, drives, places) are SVGs in `data/icons`, drawn by
 `tools/make_icons.py`; `tools/preview_icons.py` renders them all on light
 and dark backgrounds for checking. The app's own icon,
-`data/org.patrone.FileManager.svg`, is drawn by hand (not by the script),
-and the taskbar's Files pin is a copy of it
+`data/org.patrone.FileManager.svg`, is drawn by hand (not by the script):
+a folder in Patrone's blues, its tab on the right and its front cut on the
+slant of the Patrone P (since 0.3.6; it was a yellow folder with a blue
+band, File Explorer's shape, until the compliance review, item 15). The
+taskbar's Files pin is a copy of it
 (`shell/gnome/patrone-taskbar@patrone-linux/icons/pin-files.svg`), so a new
 app icon goes there too. The line glyphs of the command bar and
 menus are vector paths in `src/glyph.rs`, drawn in the text color so they

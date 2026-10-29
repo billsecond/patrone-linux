@@ -308,7 +308,7 @@ impl ThisPcPage {
         let folders_box = flow();
         let content = gtk::Box::new(gtk::Orientation::Vertical, 18);
         content.add_css_class("home-page");
-        let (drives_section, heading) = home::section("Devices and drives", &drives_box);
+        let (drives_section, heading) = home::section("Drives", &drives_box);
         heading.set_tooltip_text(Some(
             "Every drive and where it's mounted. Linux has no drive letters: \
              each drive's files appear in a folder, its mount. The system drive \
@@ -316,7 +316,7 @@ impl ThisPcPage {
              mounted to mount it.",
         ));
         content.append(&drives_section);
-        let (network_section, _) = home::section("Network locations", &network_box);
+        let (network_section, _) = home::section("Network drives", &network_box);
         content.append(&network_section);
         let (folders_section, heading) = home::section("Mount folders", &folders_box);
         heading.set_tooltip_text(Some(

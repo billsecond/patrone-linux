@@ -3,8 +3,8 @@
 //! Each glyph is a handful of SVG path strings on a 16-unit grid, drawn with
 //! 1-unit round strokes in the widget's CSS color, so glyphs follow light and
 //! dark mode, hover and disabled states, and stay sharp at any scale. Parts
-//! marked as accent are drawn in Patrone Blue. They're drawn for Patrone in
-//! the style of Windows 11's Fluent icons, not copied from them.
+//! marked as accent are drawn in Patrone Blue. They're original artwork
+//! drawn for Patrone.
 
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;

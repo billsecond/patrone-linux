@@ -88,9 +88,9 @@ pub fn is_trash_root(file: &gio::File) -> bool {
     special_of(file) == Some(Special::Trash)
 }
 
-/// The system drive's name, as This PC shows it.
+/// The system drive's name, as Computer shows it.
 pub fn root_name() -> String {
-    "Local Disk (/)".to_owned()
+    "System drive (/)".to_owned()
 }
 
 /// The name shown for a folder in tabs, the address bar and the
