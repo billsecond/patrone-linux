@@ -1,5 +1,7 @@
-# Builds Ubuntu's updates to GDM, GNOME Settings and first-login setup again
-# with Patrone's changes, and publishes them (packaging/ubuntu-updates.sh).
+# Publishes what's merged into main and not yet published
+# (packaging/main-updates.sh), then builds Ubuntu's updates to GDM, GNOME
+# Settings and first-login setup again with Patrone's changes, and publishes
+# them (packaging/ubuntu-updates.sh, which runs both).
 # A user unit for the dev VM's build account, run daily by
 # patrone-ubuntu-updates.timer. Install it, as that account:
 #
@@ -11,7 +13,7 @@
 # missed days catch up at the next sign-in. Its output:
 # journalctl --user -u patrone-ubuntu-updates
 [Unit]
-Description=Rebuild Patrone's builds of Ubuntu's updated packages
+Description=Publish what's merged into main, and rebuild Ubuntu's updates to Patrone's builds
 
 [Service]
 Type=oneshot

@@ -18,6 +18,10 @@
 # branch: this checkout's origin, fetched each time. Whatever it can't do (a
 # build that fails, the installer) becomes an issue in billsecond/patrone-apt;
 # that repository's own daily check opens one too while a build is behind.
+#
+# First, in the same checkout, it runs main-updates.sh, which publishes what's
+# merged into main and not yet published. Ubuntu's updates come next whatever
+# happens there, and the run ends with an error if that part had one.
 set -euo pipefail
 
 here=$(cd "$(dirname "$0")" && pwd)
@@ -57,6 +61,11 @@ flag() {
 
 [ -d "$repo/.git" ] || git clone -q "https://github.com/$github" "$repo"
 git -C "$repo" pull -q --ff-only
+
+# What's merged into main and not yet published
+status=0
+LOGS=$work/logs APT_REPO=$repo APT_GITHUB=$github \
+    "$root/packaging/main-updates.sh" ${check_only:+--check} || status=$?
 
 # Patrone's builds of Ubuntu's packages, and how each is built
 declare -A build=(
@@ -115,3 +124,4 @@ if [ -n "$revision" ] && [ "$revision" != "$snap_revision" ] && [ -z "$check_onl
 
 Then: take provision_commit from that snap's snap/manifest.yaml, the Flutter version from .tool-versions and ubuntu_flavor's from apps/ubuntu_bootstrap/pubspec.lock, set snap_revision, and build the installer again (installer/README.md)."
 fi
+exit "$status"

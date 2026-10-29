@@ -98,11 +98,30 @@ index (`dists/resolute`) and signs it, commits and pushes it to
 package already published at that version or newer is skipped. Every
 install takes what's published, by itself, within a day.
 
-**Nothing publishes `main` by itself.** The daily job below follows only
-Ubuntu's updates to three packages, so each merge that bumps a package's
-version is published by hand, right after the merge. On the dev VM, in a
-clean, up-to-date checkout of `main` (`~/src/patrone-linux`, or a fresh
-worktree of `origin/main` when that one is on a branch):
+**Merges publish themselves, within a day.** `main-updates.sh` builds every
+package whose version on `main` is newer than the published one, and a new
+revision of Patrone's GDM, GNOME Settings or first-login setup changes (the
+`revision=` line in their `build.sh`), and publishes what built. It runs
+once a day on the dev VM, first in the daily job below, from that job's
+clean checkout of `main`, and it won't run anywhere but a checkout of `main`
+as it is on GitHub. It publishes only the debs it has just built. So a
+change that should reach installs needs a version bump, as always.
+
+```
+./packaging/main-updates.sh --check    # only say what's behind
+```
+
+A build or publish that fails is in the job's output (`journalctl --user -u
+patrone-ubuntu-updates`), fails the run, and becomes an issue in
+billsecond/patrone-apt titled "PACKAGE VERSION from main: ...", which
+closes by itself once that version, or a newer one, is published.
+`patrone-installer` isn't built there, since it needs `installer/build.sh`
+first: a new version of it on `main` becomes an issue saying to build it by
+hand.
+
+To publish one sooner, on the dev VM, in a clean, up-to-date checkout of
+`main` (`~/src/patrone-linux`, or a fresh worktree of `origin/main` when
+that one is on a branch):
 
 ```
 export PATH=$HOME/.cargo/bin:$PATH             # over SSH, for the Rust packages
@@ -141,7 +160,8 @@ billsecond/patrone-apt.
 
 It runs daily on the dev VM as a user timer
 (`scripts/vm/patrone-ubuntu-updates.timer`, whose service file says how to
-install it), while the account is signed in. Separately, a daily GitHub
+install it), while the account is signed in, after `main-updates.sh`
+(above), which it runs first. Separately, a daily GitHub
 Actions check in billsecond/patrone-apt opens an issue for each package
 Ubuntu has updated and closes it when Patrone's rebuild is published, so a
 build that's behind shows up even while the VM is off.
