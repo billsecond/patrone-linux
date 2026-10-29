@@ -69,11 +69,11 @@
 #define IDLE_SECONDS (15 * 60)
 #define TILE 64
 
-/* Patrone's login screen: Patrone Blue, Patrone Sans, a navy-to-black
+/* Patrone's login screen: Patrone Blue, PatroneOS Sans, a navy-to-black
  * background (branding/system/gdm/patrone-gdm.css) */
 #define BLUE 0x288bfa
 #define ERROR_RED 0xff8a80
-#define FONT "Patrone Sans, Noto Sans, sans-serif"
+#define FONT "PatroneOS Sans, Noto Sans, sans-serif"
 
 typedef struct
 {

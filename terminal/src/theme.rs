@@ -6,9 +6,13 @@
 use gtk::gdk;
 use vte::prelude::*;
 
-/// The default font, from the fonts-jetbrains-mono package. A single family,
-/// so the font chooser in Preferences can show it.
-pub const FONT: &str = "JetBrains Mono 11";
+/// The default font: PatroneOS Mono, PatroneOS's own (the fonts-patroneos
+/// package). A single family, so the font chooser in Preferences can show it.
+pub const FONT: &str = "PatroneOS Mono 11";
+
+/// The default before PatroneOS Mono, which settings saved by an older
+/// version may hold without anyone having picked it.
+pub const OLD_FONT: &str = "JetBrains Mono 11";
 
 const FOREGROUND: &str = "#D6DEEB";
 const BACKGROUND: &str = "#070A10";

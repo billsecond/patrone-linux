@@ -1,3 +1,11 @@
+fonts-patrone-sans (2.0.0) resolute; urgency=medium
+
+  * Now a transitional package: Patrone Sans has given way to PatroneOS's
+    own fonts, which it installs (fonts-patroneos). Upgrading removes Patrone
+    Sans; fontconfig sends anything that asks for it to PatroneOS Sans.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
+
 fonts-patrone-sans (1.0.1) resolute; urgency=medium
 
   * The system's new name, PatroneOS (2026-10-29), as the fonts'

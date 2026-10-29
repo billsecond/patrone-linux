@@ -1,3 +1,10 @@
+patrone-remote-desktop (0.5.7) resolute; urgency=medium
+
+  * The sign-in screen's font is PatroneOS Sans, PatroneOS's own, in place of
+    Patrone Sans.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
+
 patrone-remote-desktop (0.5.6) resolute; urgency=medium
 
   * Upgrading compiles GDM's settings again, as GDM's own reload does. They
