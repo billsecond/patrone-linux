@@ -1,9 +1,15 @@
+patrone-installer (0.1.6) resolute; urgency=medium
+
+  * The licence page shows the licence agreement's version 1.0, of
+    29 October 2026: the first one published, since nothing was before it.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 14:00:00 -0500
+
 patrone-installer (0.1.5) resolute; urgency=medium
 
   * The system's new name, PatroneOS (2026-10-29), as the installer's flavor
     name ("Welcome to PatroneOS", "Install PatroneOS"), its window title,
-    the licence page and the full-screen session, with the licence
-    agreement's version 1.1.
+    the licence page and the full-screen session.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
 

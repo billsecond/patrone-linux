@@ -1,8 +1,8 @@
-Version: 1.1
+Version: 1.0
 
 # PatroneOS End User Licence Agreement
 
-Version 1.1, effective 29 October 2026.
+Version 1.0, effective 29 October 2026.
 
 This agreement is between you and William Daugherty, who makes PatroneOS ("we", "us"). It covers the PatroneOS operating system: the disc image (the ISO file), whether you download it from us or get it from someone else, what it installs on your computer, and our download service. You accept it by ticking "I have read and agree" before you download from us, or by accepting it on the installer's licence page. If you accept it for an organisation, you confirm that you may do so on its behalf. If you're under 18, you need a parent's or guardian's permission to accept it.
 
