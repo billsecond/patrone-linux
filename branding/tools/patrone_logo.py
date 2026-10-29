@@ -228,8 +228,20 @@ def _fold_meets_bowl():
     return lo
 
 
-def mark(mono=None):
-    """The P, 1425 by 1000 units. mono: one color for the whole mark."""
+# For the P drawn 16 to 32 pixels across (the taskbar's Start button): the
+# slit and the gap by the stem opened up, so they don't close
+SMALL_SLIT, SMALL_GAP = 140.0, 150.0
+# Light tones, white to pale Patrone Blue, for buttons whose color the
+# blues wash out against (the taskbar's Royal theme's green)
+LIGHT = {"lower": ("#F2F8FF", "#D3E6FF"), "stem": ("#DCEBFF", "#CBE1FF"),
+         "upper": ("#FFFFFF", "#EEF5FF"), "band": ("#FFFFFF", "#E6F1FF")}
+
+
+def mark(mono=None, small=False, light=False):
+    """The P, 1425 by 1000 units. mono: one color for the whole mark;
+    small: opened up for 16 to 32 pixels; light: in light tones."""
+    lower_top = BAND_BOTTOM + (SMALL_SLIT if small else LOWER_TOP - BAND_BOTTOM)
+    gap = SMALL_GAP if small else STEM_GAP
     cy_mid = (BAND_TOP + LOWER_BOTTOM) / 2
     top_c, low_c = cy_mid - 22.0, cy_mid + 22.0
     t_tip = _fold_meets_bowl()
@@ -246,27 +258,36 @@ def mark(mono=None):
     ])
     # The lower half runs under the band's tip, which is drawn over it, so
     # no gap shows where they meet.
-    lower_left = _stem_left(LOWER_TOP) + STEM_WIDTH + STEM_GAP
-    t_top = math.asin((LOWER_TOP - low_c) / BOWL_RY)
-    lower = Contour((lower_left, LOWER_TOP), [
+    lower_left = _stem_left(lower_top) + STEM_WIDTH + gap
+    t_top = math.asin((lower_top - low_c) / BOWL_RY)
+    lower = Contour((lower_left, lower_top), [
         ("L",) + _bowl_point(t_top, True),
         ("E", BOWL_FLAT, low_c, BOWL_RX, BOWL_RY, t_top, math.pi / 2),
-        ("L", lower_left - SLANT * (LOWER_BOTTOM - LOWER_TOP), LOWER_BOTTOM),
+        ("L", lower_left - SLANT * (LOWER_BOTTOM - lower_top), LOWER_BOTTOM),
     ])
-    stem_pts = [(_stem_left(LOWER_TOP), LOWER_TOP), (_stem_left(LOWER_TOP) + STEM_WIDTH, LOWER_TOP),
+    stem_pts = [(_stem_left(lower_top), lower_top), (_stem_left(lower_top) + STEM_WIDTH, lower_top),
                 (STEM_WIDTH, STEM_BOTTOM), (0.0, STEM_BOTTOM)]
     stem = rounded(stem_pts, [0] * 4)
     # The facet leans the band's way, through FACET
     fx, fy = FACET
 
-    def facet_meets(x0):  # x0 + -SLANT*(y - LOWER_TOP) edge, against the facet
-        y = (x0 + SLANT * LOWER_TOP - fx + SLANT * fy) / (2 * SLANT)
-        return x0 - SLANT * (y - LOWER_TOP), y
+    def facet_meets(x0):  # x0 + -SLANT*(y - lower_top) edge, against the facet
+        y = (x0 + SLANT * lower_top - fx + SLANT * fy) / (2 * SLANT)
+        return x0 - SLANT * (y - lower_top), y
     upper = rounded([stem_pts[0], stem_pts[1], facet_meets(stem_pts[1][0]),
                      facet_meets(stem_pts[0][0])], [0] * 4)
     if mono:
         paint = Solid(mono)
         return [Piece([lower], paint), Piece([stem], paint), Piece([band], paint)]
+    if light:
+        def tone(part):
+            return [(0, LIGHT[part][0]), (1, LIGHT[part][1])]
+        return [
+            Piece([lower], Linear((700, 718), (1400, 400), tone("lower"))),
+            Piece([stem], Linear((450, 700), (100, 1000), tone("stem"))),
+            Piece([upper], Linear((700, 398), (300, 850), tone("upper"))),
+            Piece([band], Linear((250, 300), (1350, 150), tone("band"))),
+        ]
     return [
         Piece([lower], Linear((700, 718), (1400, 400), [(0, DEEP), (0.55, MID), (1, BLUE)])),
         Piece([stem], Linear((450, 700), (100, 1000), [(0, DEEP), (1, SHADOW)])),
@@ -414,15 +435,22 @@ def side_by_side(dark=True, mono=None):
 
 # --- Output ------------------------------------------------------------------
 
-def svg(pieces, size=None, pad=0.0, title=None):
-    """An SVG of the pieces, its viewBox their bounds plus pad; size: its
-    width and height in pixels, or None for the viewBox's own."""
+def svg(pieces, size=None, pad=0.0, title=None, square=False, comment=None):
+    """An SVG of the pieces, its viewBox their bounds plus pad (widened to a
+    square round them with square); size: its width and height in pixels,
+    or None for the viewBox's own. comment: a note at the top."""
     x0, y0, x1, y1 = bounds(pieces)
     x0, y0, x1, y1 = x0 - pad, y0 - pad, x1 + pad, y1 + pad
+    if square:
+        side = max(x1 - x0, y1 - y0)
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        x0, y0, x1, y1 = cx - side / 2, cy - side / 2, cx + side / 2, cy + side / 2
     vw, vh = x1 - x0, y1 - y0
     w, h = size if size else (vw, vh)
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{_num(w)}" height="{_num(h)}" '
            f'viewBox="{_num(x0)} {_num(y0)} {_num(vw)} {_num(vh)}">']
+    if comment:
+        out.append(f"<!-- {comment} -->")
     if title:
         out.append(f"<title>{title}</title>")
     defs, body = [], []

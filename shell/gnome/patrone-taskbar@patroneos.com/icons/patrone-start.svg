@@ -1,24 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 16 388 388" width="64" height="64">
-  <!-- The Patrone mark (branding/logos/patrone-logo.png) as vectors, for the
-       Start button: the upper band with the bowl's top, the bowl's lower
-       part, and the slanted stem. -->
-  <defs>
-    <linearGradient id="top" x1="0" y1="0" x2="1" y2="0.4">
-      <stop offset="0" stop-color="#3d8eff"/>
-      <stop offset="1" stop-color="#5aa6ff"/>
-    </linearGradient>
-    <linearGradient id="bowl" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2f80f4"/>
-      <stop offset="1" stop-color="#1f66d6"/>
-    </linearGradient>
-    <linearGradient id="stem" x1="0.6" y1="0" x2="0.3" y2="1">
-      <stop offset="0" stop-color="#3a8cff"/>
-      <stop offset="0.55" stop-color="#2a78ec"/>
-      <stop offset="0.56" stop-color="#2266d2"/>
-      <stop offset="1" stop-color="#1d5cc4"/>
-    </linearGradient>
-  </defs>
-  <path fill="url(#top)" d="M86 68 H306 C356 68 393 106 393 150 C393 156 392 162 391 167 H140 Z"/>
-  <path fill="url(#bowl)" d="M262 180 H379 C368 228 330 262 288 262 H213 Z"/>
-  <path fill="url(#stem)" d="M133 180 H237 L131 352 H28 Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="-42.75 -255.25 1510.5 1510.5">
+<!-- Drawn by branding/tools/make_logos.py from the PatroneOS P: change that, not this -->
+<defs><linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="700" y1="718" x2="1400" y2="400"><stop offset="0" stop-color="#1851A8"/><stop offset="0.55" stop-color="#2372DD"/><stop offset="1" stop-color="#288BFA"/></linearGradient><linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="450" y1="700" x2="100" y2="1000"><stop offset="0" stop-color="#1851A8"/><stop offset="1" stop-color="#134394"/></linearGradient><linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="700" y1="398" x2="300" y2="850"><stop offset="0" stop-color="#288BFA"/><stop offset="1" stop-color="#2372DD"/></linearGradient><linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="250" y1="300" x2="1350" y2="150"><stop offset="0" stop-color="#288BFA"/><stop offset="1" stop-color="#4DA0FC"/></linearGradient></defs>
+<path fill="url(#g0)" d="M913.6 440L1421.06 440A255 337 0 0 1 1170 718L730.12 718Z"/>
+<path fill="url(#g1)" d="M369.6 440L763.6 440L394 1000L0 1000L369.6 440Z"/>
+<path fill="url(#g2)" d="M369.6 440L763.6 440L459.26 901.13L262.26 602.64L369.6 440Z"/>
+<path fill="url(#g3)" d="M230 0L1170 0A255 337 0 0 1 1425 337L1425 381A255 337 0 0 1 1401.86 521.27A294 294 0 0 0 1117 300L428 300Z"/>
 </svg>
