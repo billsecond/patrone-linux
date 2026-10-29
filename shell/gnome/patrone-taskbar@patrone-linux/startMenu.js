@@ -1,12 +1,12 @@
-// The Start menu, Windows 11's in a smaller size. It opens with the search
-// box focused, so typing searches right away: apps first, then everything
-// GNOME's own search covers (Settings, Files, Calculator and the rest), with
-// "Search the web" last. Enter opens the best match, or searches the web when
-// nothing else matched.
+// The Patrone menu, opened from the taskbar's menu button (shown to users as
+// "Menu"). It opens with the search box focused, so typing searches right
+// away: apps first, then everything GNOME's own search covers (Settings,
+// Files, Calculator and the rest), with "Search the web" last. Enter opens
+// the top result, or searches the web when nothing else matched.
 //
-// Empty, it shows the pinned apps (GNOME's favorites, which the Activities
+// Empty, it shows the Favorites (GNOME's favorites, which the Activities
 // overview shares), recently used files with the suggested apps among them
-// (Software at first), "All apps", and the account's avatar, Settings and
+// (Software at first), "All applications", and the account's avatar, Settings and
 // power buttons. Opened from the taskbar's search button, it shows the most
 // used apps and recent files instead.
 
@@ -250,7 +250,7 @@ export class StartMenu {
     _buildSearchBox() {
         this._entry = new St.Entry({
             style_class: 'patrone-start-search',
-            hint_text: 'Type here to search',
+            hint_text: 'Search apps, files and the web',
             can_focus: true,
             x_expand: true,
             primary_icon: new St.Icon({
@@ -288,8 +288,8 @@ export class StartMenu {
         return Clutter.EVENT_PROPAGATE;
     }
 
-    // Home: pinned apps and recommended files, or (from the search button)
-    // top apps and recent files
+    // Home: Favorites and recent files, or (from the search button) top apps
+    // and recent files
 
     _fillHome() {
         this._homePage.destroy_all_children();
@@ -300,8 +300,8 @@ export class StartMenu {
     }
 
     _fillStartHome() {
-        const allApps = makeLinkButton('All apps  ›', () => this._showAllApps());
-        this._homePage.add_child(makeHeader('Pinned', allApps));
+        const allApps = makeLinkButton('All applications  ›', () => this._showAllApps());
+        this._homePage.add_child(makeHeader('Favorites', allApps));
 
         const pinned = this._favorites.getFavorites().slice(0, PINNED_COLUMNS * PINNED_ROWS);
         const grid = new St.BoxLayout({
@@ -324,10 +324,10 @@ export class StartMenu {
             grid.add_child(line);
         }
         if (pinned.length === 0)
-            grid.add_child(makeLabel('Right-click an app in All apps to pin it here.', 'patrone-start-empty'));
+            grid.add_child(makeLabel('Right-click an app in All applications to add it here.', 'patrone-start-empty'));
         this._homePage.add_child(grid);
 
-        this._homePage.add_child(makeHeader('Recommended'));
+        this._homePage.add_child(makeHeader('Recent'));
         const items = this._recommended(RECOMMENDED);
         if (items.length === 0) {
             this._homePage.add_child(makeLabel('Files you open show up here.', 'patrone-start-empty'));
@@ -563,7 +563,7 @@ export class StartMenu {
             this._fillHome();
             this._showPage(this._homePage);
         });
-        page.add_child(makeHeader('All apps', back));
+        page.add_child(makeHeader('All applications', back));
 
         this._allAppsList = new St.BoxLayout({
             orientation: Clutter.Orientation.VERTICAL,
@@ -671,10 +671,10 @@ export class StartMenu {
         menu.addAction('Open', () => this.launch(app), app.app_info?.get_icon() ?? undefined);
         menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         if (this._favorites.isFavorite(id)) {
-            menu.addAction('Unpin from Start', () => this._favorites._removeFavorite(id),
+            menu.addAction('Remove from Favorites', () => this._favorites._removeFavorite(id),
                 'view-pin-symbolic');
         } else {
-            menu.addAction('Pin to Start', () => this._favorites._addFavorite(id, -1),
+            menu.addAction('Add to Favorites', () => this._favorites._addFavorite(id, -1),
                 'view-pin-symbolic');
         }
         if (this._taskbar.isPinned(id)) {
@@ -825,14 +825,14 @@ export class StartMenu {
             return row;
         };
 
-        // Best match: the first result, apps first
+        // Top result: the first result, apps first
         const groups = this._providers()
             .filter(provider => this._results.get(provider)?.length)
             .map(provider => ({provider, metas: [...this._results.get(provider)]}));
         if (groups.length) {
             const {provider} = groups[0];
             const meta = groups[0].metas.shift();
-            this._resultsBox.add_child(makeHeader('Best match'));
+            this._resultsBox.add_child(makeHeader('Top result'));
             const kind = provider.id === 'applications' ? 'App' : this._groupName(provider);
             this._resultsBox.add_child(addRow(
                 makeRow(meta.createIcon(32) ?? fallbackIcon(32), meta.name, kind,

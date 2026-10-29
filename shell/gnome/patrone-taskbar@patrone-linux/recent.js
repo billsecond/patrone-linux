@@ -1,5 +1,5 @@
 // Recently used files, read from the list GTK apps keep
-// (~/.local/share/recently-used.xbel), for the Start menu's "Recommended" and
+// (~/.local/share/recently-used.xbel), for the Patrone menu's "Recent" and
 // the taskbar's jump lists, and the folders pinned in the file manager
 // (GTK's bookmarks), for the file manager's jump list.
 

@@ -1,3 +1,13 @@
+patrone-gnome-taskbar (0.4.5) resolute; urgency=medium
+
+  * The menu speaks in Patrone's own words: the button is "Menu", and it
+    has Favorites (Add to Favorites, Remove from Favorites), All
+    applications, Recent, "Search apps, files and the web" and a Top
+    result. The package's description says what it does in Patrone's
+    words too.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+
 patrone-gnome-taskbar (0.4.4) resolute; urgency=medium
 
   * The Web browser slot shows with no browser installed, and opens Patrone

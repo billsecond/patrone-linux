@@ -7,16 +7,16 @@ shell (`shell/`, GTK4) replaces GNOME Shell. The design carries over to that
 shell.
 
 Installing the package turns it on for every account, but GNOME Shell only
-loads extensions when it starts: log out from inside the desktop (Start →
-the account picture → Sign out, or GNOME's top bar's power menu → Log Out)
-and sign in again. Disconnecting Remote Desktop or signing
+loads extensions when it starts: log out from inside the desktop (the
+Patrone menu → the account picture → Sign out, or GNOME's top bar's power
+menu → Log Out) and sign in again. Disconnecting Remote Desktop or signing
 out of the screen's session leaves the desktop, and its old shell, running.
 The same goes for every update: the desktop keeps running the old taskbar,
 whose settings a new Patrone Settings may not know, until the next sign-in.
 So the taskbar watches its own `metadata.json` (which every package update
 replaces) and then shows a notification, "The taskbar was updated", with a
 Sign out button. (The user hit this twice: after 0.2.0 Patrone Settings'
-clicks did nothing, and after 0.3.0 the layouts, Start icons and Royal
+clicks did nothing, and after 0.3.0 the layouts, menu button icons and Royal
 didn't show.)
 
 ## What it does
@@ -25,7 +25,7 @@ One compact bar along the bottom of the primary monitor, in place of GNOME's
 top bar, which it hides: medium (42 pixels) unless Patrone Settings makes it
 small (32) or large (52), its icons to match. Its look follows Patrone
 Settings' theme (see `settings/README.md`): Patrone's own, Modern (flat),
-Classic (plain and square), Royal (glossy royal blue, a green Start button)
+Classic (plain and square), Royal (glossy royal blue, a green menu button)
 or Studio (translucent, the buttons on a rounded shelf).
 
 In Patrone, Modern and Studio the bar takes its **color from the
@@ -41,7 +41,7 @@ colors. (The user, 2026-10-26: the grey bar didn't match the wallpaper.)
 
 From the left:
 
-- **Start** (the Patrone "P", or the Super key) opens the Start menu with
+- **Menu** (the Patrone "P", or the Super key) opens the Patrone menu with
   the search box focused, so typing searches right away (below).
 - **Search** opens the same menu in search mode: the most used apps and
   recent files, then results as you type.
@@ -76,8 +76,9 @@ From the left:
   means it's running, a longer blue one that it's in front.
 - On the right, the **tray**: the top bar's own status icons and menus
   (network, sound, power, input sources, other apps' indicators), then the
-  clock, Windows-style (time over date), with the calendar and notifications
-  behind it, and the **Show desktop** sliver at the far right.
+  clock (time over date, the way Windows users expect), with the calendar
+  and notifications behind it, and the **Show desktop** sliver at the far
+  right.
 
 Clicking a button works as on Windows: it starts the app, shows its window,
 or minimizes it when it's already in front; with several windows each click
@@ -86,8 +87,8 @@ window. Hovering shows the app's name.
 
 **Dragging**: a button dragged along the bar moves there (a gap shows
 where); an app that's only running is pinned where it's dropped, and so is
-an app dragged from the Start menu (Pinned or All apps). In the Start menu,
-pinned apps are dragged to reorder them, a blue line marking where.
+an app dragged from the Patrone menu (Favorites or All applications). In the
+Patrone menu, Favorites are dragged to reorder them, a blue line marking where.
 
 ### Right-click: jump lists
 
@@ -102,21 +103,21 @@ itself (a new window), **Pin to taskbar** / **Unpin from taskbar**, for a slot
 Task Manager, Show desktop, and Taskbar settings (Patrone Settings, when
 it's installed).
 
-### The Start menu
+### The Patrone menu
 
-A Windows 11 Start menu in a smaller size (540 pixels wide):
+A compact menu (540 pixels wide), laid out the way Windows users expect:
 
 - **Search box**, focused when the menu opens. Typing searches apps at once,
   then, as typing pauses, everything GNOME's own search covers (Settings,
   Files, Calculator, Characters, Clocks...: the same providers as the
   Activities overview, so apps that add a search provider show up here too).
-  Results: **Best match** first, then by kind, and **Search the web** last.
-  Up and Down move through them, Enter opens the selected one: the best match,
+  Results: **Top result** first, then by kind, and **Search the web** last.
+  Up and Down move through them, Enter opens the selected one: the top result,
   or a web search when nothing else matched. Web searches go to the
   `web-search-url` setting (Google by default) in the default browser.
-- **Pinned**: GNOME's favorites (the same list as the Activities overview's
-  dash), up to 18. **All apps** lists every app, A to Z.
-- **Recommended**: recently used files, and the `suggested-apps` among them
+- **Favorites**: GNOME's favorites (the same list as the Activities overview's
+  dash), up to 18. **All applications** lists every app, A to Z.
+- **Recent**: recently used files, and the `suggested-apps` among them
   (Software, Patrone's app store, by default; 0.4.1, the user's ask on
   2026-10-27: "letting it move over time so people get familiar with
   it"). Each suggested app counts as opened when it was first suggested
@@ -132,7 +133,7 @@ A Windows 11 Start menu in a smaller size (540 pixels wide):
   and **Restart**, whichever the system allows. With none of those, the
   power button is hidden.
 
-Right-click an app in the menu to pin it to Start or the taskbar.
+Right-click an app in the menu to add it to Favorites or pin it to the taskbar.
 
 ### The Recycle Bin on the desktop
 
@@ -405,7 +406,7 @@ the taskbar follows when it's installed):
 | `pinned` | `['role:web', 'role:terminal', 'role:files', 'role:mail', 'role:documents', 'role:spreadsheets', 'role:presentations', 'role:pdf', 'role:art']` | Pinned items in order: desktop file IDs, or `role:` slots |
 | `size` | `'medium'` | `small`, `medium` or `large` |
 | `layout` | `'left'` | `left`, `center`, `split` or `top` |
-| `start-icon` | `'patrone'` | The Start button's icon, from `icons/` |
+| `start-icon` | `'patrone'` | The menu button's icon, from `icons/` |
 | `color` | `'wallpaper'` | `wallpaper` (the wallpaper's hue, in Patrone, Modern and Studio) or `theme` (the theme's grey) |
 | `pin-icons` | `'patrone'` | `patrone` (Patrone's icons for the web, terminal, files and mail slots) or `app` (the icons of the apps they open) |
 | `show-recycle-bin` | `true` | Show the Recycle Bin on the desktop |
@@ -428,16 +429,16 @@ the taskbar follows when it's installed):
 - The account picture opens Lock and Sign out, and the power button Sleep,
   Shut down and Restart, as on Windows 11, with Disconnect for Remote
   Desktop.
-- Icons are dragged to reorder them, on the taskbar and in Start.
+- Icons are dragged to reorder them, on the taskbar and in the Patrone menu.
 - Patrone Settings sets the size (small, medium, large), the layout, the
-  Start button's icon and a theme. Themes are a handful of looks with plain
+  menu button's icon and a theme. Themes are a handful of looks with plain
   names: Patrone's own, Modern (flat and round), Classic (plain and square),
-  Royal (glossy royal blue, a green Start button with no "start" on it) and
+  Royal (glossy royal blue, a green menu button with no word on it) and
   Studio (soft and translucent). They change only the look: the layout
-  (Left, Centered, Split with Start on the left and the apps in the middle,
+  (Left, Centered, Split with the menu button on the left and the apps in the middle,
   or Top, along the top of the screen) and which corner the window buttons
   go in are separate choices, which themes don't change.
-- The Start button is the logo's "P", or one of seven other icons (a
+- The menu button is the logo's "P", or one of seven other icons (a
   one-color P, an orb, a grid, three lines, a circle, a spark, a prompt);
   the one-color ones take the bar's text color. Clicking it lets you type to
   search at once. The search button stays, hooked to GNOME's search
@@ -472,7 +473,7 @@ the taskbar follows when it's installed):
 | --- | --- |
 | `extension.js` | Turns the taskbar on and off |
 | `taskbar.js` | The bar, its buttons, the tray, the clock, Show desktop, the Super key |
-| `startMenu.js` | The Start menu and its search |
+| `startMenu.js` | The Patrone menu and its search |
 | `jumpList.js` | The buttons' right-click menus |
 | `roles.js` | The slots, and which app each one opens |
 | `tint.js` | The bar's color from the wallpaper |
@@ -483,13 +484,13 @@ the taskbar follows when it's installed):
 | `desktopBubble.js` | The desktop bubble's pill, its opening and closing (File Manager draws the bubble), and the Recycle Bin on its edge |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
 | `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
-| `icons/` | The Start button's icons: `patrone-start.svg` and `start-orb.svg` in color, `patrone-start-light.svg` (the P in light tones, for Royal's green button, where the blues washed out), the `-symbolic` ones drawn in the bar's text color. The Recycle Bin's, `recycle-bin.svg` and `recycle-bin-full.svg`. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
+| `icons/` | The menu button's icons: `patrone-start.svg` and `start-orb.svg` in color, `patrone-start-light.svg` (the P in light tones, for Royal's green button, where the blues washed out), the `-symbolic` ones drawn in the bar's text color. The Recycle Bin's, `recycle-bin.svg` and `recycle-bin-full.svg`. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
 | `tests/headless.sh` | The throwaway GNOME Shell (below) |
 
 - **Dragging** uses GNOME Shell's own drag and drop (`ui/dnd.js`): the
-  buttons and Start's tiles and rows are draggable; the taskbar's buttons
-  box and Start's Pinned grid take drops. A drop on the taskbar rewrites
-  `pinned`; one in Pinned moves the favorite.
+  buttons and the Patrone menu's tiles and rows are draggable; the taskbar's buttons
+  box and the menu's Favorites grid take drops. A drop on the taskbar rewrites
+  `pinned`; one in Favorites moves the favorite.
 
 - **The top bar** stays alive but hidden, and stops reserving space. Its
   status area (`Main.panel._rightBox`, `_centerBox`) moves into the tray
@@ -504,7 +505,7 @@ the taskbar follows when it's installed):
   any button) cuts the connection. The user hit this by right-clicking
   near it. Elsewhere it shows, as a small orange pill.
 - **The Super key**: GNOME's own handler for it (it opens the Activities
-  overview) is blocked, and the taskbar's opens the Start menu. The overview
+  overview) is blocked, and the taskbar's opens the Patrone menu. The overview
   is still there (Super+A for the app grid).
 - **Search** reuses the overview's own search providers
   (`Main.overview.searchController`), minus Ubuntu's web search provider,
@@ -523,7 +524,7 @@ desktop, so it never touches anyone's desktop:
 tests/headless.sh start 1600x900 light   # or dark
 tests/headless.sh start none             # no screen, as over Remote Desktop at sign-in
 tests/headless.sh run gnome-text-editor  # an app, for running buttons
-tests/headless.sh click 23 883           # the Start button
+tests/headless.sh click 23 883           # the menu button
 tests/headless.sh type sett
 tests/headless.sh drag 631 879 752 879   # press, hold, move, let go
 tests/headless.sh shot /tmp/shot.png
@@ -553,16 +554,16 @@ fresh each time.
 
 What the tests covered (2026-10-26, GNOME Shell 50.1, light and dark): the
 bar replacing the top bar; buttons packed left, the running and focused
-lines; the Start menu opening from the button and from GNOME's overlay-key
+lines; the Patrone menu opening from the button and from GNOME's overlay-key
 signal (a simulated key press doesn't trigger GNOME's Super key detection
 in a headless shell, so the key itself is untested there); typing "sett"
-giving Settings as the best match, Settings pages, a Clocks result and the
-web; Pinned, Recommended, All apps and the power options; jump lists for
+giving Settings as the top result, Settings pages, a Clocks result and the
+web; Favorites, Recent, All applications and the power options; jump lists for
 the web, files and a running app; the quick settings and calendar menus
 opening upward from the tray; click to minimize and restore; and turning the
 extension off (the top bar comes back) and on again. Later, with
 `tests/headless.sh drag`: reordering the taskbar's buttons, pinning a
-running app by dragging it in, and reordering Start's pinned apps; and,
+running app by dragging it in, and reordering the menu's Favorites; and,
 with Patrone Settings running in the shell, all three sizes and four
 themes.
 
