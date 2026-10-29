@@ -7,7 +7,13 @@ and leaves out everything that reports to Canonical. It also recommends a
 few tools everyone gets (the user asked for them, 2026-10-26): `fastfetch`,
 `nano` and `vim` (Ubuntu installs only `vim-tiny`), `btop` and `htop`,
 `tree`, `ripgrep` (`rg`), `fzf`, `bat` (Ubuntu names its command `batcat`),
-`ncdu` and `7zip` (`7z`). Its app store is GNOME Software, with Patrone's
+`ncdu` and `7zip` (`7z`). Since 0.2.5 it recommends KDE's Breeze cursors
+(`breeze-cursor-theme`, LGPL-3+), Breeze Dark and Breeze Light, so the Mouse
+pointer choice (Patrone Settings, and GNOME Settings' Patrone page) has a
+white pointer among its five: Patrone's, Adwaita and Yaru are all dark, and
+the other cursor themes Ubuntu's desktop brings (DMZ, X.Org's) can't be
+offered (`settings/README.md`, "Mouse pointer"; `docs/COMPLIANCE.md`, item
+22). Its app store is GNOME Software, with Patrone's
 picks (`patrone-software`, `software/README.md`), in place of Canonical's App
 Center.
 
