@@ -15,6 +15,9 @@ patrone-settings (0.3.8) resolute; urgency=medium
     word of why.
   * Every card has a name and description for screen readers, which heard
     unnamed toggle buttons.
+  * The window follows the dark style: it stayed light, because GTK 4.22's
+    Default theme (which plain GTK 4 apps get, Yaru not loading in them)
+    has to be asked for its dark variant, as Patrone's other apps do.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 10:00:00 -0500
 

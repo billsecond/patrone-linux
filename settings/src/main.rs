@@ -295,6 +295,21 @@ fn save_picture(draw: &Draw, path: &Path) -> Result<(), String> {
 }
 
 fn load_style() {
+    if let Some(settings) = gtk::Settings::default() {
+        // GTK's own theme, as in Patrone's other apps: Ubuntu's Yaru
+        // doesn't load in plain GTK 4 apps
+        settings.set_gtk_theme_name(Some("Default"));
+        // GTK 4.22's Default theme stays light when the desktop prefers
+        // dark (the window stayed light in the dark style until 0.3.8);
+        // its dark variant has to be asked for
+        #[allow(deprecated)]
+        fn follow(settings: &gtk::Settings) {
+            let dark = settings.gtk_interface_color_scheme() == gtk::InterfaceColorScheme::Dark;
+            settings.set_gtk_application_prefer_dark_theme(dark);
+        }
+        follow(&settings);
+        settings.connect_gtk_interface_color_scheme_notify(follow);
+    }
     let provider = gtk::CssProvider::new();
     provider.load_from_string(include_str!("../data/style.css"));
     if let Some(display) = gdk::Display::default() {

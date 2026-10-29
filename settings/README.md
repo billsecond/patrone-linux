@@ -19,6 +19,11 @@ Settings' Patrone page, or this window's Taskbar page where Patrone's build
 of GNOME Settings isn't installed; the launcher's actions (its right-click
 menu in the Patrone menu and on the taskbar) open each page.
 
+The window is in GTK's own theme, light or dark with the desktop's style,
+as Patrone's other apps are (Ubuntu's Yaru doesn't load in plain GTK 4
+apps, and GTK 4.22's Default theme has to be asked for its dark variant).
+Until 0.3.8 it stayed light in the dark style.
+
 ## Pages
 
 | Page | Choices | Setting |
@@ -199,4 +204,5 @@ action. On the Mouse pointer page, each theme and size set GNOME's setting,
 and the pointer standing over the card just clicked was in the new theme
 in a screenshot taken a second later (Adwaita, Yaru and Patrone; Breeze was
 tried from the test's own folder, which GNOME Shell doesn't search, so only
-its cards and setting).
+its cards and setting). In the dark style the window was light with 0.3.7
+and dark with 0.3.8, and it followed a switch to light and back at once.
