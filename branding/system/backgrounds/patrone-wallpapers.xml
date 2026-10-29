@@ -4,60 +4,69 @@
      filename-dark is a pair: GNOME shows filename in the light style and
      filename-dark in the dark one. See branding/README.md. -->
 <wallpapers>
+  <!-- Wallpaper 02, Neon Horizon, and its family, and wallpaper 03, made by
+       tools/make_wallpapers.py. The first pair is the default. -->
   <wallpaper deleted="false">
-    <name>Patrone</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-light.png</filename>
-    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-01-8k.png</filename-dark>
+    <name>Neon Horizon</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-02-dark.png</filename-dark>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone, no logo</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-plain-light.png</filename>
-    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-01-plain.png</filename-dark>
+    <name>Neon Horizon, no logo</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-plain-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-02-plain.png</filename-dark>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone Mark</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-mark-light.png</filename>
-    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-01-mark.png</filename-dark>
+    <name>Neon Horizon Mark</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-mark-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-02-mark.png</filename-dark>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone Clean</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-clean.png</filename>
+    <name>Neon Horizon Clean</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-clean.png</filename>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone Badge</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-badge.png</filename>
+    <name>Neon Horizon Badge</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-badge.png</filename>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone Midnight</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-midnight.png</filename>
+    <name>Neon Horizon Midnight</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-midnight.png</filename>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone Blue</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-blue.png</filename>
+    <name>Neon Horizon Blue</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-blue.png</filename>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone Graphite</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-graphite.png</filename>
+    <name>Neon Horizon Graphite</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-graphite.png</filename>
     <options>zoom</options>
   </wallpaper>
 
   <wallpaper deleted="false">
-    <name>Patrone Watermark</name>
-    <filename>/usr/share/backgrounds/patrone/patrone-back-01-watermark.png</filename>
+    <name>Neon Horizon Watermark</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-02-watermark.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Neon Horizon Starlit</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-back-03-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/patrone/patrone-back-03-dark.png</filename-dark>
     <options>zoom</options>
   </wallpaper>
 
