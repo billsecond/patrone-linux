@@ -278,6 +278,20 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    passes the session through as for Remote Desktop: graphics, input,
    clipboard, sound and resizing.
 
+   Sound goes over the static channel, rdpsnd (0.5.2). GNOME Remote
+   Desktop's sound (FreeRDP's sound server) sends its first message, the
+   formats it can play, right after asking VMConnect to open
+   `AUDIO_PLAYBACK_DVC`, without waiting for the answer, and the proxy drops
+   anything on a dynamic channel that isn't open yet ("channel is not
+   opened, dropping packet"). VMConnect never heard the formats, and ten
+   seconds later the desktop gave up ("Client did not respond to protocol
+   initiation"). So the plugin answers the desktop itself that the channel
+   can't be opened, as VMConnect answers for a channel it doesn't have, and
+   VMConnect never sees the request; GNOME Remote Desktop then falls back
+   to rdpsnd, which the proxy passes on as it comes. The microphone's
+   channel (`AUDIO_INPUT`) waits for its answer before sending anything, so
+   it isn't affected.
+
    Then the plugin tells VMConnect that the account has signed in (a Save
    Session Info PDU, "logon", version 2), as Windows does after its own
    sign-in. GNOME Remote Desktop never sends one, and without it VMConnect
@@ -384,8 +398,13 @@ connects with no username or password, as VMConnect does
 one; the test checks that the login screen signed it in, that the desktop
 let in that account with the secret, and that the client stayed connected
 throughout, was activated three times (by the proxy, for the login screen,
-for the desktop) and was told the account signed in. A second proxy, as
-shipped, must refuse a client that isn't on a Hyper-V socket. With
+for the desktop) and was told the account signed in. The stand-in desktop
+sends sound as GNOME Remote Desktop does, with FreeRDP's sound server, and
+the client takes it on both of sound's channels, as VMConnect does, into
+FreeRDP's fake sound device (`TEST_CLIENT_SOUND=1`): the test checks that
+the sound arrives over rdpsnd and that the desktop hears it was played. A
+second proxy, as shipped, must refuse a client that isn't on a Hyper-V
+socket. With
 `TEST_CLIENT_SHOTS=PREFIX` the client saves what it shows, and with
 `TEST_CLIENT_RESIZE=WxH` it takes the graphics pipeline and display control
 and asks for that size, as VMConnect does when its window is resized.
@@ -399,11 +418,17 @@ the desktop from 1024x768. Then on the dev VM, with the host switched to
 the Hyper-V socket transport, the user opened VMConnect's enhanced session:
 Patrone's login screen, their own password, their own desktop, and, once
 the plugin told VMConnect they had signed in, a window that resizes with
-the desktop following (VMConnect asked for 1562x885). Clipboard and sound
-channels were set up in those sessions (GNOME Remote Desktop's log: file
-clipboard, PCM sound); whether they work both ways is still the user's to
-confirm. Not checked: a fresh install from an ISO with this package (the
-next ISO), and Windows hosts other than the user's.
+the desktop following (VMConnect asked for 1562x885). Not checked: Windows
+hosts other than the user's. The user then found the clipboard and resizing
+working (2026-10-29), on the dev VM and in a fresh install from the next
+ISO, but never any sound.
+
+How 0.5.2's sound fix was checked (2026-10-29): with 0.5.1's plugin, the
+test above failed the way the dev VM's journal showed every session: the
+proxy dropped the stand-in desktop's first sound message, and the client
+got no sound. With the fix, the desktop was told the dynamic channel
+couldn't be opened, sent its sound over rdpsnd, and the client received
+twenty blocks and confirmed playing each.
 
 0.4.5's Settings helper was tried on the dev VM (2026-10-27), installed, as
 root the way pkexec runs it, for a throwaway account with a random

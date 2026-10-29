@@ -69,7 +69,9 @@ Done:
 - **Hyper-V's enhanced session** (`remote-desktop/README.md`, package
   `patrone-remote-desktop` 0.5.0, 2026-10-28): VMConnect shows Patrone's
   login screen, then the account's own desktop, resizing with the window.
-  Tried on the dev VM by the user with VMConnect; not yet in an ISO.
+  The user found the clipboard and resizing working on the dev VM and in a
+  fresh install from the ISO, but no sound; 0.5.2 sends sound over the
+  static rdpsnd channel instead (2026-10-29), still for the user to try.
 - **Patrone's own updates** (section 18, 2026-10-28): an apt repository on
   GitHub Pages, [billsecond/patrone-apt](https://github.com/billsecond/patrone-apt),
   signed with a key that's only on the dev VM, published with

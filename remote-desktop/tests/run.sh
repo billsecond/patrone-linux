@@ -223,7 +223,8 @@ vmconnect_test() {
         sleep 0.1
     done
 
-    "$tests/test-client" 127.0.0.1 "$port" 12 $'alice\twrong\n' $'right\n' > "$work/client.log" 2>&1 || true
+    TEST_CLIENT_SOUND=1 WLOG_FILTER=com.freerdp.channels.rdpsnd.client:DEBUG \
+        "$tests/test-client" 127.0.0.1 "$port" 12 $'alice\twrong\n' $'right\n' > "$work/client.log" 2>&1 || true
     reached=$(cat "$work/reached" 2> /dev/null || true)
     # VMConnect's own connection stays up throughout: activated by the proxy,
     # again for the login screen, and again for the desktop. And it's told
@@ -239,6 +240,26 @@ vmconnect_test() {
             echo "--- $log"
             tail -n 20 "$work/$log.log"
         done
+        failures=$((failures + 1))
+    fi
+
+    # The desktop's sound reaches the client: GNOME Remote Desktop's first
+    # sound message comes before its channel is open, and the proxy drops it
+    # (the desktop gave up on sound ten seconds later), so the plugin has the
+    # desktop send sound over the static channel. The client's log shows the
+    # sound arriving, and the desktop hears back that it was played.
+    if grep -q "^the client takes sound over rdpsnd" "$work/desktop.log" &&
+        grep -q "^the client played sound block" "$work/desktop.log" &&
+        grep -q -E '\[static\] Wave(2PDU|Info)' "$work/client.log"; then
+        echo "ok   vmconnect: the desktop's sound reaches VMConnect"
+    else
+        echo "FAIL vmconnect: the desktop's sound reaches VMConnect"
+        echo "--- desktop"
+        tail -n 20 "$work/desktop.log"
+        echo "--- client"
+        grep -i -E 'rdpsnd|wave|sound' "$work/client.log" | tail -n 20
+        echo "--- proxy"
+        grep -i -E 'AUDIO_PLAYBACK|rdpsnd|sound' "$work/proxy.log" | tail -n 10
         failures=$((failures + 1))
     fi
 
