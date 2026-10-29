@@ -171,9 +171,16 @@ static const char * const needed_cursors[] = { "default", "pointer", "text" };
 /* How deep Inherits chains are followed, as libXcursor does */
 #define MAX_INHERITS 4
 
+/* Patrone's own cursor themes, listed first and in this order: Patrone
+ * Blue, the default, which kept the folder it had as the only one, then
+ * Black and White */
+static const char * const patrone_cursor_themes[] = { "Patrone", "Patrone-Black", "Patrone-White" };
+
 /* Patrone's words for the cursor themes it ships or knows */
 static const Choice known_cursor_themes[] = {
-  { "Patrone", NULL, N_("Patrone's own: blue, with a white edge") },
+  { "Patrone", NULL, N_("Patrone's own, the default: blue, with a white edge") },
+  { "Patrone-Black", NULL, N_("Patrone's own: black, with a white edge") },
+  { "Patrone-White", NULL, N_("Patrone's own: white, with a dark edge") },
   { "Adwaita", NULL, N_("GNOME's own: black, with a white edge") },
   { "Yaru", NULL, N_("Yaru's: dark grey, with a white edge") },
   { "breeze_cursors", NULL, N_("KDE's Breeze: black, with a white edge") },
@@ -592,16 +599,27 @@ load_cursor (const char * const *dirs, const char *theme, const char * const *na
   return NULL;
 }
 
+/* Where a theme goes in the list: Patrone's in their order, then the
+ * others (by title) */
+static guint
+cursor_theme_place (const char *name)
+{
+  for (guint i = 0; i < G_N_ELEMENTS (patrone_cursor_themes); i++)
+    if (g_str_equal (name, patrone_cursor_themes[i]))
+      return i;
+  return G_N_ELEMENTS (patrone_cursor_themes);
+}
+
 static int
 compare_cursor_themes (gconstpointer a, gconstpointer b)
 {
   const CursorTheme *first = *(CursorTheme * const *) a;
   const CursorTheme *second = *(CursorTheme * const *) b;
-  gboolean first_patrone = g_str_equal (first->name, "Patrone");
-  gboolean second_patrone = g_str_equal (second->name, "Patrone");
+  guint first_place = cursor_theme_place (first->name);
+  guint second_place = cursor_theme_place (second->name);
 
-  if (first_patrone != second_patrone)
-    return first_patrone ? -1 : 1;
+  if (first_place != second_place)
+    return first_place < second_place ? -1 : 1;
   return g_utf8_collate (first->title, second->title);
 }
 
