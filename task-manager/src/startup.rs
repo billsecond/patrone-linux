@@ -76,7 +76,7 @@ impl Page {
         let toolbar = gtk::Box::new(gtk::Orientation::Horizontal, 4);
         let enable = crate::command("media-playback-start-symbolic", "Enable");
         let disable = crate::command("media-playback-stop-symbolic", "Disable");
-        let location = crate::command("folder-open-symbolic", "Open file location");
+        let location = crate::command("folder-open-symbolic", "Show in File Manager");
         for button in [&enable, &disable, &location] {
             button.set_sensitive(false);
             toolbar.append(button);
@@ -135,7 +135,7 @@ impl Page {
         let menu = gio::Menu::new();
         menu.append(Some("Enable"), Some("win.startup::on"));
         menu.append(Some("Disable"), Some("win.startup::off"));
-        menu.append(Some("Open file location"), Some("win.startup::location"));
+        menu.append(Some("Show in File Manager"), Some("win.startup::location"));
         let menu_context = context.clone();
         let popover = table::context_menu(&menu, &page.table.view);
         page.table.on_menu(move |row, cell, x, y| {
@@ -182,7 +182,7 @@ impl Page {
                 None => "Added by you".to_string(),
             };
             row.put_text("extra", &from);
-            // The file that's in effect, for "Open file location"
+            // The file that's in effect, for "Show in File Manager"
             let file = entry
                 .user
                 .as_ref()

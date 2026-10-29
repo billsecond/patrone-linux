@@ -91,7 +91,7 @@ impl Page {
         });
 
         let toolbar = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-        let end = crate::command("process-stop-symbolic", "End task");
+        let end = crate::command("process-stop-symbolic", "End");
         toolbar.append(&end);
         end_button(&end, &table, context, true);
         delete_ends(&table, context, true);
@@ -130,8 +130,8 @@ impl Page {
 pub fn process_menu(details: bool) -> gio::Menu {
     let menu = gio::Menu::new();
     let ending = gio::Menu::new();
-    ending.append(Some("End task"), Some("win.end-task"));
-    ending.append(Some("End process tree"), Some("win.end-tree"));
+    ending.append(Some("End"), Some("win.end-task"));
+    ending.append(Some("End process and its children"), Some("win.end-tree"));
     menu.append_section(None, &ending);
     if details {
         let priorities = gio::Menu::new();
@@ -144,15 +144,15 @@ pub fn process_menu(details: bool) -> gio::Menu {
     }
     let more = gio::Menu::new();
     if !details {
-        more.append(Some("Go to details"), Some("win.go-to-details"));
+        more.append(Some("Show details"), Some("win.go-to-details"));
     }
-    more.append(Some("Open file location"), Some("win.open-location"));
+    more.append(Some("Show in File Manager"), Some("win.open-location"));
     more.append(Some("Properties"), Some("win.process-properties"));
     menu.append_section(None, &more);
     menu
 }
 
-/// An "End task" button for a list: on while a process or group is
+/// An "End" button for a list: on while a process or group is
 /// selected.
 pub fn end_button(button: &gtk::Button, table: &Table, context: &Rc<Context>, tree: bool) {
     button.set_sensitive(false);

@@ -88,7 +88,7 @@ impl Page {
         });
 
         let toolbar = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-        let end = crate::command("process-stop-symbolic", "End task");
+        let end = crate::command("process-stop-symbolic", "End");
         toolbar.append(&end);
         end_button(&end, &table, context, false);
         let properties = crate::command("document-properties-symbolic", "Properties");
@@ -116,7 +116,7 @@ impl Page {
         Page { table, toolbar }
     }
 
-    /// Selects a process, for "Go to details".
+    /// Selects a process, for "Show details".
     pub fn select(&self, pid: i32) -> bool {
         self.table.select(|row| row.pid() == pid)
     }

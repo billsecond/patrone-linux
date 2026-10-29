@@ -356,7 +356,7 @@ impl Window {
         for (name, widget, toolbar) in pages {
             stack.add_named(&widget, Some(name));
             let bar = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-            let run = command("list-add-symbolic", "Run new task");
+            let run = command("list-add-symbolic", "Run a program");
             run.set_action_name(Some("win.run-task"));
             bar.append(&run);
             bar.append(toolbar);
