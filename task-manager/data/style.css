@@ -200,7 +200,7 @@ button.tm-small-toggle {
   background: none;
 }
 
-/* Compact switches in the Startup apps list */
+/* Compact switches in the Startup applications list */
 .tm-cell switch {
   min-width: 36px;
   min-height: 18px;

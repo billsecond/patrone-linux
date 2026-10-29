@@ -1,4 +1,4 @@
-//! The Startup apps page: what starts when you sign in. These are the
+//! The Startup applications page: what starts when you sign in. These are the
 //! desktop's autostart entries, in /etc/xdg/autostart for everyone and
 //! ~/.config/autostart for you, where your entry of the same name takes
 //! the place of everyone's. Turning one off writes your own copy of it with

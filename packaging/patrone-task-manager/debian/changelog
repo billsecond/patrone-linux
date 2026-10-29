@@ -1,3 +1,11 @@
+patrone-task-manager (0.2.1) resolute; urgency=medium
+
+  * Two pages have names of Patrone's own: Usage history, and Startup
+    applications (GNOME's own term), in place of names copied from
+    Windows 11. The launcher's action for that page has the new name too.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 12:00:00 -0500
+
 patrone-task-manager (0.2.0) resolute; urgency=medium
 
   * Users: Sign out and Disconnect, from buttons above the list or an

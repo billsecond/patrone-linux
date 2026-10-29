@@ -1,8 +1,8 @@
 //! Patrone Task Manager: the apps and processes running and what they use,
 //! how hard the computer is working, each app's use since it started, what
-//! starts at sign-in, who is signed in, and the system's services. Laid out
-//! like the task manager people know, in Patrone's words. Ctrl+Shift+Esc
-//! opens it (packaging/patrone-task-manager sets that up).
+//! starts at sign-in, who is signed in, and the system's services. It works
+//! the way people who have used Windows expect, in Patrone's own words.
+//! Ctrl+Shift+Esc opens it (packaging/patrone-task-manager sets that up).
 //!
 //!   patrone-task-manager [--page processes|performance|history|startup|users|details|services]
 
@@ -44,8 +44,8 @@ const PAGES: [(&str, &str, &str); 7] = [
         "Performance",
         "power-profile-performance-symbolic",
     ),
-    ("history", "App history", "document-open-recent-symbolic"),
-    ("startup", "Startup apps", "system-run-symbolic"),
+    ("history", "Usage history", "document-open-recent-symbolic"),
+    ("startup", "Startup applications", "system-run-symbolic"),
     ("users", "Users", "system-users-symbolic"),
     ("details", "Details", "view-list-symbolic"),
     ("services", "Services", "emblem-system-symbolic"),
