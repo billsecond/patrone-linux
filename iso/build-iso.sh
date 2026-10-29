@@ -82,7 +82,9 @@ printf '%s\n' "${newest[@]##*/}" | sort
 in_root() { chroot "$root" env DEBIAN_FRONTEND=noninteractive LC_ALL=C.UTF-8 "$@"; }
 
 # seed_drop SEED NAME...: takes snaps out of a snap seed (the snaps a new
-# system sets up at first boot), leaving every other entry as it is.
+# system sets up at first boot), leaving every other entry as it is. A
+# snap's components (NAME+COMPONENT_REV.comp, such as pc-kernel's NVIDIA
+# driver parts) go with it.
 seed_drop() {
     local seed=$1 name
     shift
@@ -94,7 +96,8 @@ seed_drop() {
         END { flush() }' "$seed/seed.yaml" >"$seed/seed.yaml.new"
     mv "$seed/seed.yaml.new" "$seed/seed.yaml"
     for name; do
-        rm -f "$seed/snaps/${name}_"*.snap "$seed/assertions/${name}_"*.assert
+        rm -f "$seed/snaps/${name}_"*.snap "$seed/snaps/${name}+"*.comp \
+            "$seed/assertions/${name}_"*.assert
     done
 }
 
