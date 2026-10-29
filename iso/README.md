@@ -29,9 +29,8 @@ iso/build-source.sh /var/tmp/patrone-linux-26.04.1-amd64.iso /var/tmp/patrone-li
 root, saying where the source is (`https://patronelinux.com/source`, and
 Patrone's own on GitHub, at the disc's commit), and `casper/sources.manifest`,
 every source package of what's on the disc, name and exact version: what
-Patrone's two layers and the three of Ubuntu's they stand on have installed
-(Ubuntu's include what Patrone's layers remove, still on the disc, hidden),
-the package pool's, and the snaps in the seeds. `build-source.sh` (as
+Patrone's two layers have installed, the package pool's, and the snaps in
+the seeds. `build-source.sh` (as
 anyone, with a network; about half an hour and 7 GB) fetches each of
 Ubuntu's from Launchpad at its exact version (Ubuntu's mirrors keep only
 the newest), maps Patrone's rebuilds (`...patroneN`) to the Ubuntu version
@@ -49,21 +48,27 @@ Ubuntu's disc is made of stacked layers in `casper/`: the base
 ...), and the live session's own (`minimal.standard.live.squashfs`).
 `casper/install-sources.yaml` lists what the installer can install. The
 user's rule (2026-10-27): **nothing on screen says Ubuntu**. So Patrone's ISO
-has two more layers, each with Patrone's packages installed (the newest
-build of each in `out/`, not `-dev` packages, with what they depend on and
-recommend from Ubuntu's archive, as on the dev VM, including the rebuilt
-GDM and GNOME Settings):
+has two layers of its own in place of all of Ubuntu's, made from them, each
+with Patrone's packages installed (the newest build of each in `out/`, not
+`-dev` packages, with what they depend on and recommend from Ubuntu's
+archive, as on the dev VM, including the rebuilt GDM and GNOME Settings):
 
-- **`minimal.patrone`, what the installer installs**, on the base. It starts
-  as Ubuntu's English layer, so it has English's language packs, and the
-  installer puts no language layer on it (the entry lists no
-  `preinstalled_langs`); other languages' packs come from the network during
-  the install. It's the installer's only choice, named "Patrone Linux"; its
-  ID is Ubuntu's default choice's (`ubuntu-desktop-minimal`), which the
-  installer's page of app choices knows.
-- **`minimal.standard.live.patrone`, the live session**, on Ubuntu's live
-  layer. The live desktop is Patrone's, and so is the installer that starts
-  in it (Ubuntu's `ubuntu-desktop-bootstrap` snap): `patrone-branding` gives
+- **`patrone`, what the installer installs**: Ubuntu's base and English
+  layers with Patrone's changes, as one whole system, so it has English's
+  language packs, and the installer puts no language layer on it (the entry
+  lists no `preinstalled_langs`); other languages' packs come from the
+  network during the install. It's the installer's only choice, named
+  "Patrone Linux"; its ID is Ubuntu's default choice's
+  (`ubuntu-desktop-minimal`), which the installer's page of app choices
+  knows.
+- **`patrone.live`, the live session**, on `patrone` (casper and the
+  installer stack a layer on the ones its name starts with). It's made from
+  Ubuntu's live session (its base, standard and live layers) with Patrone's
+  changes, and holds only how that differs from `patrone`: the build makes an
+  empty layer on `patrone` the same as the live session (`rsync`, comparing
+  contents), which leaves the differences in it, with whiteouts for what the
+  live session hasn't got. The live desktop is Patrone's, and so is the
+  installer that starts in it (Ubuntu's `ubuntu-desktop-bootstrap` snap): `patrone-branding` gives
   it Patrone's name, blue, wordmark and P through
   `/usr/share/desktop-provision/` (`branding/system/desktop-provision/`).
   Patrone Terminal doesn't open at login here, so the installer has the
@@ -97,6 +102,13 @@ In both:
   the live layer recommends, are removed, and the seed has neither
   Thunderbird's snap (Canonical's build of Mozilla's app) nor `hwctl`'s
   (Canonical's hardware-certification tool).
+- **No seed system for TPM-backed encryption.** Ubuntu's live layer has one
+  (`/var/lib/snapd/seed/systems/enhanced-secureboot-desktop`), with the
+  `pc` and `pc-kernel` snaps (a second kernel). Patrone's installer doesn't
+  offer those installs (its entry in `install-sources.yaml` names no
+  `snapd_system_label`), and the system's model asks for App Center, Firefox
+  and Security Center, which aren't on the disc, so it goes with its two
+  snaps.
 - **Ubuntu's metapackages go**: `patrone-desktop` 0.2.0 lists Ubuntu's
   desktop packages itself, less Ubuntu Pro's client, Software Updater,
   Ubuntu's Help and `hwctl` (`desktop/README.md`), so installing it removes
@@ -122,7 +134,13 @@ Patrone's boot splash (Plymouth's `patrone` and `patrone-text` themes in
 place of Ubuntu's) and Patrone's live layer as the one to boot
 (`conf/conf.d/default-layer.conf`).
 
-The rest of Ubuntu's layers go. The boot menu starts with "Install Patrone
+**All of Ubuntu's layers go** (`docs/COMPLIANCE.md`, item 3). Until
+2026-10-29 Patrone's two stood on Ubuntu's base, standard and live layers,
+which stayed on the disc with what Patrone's layers hid in them: Ubuntu's
+logo pixmaps and the Firefox, App Center, Security Center and Thunderbird
+snaps in their seeds. Now nothing Patrone takes out is on the disc, and
+its list of sources (`casper/sources.manifest`) is only what's on it. The
+boot menu starts with "Install Patrone
 Linux", the installer alone, full screen, then "Try Patrone Linux", the live
 desktop (`installer/README.md`, "Installing with nothing else"); the disc's
 name is "Patrone Linux 26.04.1 amd64", `.disk/info` says
