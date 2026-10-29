@@ -146,7 +146,7 @@ needs:
 - **Snaps:** the Snap Store, which keeps the system's snaps (such as the
   firmware updater) up to date.
 - **Flatpak apps:** Flathub, from Patrone Software, which keeps the web
-  browser up to date (Patrone Linux comes with none: Patrone Browser
+  browser up to date (PatroneOS comes with none: Patrone Browser
   Chooser asks which to install).
 
 Ubuntu Pro's client isn't installed (above): nothing fetches its news or

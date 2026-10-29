@@ -224,7 +224,7 @@ Conflicts: apport-gtk, hwctl, ubuntu-advantage-desktop-daemon, ubuntu-insights,
            ubuntu-pro-client, ubuntu-report, update-manager, update-notifier,
            whoopsie
 Provides: update-notifier
-Description: Patrone Linux's desktop
+Description: PatroneOS's desktop
  Ubuntu's desktop with Patrone's branding and apps, and none of Canonical's
  own services: no Ubuntu Pro (its client, its services and its notices), no
  Software Updater (Patrone Software tells of updates and installs them), no
