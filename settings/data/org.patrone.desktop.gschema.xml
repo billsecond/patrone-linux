@@ -15,7 +15,7 @@
         The look of the taskbar, title bars and window buttons, chosen in
         Patrone Settings: "patrone" (Patrone's own), "modern" (flat and
         round), "classic" (plain and square, solid title bars), "royal"
-        (glossy royal blue, a green Start button) or "studio" (translucent,
+        (Sapphire: glossy sapphire blue, a green Start button) or "studio" (translucent,
         round colored window buttons). The taskbar follows it; Patrone
         Settings also puts the theme's style for apps in the account's GTK
         settings. Where the taskbar's buttons go is the taskbar's own
@@ -37,7 +37,7 @@
         wide, close turning red under the pointer), "round" (small symbols
         in soft circles), "dots" (red, yellow and green dots) or "glossy"
         (framed blue squares, a red close). "theme" is the theme's own:
-        wide for Patrone and Classic, round for Modern, glossy for Royal,
+        wide for Patrone and Classic, round for Modern, glossy for Sapphire,
         dots for Studio. Patrone Settings puts the style in the account's
         GTK settings. Which corner they go in is GNOME's button-layout.
       </description>

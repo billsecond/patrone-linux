@@ -121,7 +121,7 @@ static const Choice themes[] = {
   { "patrone", N_("Patrone"), N_("Patrone's own look, light or dark") },
   { "modern", N_("Modern"), N_("Clean and flat, with rounder buttons and no lines") },
   { "classic", N_("Classic"), N_("Plain and square, with solid title bars") },
-  { "royal", N_("Royal"), N_("Glossy royal blue, with a green Start button") },
+  { "royal", N_("Sapphire"), N_("Glossy sapphire blue, with a green Start button") },
   { "studio", N_("Studio"), N_("Soft and translucent, with round colored window buttons") },
 };
 
@@ -650,7 +650,7 @@ cc_patrone_panel_init (CcPatronePanel *self)
       if (has_key (self->taskbar, "color"))
         {
           group = add_group (page, _("Taskbar Color"),
-                             _("In the Patrone, Modern and Studio themes. Classic and Royal "
+                             _("In the Patrone, Modern and Studio themes. Classic and Sapphire "
                                "keep their own colors."));
           add_choices (self, group, self->taskbar, "color", read_string, write_string,
                        colors, G_N_ELEMENTS (colors), "color", 2);
