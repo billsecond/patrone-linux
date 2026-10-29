@@ -157,9 +157,27 @@ parts pretended:
 - The login unit, started in the account's own session with everything set
   up: started, and ended without a window.
 
+0.2.0, the new name (2026-10-29), on PatroneDev:
+
+- Installed, the package's description, the app's entry, the icon's title
+  and polkit's action say "Virtual Machine Setup" or "this virtual
+  machine" (`dpkg-query`, `desktop-file-validate`, `pkaction`).
+- In the hidden GNOME Shell at 1024×768, a common size for Hyper-V's basic
+  window, where the prompt mostly shows, light and dark: each page has the
+  new name and the trademark line. With everything missing, the first page
+  fits above the taskbar both with the VM's name and without it (Data
+  Exchange's pool hidden in a mount namespace), after the opening line was
+  cut to one and the rows made a little tighter. Set Up as a dry run went
+  to "Setting up this virtual machine", then "One more step, on Windows";
+  with only the enhanced session missing, to "This virtual machine is set
+  up". Set Up for real brought GNOME Shell's password dialog, "Authentication
+  is required to set up this virtual machine", which was left unanswered.
+- A real enhanced session from VMConnect started
+  `patrone-hyperv-setup-seen.service` (twice that morning, in the journal),
+  which wrote the file again.
+
 Not checked yet: a fresh install, where the prompt really shows (after
-first-login setup), Set Up with a password, Restart and Shut Down, and a
-real enhanced session writing the file. VMs from
+first-login setup), Set Up with a password, and Restart and Shut Down. VMs from
 `scripts/hyperv/new-test-vm.ps1` have the socket transport and Guest
 services on, so nothing shows there; to see the prompt, make the VM with
 Hyper-V Manager's defaults, or set the transport back to `VMBus` with the

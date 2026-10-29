@@ -8,6 +8,9 @@ patrone-hyperv-setup (0.2.0) resolute; urgency=medium
     keep their names, which a rename would have to migrate.
   * A line in the dialog and the description: Hyper-V and Windows are
     trademarks of the Microsoft group of companies.
+  * To leave room for it at 1024 by 768, the size Hyper-V's basic window
+    often has: the first page's opening line is one line, the rows are a
+    little tighter, and the note about the VM's name is shorter.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 12:00:00 -0500
 

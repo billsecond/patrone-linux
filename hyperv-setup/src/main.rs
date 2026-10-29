@@ -312,6 +312,20 @@ fn label(text: &str, class: &str) -> gtk::Label {
     label
 }
 
+/// The small print above the buttons: `note`, then the trademarks the
+/// dialog names
+fn notes(note: Option<&str>) -> gtk::Box {
+    let notes = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(2)
+        .build();
+    if let Some(note) = note {
+        notes.append(&label(note, "setup-dim"));
+    }
+    notes.append(&label(TRADEMARKS, "setup-legal"));
+    notes
+}
+
 fn button(text: &str, suggested: bool) -> gtk::Button {
     let button = gtk::Button::with_label(text);
     if suggested {
@@ -390,8 +404,8 @@ fn add_row(list: &gtk::ListBox, icon: &str, name: &str, about: &str, state: &str
     let row = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
         .spacing(14)
-        .margin_top(8)
-        .margin_bottom(8)
+        .margin_top(6)
+        .margin_bottom(6)
         .margin_start(12)
         .margin_end(12)
         .build();
@@ -414,7 +428,7 @@ fn show_check(this: &Rc<Setup>) {
             "Patrone Linux isn't running in Hyper-V here, so there's nothing to set up.",
             "",
         ));
-        page.append(&label(TRADEMARKS, "setup-legal"));
+        page.append(&notes(None));
         let close = button("Close", true);
         let window = this.window.clone();
         close.connect_clicked(move |_| window.close());
@@ -423,18 +437,18 @@ fn show_check(this: &Rc<Setup>) {
         return;
     }
 
+    // A line each, to leave room for the rest at 1024 by 768, the size of
+    // Hyper-V's basic window, where this mostly shows
     if status.set_up() {
         page.append(&label("This virtual machine is set up", "setup-title"));
         page.append(&label(
-            "Patrone Linux is running in a Hyper-V virtual machine, and everything it \
-             needs there is set up.",
+            "Everything Patrone Linux needs in Hyper-V is set up.",
             "",
         ));
     } else {
         page.append(&label("Set up this virtual machine", "setup-title"));
         page.append(&label(
-            "Patrone Linux is running in a Hyper-V virtual machine, and some of what it \
-             needs there isn't set up yet.",
+            "Some of what Patrone Linux needs in Hyper-V isn't set up yet.",
             "",
         ));
     }
@@ -494,17 +508,13 @@ fn show_check(this: &Rc<Setup>) {
 
     let parts = status.to_set_up();
     if parts.is_empty() {
-        page.append(&label(TRADEMARKS, "setup-legal"));
+        page.append(&notes(None));
         let close = button("Close", true);
         let window = this.window.clone();
         close.connect_clicked(move |_| window.close());
         page.append(&bottom(this, true, &[&close]));
     } else {
-        page.append(&label(
-            "Setting up asks for your password once.",
-            "setup-dim",
-        ));
-        page.append(&label(TRADEMARKS, "setup-legal"));
+        page.append(&notes(Some("Setting up asks for your password once.")));
         let not_now = button("Not Now", false);
         let set_up = button("Set Up", true);
         let window = this.window.clone();
@@ -613,7 +623,7 @@ fn windows_box(status: &Status, command: &str) -> gtk::Box {
 
     let mut notes = Vec::new();
     if status.vm_name.is_none() {
-        notes.push("Put the VM's name, as Hyper-V Manager shows it, in place of NAME.");
+        notes.push("Put the VM's name in place of NAME.");
     }
     if !status.transport {
         // No enhanced session yet means, most likely, VMConnect's basic
@@ -781,7 +791,7 @@ fn show_done(this: &Rc<Setup>, fresh: Status, restart: bool) {
             "",
         ));
     }
-    page.append(&label(TRADEMARKS, "setup-legal"));
+    page.append(&notes(None));
 
     let mut buttons = Vec::new();
     let power = if command.is_some() && shutdown {
