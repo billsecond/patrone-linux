@@ -788,8 +788,9 @@ Hyper-V.
   the **Royal** theme is Windows XP's look, a letter from XP Media Center's
   "Royale"; File Manager's icon is File Explorer's yellow-folder shape.
 - Package descriptions say "Windows-style" (`patrone-remote-desktop`'s title
-  line) and "Windows 11's File Explorer"; docs/NEXT.md calls the brief "an
-  exact replica of Windows 11's File Explorer".
+  line; reworded in 0.5.3, with a trademark line) and "Windows 11's File
+  Explorer"; docs/NEXT.md calls the brief "an exact replica of Windows 11's
+  File Explorer".
 
 US courts have mostly refused to protect interface layouts (Apple v.
 Microsoft, 1994; Lotus v. Borland, 1995), and trade dress in a product's

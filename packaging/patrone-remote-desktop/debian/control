@@ -58,3 +58,5 @@ Description: Patrone's desktops: one per account, on the screen and remotely
  its own password, checked by PAM, and gets its own desktop, with the
  clipboard, sound and a screen that follows the window, whether or not
  Remote Desktop is turned on.
+ .
+ Windows and Hyper-V are trademarks of the Microsoft group of companies.

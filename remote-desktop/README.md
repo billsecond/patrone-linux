@@ -1,7 +1,8 @@
-# Patrone Remote Desktop: Windows-style sessions
+# Patrone Remote Desktop: one desktop per account, on the screen and remotely
 
-Packaged as `patrone-remote-desktop`. It makes desktops work the way they do
-on Windows:
+Packaged as `patrone-remote-desktop`. Each account gets one desktop, which
+you can sit down at or sign in to from Remote Desktop Connection, and it
+works the way Windows users expect:
 
 - **Each account has one desktop**, which keeps running whether or not
   anyone is looking at it.
@@ -440,3 +441,5 @@ authentication.
 
 The plugin and helper are C because FreeRDP's plugin interface is a C struct
 of function pointers with fixed slots, which is awkward to match from Rust.
+
+Windows and Hyper-V are trademarks of the Microsoft group of companies.
