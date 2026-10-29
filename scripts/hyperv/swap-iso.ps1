@@ -1,7 +1,7 @@
 # Puts a new build of an ISO in a VM's DVD drive and boots from it. The VM is
 # turned off first (whatever it's running is lost).
 #
-#   .\swap-iso.ps1 -New N:\Hyper-V\ISO\patrone-linux-26.04.1-amd64.new.iso
+#   .\swap-iso.ps1 -New N:\Hyper-V\ISO\patroneos-26.04.1-amd64.new.iso
 #
 # -New replaces -Iso, the file the drive holds. Inserting a file Hyper-V
 # hasn't let go of yet, just after it's replaced, fails ("the object was not
@@ -11,7 +11,7 @@
 # order, which the swap undoes.
 param(
     [Parameter(Mandatory)][string]$New,
-    [string]$Iso = 'N:\Hyper-V\ISO\patrone-linux-26.04.1-amd64.iso',
+    [string]$Iso = 'N:\Hyper-V\ISO\patroneos-26.04.1-amd64.iso',
     [string]$Name = 'PatroneTest',
     [switch]$NoStart
 )

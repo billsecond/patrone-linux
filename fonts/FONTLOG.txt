@@ -8,7 +8,7 @@ the SIL Open Font License's FAQ asks of a derivative font.
 Basic font information
 ----------------------
 
-Patrone Sans is the interface font of Patrone Linux. It is Noto Sans,
+Patrone Sans is the interface font of PatroneOS. It is Noto Sans,
 version 2.015 (the NotoSans-v2.015 tag of
 https://github.com/notofonts/latin-greek-cyrillic, commit c4a321e1), with
 a few changes that make letters and figures easier to tell apart on screen.
@@ -97,5 +97,5 @@ Acknowledgements
 Noto Sans: the Noto Project Authors, the Monotype design team and Irene
 Vlachou (https://github.com/notofonts/latin-greek-cyrillic).
 
-Patrone Sans changes: William Daugherty, for Patrone Linux
-(https://github.com/billsecond/patrone-linux).
+Patrone Sans changes: William Daugherty, for PatroneOS
+(https://github.com/billsecond/patroneos).

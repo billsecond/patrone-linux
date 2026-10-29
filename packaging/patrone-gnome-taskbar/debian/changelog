@@ -1,3 +1,20 @@
+patrone-gnome-taskbar (0.4.8) resolute; urgency=medium
+
+  * Its ID is patrone-taskbar@patroneos.com, with no trace of the system's
+    old name, and so is its folder. At sign-in it puts the new ID in place of
+    the old in the account's lists of GNOME Shell's extensions, so a choice
+    made under the old one holds. It breaks the patrone-desktop,
+    patrone-settings and GNOME Settings versions that look for the old folder,
+    so they're upgraded with it.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 11:00:00 -0500
+
+patrone-gnome-taskbar (0.4.7) resolute; urgency=medium
+
+  * The system's new name, PatroneOS (2026-10-29), in its notes.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+
 patrone-gnome-taskbar (0.4.6) resolute; urgency=medium
 
   * The Files pin is File Manager's new icon (File Manager 0.3.6): a folder

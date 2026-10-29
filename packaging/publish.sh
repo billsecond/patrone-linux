@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Publishes Patrone's packages to its apt repository, billsecond/patrone-apt
-# (https://billsecond.github.io/patrone-apt), where Patrone Linux installs get
+# (https://billsecond.github.io/patrone-apt), where PatroneOS installs get
 # their updates (patrone-desktop's /etc/apt/sources.list.d/patrone.sources).
 # On the dev VM, where the signing key is.
 #
@@ -136,7 +136,7 @@ fi
 # version.
 gh release view pool -R "$github" >/dev/null 2>&1 ||
     gh release create pool -R "$github" --latest=false --title "Package pool" \
-        --notes "The .deb files of Patrone Linux's apt repository (https://billsecond.github.io/patrone-apt), which publishes them with its signed index. Not for downloading by hand."
+        --notes "The .deb files of PatroneOS's apt repository (https://billsecond.github.io/patrone-apt), which publishes them with its signed index. Not for downloading by hand."
 declare -A have
 while IFS=$'\t' read -r asset digest; do
     have[$asset]=$digest
@@ -174,6 +174,10 @@ gzip -9nkf "$repo/$index/Packages"
 xz -kf "$repo/$index/Packages"
 
 rm -f "$repo/$dists/Release" "$repo/$dists/InRelease" "$repo/$dists/Release.gpg"
+# Origin and Label stay as installs first saw them, whatever the system is
+# called (PatroneOS since 2026-10-29): apt stops updating from a repository
+# whose Origin or Label changes until it's told to accept it, and
+# desktop/apt/patrone.pref matches on the Origin
 (cd "$repo/$dists" && apt-ftparchive \
     -o APT::FTPArchive::Release::Origin=Patrone \
     -o "APT::FTPArchive::Release::Label=Patrone Linux" \
@@ -181,7 +185,7 @@ rm -f "$repo/$dists/Release" "$repo/$dists/InRelease" "$repo/$dists/Release.gpg"
     -o APT::FTPArchive::Release::Codename=$suite \
     -o APT::FTPArchive::Release::Architectures=amd64 \
     -o APT::FTPArchive::Release::Components=main \
-    -o "APT::FTPArchive::Release::Description=Patrone Linux's packages, for Ubuntu 26.04 LTS" \
+    -o "APT::FTPArchive::Release::Description=PatroneOS's packages, for Ubuntu 26.04 LTS" \
     release .) >"$work/Release"
 mv "$work/Release" "$repo/$dists/Release"
 

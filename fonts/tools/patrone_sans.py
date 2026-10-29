@@ -42,7 +42,7 @@ NOTO_COPYRIGHT = (
 )
 COPYRIGHT = f"{NOTO_COPYRIGHT}. Patrone Sans changes copyright 2026 William Daugherty."
 DESCRIPTION = (
-    "Patrone Sans is Noto Sans 2.015 changed for Patrone Linux: a tailed l and "
+    "Patrone Sans is Noto Sans 2.015 changed for PatroneOS: a tailed l and "
     "a slashed zero tell I, l, 1, O and 0 apart. Noto Sans was designed by the "
     "Monotype design team and Irene Vlachou."
 )
@@ -251,7 +251,7 @@ def set_info(font):
     info.versionMajor, info.versionMinor = VERSION
     info.openTypeNameDesigner = "Monotype Design Team, Irene Vlachou (Noto Sans)"
     info.openTypeNameDesignerURL = None
-    info.openTypeNameManufacturer = "Patrone Linux"
+    info.openTypeNameManufacturer = "PatroneOS"
     info.openTypeNameManufacturerURL = None
     info.openTypeNameDescription = DESCRIPTION
     info.openTypeNameLicense = LICENSE

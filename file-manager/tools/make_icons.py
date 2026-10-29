@@ -10,7 +10,7 @@ readable at 16 pixels. Nothing here is copied from Microsoft's icons.
 
 The app's own icon, data/org.patrone.FileManager.svg, is drawn by hand and
 isn't made here; the taskbar's Files pin
-(shell/gnome/patrone-taskbar@patrone-linux/icons/pin-files.svg) is a copy of
+(shell/gnome/patrone-taskbar@patroneos.com/icons/pin-files.svg) is a copy of
 it, so a new app icon goes there too.
 """
 

@@ -243,8 +243,8 @@ Installed-Size: 2578
 Depends: libc6 (>= 2.39), gvfs
 Section: utils
 Homepage: https://example.org/fm
-Description: file manager for Patrone Linux
- Patrone File Manager is the file manager of Patrone Linux, in the image of
+Description: file manager for PatroneOS
+ Patrone File Manager is the file manager of PatroneOS, in the image of
  Windows 11's File Explorer.
  .
  It works with the Recycle Bin.
@@ -259,11 +259,11 @@ Description: file manager for Patrone Linux
         assert_eq!(deb.version, "0.2.4");
         assert_eq!(deb.architecture, "amd64");
         assert_eq!(deb.installed_size_kb, Some(2578));
-        assert_eq!(deb.summary, "file manager for Patrone Linux");
+        assert_eq!(deb.summary, "file manager for PatroneOS");
         assert_eq!(deb.homepage.as_deref(), Some("https://example.org/fm"));
         assert_eq!(
             deb.description,
-            "Patrone File Manager is the file manager of Patrone Linux, in the image of \
+            "Patrone File Manager is the file manager of PatroneOS, in the image of \
              Windows 11's File Explorer.\n\nIt works with the Recycle Bin.\n\n  verbatim line"
         );
         assert!(parse_control("Version: 1\n").is_err());

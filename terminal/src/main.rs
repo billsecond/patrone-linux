@@ -1,4 +1,4 @@
-//! Patrone Terminal, the default terminal of Patrone Linux.
+//! Patrone Terminal, the default terminal of PatroneOS.
 //!
 //! GTK4 and VTE, with copy on select, paste on right-click, tabs, and the
 //! Patrone Dark theme.

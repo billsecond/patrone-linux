@@ -32,12 +32,27 @@ esac
 # Ubuntu's session mode back in its place (and Ubuntu Pro's apt hook, which
 # versions before 0.2.0 moved aside, if postinst never got to put it back)
 mode=/usr/share/gnome-shell/modes/ubuntu.json
+aside=/usr/share/patrone-desktop/ubuntu.json.ubuntu
+old_aside=$mode.ubuntu
 case "$1" in
     remove | abort-install | disappear)
         rm -f "$mode" "$mode.new"
-        dpkg-divert --package patrone-desktop --remove --rename --divert "$mode.ubuntu" "$mode"
+        dpkg-divert --package patrone-desktop --remove --rename --divert "$aside" "$mode"
         dpkg-divert --package patrone-desktop --remove --rename \
             --divert /usr/share/patrone-desktop/20apt-esm-hook.conf.ubuntu /etc/apt/apt.conf.d/20apt-esm-hook.conf
+        rmdir --ignore-fail-on-non-empty /usr/share/patrone-desktop 2> /dev/null || true
+        ;;
+    abort-upgrade)
+        # An upgrade from before 0.2.6 that failed after preinst moved
+        # Ubuntu's mode to its new place: back where the old version keeps it,
+        # and the old version's mode made again from it
+        if dpkg --compare-versions "$2" lt 0.2.6 &&
+            [ "$(dpkg-divert --truename "$mode")" = "$aside" ]; then
+            rm -f "$mode"
+            dpkg-divert --package patrone-desktop --remove --rename --divert "$aside" "$mode"
+            dpkg-divert --package patrone-desktop --add --rename --divert "$old_aside" "$mode"
+            /usr/libexec/patrone-desktop/make-session-mode || true
+        fi
         ;;
 esac
 

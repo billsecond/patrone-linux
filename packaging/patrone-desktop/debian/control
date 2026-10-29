@@ -5,7 +5,7 @@ Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
-Vcs-Git: https://github.com/billsecond/patrone-linux.git
+Vcs-Git: https://github.com/billsecond/patroneos.git
 
 # Ubuntu's desktop, listed here in place of Ubuntu's metapackages
 # (ubuntu-desktop-minimal and ubuntu-minimal 1.570.4): their Depends and
@@ -224,6 +224,9 @@ Conflicts: apport-gtk, hwctl, ubuntu-advantage-desktop-daemon, ubuntu-insights,
            ubuntu-pro-client, ubuntu-report, update-manager, update-notifier,
            whoopsie
 Provides: update-notifier
+# The taskbar's ID is patrone-taskbar@patroneos.com from 0.4.8, and the
+# session mode (session/make-session-mode) names it
+Breaks: patrone-gnome-taskbar (<< 0.4.8)
 Description: PatroneOS's desktop
  Ubuntu's desktop with Patrone's branding and apps, and none of Canonical's
  own services: no Ubuntu Pro (its client, its services and its notices), no

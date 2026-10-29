@@ -1,6 +1,6 @@
 # Patrone Terminal
 
-The default terminal of Patrone Linux: GTK4 and VTE, written in Rust.
+The default terminal of PatroneOS: GTK4 and VTE, written in Rust.
 
 - **Copy on select:** selected text goes to the clipboard as soon as you stop
   selecting.

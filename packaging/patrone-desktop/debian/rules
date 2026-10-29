@@ -20,6 +20,9 @@ override_dh_auto_install:
 	    $(pkg)/usr/libexec/patrone-desktop/make-session-mode
 	install -Dm644 apt/52patrone-unattended-upgrades \
 	    $(pkg)/etc/apt/apt.conf.d/52patrone-unattended-upgrades
+	# Accepts the repository's new Label (apt/51patrone-release-label)
+	install -Dm644 apt/51patrone-release-label \
+	    $(pkg)/etc/apt/apt.conf.d/51patrone-release-label
 	# Patrone's own updates: its repository on GitHub, its key, and the pins
 	# that put its builds before Ubuntu's
 	install -Dm644 apt/patrone.sources \

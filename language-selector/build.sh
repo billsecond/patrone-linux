@@ -17,9 +17,9 @@
 set -euo pipefail
 
 # Patrone's revision of the changes: one more with each change to them
-revision=1
+revision=2
 # What changed in it, for the package's changelog
-changes="Patrone's build: the input method's tip, the error message and the help name Patrone Linux, or nobody, where they named Ubuntu or Launchpad. Patrone maintains this build, with Ubuntu as the original maintainer."
+changes="Patrone's build: the input method's tip, the error message and the help name PatroneOS, or nobody, where they named Ubuntu or Launchpad. Patrone maintains this build, with Ubuntu as the original maintainer."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -50,20 +50,20 @@ edit LanguageSelector/gtk/GtkLanguageSelector.py \
                          "file a bug report at "
                          "https://bugs.launchpad.net/ubuntu/+source/language-selector/+filebug")' \
     '_("This is perhaps a bug of this application.")'
-# The help described Ubuntu. What it says is as true of Patrone Linux, which
+# The help described Ubuntu. What it says is as true of PatroneOS, which
 # is built on Ubuntu; its credits and licence (CC BY-SA 2.5) stay, with a
 # line on what Patrone changed, as the licence asks.
 help=help/C/index.docbook
-edit "$help" 'Ubuntu has been translated' 'Patrone Linux has been translated'
+edit "$help" 'Ubuntu has been translated' 'PatroneOS has been translated'
 edit "$help" 'most Ubuntu users' 'most users'
-edit "$help" '<para>Ubuntu uses the ' '<para>Patrone Linux uses the '
-edit "$help" 'Ubuntu with GNOME' 'Patrone Linux'
+edit "$help" '<para>Ubuntu uses the ' '<para>PatroneOS uses the '
+edit "$help" 'Ubuntu with GNOME' 'PatroneOS'
 edit "$help" '		  <para>This documentation is distributed in the hope' \
-    '		  <para>Patrone Linux changed this guide to name Patrone Linux where it named Ubuntu.</para>
+    '		  <para>PatroneOS changed this guide to name PatroneOS where it named Ubuntu.</para>
 
 		  <para>This documentation is distributed in the hope'
 if grep -n 'Ubuntu' "$help" | grep -v -e 'Ubuntu Documentation Contributors' \
-    -e 'the Ubuntu documentation source code' -e 'Patrone Linux changed this guide' >&2; then
+    -e 'the Ubuntu documentation source code' -e 'PatroneOS changed this guide' >&2; then
     echo "$help names Ubuntu where this doesn't expect it: update language-selector/build.sh" >&2
     exit 1
 fi

@@ -15,9 +15,9 @@
 set -euo pipefail
 
 # Patrone's revision of the changes: one more with each change to them
-revision=4
+revision=5
 # What changed in it, for the package's changelog
-changes="Patrone's build: Patrone Linux in place of Ubuntu, Patrone Software in place of App Center, and Patrone's pictures, in Patrone's blue. No \"View release notes\" link, which opened Ubuntu's. No password prompts from the crash reporter's settings, which Patrone doesn't have. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pictures and the Craft apps' icons in one of them."
+changes="Patrone's build: PatroneOS in place of Ubuntu, Patrone Software in place of App Center, and Patrone's pictures, in Patrone's blue. No \"View release notes\" link, which opened Ubuntu's. No password prompts from the crash reporter's settings, which Patrone doesn't have. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pictures and the Craft apps' icons in one of them."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -58,7 +58,7 @@ Copyright: 2026 William Daugherty, as far as these files are protected by
  copyright
 Comment: Patrone's P, in place of Ubuntu's logo and mascot, put in by
  Patrone's build (gnome-initial-setup/patrone.py in
- https://github.com/billsecond/patrone-linux), which also changes the
+ https://github.com/billsecond/patroneos), which also changes the
  setup's words and recolors its other pictures from Ubuntu's orange to
  Patrone's blue. The P comes from Patrone's logo, which was made with an AI
  image generator, so it's offered under GPL-3+ only as far as anyone holds
@@ -80,7 +80,7 @@ Copyright: 2026 William Daugherty
  2007-2016 Richard Hughes and the GNOME Software contributors
 Comment: Patrone's picture, in place of Ubuntu's App Center one
  (patrone-software.svg, drawn by gnome-initial-setup/make_software_picture.py
- in https://github.com/billsecond/patrone-linux): GNOME Software's icon
+ in https://github.com/billsecond/patroneos): GNOME Software's icon
  (GPL-2+, as GNOME Software), with ten Craft apps' icons round it. The
  Craft apps' makers license them under MIT OR Apache-2.0; they're used here
  under the MIT licence, below.

@@ -3,7 +3,7 @@
 # of product names (docs/COMPLIANCE.md, item 15). Hyper-V is a trademark of
 # the Microsoft group of companies.
 Name=Virtual Machine Setup
-Comment=Set up what Patrone Linux needs in a Hyper-V virtual machine
+Comment=Set up what PatroneOS needs in a Hyper-V virtual machine
 Exec=patrone-hyperv-setup
 Icon=org.patrone.HyperVSetup
 Terminal=false

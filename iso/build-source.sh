@@ -1,5 +1,5 @@
 #!/bin/bash
-# Gathers the source code of everything on a Patrone Linux disc image, to
+# Gathers the source code of everything on a PatroneOS disc image, to
 # publish beside it (docs/COMPLIANCE.md, item 1: GPL-2 asks for the source
 # "from the same place" as the binaries).
 #
@@ -13,7 +13,7 @@
 #   mirrors keep only the newest). Patrone's rebuilds of Ubuntu's packages
 #   (versions ending in patroneN) get the version of Ubuntu's they're built
 #   from; Patrone's changes to them are in patrone/.
-# - patrone/: Patrone Linux's repository at the disc's commit (its own
+# - patrone/: PatroneOS's repository at the disc's commit (its own
 #   packages, its changes to Ubuntu's, and the scripts that make the disc),
 #   and the installer's upstream source: Canonical's ubuntu-desktop-provision
 #   at the commit installer/build.sh names, and ubuntu_flavor from pub.dev.
@@ -35,12 +35,14 @@ trap 'rm -rf "$work"' EXIT
 mkdir -p "$out/ubuntu" "$out/patrone"
 
 xorriso -osirrox on -indev "$iso" -extract /casper/sources.manifest "$work/sources.manifest" 2>/dev/null
-commit=$(sed -n 's|^# https://github.com/billsecond/patrone-linux at \([0-9a-f]\{40\}\).*|\1|p' "$work/sources.manifest")
+# The repository is billsecond/patroneos since 2026-10-29; discs from before
+# then name it billsecond/patrone-linux
+commit=$(sed -nE 's,^# https://github.com/billsecond/(patrone-linux|patroneos) at ([0-9a-f]{40}).*,\2,p' "$work/sources.manifest")
 if [ -z "$commit" ] || ! git -C "$root" cat-file -e "$commit^{commit}" 2>/dev/null; then
     echo "build-source.sh: the disc's commit (${commit:-not recorded}) isn't in this checkout; fetch it first" >&2
     exit 1
 fi
-if grep -q '^# https://github.com/billsecond/patrone-linux at .*not committed' "$work/sources.manifest"; then
+if grep -qE '^# https://github.com/billsecond/(patrone-linux|patroneos) at .*not committed' "$work/sources.manifest"; then
     echo "build-source.sh: the disc was built with changes that were never committed, so its source isn't all in the repository" >&2
     exit 1
 fi
@@ -101,8 +103,8 @@ rm -f "$out/missing.txt"
 xargs -P "$jobs" -L 1 bash -c 'fetch "$@"' _ <"$work/fetch"
 
 # Patrone's own source, and the installer's upstream source
-git -C "$root" archive --format=tar.gz --prefix="patrone-linux-$short/" \
-    -o "$out/patrone/patrone-linux-$short.tar.gz" "$commit"
+git -C "$root" archive --format=tar.gz --prefix="patroneos-$short/" \
+    -o "$out/patrone/patroneos-$short.tar.gz" "$commit"
 build=$(git -C "$root" show "$commit:installer/build.sh")
 provision=$(sed -n 's/^provision_commit=//p' <<<"$build")
 flavor=$(sed -n 's/^flavor_version=//p' <<<"$build")
@@ -116,11 +118,11 @@ flavor=$(sed -n 's/^flavor_version=//p' <<<"$build")
 cp "$work/sources.manifest" "$out/sources.manifest"
 {
     cat <<EOF
-The source code of Patrone Linux 26.04.1
+The source code of PatroneOS 26.04.1
 ========================================
 
 Everything on the disc image, as casper/sources.manifest on it lists
-(sources.manifest here), built from https://github.com/billsecond/patrone-linux
+(sources.manifest here), built from https://github.com/billsecond/patroneos
 at $commit.
 
 ubuntu/
@@ -135,7 +137,7 @@ EOF
     cat <<EOF
 
 patrone/
-    patrone-linux-$short.tar.gz: Patrone Linux's repository at that
+    patroneos-$short.tar.gz: PatroneOS's repository at that
     commit: Patrone's own packages (packaging/, and the folders it names),
     its changes to Ubuntu's (gdm/, gnome-settings/, gnome-initial-setup/,
     installer/), and the scripts that make the disc (iso/). Each package's
@@ -147,7 +149,7 @@ patrone/
     end at the commit Patrone's installer is built from
     (installer/build.sh, with installer/patch_source.py and
     installer/debrand_l10n.py), and ubuntu_flavor-$flavor.tar.gz, from
-    pub.dev, which installer/build.sh renames Patrone Linux. Its Dart and
+    pub.dev, which installer/build.sh renames PatroneOS. Its Dart and
     Flutter packages' versions are in the source's pubspec.lock files.
 
 The snaps on the disc are Canonical's and their publishers', unchanged;

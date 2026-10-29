@@ -4,7 +4,7 @@
 // that app's windows show under the slot: WordCraft for documents while it's
 // the default for them, LibreOffice Writer once that is (the user,
 // 2026-10-26). A slot with no app for its job doesn't show, except the web
-// browser's: Patrone Linux comes with no browser, and the slot opens Patrone
+// browser's: PatroneOS comes with no browser, and the slot opens Patrone
 // Browser Chooser to install one.
 
 import Gio from 'gi://Gio';

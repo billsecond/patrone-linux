@@ -1,4 +1,4 @@
-# Patrone Linux
+# PatroneOS
 
 An Ubuntu 26.04 LTS-based operating system with its own, brand-new desktop
 environment: Patrone Desktop.
@@ -9,11 +9,12 @@ settings) that replaces GNOME. The build produces an installable ISO.
 
 See [docs/PLAN.md](docs/PLAN.md) for the approach, repo layout and milestones.
 
-This repository is private while the project takes shape.
+PatroneOS has had its name since 2026-10-29. Its website is
+<https://patroneos.com>.
 
 ## License
 
-Patrone Linux is free software, licensed under the GNU General Public License,
+PatroneOS is free software, licensed under the GNU General Public License,
 version 3 or (at your option) any later version. See [LICENSE](LICENSE).
 Each package's copyright file says what else is in it and under which
 licence, and [legal/eula.md](legal/eula.md) is the licence agreement for the
@@ -21,7 +22,7 @@ disc image.
 
 ## Trademarks
 
-Patrone Linux is based on Ubuntu. It is an independent project, not
+PatroneOS is based on Ubuntu. It is an independent project, not
 affiliated with or endorsed by Canonical Ltd., the GNOME Foundation,
 Microsoft or the Linux Foundation.
 

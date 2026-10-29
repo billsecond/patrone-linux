@@ -5,7 +5,7 @@ Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
-Vcs-Git: https://github.com/billsecond/patrone-linux.git
+Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: fonts-patrone-sans
 Architecture: all

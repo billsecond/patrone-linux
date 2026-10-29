@@ -1,0 +1,8 @@
+// PatroneOS's apt repository (billsecond.github.io/patrone-apt) takes the
+// system's new name as its Label. apt stops updating from a repository whose
+// Label changes until someone accepts it (apt-get update
+// --allow-releaseinfo-change), which would stop PatroneOS's updates, in apt
+// and in Patrone Software. This accepts a Label change, so they go on.
+// Labels only name a repository: preferences here match on the Origin
+// (patrone.pref), and a change of Origin, Suite or Codename is still refused.
+Acquire::AllowReleaseInfoChange::Label "true";

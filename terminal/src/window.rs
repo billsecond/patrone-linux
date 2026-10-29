@@ -464,7 +464,7 @@ fn add_actions(window: &gtk::ApplicationWindow, notebook: &gtk::Notebook) {
                     .program_name("Patrone Terminal")
                     .logo_icon_name(crate::APP_ID)
                     .version(env!("CARGO_PKG_VERSION"))
-                    .comments("The terminal of Patrone Linux")
+                    .comments("The terminal of PatroneOS")
                     .build()
                     .present();
             })

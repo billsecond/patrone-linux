@@ -8,7 +8,7 @@ it opens the Canonical app center". `build.sh` rebuilds Ubuntu's package with
 Patrone's changes (`patrone.py`), as `gnome-settings/build.sh` does for
 Settings:
 
-- **Words:** "Choose how Patrone Linux looks", "Welcome to Patrone Linux"
+- **Words:** "Choose how PatroneOS looks", "Welcome to PatroneOS"
   (the welcome page uses os-release's name, Patrone's; this is the fallback).
 - **"Get started with more applications"** offers Patrone Software ("Open
   Patrone Software", GNOME Software) in place of Ubuntu's App Center, with

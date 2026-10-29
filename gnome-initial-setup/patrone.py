@@ -7,7 +7,7 @@
 # IMAGES has Patrone's pictures (branding/tools/make_installer_images.sh);
 # PICTURE is patrone-software.svg (make_software_picture.py).
 #
-# - Patrone Linux where Ubuntu's pages say Ubuntu.
+# - PatroneOS where Ubuntu's pages say Ubuntu.
 # - The "Get started with more applications" page offers Patrone Software,
 #   with the Craft apps, in place of Ubuntu's App Center.
 # - Patrone's P in place of Ubuntu's logo and mascot, and every other picture
@@ -32,9 +32,9 @@ def edit(path, old, new):
 
 # The words
 edit(pages / 'appearance/gis-appearance-page.blp',
-     '_("Choose how Ubuntu looks")', '_("Choose how Patrone Linux looks")')
-edit(pages / 'welcome/gis-welcome-page.c', 'g_strdup ("Ubuntu")', 'g_strdup ("Patrone Linux")')
-edit(pages / 'welcome/gis-welcome-page.ui', 'Welcome to Ubuntu 24.04 LTS', 'Welcome to Patrone Linux')
+     '_("Choose how Ubuntu looks")', '_("Choose how PatroneOS looks")')
+edit(pages / 'welcome/gis-welcome-page.c', 'g_strdup ("Ubuntu")', 'g_strdup ("PatroneOS")')
+edit(pages / 'welcome/gis-welcome-page.ui', 'Welcome to Ubuntu 24.04 LTS', 'Welcome to PatroneOS')
 # "View release notes" opened Ubuntu's release notes for the system's
 # version (Ubuntu's notes for "0.1"): hidden until Patrone has its own
 # (docs/COMPLIANCE.md, item 18)

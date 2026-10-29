@@ -16,7 +16,7 @@ set -euo pipefail
 
 # Patrone's revision of the patches: one more with each change to them, so a
 # new build of the same Ubuntu version installs as an upgrade
-revision=2
+revision=3
 # What changed in it, for the package's changelog
 changes="Patrone's build: Hyper-V's synthetic video counts as the boot display, so on a generation 2 VM the login screen no longer waits 10 seconds for a primary GPU. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's patch."
 
@@ -53,8 +53,8 @@ fi
 # GDM's copyright file is plain text, not machine-readable
 cat >> debian/copyright << 'EOF'
 
-Patrone Linux's build of GDM (gdm/ in
-https://github.com/billsecond/patrone-linux) adds
+PatroneOS's build of GDM (gdm/ in
+https://github.com/billsecond/patroneos) adds
 debian/patches/patrone-hyperv-boot-display.patch:
 
     Copyright © 2026  William Daugherty

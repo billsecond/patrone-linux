@@ -10,7 +10,7 @@
   counts them as "any", not "active": each action allows all three the same.
 -->
 <policyconfig>
-  <vendor>Patrone Linux</vendor>
+  <vendor>PatroneOS</vendor>
 
   <action id="org.patrone.remote-desktop.status">
     <description>See whether Remote Desktop is on for your account</description>

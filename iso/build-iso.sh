@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds Patrone Linux's ISO from Ubuntu's desktop ISO.
+# Builds PatroneOS's ISO from Ubuntu's desktop ISO.
 #
 #   sudo iso/build-iso.sh UBUNTU-ISO DEB-DIR OUT-ISO
 #
@@ -12,7 +12,7 @@
 #
 # - patrone, what the installer installs: Ubuntu's base and English layers
 #   with Patrone's packages, as one whole system. It's the installer's only
-#   choice, "Patrone Linux".
+#   choice, "PatroneOS".
 # - patrone.live, on it, the live session the disc boots: made from Ubuntu's
 #   live session with Patrone's packages, it holds only how that differs from
 #   patrone. The live desktop, its splash and the installer (whose name,
@@ -387,11 +387,11 @@ $kernel
 sources:
 - default: true
   description:
-    en: Patrone Linux's desktop, on Ubuntu 26.04 LTS.
+    en: PatroneOS's desktop, on Ubuntu 26.04 LTS.
   id: ubuntu-desktop-minimal
   locale_support: langpack
   name:
-    en: Patrone Linux
+    en: PatroneOS
   path: $install_layer.squashfs
   size: $install_size
   type: fsimage-layered
@@ -403,15 +403,15 @@ sources:
 version: 2
 EOF
 # The boot menu (the user, 2026-10-27: "installer only"): first "Install
-# Patrone Linux", the installer alone, full screen (patrone-installer's
-# session for patrone-install-only); then "Try Patrone Linux", the live
+# PatroneOS", the installer alone, full screen (patrone-installer's
+# session for patrone-install-only); then "Try PatroneOS", the live
 # desktop with the installer on it; then the installer with safe graphics.
 # Ubuntu's entries for the firmware stay, and it counts down 10 seconds, not
 # 30.
 boot_menu() { # MORE-KERNEL-ARGUMENTS
     local entry
-    for entry in "Install Patrone Linux|patrone-install-only" "Try Patrone Linux|" \
-        "Install Patrone Linux (safe graphics)|nomodeset patrone-install-only"; do
+    for entry in "Install PatroneOS|patrone-install-only" "Try PatroneOS|" \
+        "Install PatroneOS (safe graphics)|nomodeset patrone-install-only"; do
         printf 'menuentry "%s" {\n    set gfxpayload=keep\n    linux  /casper/vmlinuz %s %s --- quiet splash\n    initrd /casper/initrd\n}\n' \
             "${entry%%|*}" "${entry#*|}" "$1"
     done
@@ -426,7 +426,7 @@ mv "$work/iso/grub.cfg.new" "$work/iso/grub.cfg"
 boot_menu 'iso-scan/filename=${iso_path}' >"$work/iso/loopback.cfg"
 # Ubuntu's form; the installer shows what comes before the quote as the new
 # system's name.
-echo "Patrone Linux 26.04.1 \"Patrone Linux\" - Release amd64 ($(date -u +%Y%m%d))" >"$work/iso/info"
+echo "PatroneOS 26.04.1 \"PatroneOS\" - Release amd64 ($(date -u +%Y%m%d))" >"$work/iso/info"
 
 # Where the source code is (docs/COMPLIANCE.md, item 1): SOURCE.txt at the
 # disc's root, and casper/sources.manifest, every source package (name and
@@ -439,26 +439,26 @@ if [ "$commit" != unknown ] &&
     commit="$commit, with changes not committed"
 fi
 {
-    echo "# The source of everything on Patrone Linux 26.04.1's disc: KIND NAME VERSION"
+    echo "# The source of everything on PatroneOS 26.04.1's disc: KIND NAME VERSION"
     echo "# (deb: a source package; snap: a snap and its revision). Built from"
-    echo "# https://github.com/billsecond/patrone-linux at $commit"
+    echo "# https://github.com/billsecond/patroneos at $commit"
     {
         cat "$work/$install_layer.sources" "$work/$live_layer.sources"
         pool_sources
     } | sort -u
 } >"$work/iso/sources.manifest"
 cat >"$work/iso/SOURCE.txt" <<EOF
-Patrone Linux 26.04.1: where the source code is
+PatroneOS 26.04.1: where the source code is
 
-Patrone Linux is free software, and almost every program on this disc is
+PatroneOS is free software, and almost every program on this disc is
 too. Their source code is published beside this disc image:
 
-    https://patronelinux.com/source
+    https://patroneos.com/source
 
 Patrone's own code, its changes to Ubuntu's programs and the scripts that
 make this disc are also at
 
-    https://github.com/billsecond/patrone-linux
+    https://github.com/billsecond/patroneos
 
 at $commit.
 
@@ -510,7 +510,7 @@ done
 volume_date=$(xorriso -indev "$ubuntu_iso" -pvd_info 2>/dev/null | sed -n 's/^Modif. Time *: *//p')
 rm -f "$out"
 xorriso -indev "$ubuntu_iso" -outdev "$out" -boot_image any replay \
-    -volid "Patrone Linux 26.04.1 amd64" -volume_date uuid "$volume_date" \
+    -volid "PatroneOS 26.04.1 amd64" -volume_date uuid "$volume_date" \
     -rm "${remove[@]}" -- "${maps[@]}"
 
 step "On the disc"

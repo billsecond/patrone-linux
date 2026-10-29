@@ -1,6 +1,6 @@
-# Patrone Linux: project plan
+# PatroneOS: project plan
 
-Patrone Linux is an Ubuntu-based operating system with its own, brand-new desktop
+PatroneOS is an Ubuntu-based operating system with its own, brand-new desktop
 environment, **Patrone Desktop**, built as an installable ISO.
 
 ## What comes from Ubuntu, and what is ours

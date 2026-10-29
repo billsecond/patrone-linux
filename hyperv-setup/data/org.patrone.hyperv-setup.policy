@@ -10,7 +10,7 @@
   three allow the same.
 -->
 <policyconfig>
-  <vendor>Patrone Linux</vendor>
+  <vendor>PatroneOS</vendor>
 
   <action id="org.patrone.hyperv-setup.apply">
     <description>Set up this virtual machine</description>
