@@ -40,7 +40,7 @@
 #define WM_SCHEMA "org.gnome.desktop.wm.preferences"
 #define INTERFACE_SCHEMA "org.gnome.desktop.interface"
 #define PREVIEWS_DIR "/usr/share/patrone/settings/previews"
-#define TASKBAR_ICONS "gnome-shell/extensions/patrone-taskbar@patrone-linux/icons"
+#define TASKBAR_ICONS "gnome-shell/extensions/patrone-taskbar@patroneos.com/icons"
 
 /* The title bar buttons at the top right or top left (GNOME's
  * button-layout), close nearest the corner */

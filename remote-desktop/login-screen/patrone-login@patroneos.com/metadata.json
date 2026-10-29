@@ -1,5 +1,5 @@
 {
-    "uuid": "patrone-login@patrone-linux",
+    "uuid": "patrone-login@patroneos.com",
     "name": "Patrone login screen",
     "description": "Signing in on the screen joins the account's desktop instead of ending it",
     "shell-version": ["50"],

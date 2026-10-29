@@ -223,6 +223,9 @@ Conflicts: apport-gtk, hwctl, ubuntu-advantage-desktop-daemon, ubuntu-insights,
            ubuntu-pro-client, ubuntu-report, update-manager, update-notifier,
            whoopsie
 Provides: update-notifier
+# The taskbar's ID is patrone-taskbar@patroneos.com from 0.4.8, and the
+# session mode (session/make-session-mode) names it
+Breaks: patrone-gnome-taskbar (<< 0.4.8)
 Description: PatroneOS's desktop
  Ubuntu's desktop with Patrone's branding and apps, and none of Canonical's
  own services: no Ubuntu Pro (its client, its services and its notices), no

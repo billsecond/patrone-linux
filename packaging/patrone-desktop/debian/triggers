@@ -1,1 +1,3 @@
 interest-noawait /usr/share/gnome-shell/modes
+# Ubuntu's session mode, moved aside here by preinst: its updates land here
+interest-noawait /usr/share/patrone-desktop

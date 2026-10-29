@@ -18,7 +18,7 @@ patrone-browser-chooser --list      the browsers it offers, and which are instal
 
 - **The taskbar's Web browser button.** The slot opens the default app for
   web links; with no browser installed, that's the chooser, and the slot
-  still shows (`fallback` in `shell/gnome/patrone-taskbar@patrone-linux/roles.js`).
+  still shows (`fallback` in `shell/gnome/patrone-taskbar@patroneos.com/roles.js`).
 - **Any link opened with no browser installed**, from Help, first-login
   setup or any app. `patrone-default-apps` makes the chooser the last
   choice in `/etc/xdg/mimeapps.list` for `x-scheme-handler/http`, `https`,

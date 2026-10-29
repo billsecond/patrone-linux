@@ -21,9 +21,10 @@ Center.
 | `apt/patrone.sources` | `/etc/apt/sources.list.d/` | Patrone's own updates: its apt repository on GitHub Pages, `https://billsecond.github.io/patrone-apt` (below) |
 | `apt/patrone-archive-keyring.gpg` | `/usr/share/keyrings/` | The key that repository is signed with, and the only one apt takes for it (`Signed-By`) |
 | `apt/patrone.pref` | `/etc/apt/preferences.d/` | Patrone's builds come before Ubuntu's, even Ubuntu's newer versions (below) |
+| `apt/51patrone-release-label` | `/etc/apt/apt.conf.d/` | Accepts a change of a repository's Label (`Acquire::AllowReleaseInfoChange::Label`): Patrone's repository's Label is to take the system's new name, and apt otherwise stops updating from it, in apt and in Patrone Software, until someone runs `apt-get update --allow-releaseinfo-change`. Origin, Suite and Codename changes are still refused (0.2.6) |
 | `apt/52patrone-unattended-upgrades` | `/etc/apt/apt.conf.d/` | The daily automatic updates install from Ubuntu's archive (whose origins Ubuntu's own file names by the system's ID, now "Patrone") and from Patrone's repository |
 | `connections.txt` | `/usr/share/doc/patrone-desktop/connections.txt` | What the system connects to, and who runs each service, for users (`/etc/legal` points to it): the website's list (`/privacy/patrone-linux`), kept to what this version does. Change both together |
-| `session/make-session-mode` | `/usr/libexec/patrone-desktop/` | Writes `/usr/share/gnome-shell/modes/ubuntu.json`: Ubuntu's session mode (moved aside to `ubuntu.json.ubuntu` by preinst) with Patrone's taskbar among the session's own extensions (below). Run by postinst, and again by a trigger whenever `gnome-shell-common` brings a new one; if Ubuntu's file changes shape, or the result isn't valid JSON, Ubuntu's is used as it is |
+| `session/make-session-mode` | `/usr/libexec/patrone-desktop/` | Writes `/usr/share/gnome-shell/modes/ubuntu.json`: Ubuntu's session mode (moved aside by preinst to `/usr/share/patrone-desktop/ubuntu.json.ubuntu`, out of the modes folder: before 0.2.6 it sat beside Patrone's as `ubuntu.json.ubuntu`, which GNOME Shell also takes for the "ubuntu" mode, and when it found that first the taskbar loaded only if the account's own list named it) with Patrone's taskbar among the session's own extensions (below). Run by postinst, and again by a trigger whenever `gnome-shell-common` brings a new one; if Ubuntu's file changes shape, or the result isn't valid JSON, Ubuntu's is used as it is |
 
 ### Ubuntu's desktop, listed here
 
@@ -87,7 +88,7 @@ stayed (the user: "I should never see that bar"). As one of the session's
 own extensions (0.1.5) it always loads. The other side of that: a taskbar
 that crashed GNOME Shell at sign-in would keep doing it, with no safety
 switch. `disabled-extensions` still turns it off, over SSH if need be:
-`gsettings set org.gnome.shell disabled-extensions "['patrone-taskbar@patrone-linux']"`
+`gsettings set org.gnome.shell disabled-extensions "['patrone-taskbar@patroneos.com']"`
 in the account's session.
 
 Ubuntu's GNOME Shell doesn't load a session-mode extension from an account's

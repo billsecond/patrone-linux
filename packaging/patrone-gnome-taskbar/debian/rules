@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 pkg = debian/patrone-gnome-taskbar
-uuid = patrone-taskbar@patrone-linux
+uuid = patrone-taskbar@patroneos.com
 extension = $(pkg)/usr/share/gnome-shell/extensions/$(uuid)
 schemas = $(pkg)/usr/share/glib-2.0/schemas
 

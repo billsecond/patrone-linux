@@ -1,5 +1,5 @@
 {
-    "uuid": "unsafe@patrone-linux",
+    "uuid": "unsafe@patroneos.com",
     "name": "Unsafe mode (tests only)",
     "description": "Turns on GNOME Shell's unsafe mode, for tests/headless.sh. Never install it on a real desktop.",
     "shell-version": ["50"]

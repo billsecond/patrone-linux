@@ -2,9 +2,16 @@
 
 Patrone Desktop's taskbar for the GNOME-based desktop Patrone runs today,
 packaged as `patrone-gnome-taskbar`. It's a GNOME Shell extension
-(`patrone-taskbar@patrone-linux`), on for every account, until Patrone's own
+(`patrone-taskbar@patroneos.com`), on for every account, until Patrone's own
 shell (`shell/`, GTK4) replaces GNOME Shell. The design carries over to that
 shell.
+
+Its ID was `patrone-taskbar@` and the system's old name until 0.4.8. The
+session mode (`patrone-desktop` 0.2.6) names the new one, and the taskbar
+puts it in place of the old one in each account's own lists of GNOME
+Shell's extensions when it starts, so an account that turned it off keeps
+it off (from its next sign-in). `Breaks` makes `patrone-desktop` and both
+Settings apps, which find its icons by its folder, upgrade with it.
 
 Installing the package turns it on for every account, but GNOME Shell only
 loads extensions when it starts: log out from inside the desktop (the
@@ -541,7 +548,7 @@ desktop icons
 (when they start, they end every desktop-icons process of the account,
 the real desktop's included; early test runs made the real desktop's icons
 restart this way) and the snap permission prompts. A helper
-extension, `tests/unsafe@patrone-linux`, turns on GNOME Shell's unsafe mode
+extension, `tests/unsafe@patroneos.com`, turns on GNOME Shell's unsafe mode
 in that shell, which is what lets the script run JavaScript there and take
 screenshots; never install it on a real desktop.
 

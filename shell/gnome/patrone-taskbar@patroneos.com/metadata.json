@@ -1,5 +1,5 @@
 {
-    "uuid": "patrone-taskbar@patrone-linux",
+    "uuid": "patrone-taskbar@patroneos.com",
     "name": "Patrone Taskbar",
     "description": "Patrone Desktop's taskbar, along the bottom of the screen in place of the top bar: the Patrone menu with type-to-search, search, pinned and running apps with right-click jump lists, and the clock and system tray.",
     "shell-version": ["50"],

@@ -365,7 +365,7 @@ a folder in Patrone's blues, its tab on the right and its front cut on the
 slant of the Patrone P (since 0.3.6; it was a yellow folder with a blue
 band, File Explorer's shape, until the compliance review, item 15). The
 taskbar's Files pin is a copy of it
-(`shell/gnome/patrone-taskbar@patrone-linux/icons/pin-files.svg`), so a new
+(`shell/gnome/patrone-taskbar@patroneos.com/icons/pin-files.svg`), so a new
 app icon goes there too. The line glyphs of the command bar and
 menus are vector paths in `src/glyph.rs`, drawn in the text color so they
 follow light and dark mode. The text is the desktop's font (Patrone
