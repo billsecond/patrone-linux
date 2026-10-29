@@ -7,6 +7,16 @@ packages, app IDs, paths, `ID=patrone`). Entries below from before then
 use the new name too, quotes included (the user: "I want to be sure we
 remove anything that says" the old name).
 
+**A second EFI folder on PatroneDev.** GRUB's updates (`grub-install`, run
+by `grub-efi-amd64-signed`'s postinst) name the EFI folder after the first
+word of os-release's NAME, now PatroneOS. So the next GRUB update on an
+existing install puts GRUB in `\EFI\patroneos\`, with a boot entry of its
+own, beside the folder it was installed in: `\EFI\ubuntu\` on PatroneDev
+(from before it was Patrone), `\EFI\patrone\` on earlier test installs. Both
+boot, so it's left as it is (the main session, 2026-10-29: the only
+existing installs are PatroneDev and throwaway VMs). Which folder a fresh
+install starts in is for the next fresh install to show.
+
 Last updated 2026-10-27, after the ISO's installer, first-login setup and a
 search of the installed system for Ubuntu's name (section 16 lists what's
 left of it).

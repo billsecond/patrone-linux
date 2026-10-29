@@ -1,20 +1,26 @@
 patrone-desktop (0.2.6) resolute; urgency=medium
 
+  * The system's new name, PatroneOS (2026-10-29), in its description, the
+    list of what it connects to (connections.txt, with the website's new
+    address, patroneos.com) and its apt source's note.
   * The session mode names the taskbar by its new ID (patrone-gnome-taskbar
-    0.4.8). Accepts a change of the apt repository's Label
+    0.4.8), and Ubuntu's session mode is kept out of the modes folder, where
+    GNOME Shell took it for the same mode.
+  * Accepts a change of the apt repository's Label
     (apt.conf.d/51patrone-release-label), which is about to take the system's
     new name: without it, apt and Patrone Software would stop updating from it.
 
- -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 11:00:00 -0500
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 12:00:00 -0500
 
 patrone-desktop (0.2.5) resolute; urgency=medium
 
-  * The system's new name, PatroneOS (2026-10-29), in its description, the
-    list of what it connects to (connections.txt, with the website's new
-    address, patroneos.com) and its apt source's note. The repository's
-    Origin and Label stay, as apt and patrone.pref match on them.
+  * Recommends breeze-cursor-theme, KDE's Breeze cursors (LGPL-3+), so the
+    new Mouse pointer choice in Patrone Settings and GNOME Settings has a
+    white pointer (Breeze Light) and five themes in all; the DMZ and X.Org
+    themes Ubuntu's desktop brings can't be offered (docs/COMPLIANCE.md,
+    item 22).
 
- -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 10:00:00 -0500
 
 patrone-desktop (0.2.4) resolute; urgency=medium
 
@@ -38,7 +44,7 @@ patrone-desktop (0.2.2) resolute; urgency=medium
 
   * Recommends patrone-hyperv-setup: at login in a Hyper-V VM, a dialog
     that offers to set up what's missing of Hyper-V support (the user,
-    2026-10-28: "When the PatroneOS starts up, have it check for
+    2026-10-28: "When [PatroneOS] starts up, have it check for
     Hyper-V and if its using Hyper-V as its host, then provide a prompt
     with an option to install support for Hyper-V").
 

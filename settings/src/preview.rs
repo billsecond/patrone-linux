@@ -1,11 +1,14 @@
 //! The little pictures on Patrone Settings' choices: the taskbar at each
 //! size, in each layout, in each color and with each kind of pin icon,
-//! where each arrangement puts the title bar buttons, and each theme's
-//! taskbar and title bar. Drawn with cairo, at whatever size they're given.
+//! where each arrangement puts the title bar buttons, each theme's
+//! taskbar and title bar, and each mouse pointer, from its own pictures.
+//! Drawn with cairo, at whatever size they're given.
 
 use std::f64::consts::PI;
 
-use gtk::cairo::{Context, FontSlant, FontWeight, LineCap, LineJoin, LinearGradient};
+use gtk::cairo::{Context, Filter, FontSlant, FontWeight, Format, ImageSurface, LineCap, LineJoin, LinearGradient};
+
+use crate::cursor::Cursor;
 
 /// Which corner the title bar buttons go in.
 #[derive(Clone, Copy)]
@@ -749,4 +752,67 @@ pub fn recycle_bin(cr: &Context, w: f64, h: f64, shown: &str) {
         recycle_bin_icon(cr, w - s - 12.0, top - s * 1.45, s);
         fill_rounded(cr, w - s * 1.15 - 12.0, top - s * 0.32, s * 1.3, s * 0.13, s * 0.06, 0xffffff, 0.8);
     }
+}
+
+/// A cursor's picture at `size` pixels, its hotspot at (x, y). The
+/// picture comes from the theme's next size up, scaled down, so it stays
+/// sharp on a dense screen (GTK replays cards drawn with cairo at the
+/// screen's scale).
+fn pointer(cr: &Context, cursor: &Cursor, x: f64, y: f64, size: f64) {
+    let Some(image) = cursor.image_for(size, 2.0) else { return };
+    let Ok(surface) =
+        ImageSurface::create_for_data(image.pixels.clone(), Format::ARgb32, image.width, image.height, image.width * 4)
+    else {
+        return;
+    };
+    let scale = size / f64::from(image.nominal);
+    let _ = cr.save();
+    cr.translate(x - image.xhot * scale, y - image.yhot * scale);
+    cr.scale(scale, scale);
+    let _ = cr.set_source_surface(&surface, 0.0, 0.0);
+    cr.source().set_filter(Filter::Good);
+    let _ = cr.paint();
+    let _ = cr.restore();
+}
+
+/// A mouse pointer theme's pointers where they'd be (cursor::SHOWN's
+/// order): the arrow and the busy one on the desktop, the hand over a
+/// window's button and the text cursor in its text.
+pub fn pointer_theme(cr: &Context, w: f64, h: f64, cursors: &[Option<Cursor>]) {
+    desktop(cr, w, h);
+    let (x, y, ww, wh) = (w * 0.42, h * 0.14, w * 0.5, h * 0.72);
+    fill_rounded(cr, x, y, ww, wh, 6.0, 0xffffff, 1.0);
+    let bar = wh * 0.22;
+    fill_rounded(cr, x, y, ww, bar, 6.0, 0xeceef2, 1.0);
+    color(cr, 0xeceef2, 1.0);
+    cr.rectangle(x, y + bar / 2.0, ww, bar / 2.0);
+    let _ = cr.fill();
+    fill_rounded(cr, x + ww * 0.12, y + wh * 0.36, ww * 0.72, 4.0, 2.0, 0xc4c9d2, 1.0);
+    fill_rounded(cr, x + ww * 0.12, y + wh * 0.5, ww * 0.48, 4.0, 2.0, 0xc4c9d2, 1.0);
+    fill_rounded(cr, x + ww * 0.46, y + wh * 0.68, ww * 0.42, wh * 0.18, 4.0, 0x288bfa, 1.0);
+
+    let spots = [
+        (w * 0.13, h * 0.2),
+        (x + ww * 0.7, y + wh * 0.78),
+        (x + ww * 0.36, y + wh * 0.38),
+        (w * 0.2, h * 0.68),
+    ];
+    for (cursor, (cx, cy)) in cursors.iter().zip(spots) {
+        if let Some(cursor) = cursor {
+            pointer(cr, cursor, cx, cy, 26.0);
+        }
+    }
+}
+
+/// The arrow at a pointer size, as big as it'd be on the screen, in the
+/// middle of the picture.
+pub fn pointer_size(cr: &Context, w: f64, h: f64, arrow: Option<&Cursor>, size: f64) {
+    desktop(cr, w, h);
+    let Some(arrow) = arrow else { return };
+    let Some(image) = arrow.image_for(size, 2.0) else { return };
+    // Where its hotspot goes for the picture's box to be centered
+    let scale = size / f64::from(image.nominal);
+    let x = (w - f64::from(image.width) * scale) / 2.0 + image.xhot * scale;
+    let y = (h - f64::from(image.height) * scale) / 2.0 + image.yhot * scale;
+    pointer(cr, arrow, x, y, size);
 }

@@ -58,7 +58,7 @@ cargo test --manifest-path compositor/Cargo.toml
   --screenshot-after SECS   When to save it (default: 5)
 ```
 
-The default wallpaper is `branding/wallpapers/patrone-back-01.png` in this
+The default wallpaper is `branding/wallpapers/patrone-back-02.png` in this
 repository. `RUST_LOG` changes the logging, for example `RUST_LOG=debug`.
 
 From SSH, point it at the desktop session first:

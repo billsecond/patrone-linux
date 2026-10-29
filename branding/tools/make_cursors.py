@@ -623,7 +623,7 @@ def write_theme(folder: Path):
     for old in cursors.iterdir():
         old.unlink()
     (folder / "index.theme").write_text(
-        "[Icon Theme]\nName=Patrone\nComment=Patrone Linux's cursors\nInherits=Adwaita\n")
+        "[Icon Theme]\nName=Patrone\nComment=PatroneOS's cursors\nInherits=Adwaita\n")
     (folder / "cursor.theme").write_text("[Icon Theme]\nInherits=Patrone\n")
     for name in SHAPES:
         images = [(size, *frame) for size in SIZES for frame in draw(name, size)]

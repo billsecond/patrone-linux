@@ -19,7 +19,7 @@ set -euo pipefail
 # them, so a new build of the same Ubuntu version installs as an upgrade
 revision=17
 # What changed in it, for the package's changelog
-changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons and dock settings, and its error message without Ubuntu's name or Launchpad, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pages."
+changes="Patrone's build: a Patrone page (taskbar size, layout, Start button, color and pin icons, desktop bubble, Recycle Bin and the terminal at sign-in, title bar button position and style, theme, font, and the mouse pointer's theme and size), the desktop bubble's and Recycle Bin's switches on the Desktop page in place of Ubuntu's desktop icons and dock settings, and its error message without Ubuntu's name or Launchpad, no Telemetry page, Patrone's logo on the About page, and Patrone Remote Desktop first in System > Remote Desktop: a \"Remote Desktop\" switch, how to connect, and what Desktop Sharing, Secure Shell and GNOME's Remote Login do. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's pages."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)

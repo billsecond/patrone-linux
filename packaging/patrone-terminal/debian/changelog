@@ -1,9 +1,19 @@
-patrone-terminal (0.1.6) resolute; urgency=medium
+patrone-terminal (0.1.7) resolute; urgency=medium
 
   * The system's new name, PatroneOS (2026-10-29), in its About window and
     its description.
 
- -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 09:00:00 -0500
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 12:00:00 -0500
+
+patrone-terminal (0.1.6) resolute; urgency=medium
+
+  * The app icon loads everywhere: its comment came before the svg element
+    and pushed it past the first 256 bytes, where image loaders look for
+    it, so GNOME Shell couldn't load it and showed nothing for Patrone
+    Terminal in the menu, Alt+Tab and the taskbar's terminal pin with
+    "Each app's own" pin icons.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 10:00:00 -0500
 
 patrone-terminal (0.1.5) resolute; urgency=medium
 

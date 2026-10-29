@@ -564,16 +564,20 @@ notices too.
 **Confirmed problem** (the copyright file, for wallpaper 01's family);
 **likely problem** (the logo); **needs a lawyer** (who owns what). The
 user; wallpapers session. The original wallpaper,
-`branding/wallpapers/patrone-back-01.png`, carries a C2PA manifest: created
-2026-10-25T15:59:59Z by "ChatGPT", `gpt-image`, `digitalSourceType`
+`branding/wallpapers/patrone-back-01.png` (removed from the tree by #35 in
+2026-10-29's rebranding, and kept in git history:
+`git show 9d24a57^:branding/wallpapers/patrone-back-01.png`), carries a C2PA
+manifest: created 2026-10-25T15:59:59Z by "ChatGPT", `gpt-image`, `digitalSourceType`
 `trainedAlgorithmicMedia`, signed by "OpenAI Media Service" (OpenAI OpCo,
 LLC). The re-check recomputed the manifest's hash of the image: it
 matches, so the committed file is exactly what OpenAI signed. Commit
 `64936b4` added it ten minutes later. `branding/README.md` says the
 generated wallpapers use "no ... image models, so Patrone owns them
-outright", a distinction it doesn't make for wallpaper 01. The logo concept (`branding/concepts/logo-concept-01.webp`)
-has no metadata (WebP conversion drops it), but its 1536×1024 canvas is one
-of gpt-image's sizes, it was committed five minutes earlier, and the
+outright", a distinction it doesn't make for wallpaper 01. The logo concept
+(`branding/concepts/logo-concept-01.webp`, also removed by #35 and kept in
+git history: `git show 9d24a57^:branding/concepts/logo-concept-01.webp`) has
+no metadata (WebP conversion drops it), but its 1536×1024 canvas is one of
+gpt-image's sizes, it was committed five minutes earlier, and the
 wallpaper contains the same logo. Every logo, splash, About picture,
 installer mark and the fastfetch logo comes from it.
 
@@ -1187,6 +1191,21 @@ to the website session.
   shipped.
 - **Microsoft's Segoe UI** alias, **cookies**, **children** (16+ and no
   commercial site).
+- **Cursor themes** (2026-10-29), which the new Mouse pointer choice lists
+  (Patrone Settings 0.3.8, GNOME Settings revision 16): Patrone's own
+  (GPL-3+, `branding/tools/make_cursors.py`), Adwaita (`adwaita-icon-theme`,
+  CC-BY-SA-3.0 or LGPL-3), Yaru (`yaru-theme-icon`, CC-BY-SA-4.0), and KDE's
+  Breeze Dark and Breeze Light (`breeze-cursor-theme`, universe, LGPL-3+,
+  by Uri Herrera and the KDE VDG), which `patrone-desktop` 0.2.5 recommends
+  so there's a white pointer. Each is its project's own design, unmodified;
+  none copies Windows' or macOS's cursors. Left out: Bibata and phinger,
+  whose busy pointers are rainbow wheels like macOS's (and Bibata is 178 MB
+  installed), and Oxygen (dated). DMZ (`dmz-cursor-theme`, CC-BY-SA-3.0,
+  openSUSE's) and X.Org's whiteglass, redglass and handhelds
+  (`xcursor-themes`, MIT/X11) stay installed, as Ubuntu's desktop has them,
+  but aren't listed: they have only the old X11 cursor names, so GNOME
+  shows Patrone's pointers in their place (`settings/README.md`, "Mouse
+  pointer").
 
 ## 23. The website's notices, and the JavaScript notice
 

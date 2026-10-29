@@ -11,7 +11,7 @@ Build-Depends: debhelper-compat (= 13),
                yaru-theme-gnome-shell
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
-Vcs-Git: https://github.com/billsecond/patrone-linux.git
+Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: patrone-branding
 Architecture: all
@@ -35,20 +35,20 @@ Conflicts: ubuntu-docs,
 Replaces: ubuntu-docs,
           ubuntu-wallpapers,
           ubuntu-wallpapers-resolute
-Description: Patrone Linux's name, logos and artwork
- Names the system Patrone Linux and puts Patrone's logo where Ubuntu's was:
- the boot splash, the boot menu, the login screen, Settings > About, the text
+Description: PatroneOS's name, logos and artwork
+ Names the system PatroneOS and puts its logo where Ubuntu's was: the boot
+ splash, the boot menu, the login screen, Settings > About, the text
  console's banner and the welcome message at login, which also loses Ubuntu's
  help links, news and Ubuntu Pro advertising. The login screen gets Patrone's
- colors and a blue default avatar. Noto Sans is the typeface everywhere:
+ colors and a blue default avatar. Patrone Sans is the typeface everywhere:
  the desktop, apps, the login screen, and web pages that ask for Segoe UI or
- a plain sans-serif font, Chromium's included. It installs the Patrone
+ a plain sans-serif font, Chromium's included. It installs the Neon Horizon
  wallpaper as the default, light in the light style and dark in the dark
  one, with variants to choose from in Settings in place of Ubuntu's
  wallpapers (it replaces ubuntu-wallpapers), makes blue the accent color
  in place of Ubuntu's orange, gives the desktop, apps and the login screen
  Patrone's cursors (falling back to Adwaita's for any it lacks), turns
- Ubuntu's dock off by default, and sets up fastfetch with the Patrone logo.
+ Ubuntu's dock off by default, and sets up fastfetch with the PatroneOS logo.
  Help is GNOME Help, with GNOME's own front page in place of Ubuntu's (it
  replaces ubuntu-docs), and the logo icons apps ask for (start-here and
  distributor-logo) are Patrone's P in place of Ubuntu's, in every color of
