@@ -6,8 +6,8 @@ Files: *
 Copyright: 2026 William Daugherty
 License: GPL-3+
 Comment: The icons (data/icons, drawn by tools/make_icons.py) and the line
- glyphs (src/glyph.rs) are original artwork made for Patrone in the style of
- Windows 11's Fluent design; no Microsoft icons or fonts are included.
+ glyphs (src/glyph.rs) are original artwork made for Patrone; no Microsoft
+ icons or fonts are included.
 
 Files: vendor/*
 Copyright: The authors of each crate

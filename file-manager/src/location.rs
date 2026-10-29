@@ -35,7 +35,7 @@ impl Location {
         match self {
             Location::Home => "Home".into(),
             Location::Gallery => "Gallery".into(),
-            Location::ThisPc => "This PC".into(),
+            Location::ThisPc => "Computer".into(),
             Location::Folder(file) => places::display_name(file),
             Location::Search { root, .. } => {
                 format!("Search Results in {}", places::display_name(root))
@@ -148,7 +148,7 @@ impl Location {
         let anchor = places::mount_containing(file)
             .map(|mount| mount.root())
             .unwrap_or_else(places::root);
-        let mut crumbs = vec![("This PC".to_owned(), Location::ThisPc)];
+        let mut crumbs = vec![("Computer".to_owned(), Location::ThisPc)];
         crumbs.extend(chain(&anchor));
         crumbs
     }
@@ -158,7 +158,7 @@ impl Location {
         match self {
             Location::Home => "Home".into(),
             Location::Gallery => "Gallery".into(),
-            Location::ThisPc => "This PC".into(),
+            Location::ThisPc => "Computer".into(),
             Location::Folder(file) if places::is_trash_root(file) => "Recycle Bin".into(),
             Location::Folder(file) => match file.path() {
                 Some(path) => path.to_string_lossy().into_owned(),

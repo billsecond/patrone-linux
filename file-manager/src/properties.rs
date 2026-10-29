@@ -636,10 +636,12 @@ fn show_drive(window: &Window, info: &gio::FileInfo) {
     grid.attach(&header, 0, line, 2, 1);
     line += 1;
     rule(&grid, &mut line);
-    let kind = if root.is_native() {
-        "Local Disk"
+    let kind = if places::special_of(&root) == Some(places::Special::Root) {
+        "System drive"
+    } else if root.is_native() {
+        "Drive"
     } else {
-        "Network Drive"
+        "Network drive"
     };
     row(&grid, &mut line, "Type:", &text(kind));
     let file_system = text("");

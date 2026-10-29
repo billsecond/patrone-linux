@@ -574,7 +574,7 @@ impl AddressBar {
                 );
             }
         }
-        me.navigate_item(menu, "pfm-nav-computer", "This PC", Location::ThisPc);
+        me.navigate_item(menu, "pfm-nav-computer", "Computer", Location::ThisPc);
         me.navigate_item(
             menu,
             "pfm-nav-network",

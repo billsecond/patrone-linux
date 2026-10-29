@@ -18,11 +18,11 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, gvfs, fonts-inter | fonts-noto-core
 Recommends: gvfs-backends, xdg-user-dirs, xdg-utils, pkexec, acl
 Description: file manager for Patrone Linux
- Patrone File Manager is the file manager of Patrone Linux, in the image of
- Windows 11's File Explorer: tabs, the command bar, breadcrumbs, the
- navigation pane with Quick access, Home, Gallery and This PC, eight views,
- the details and preview panes, Windows-style right-click menus, Folder
- Options and Properties, and copying, moving and deleting with progress,
- conflict handling and undo. It works with the Recycle Bin (the trash),
+ Patrone File Manager is the file manager of Patrone Linux, and it works
+ the way Windows users expect: tabs, the command bar, breadcrumbs, the
+ navigation pane with Quick access, Home, Gallery and Computer, eight views,
+ the details and preview panes, full right-click menus, Folder Options and
+ Properties, and copying, moving and deleting with progress, conflict
+ handling and undo. It works with the Recycle Bin (the trash),
  removable drives and network places through GIO. It also draws the
  desktop and the desktop bubble, which Patrone's taskbar hosts.

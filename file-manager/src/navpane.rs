@@ -299,7 +299,7 @@ impl NavPane {
             NodeKind::Home => ("Home".to_owned(), "pfm-nav-home"),
             NodeKind::Gallery => ("Gallery".to_owned(), "pfm-nav-gallery"),
             NodeKind::Folder(file) => (places::display_name(file), icons::small_folder_icon(file)),
-            NodeKind::ThisPc => ("This PC".to_owned(), "pfm-nav-computer"),
+            NodeKind::ThisPc => ("Computer".to_owned(), "pfm-nav-computer"),
             NodeKind::Drive(drive) => (drive.name(), small_icon_for(drive)),
             NodeKind::MountFolder(_, name) => (name.to_string(), "pfm-nav-folder"),
             NodeKind::Network => ("Network".to_owned(), "pfm-nav-network"),
