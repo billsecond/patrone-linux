@@ -1,3 +1,12 @@
+patrone-terminal (0.1.8) resolute; urgency=medium
+
+  * Its default font is PatroneOS Mono 11, PatroneOS's own (fonts-patroneos),
+    in place of JetBrains Mono. Settings that hold the old default
+    (JetBrains Mono 11), which an older version saved with any other
+    change, take the new one; a font someone picked stays.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
+
 patrone-terminal (0.1.7) resolute; urgency=medium
 
   * The system's new name, PatroneOS (2026-10-29), in its About window and

@@ -437,25 +437,11 @@ Waiting on the user:
   new to the session). Also open a zip or tar.gz (Extract all, Extract here)
   and a `.deb`: Install asks for your password with "Installing software for
   everyone on this computer needs an administrator's password".
-- **Install Patrone Sans, Patrone's default font now** (section 14), from
-  SSH or a terminal:
-  `sudo apt install ~/src/patrone-linux/out/fonts-patrone-sans_1.0.0_all.deb
-  ~/src/patrone-linux/out/patrone-branding_0.1.6_all.deb
-  ~/src/patrone-linux/out/patrone-settings_0.3.3_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone5_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone5_all.deb`,
-  then sign out and back in. The desktop, apps, window titles and web pages
-  are in Patrone Sans (unless the account picked a font itself), and
-  Patrone Settings → Theme → Font (or GNOME Settings → Patrone → Font)
-  switches between it and Noto Sans at once.
-- **Sign out and back in for Flatpak apps' fonts** (section 14, "Flatpak
-  apps"): `patrone-branding` 0.1.15 was installed on PatroneDev on
-  2026-10-28 (by the claude account); the session gets the variable that
-  gives Flatpak apps Patrone Sans only at its next start (a reboot if
-  sign-out leaves the user's systemd running, as SSH sessions do). On
-  PatroneTest, install `~/src/patrone-linux/out/patrone-branding_0.1.15_all.deb`
-  or the next ISO. PdfCraft looks the same afterwards: it draws its own
-  font, which only its developers can change (same section).
+- **PatroneOS's fonts are the system's** (section 14): once the PR is
+  merged, the daily job publishes `fonts-patroneos` and the rest within a
+  day. On PatroneDev they're installed already (2026-10-29); sign out and
+  back in to see PatroneOS Sans on the desktop and in apps, and PatroneOS
+  Mono in Patrone Terminal.
 
 ## 1. Patrone Terminal
 
@@ -1981,166 +1967,78 @@ Findings:
   rar and Extract here to `patrone-unpack --extract-here` /
   `--extract-to DIR` (its session was told).
 
-## 14. Patrone Sans (fonts-patrone-sans)
+## 14. PatroneOS's fonts (fonts-patroneos)
 
-Asked for 2026-10-26: a font that looks and feels mostly like the current
-one (Noto Sans), changed by best practice for a system font, with a choice
-between the two in Patrone Settings. Done:
+Asked for 2026-10-28 and 29: PatroneOS's own font families, drawn from
+scratch, as the system's main fonts, under the OFL 1.1, in a public
+repository with a release people can download. Done:
 
-- **Patrone Sans 1.000** (`fonts/`, see its README and FONTLOG): Noto Sans
-  2.015 from its own sources, with l tailed (the foot of Noto's t) and the
-  slashed zero (Noto's own) made the default, so I, l, 1, | and O, 0 are
-  told apart. One weight axis (100 to 900), upright and italic. Spacing,
-  line height (exactly Noto's), features and languages unchanged; figures
-  were already tabular. Reproducible: `fonts/build.sh` gives the same bytes
-  each time. OFL 1.1 (Noto's license has no Reserved Font Name; "Noto" is a
-  trademark, so the name is Patrone's own).
-- **fonts-patrone-sans 1.0.0** installs it in
-  `/usr/share/fonts/truetype/patrone-sans/`.
-- **The Font choice**: `patrone-settings` 0.3.2 (Theme page) and GNOME
-  Settings `...patrone4` (Patrone page). It changes the family of
-  `font-name`, `document-font-name` and `titlebar-font`, keeping sizes;
-  the monospace font stays. Each card shows text in its own font (not a
-  picture: the package build has no Patrone Sans to draw with). A font
-  that isn't installed can't be picked.
-- **Patrone Sans is the default** since `patrone-branding` 0.1.6 (89f10b5,
-  the user's decision, 2026-10-26): GNOME's interface and document fonts,
-  title bars (SemiBold), the login screen, and fontconfig's sans-serif,
-  system-ui and Segoe UI names, with Noto Sans second for the scripts
-  Patrone Sans lacks. `patrone-settings` 0.3.3 and GNOME Settings
-  `...patrone5` list it first, with Noto Sans as the font it's based on.
-  File Manager names "Noto Sans" in its style sheet, so it keeps Noto Sans
-  whatever is picked; its session was asked to follow the system font
-  instead.
+- **The fonts**: PatroneOS Sans (the system font), Mono (the console font,
+  with box drawing), Document, Serif and Classic, version 1.0.0, in their own
+  public repository, `billsecond/patroneos-fonts`: the drawing code, its
+  build, the 28 TrueType fonts, WOFF2 web fonts, OFL.txt and FONTLOG.
+  Release v1.0.0 has `PatroneOS-Fonts-1.0.0.zip` (the five families, OFL.txt
+  and FONTLOG.txt). `./build.sh` there rebuilds them byte for byte, checked
+  from a fresh clone; fontbakery's universal checks find no errors or fails.
+  Patrone Sans (Noto Sans with a tailed l, from 2026-10-26) is retired.
+- **`fonts-patroneos` 1.0.0** installs the release `fonts/release.txt` pins
+  in `/usr/share/fonts/truetype/patroneos/`: `packaging/build.sh` fetches it
+  and checks its SHA-256 first, so the build runs offline. It recommends
+  `fonts-noto-core`, `fonts-liberation` and `fonts-crosextra-caladea`.
+  **`fonts-patrone-sans` 2.0.0** is transitional: it depends on
+  `fonts-patroneos`, so upgrading installs that and removes Patrone Sans. A
+  new release: change `version`, `url` and `sha256` in `fonts/release.txt`
+  and bump `fonts-patroneos`.
+- **The defaults** (`patrone-branding` 0.1.24): GNOME's interface font
+  PatroneOS Sans 11, document font PatroneOS Document 11, monospace
+  PatroneOS Mono 11, title bars PatroneOS Sans SemiBold 11, and the login
+  screen PatroneOS Sans. fontconfig (`05-patrone-fonts.conf`): sans-serif,
+  serif, monospace, system-ui and ui-monospace are PatroneOS Sans, Serif and
+  Mono; Calibri is PatroneOS Document; Arial and Helvetica are PatroneOS
+  Classic; "Patrone Sans" is PatroneOS Sans. Times New Roman stays Liberation
+  Serif and Cambria Caladea (fontconfig's own metric aliases). LibreOffice
+  starts new documents in PatroneOS Document
+  (`system/libreoffice/patroneos-fonts.xcd`).
+- **The apps**: Patrone Terminal 0.1.8 defaults to PatroneOS Mono 11, and a
+  saved "JetBrains Mono 11" (the old default, saved with any other change)
+  gives way to it. Patrone Settings 0.3.10 and GNOME Settings `...patrone18`:
+  the Font card is PatroneOS Sans (with PatroneOS Document for documents) or
+  Noto Sans, and a desktop set to Patrone Sans shows PatroneOS Sans picked.
+  File Manager 0.3.8 draws its monospace text in PatroneOS Mono; Remote
+  Desktop 0.5.7 its sign-in screen in PatroneOS Sans.
 
-Checked: fontbakery 1.1.0's universal checks (5 fails, all inherited from
-Noto Sans 2.015, which fails the same checks built the same way; see
-`fonts/README.md`); the glyph set and GDEF classes equal Noto's; the
-comparison sheet (`fonts/comparison.png`, Noto Sans and Patrone Sans at 9,
-10 and 11 pt, light and dark, as GTK draws them); `cargo test` (12 tests,
-3 new); GNOME Settings revision 4 compiled with no warnings in the page;
-both settings apps in the throwaway shell: the cards, picking Patrone Sans
-and Noto Sans in each (the four keys checked after each click), Patrone
-Settings' own text and the taskbar's clock switching at once, the font
-cards in light and dark, and Patrone Settings without Patrone Sans (its
-card greyed and naming the package; clicking it changed nothing).
-`fonts-patrone-sans` passes lintian with no tags. Not checked: installed
-for real, the login screen, Chromium and web pages (they follow fontconfig's
-sans-serif, still Noto Sans), apps other than these.
+Checked on PatroneDev, 2026-10-29 (packages installed by the claude
+account): the upgrade from `fonts-patrone-sans` 1.0.1 (Patrone Sans's files
+gone, Caladea added); `fc-match` for every name above; in a throwaway shell
+(`headless.sh`), the shell's font and GNOME's four font settings, Patrone
+Terminal drawing in PatroneOS Mono, and both settings apps' Font cards (each
+click checked in the settings); `cargo test` (Settings 19, Terminal 14, three
+new); GNOME Settings revision 18 compiled with no warnings in the page;
+`lintian` on both font packages (no tags); LibreOffice (its Writer, installed
+for the test and removed after): new documents in PatroneOS Document, and
+Calibri, Helvetica, Times New Roman and Cambria drawn as above. Not checked:
+`patrone-remote-desktop` installed (built only: upgrading it restarts the
+remote desktop services); Chromium and Flatpak apps; a fresh install from
+an ISO; the user's own session, which shows the new fonts after signing in
+again.
 
 Findings:
 
-- The VM's python3 has no pip or venv module (`python3-venv` isn't
-  installed). `python3 -m venv --without-pip` and PyPA's `get-pip.py` make
-  a venv without sudo; `fonts/build.sh` does that itself.
-- `glyphs2ufo` needs `--generate-GDEF --write-public-skip-export-glyphs` to
-  match `fontmake -g`; without them the font kept 36 unexported glyphs and
-  called spacing accents marks.
-- With GNOME's default "slight" hinting, FreeType ignores a TrueType font's
-  instructions: Ubuntu's Noto Sans and a copy without its instructions drew
-  identical pixels (and different ones at "full"). So Patrone Sans ships
-  without instructions, and FreeType autohints it at every setting.
-- A throwaway shell (`headless.sh`) finds fonts added to its
-  `data/fonts` only in apps started afterwards, not in the shell itself.
-  Exporting `FONTCONFIG_FILE` (a file that includes `/etc/fonts/fonts.conf`
-  and adds a `<dir>`) before `headless.sh start` gives the shell and its
-  apps the fonts without touching the account.
-- libadwaita draws buttons' text in bold, so text inside a card button
-  needs its weight set to show a font's regular weight.
-
-### Flatpak apps, and the Craft apps (patrone-branding 0.1.15)
-
-Asked for 2026-10-28: "Can you force applications to try to use the
-patrone font, for example, I installed the PdfCraft app and it uses an
-odd font that doesn't look correct."
-
-- **PdfCraft draws its interface in its own Inter** and never asks the
-  system: it's egui 0.36 with fifteen fonts compiled into its binary
-  (Inter Regular, Medium and SemiBold, egui's Ubuntu Light and Hack,
-  JetBrains Mono, Noto Sans Arabic and Thai, BIZ UD, Shippori Mincho,
-  Dancing Script, emoji). Its `system_fonts` module loads only fallbacks
-  from the system (Noto Sans Devanagari, Telugu, Sinhala and Tamil by
-  file, then DejaVu Sans), the same before and after this change. Nothing
-  done in the OS changes it; the screenshots before and after are
-  identical. MailCraft's `crates/ui-egui/src/theme.rs` reads a system font
-  only on Windows (`SystemFont::read`: Segoe UI) and uses the bundled Inter
-  elsewhere; ScreenGrabCraft's `crates/ui/src/lib.rs` always uses Inter.
-- **What the Craft apps would need**, for their developers: they're
-  third-party apps that Patrone's app index only lists, not the user's
-  projects (the user, 2026-10-28), so nothing was changed in them, and
-  the fix belongs with whoever makes them. It's a Linux
-  `SystemFont::read` that asks for the desktop's font (the settings
-  portal's `org.gnome.desktop.interface font-name`, "Patrone Sans 11",
-  which answers inside Flatpak too; else fontconfig's match for system-ui),
-  finds its file through fontconfig (the host's fonts are in every sandbox,
-  under `/run/host/fonts`), and puts it in front of Inter. Patrone Sans is
-  one variable font, so each weight is the same file with egui 0.36's
-  `FontTweak { coords: VariationCoords::new([("wght", 600.0)]) }` and the
-  like. MailCraft's `SYSTEM_FONT_RAISE` was measured for Segoe UI and needs
-  checking for the new face. Inter stays for systems that have no such
-  font, and the web.
-- **Other Flatpak apps**: GTK and Qt apps already get "Patrone Sans 11" for
-  their own text through the settings portal. But fontconfig in a sandbox
-  is the runtime's, which never sees `/etc/fonts`, so sans-serif,
-  system-ui and Segoe UI gave the runtime's DejaVu Sans, for web pages,
-  Electron, WebKit and anything that asks fontconfig. Patrone Sans itself
-  was there (the host's `/usr/share/fonts` is in every sandbox as
-  `/run/host/fonts`).
-- **The fix** (`patrone-branding` 0.1.15): `05-patrone-fonts.conf` also in
-  `/usr/share/fonts/patrone-fontconfig/`, with a `fonts.conf` there that
-  loads it before the runtime's own configuration
-  (`branding/system/fontconfig/flatpak-fonts.conf`), and
-  `/etc/environment.d/60-patrone-fontconfig.conf` setting
-  `FONTCONFIG_PATH=/run/host/fonts/patrone-fontconfig`. fontconfig looks for
-  its fonts.conf there first; the folder exists only in a sandbox, so on
-  the host fontconfig carries on to `/etc/fonts`. A Flatpak override was
-  the other way, but overrides in `/var/lib/flatpak` don't reach per-user
-  installs, which is what Patrone Unpack makes (tried: a variable set
-  there never reached PdfCraft).
-
-Checked on PatroneDev, with 0.1.15 installed: systemd's
-`30-systemd-environment-d-generator` gives the variable; on the host,
-sans-serif, system-ui, Segoe UI and Segoe UI Semibold give Patrone Sans
-(Regular, SemiBold), Japanese Noto Sans CJK JP, with and without the
-variable; `fc-cache` finds no fonts in the new folder and no errors; in
-PdfCraft's sandbox with the variable (as a new session runs it),
-sans-serif, system-ui and Segoe UI give Patrone Sans, Segoe UI Semibold its
-SemiBold, Japanese Noto Sans CJK JP, all 805 fonts still listed, where
-without it they gave DejaVu Sans; text drawn there with Pango through
-"sans-serif" and "Segoe UI" came out in Patrone Sans; and PdfCraft itself,
-in a private copy of `headless.sh`, looked the same both ways.
-
-Checked in a fresh install (2026-10-28): an ISO built from e95af6f
-(sha256 `29d7c5ab...`, `patrone-branding` 0.1.15 and `fonts-patrone-sans`
-1.0.0 in both layers) in a new Hyper-V VM of its own, `PatroneFontTest`
-(`new-test-vm.ps1`), "Erase disk" and a test account. At the first sign-in
-the session had `FONTCONFIG_PATH=/run/host/fonts/patrone-fontconfig`
-(Patrone Terminal and `systemctl --user show-environment`). PdfCraft
-0.14.0, installed from Patrone's app index for the account, resolved
-sans-serif, system-ui and Segoe UI to Patrone Sans in its sandbox (Segoe UI
-Semibold to its SemiBold), and DejaVu Sans with the variable taken away;
-its own window was in Inter all the same, its log naming the same
-fallbacks. Not checked: a Flatpak browser's pages (the ISO has no browser
-until one is picked), and the user's own session, which predates the
-variable until they sign in again.
-
-- From a terminal in that install, `flatpak install patrone-app-index
-  ai.storyteller.pdfcraft` (the system-wide remote) failed with "Flatpak
-  system operation Deploy not allowed for user" and no password prompt;
-  the same remotes added `--user` (the app index's key from
-  `/var/lib/flatpak/repo/patrone-app-index.trustedkeys.gpg`) worked. Not
-  looked into: whether that refusal is meant.
-- The installer's "Require my password to log in", unticked, still left
-  the login screen at the first boot. Not looked into either.
-
-- A system-wide `flatpak override` (`/var/lib/flatpak/overrides`) applies
-  only to apps installed system-wide; per-user installs read only
-  `~/.local/share/flatpak/overrides`.
-- `flatpak run` over SSH talks to the user's compositor (`wayland-0`) and
-  waited on it once; for command-line checks pass
-  `--nosocket=wayland --nosocket=fallback-x11 --nosocket=x11`. In a copy of
-  `headless.sh`, `flatpak run` needs `XDG_DATA_HOME=$HOME/.local/share` to
-  find per-user apps.
+- On `fc-match`'s command line a hyphen starts a size: ask for `system\-ui`
+  or `:family=system-ui`, or it matches "system".
+- LibreOffice's default font lists (`VCL/DefaultFonts`) are in an
+  extensible group: each value needs `oor:type="xs:string"`, or LibreOffice
+  fails to start (a RuntimeException). The first version did that.
+- LibreOffice matches Arial itself, before fontconfig, with the
+  metric-compatible font it knows for it (from `fonts-liberation`); neither
+  its substitution table nor a new entry for PatroneOS Classic changes that.
+  Its letters have the same widths as PatroneOS Classic's, so documents lay
+  out the same; elsewhere Arial is PatroneOS Classic.
+- With GNOME's slight hinting, FreeType ignores a font's TrueType
+  instructions (found with Patrone Sans), so the fonts' ttfautohint hints
+  matter only under full hinting and on other systems.
+- PatroneDev's `gh` sign-in has expired: the fonts repository was pushed,
+  and its release made, from Windows.
 
 ## 15. Patrone Task Manager (patrone-task-manager)
 

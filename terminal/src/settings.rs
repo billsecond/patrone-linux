@@ -15,7 +15,7 @@ pub const MAX_TRANSPARENCY: i64 = 60;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Settings {
-    /// A Pango font description, such as "JetBrains Mono 11".
+    /// A Pango font description, such as "PatroneOS Mono 11".
     pub font: String,
     pub scrollback_lines: i64,
     pub copy_on_select: bool,
@@ -77,9 +77,13 @@ impl Settings {
             return defaults;
         }
         Self {
+            // Every setting is saved when any one changes, so the old
+            // default font may be there unpicked: it gives way to the new one
             font: file
                 .string(GROUP, "font")
                 .map(String::from)
+                .ok()
+                .filter(|font| font != theme::OLD_FONT)
                 .unwrap_or(defaults.font),
             scrollback_lines: file
                 .int64(GROUP, "scrollback-lines")
@@ -133,6 +137,23 @@ mod tests {
         };
         settings.save_to(&path).unwrap();
         assert_eq!(Settings::load_from(&path), settings);
+        std::fs::remove_file(&path).unwrap();
+    }
+
+    #[test]
+    fn the_old_default_font_gives_way_to_the_new_one() {
+        let path = std::env::temp_dir().join(format!(
+            "patrone-terminal-test-font-{}.ini",
+            std::process::id()
+        ));
+        std::fs::write(&path, format!("[terminal]
+font={}
+", theme::OLD_FONT)).unwrap();
+        assert_eq!(Settings::load_from(&path).font, theme::FONT);
+        std::fs::write(&path, "[terminal]
+font=Fira Code 13
+").unwrap();
+        assert_eq!(Settings::load_from(&path).font, "Fira Code 13");
         std::fs::remove_file(&path).unwrap();
     }
 

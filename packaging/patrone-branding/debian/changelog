@@ -15,6 +15,20 @@ patrone-branding (0.1.25) resolute; urgency=medium
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:30:00 -0500
 
+patrone-branding (0.1.24) resolute; urgency=medium
+
+  * PatroneOS's own fonts (fonts-patroneos) in place of Patrone Sans: GNOME's
+    interface and title bar font is PatroneOS Sans, its document font
+    PatroneOS Document and its monospace font PatroneOS Mono; the login
+    screen's is PatroneOS Sans. fontconfig gives sans-serif, serif and
+    monospace to PatroneOS Sans, Serif and Mono, Calibri to PatroneOS
+    Document, Arial and Helvetica to PatroneOS Classic, and "Patrone Sans"
+    to PatroneOS Sans; the classic serif fonts stay with Liberation Serif
+    and Caladea. LibreOffice's default fonts are PatroneOS's too
+    (/usr/lib/libreoffice/share/registry/patroneos-fonts.xcd).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
+
 patrone-branding (0.1.23) resolute; urgency=medium
 
   * The system is PatroneOS, as the user named it on 2026-10-29: os-release

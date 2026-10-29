@@ -1,0 +1,8 @@
+fonts-patroneos (1.0.0) resolute; urgency=medium
+
+  * PatroneOS's fonts 1.0.0, from their release: PatroneOS Sans, Mono,
+    Document, Serif and Classic, 28 static fonts. They take over from Patrone
+    Sans (fonts-patrone-sans, now a transitional package that installs
+    this one).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500

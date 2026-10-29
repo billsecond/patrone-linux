@@ -262,7 +262,7 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    (`src/greeter.c`), one per connection on
    `/run/patrone-remote-desktop/greeter.sock`, which only the proxy's user
    can open. It draws the screen with cairo and Pango in the style of
-   Patrone's login screen (the colors of `patrone-gdm.css`, Patrone Sans,
+   Patrone's login screen (the colors of `patrone-gdm.css`, PatroneOS Sans,
    the logo) and sends it as planar-compressed bitmap tiles. Keys come as
    positions, so it reads them with the layout the computer's own screen
    uses (`/etc/default/keyboard`, through xkbcommon). It hands the username

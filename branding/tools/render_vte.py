@@ -1,5 +1,5 @@
 """Draws terminal text, escape codes and all, the way Patrone Terminal does
-(VTE, JetBrains Mono, Patrone's colors), and saves it as a PNG: to see the
+(VTE, PatroneOS Mono, Patrone's colors), and saves it as a PNG: to see the
 fastfetch logo as it really looks, and to measure the shapes VTE draws for
 make_terminal_logo.py.
 
@@ -21,7 +21,7 @@ gi.require_version("Vte", "3.91")
 from gi.repository import Gdk, GLib, Gtk, Pango, Vte  # noqa: E402
 
 # terminal/src/theme.rs
-FONT = "JetBrains Mono 11"
+FONT = "PatroneOS Mono 11"
 FOREGROUND = "#D6DEEB"
 BACKGROUND = "#070A10"
 

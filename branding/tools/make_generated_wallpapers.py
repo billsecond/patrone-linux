@@ -599,9 +599,8 @@ def file_name(name, mode):
 
 
 def label_font(size):
-    """Patrone Sans from the repo for the sheets' labels, or OpenCV's own."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(here, "..", "..", "fonts", "ttf", "PatroneSans[wght].ttf")
+    """PatroneOS Sans (fonts-patroneos) for the sheets' labels, or OpenCV's own."""
+    path = "/usr/share/fonts/truetype/patroneos/PatroneOSSans-Regular.ttf"
     try:
         from PIL import ImageFont
         return ImageFont.truetype(path, size)

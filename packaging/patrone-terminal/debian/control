@@ -14,7 +14,7 @@ Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: patrone-terminal
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, fonts-jetbrains-mono
+Depends: ${shlibs:Depends}, ${misc:Depends}, fonts-patroneos
 Recommends: patrone-shell-config
 Provides: x-terminal-emulator
 Description: terminal emulator for PatroneOS

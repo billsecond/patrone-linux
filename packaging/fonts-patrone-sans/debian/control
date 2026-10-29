@@ -1,5 +1,5 @@
 Source: fonts-patrone-sans
-Section: fonts
+Section: oldlibs
 Priority: optional
 Maintainer: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13)
@@ -10,12 +10,7 @@ Vcs-Git: https://github.com/billsecond/patroneos.git
 Package: fonts-patrone-sans
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}
-Description: Patrone Sans, Patrone's interface typeface
- Patrone Sans is Noto Sans with a tailed l and a slashed zero, so that I, l,
- 1, O and 0 are easy to tell apart in passwords, codes and file names. It
- keeps Noto Sans's look, spacing and line height, and its Latin, Greek and
- Cyrillic. It comes as two variable fonts, upright and italic, with every
- weight from thin to black, medium and semibold among them.
- .
- Pick it in Patrone Settings (Theme, Font) or GNOME Settings' Patrone page.
+Depends: fonts-patroneos, ${misc:Depends}
+Description: transitional package for PatroneOS's fonts
+ Patrone Sans has given way to PatroneOS's own fonts (fonts-patroneos), which
+ this package installs. It can be removed.

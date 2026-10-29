@@ -3,7 +3,7 @@
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
  * button icon), the desktop (its files in a bubble or across it, the
  * Recycle Bin, and where the terminal opens at sign-in), the title bar
- * buttons (top right or top left, and their style), the theme and the desktop's font (Patrone Sans or Noto Sans,
+ * buttons (top right or top left, and their style), the theme and the desktop's font (PatroneOS Sans or Noto Sans,
  * which the page sets itself), and the mouse pointer (the cursor theme and
  * size, which the page sets itself, with pictures from each theme's own
  * cursors). The same settings as Patrone Settings' window,
@@ -131,10 +131,17 @@ static const Choice themes[] = {
 /* The desktop's fonts, by family, the default first, and the packages that
  * install them */
 static const Choice fonts[] = {
-  { "Patrone Sans", N_("Patrone Sans"), N_("Patrone's font: Noto Sans with a tailed l and a slashed zero") },
-  { "Noto Sans", N_("Noto Sans"), N_("The font Patrone Sans is based on, without those changes") },
+  { "PatroneOS Sans", N_("PatroneOS Sans"), N_("PatroneOS's own font, with PatroneOS Document for documents") },
+  { "Noto Sans", N_("Noto Sans"), N_("A font made for nearly every language, for documents too") },
 };
-static const char * const font_packages[] = { "fonts-patrone-sans", "fonts-noto-core" };
+static const char * const font_packages[] = { "fonts-patroneos", "fonts-noto-core" };
+
+/* The document font that goes with each choice */
+static const char *
+document_font (const char *family)
+{
+  return g_strcmp0 (family, "PatroneOS Sans") == 0 ? "PatroneOS Document" : family;
+}
 
 /* What a font's card shows, in that font */
 #define FONT_SAMPLE_BIG "Aa"
@@ -346,14 +353,17 @@ write_title_buttons (ChoiceSet *set, const char *value)
   run_patrone_settings ("--set-title-buttons", value);
 }
 
-/* The family of a font setting such as "Noto Sans Bold 11" */
+/* The family of a font setting such as "Noto Sans Bold 11"; Patrone Sans,
+ * which PatroneOS Sans replaced (and fontconfig still draws as it), is
+ * PatroneOS Sans */
 static char *
 read_font (ChoiceSet *set)
 {
   g_autofree char *current = g_settings_get_string (set->settings, set->key);
   g_autoptr(PangoFontDescription) font = pango_font_description_from_string (current);
+  const char *family = pango_font_description_get_family (font);
 
-  return g_strdup (pango_font_description_get_family (font));
+  return g_strdup (g_strcmp0 (family, "Patrone Sans") == 0 ? "PatroneOS Sans" : family);
 }
 
 /* Gives a font setting another family, keeping its style and size */
@@ -370,15 +380,16 @@ set_font_family (GSettings *settings, const char *key, const char *family)
     g_settings_set_string (settings, key, changed);
 }
 
-/* The interface and document fonts, and the title bar font for windows
- * that don't draw their own title bars; the monospace font stays */
+/* The interface font and the title bar font for windows that don't draw
+ * their own title bars, and the document font that goes with them; the
+ * monospace font stays */
 static void
 write_font (ChoiceSet *set, const char *value)
 {
   g_autoptr(GSettings) wm = g_settings_new (WM_SCHEMA);
 
   set_font_family (set->settings, "font-name", value);
-  set_font_family (set->settings, "document-font-name", value);
+  set_font_family (set->settings, "document-font-name", document_font (value));
   set_font_family (wm, "titlebar-font", value);
 }
 

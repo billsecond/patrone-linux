@@ -1037,7 +1037,8 @@ AAC support, as in Ubuntu: low risk, not checked further.
   - Checked on the dev VM, and in a fresh install from a test disc.
 - **JetBrains Mono**: Ubuntu's `fonts-jetbrains-mono` copyright file says
   Apache-2, but the font is OFL 1.1 and no OFL text ships. Ubuntu's mistake,
-  harmless to Patrone; optional note in `patrone-terminal`'s copyright.
+  harmless to Patrone. Since `patrone-terminal` 0.1.8 (2026-10-29) Patrone no
+  longer installs it: the terminal's font is PatroneOS Mono.
 - **MailCraft** belongs to UCS Care Group (`UCS-Care-Group/mailcraft`,
   GOVERNANCE.md: "Owner | UCS Care Group"), which billsecond helps maintain;
   `software/README.md` and docs/NEXT.md call it billsecond's. The Craft
@@ -1167,9 +1168,11 @@ to the website session.
   goes through it. The main session took it off in `cd60745`, from the
   next ISO build.
 - **Ubuntu's fonts** (Ubuntu Font Licence 1.0) are unmodified; if Patrone
-  ever changes them, the licence requires a new name. **Patrone Sans**:
-  OFL 1.1, Noto has no Reserved Font Name, the name table credits the Noto
-  Project and names the licence, and "Noto" is in no name field.
+  ever changes them, the licence requires a new name. **PatroneOS's fonts**
+  (`fonts-patroneos`, 2026-10-29, in place of Patrone Sans): drawn from
+  scratch, OFL 1.1 with PatroneOS's copyright only and no Reserved Font
+  Name; the name tables hold only PatroneOS's own names, and the source,
+  FONTLOG and licence are public (billsecond/patroneos-fonts).
 - **Yaru's themes, icons and sounds** are used unmodified, and the login
   theme's pieces are Yaru's GPL-3+ files, not its CC BY-SA icons. Patrone's
   own icons are its own drawings.
@@ -1434,7 +1437,7 @@ main (GRUB, shim, the kernel, ZFS, compilers, drivers' helpers) and 38 from
 restricted (NVIDIA, Broadcom). The universe packages are Patrone's
 additions and their dependencies: `7zip`, `bat`, `btop`, `cage`,
 `chromium-browser` (the stub), `fastfetch`, `flatpak`,
-`fonts-jetbrains-mono`, `freerdp-proxy`, `freerdp-sdl`, `fzf`,
+`freerdp-proxy`, `freerdp-sdl`, `fzf`,
 `gnome-software` and its plugins, `ncdu`, `ripgrep`, `tree`, the zsh
 plugins, and libraries (`libflatpak0`, `libostree-1-1`, `libsdl3-*`,
 `libwlroots-0.19` and others); the live session adds `gnome-kiosk`.

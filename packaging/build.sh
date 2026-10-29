@@ -13,7 +13,8 @@
 #   ./packaging/build.sh patrone-unpack -d
 #   ./packaging/build.sh patrone-task-manager -d
 #   ./packaging/build.sh patrone-browser-chooser -d
-#   ./packaging/build.sh fonts-patrone-sans
+#   ./packaging/build.sh fonts-patroneos      (fetches its pinned release)
+#   ./packaging/build.sh fonts-patrone-sans   (transitional)
 #   ./packaging/build.sh patrone-software
 #   ./packaging/build.sh patrone-guest-tools
 #   ./packaging/build.sh patrone-hyperv-setup -d
@@ -42,7 +43,7 @@ case $package in
     patrone-unpack) source_dir=unpack ;;
     patrone-task-manager) source_dir=task-manager ;;
     patrone-browser-chooser) source_dir=browser-chooser ;;
-    fonts-patrone-sans) source_dir=fonts ;;
+    fonts-patroneos | fonts-patrone-sans) source_dir=fonts ;;
     patrone-software) source_dir=software ;;
     patrone-guest-tools) source_dir=guest-tools ;;
     patrone-hyperv-setup) source_dir=hyperv-setup ;;
@@ -87,6 +88,20 @@ EOF
     # licences ask: /usr/share/doc/$package/third-party-licenses.txt.gz
     bash "$root/packaging/third-party-licenses.sh" "$work/vendor" > "$work/third-party-licenses.txt"
     echo third-party-licenses.txt >> "$work/debian/docs"
+fi
+
+if [[ $package == fonts-patroneos ]]; then
+    # The fonts are a release of billsecond/patroneos-fonts (fonts/release.txt),
+    # fetched here and checked against its pinned checksum, so the build
+    # itself runs offline
+    url=$(sed -n 's/^url=//p' "$work/release.txt")
+    sum=$(sed -n 's/^sha256=//p' "$work/release.txt")
+    curl -fsSL "$url" -o "$work/release.zip"
+    if ! echo "$sum  $work/release.zip" | sha256sum -c --quiet; then
+        echo "$url isn't the release fonts/release.txt pins (its SHA-256 differs)" >&2
+        exit 1
+    fi
+    (cd "$work" && unzip -q release.zip && rm release.zip)
 fi
 
 (cd "$work" && dpkg-buildpackage -us -uc -b "$@")

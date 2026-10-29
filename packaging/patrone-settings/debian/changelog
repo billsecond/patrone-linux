@@ -6,6 +6,15 @@ patrone-settings (0.3.11) resolute; urgency=medium
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:30:00 -0500
 
+patrone-settings (0.3.10) resolute; urgency=medium
+
+  * Font: PatroneOS Sans (fonts-patroneos) or Noto Sans, in place of Patrone
+    Sans. Picking PatroneOS Sans makes PatroneOS Document the document font;
+    picking Noto Sans makes it Noto Sans too. A desktop still set to Patrone
+    Sans shows PatroneOS Sans picked (fontconfig draws it as PatroneOS Sans).
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Thu, 29 Oct 2026 15:00:00 -0500
+
 patrone-settings (0.3.9) resolute; urgency=medium
 
   * Finds the taskbar's icons under its new ID,
