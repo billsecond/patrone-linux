@@ -15,6 +15,12 @@ there is anything we need to do to be more complaint and less risky for any
 of the microsoft or conicial things do it now". Each item that changed says
 so under **2026-10-29**.
 
+**The system is PatroneOS since 2026-10-29** (the user: "change the name
+from Patrone LInux to PatroneOS ... The website will be
+https://patroneos.com"). This review was written when it was Patrone Linux;
+where it quotes or records what was seen then, it keeps that name. Items 4
+and 9 are brought up to date for the new name.
+
 **This is not legal advice.** Each finding is graded:
 
 - **Confirmed problem**: a duty that isn't met, shown by the files.
@@ -59,12 +65,12 @@ Nothing was published, uploaded, or sent to anyone outside these sessions.
 | [1](#1-no-source-code-is-offered-for-anything-on-the-iso) | No source code is offered for the ISO's GPL software, and Patrone's own changed builds have no public source at all | Confirmed problem, before any public download; **fixed for 26.04.1** (2026-10-28: the repository is public, and the disc's source is on the website beside it, gathered by `iso/build-source.sh`). Since 2026-10-29 the disc lists only what's on it. The snaps' own source can't all be gathered from the disc | Each new disc: the same again; a lawyer (the snaps) | Yes: confirmed |
 | [2](#2-canonicals-rule-on-redistributing-ubuntus-binaries) | Canonical's policy asks derived distributions to recompile Ubuntu's binaries; Patrone ships Ubuntu's own | Needs a lawyer; a letter to Canonical is drafted (2026-10-29), not sent | The user (a lawyer first) | Yes: same count, needs a lawyer |
 | [3](#3-ubuntus-logo-is-still-on-screen) | Ubuntu's logo is still on screen: Help, Software Updater, the logo icons | Confirmed problem, **fixed** (on screen 2026-10-28; on the disc 2026-10-29: none of Ubuntu's layers left, #29) | | Yes: confirmed |
-| [4](#4-linux-in-the-name-needs-the-linux-foundations-sublicence) | "Linux" in the name needs the Linux Foundation's (free) sublicence | Confirmed problem, before a public release; **applied for** (2026-10-28), waiting on the Linux Foundation | The user | Yes: confirmed |
+| [4](#4-linux-in-the-name-needs-the-linux-foundations-sublicence) | "Linux" in the name needs the Linux Foundation's (free) sublicence | Confirmed problem, before a public release; applied for (2026-10-28); **no longer needed** since the name is PatroneOS (2026-10-29), as long as "Linux" stays descriptive and attributed | The user (withdraw or let lapse) | Yes: confirmed |
 | [5](#5-the-website-keeps-full-ip-addresses-for-a-year-and-says-it-keeps-none) | The download log keeps full IP addresses for a year, "deleted" data stays in the file, and the privacy page contradicts the code | Confirmed problem | Website session | Yes: confirmed, by a test |
 | [6](#6-the-app-index-republishes-artcrafts-trademarked-icon) | The app index republishes ArtCraft's trademarked, non-open-source "A" icon | Likely problem, needs a lawyer; **taken off the index** (2026-10-28) until the ArtCraft Team allows it | The user (ask them) | Yes: likely problem |
 | [7](#7-timenl-asks-vendors-to-ask-first) | TimeNL's terms ask vendors to contact them before shipping its server as a default | Likely problem, **fixed** (2026-10-28: TimeNL dropped) | | Yes: likely problem |
 | [8](#8-the-rust-apps-shipped-none-of-their-crates-notices) | The Rust apps shipped none of the MIT/Apache notices of the code compiled into them | Confirmed problem, **fixed** (`5b9356e`, `460713b`) | Rebuild each package | Yes: confirmed; it found the standard library gap, fixed in `460713b` |
-| [9](#9-the-wallpaper-and-logo-are-ai-generated-but-labelled-gpl-3-by-william-daugherty) | The wallpaper (and almost certainly the logo) is AI-generated, but the copyright file claims it as the owner's GPL-3+ work | Confirmed problem (the label), **fixed** (2026-10-28: labelled as AI-made); needs a lawyer (ownership) | The user (a lawyer, a vector master) | Yes: confirmed, image hash checked |
+| [9](#9-the-wallpaper-and-logo-are-ai-generated-but-labelled-gpl-3-by-william-daugherty) | The wallpaper (and almost certainly the logo) is AI-generated, but the copyright file claims it as the owner's GPL-3+ work | Confirmed problem (the label), **fixed** (2026-10-28: labelled as AI-made); needs a lawyer (ownership, and a clearance search for PATRONEOS, 2026-10-29) | The user (a lawyer, a vector master) | Yes: confirmed, image hash checked |
 | [10](#10-the-installer-still-carries-canonicals-and-other-peoples-pieces) | The installer: "Automated with Landscape", 27 other companies' app logos and Windows' logo, fonts and data without their licences (and no telemetry page after all) | Confirmed (notices); likely problem (the rest): **fixed** (2026-10-28) | | Yes: confirmed; it found the extra fonts, data and Windows logo |
 | [11](#11-thunderbird-in-the-live-session) | Thunderbird, Canonical's build of Mozilla's app, is in the live session | Likely problem, **fixed** (2026-10-28; the hidden layer too, 2026-10-29, #29) | | Yes: likely problem |
 | [12](#12-ubuntu-pro-landscape-and-other-canonical-services) | Ubuntu Pro's client and services, hwctl, and other Canonical services | Likely problem (Pro, hwctl), **fixed** (2026-10-28); fine (the rest) | | No (research, checked on the VM) |
@@ -396,6 +402,22 @@ closed (it opens only with the source, item 1). If the download is to open
 before the Foundation answers, use "Patrone Linux OS" or "the Patrone Linux
 operating system" in titles and first mentions until it does.
 
+**2026-10-29: not needed for PatroneOS.** The name has no "Linux" in it,
+and the sublicence is for marketing a product "using a trademark that
+includes the element 'Linux'" (the [Linux Mark
+page](https://www.linuxfoundation.org/legal/the-linux-mark)). The same page
+says "In cases of fair use, members of the public may use or refer to a
+registered trademark without a license from the owner", for "non-trademark
+uses of a term that would normally occur in everyday communication". That
+covers "based on Ubuntu, with the Linux kernel" and "Linux apps". What it
+asks of everyone still applies: Linux® at the first prominent mention on a
+page, and "Linux® is the registered trademark of Linus Torvalds in the U.S.
+and other countries." (`/etc/legal`, the licence agreement, the website's
+footer, `README.md`). So **withdraw the request, or let it lapse**: the
+user's call. Nothing else is needed while "Linux" stays out of the name, the
+logo's wordmark and the website's address. Patrone Linux, the old name,
+should stay off anything new.
+
 ## 5. The website keeps full IP addresses for a year, and says it keeps none
 
 **Confirmed problem** (website session). At `77ce19f`:
@@ -586,6 +608,26 @@ in them. `patrone-installer`'s and first-login setup's copyright files say
 the same of their P. `branding/README.md` records the provenance, beside
 the generated wallpapers' note that code draws them. Still a lawyer's
 question: who owns what, and whether to have the logo redrawn by hand.
+
+**2026-10-29: the name is PatroneOS**, with new logos from the wallpapers
+session, whose provenance `branding/README.md` and `patrone-branding`'s
+copyright file should record the same way. **A first look for PATRONEOS**
+(web searches, 2026-10-29; not a clearance search): nothing called
+PatroneOS or Patrone OS turned up. The nearest names:
+
+- **ParrotOS** ([Wikipedia](https://en.wikipedia.org/wiki/Parrot_OS)), a
+  Debian-based Linux distribution with a large following. It's in the same
+  market, and the names share their start, their end and "OS". The one to
+  weigh.
+- **PATRONTEK**, a US mark in class 9, computers and electronics
+  ([TrademarkDir](https://trademarkdir.com/owner/patrontek)).
+- **PATRONMANAGER**, a US registration for ticketing and donor software
+  ([Justia](https://trademark.justia.com/775/33/patronmanager-77533763.html)).
+- **PATRON** marks, for tequila and door hardware: unrelated goods.
+
+Those came from aggregator sites, not the registries themselves. A clearance
+search of the USPTO, EUIPO and WIPO's Global Brand Database in classes 9
+and 42, with ParrotOS in mind, is still a lawyer's.
 
 ## 10. The installer still carries Canonical's and other people's pieces
 
@@ -1267,7 +1309,8 @@ the simplest safe option where no lawyer or the user personally is needed.
    whether to write to Canonical. A draft letter is ready (2026-10-29), kept
    outside this repository.
 3. **The Linux sublicence** (item 4): applied for; waiting on the Linux
-   Foundation.
+   Foundation. Since the name is PatroneOS (2026-10-29) it isn't needed:
+   withdraw the request, or let it lapse.
 4. **ArtCraft's icon** (item 6): coming off the app index (its pull request
    waits for the user to merge it) until the ArtCraft Team gives
    permission; asking them is the user's.
@@ -1290,8 +1333,8 @@ the simplest safe option where no lawyer or the user personally is needed.
    the duty reaches into Canonical's snaps, whose manifests don't record
    the commit of their own code (item 1).
 3. ArtCraft's trademarked icon (item 6).
-4. Who owns the AI-made logo and wallpaper, and a trademark search for
-   PATRONE (item 9).
+4. Who owns the AI-made logo and wallpaper, and a clearance search for
+   PATRONEOS in classes 9 and 42, with ParrotOS in mind (item 9).
 5. Whether the look that's left is safe, now that the names are Patrone's
    (item 15).
 6. ZFS's kernel module (item 16), and NVIDIA's and Broadcom's indemnities

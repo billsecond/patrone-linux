@@ -1,5 +1,12 @@
 # Next steps
 
+**PatroneOS since 2026-10-29.** The user: "change the name from Patrone
+LInux to PatroneOS ... The website will be https://patroneos.com." The
+name is one word wherever users or the public see it; "Patrone" stays the
+short name (Patrone Terminal, `patrone-*` packages, app IDs, paths,
+`ID=patrone`). Entries below from before then keep the old name where they
+record what was seen or said at the time.
+
 Last updated 2026-10-27, after the ISO's installer, first-login setup and a
 search of the installed system for Ubuntu's name (section 16 lists what's
 left of it).
@@ -248,13 +255,13 @@ Waiting on the user:
     takes Ubuntu's copy, moved aside by the diversion, as deleted by the
     user. The ISO build answers with `--force-confnew`; an install with apt
     on a running system asks.
-  - **"Install Patrone Linux" boots to the installer alone**, full screen
+  - **"Install PatroneOS" boots to the installer alone**, full screen
     in a GNOME Kiosk session with no desktop behind it (`installer/README.md`,
-    "Installing with nothing else"); "Try Patrone Linux" is the live
+    "Installing with nothing else"); "Try PatroneOS" is the live
     desktop. The kiosk session doesn't switch to a text console with
     Ctrl+Alt+F3.
   - **First-login setup is Patrone's build of Ubuntu's**
-    (`gnome-initial-setup/README.md`): "Choose how Patrone Linux looks",
+    (`gnome-initial-setup/README.md`): "Choose how PatroneOS looks",
     Patrone Software in place of App Center, Patrone's pictures. Patrone
     Terminal waits for it to finish before it opens at the first login, so
     it no longer covers the setup's pages.
@@ -264,7 +271,7 @@ Waiting on the user:
   - **A search of the installed system for Ubuntu's name** (the user,
     2026-10-27: "a full search on the name and references across the OS")
     found the snaps and notices fixed in `98c51cd` and the bigger pieces in
-    section 16. The user's rule for it: saying Patrone Linux is based on
+    section 16. The user's rule for it: saying PatroneOS is based on
     Ubuntu is welcome where it explains what's different ("don't dog
     ubuntu, just explain the differences").
 - **The Craft apps show and install in Patrone Software** (done
@@ -883,7 +890,7 @@ Plan:
 
 ## 4. The web browser: none preinstalled, the user picks one
 
-**Since 2026-10-28** Patrone Linux comes with no browser (the user: "Ask
+**Since 2026-10-28** PatroneOS comes with no browser (the user: "Ask
 the user when they click on the browser with a modal if they want to
 install Chromium, Fire Fox, Brave, etc, then use the current patrone apps
 to open that up and set up the install"). **Patrone Browser Chooser**
@@ -2239,7 +2246,7 @@ The user, 2026-10-27, after a fresh install from the ISO: "a full search on
 the name and references across the OS". A subagent searched the installed
 system's files (the ISO's layers, mounted read-only: text, binaries'
 strings, GNOME's settings as the session reads them). The user's rule for
-the fixes: saying Patrone Linux is based on Ubuntu is welcome where it
+the fixes: saying PatroneOS is based on Ubuntu is welcome where it
 explains what's different ("don't dog ubuntu, just explain the
 differences"); `os-release` already says "0.1 (based on Ubuntu 26.04.1
 LTS)" and `/etc/legal` now does too.
