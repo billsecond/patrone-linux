@@ -4,6 +4,7 @@
 //! Patrone Dark theme.
 
 mod cli;
+mod live_style;
 mod preferences;
 mod settings;
 mod theme;
@@ -60,6 +61,7 @@ fn startup(app: &gtk::Application) {
         settings.set_gtk_theme_name(Some("Default"));
         settings.set_gtk_interface_color_scheme(gtk::InterfaceColorScheme::Dark);
     }
+    live_style::follow(&display);
     gtk::Window::set_default_icon_name(APP_ID);
     for (action, accels) in ACCELS {
         app.set_accels_for_action(action, accels);

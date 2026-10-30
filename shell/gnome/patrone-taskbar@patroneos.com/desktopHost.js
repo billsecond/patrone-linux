@@ -3,8 +3,9 @@
 // 2026-10-27: "The desktop and the roll out menu must be an extension of
 // the file explorer app, while supporting the desktop and all it can do"),
 // in place of Ubuntu's desktop icons. File Manager draws two windows: one
-// the size of the primary screen, with the icons, and the desktop bubble's
-// (desktopBubble.js animates it and keeps the pill).
+// the size of the primary screen, with the icons, and the desktop files
+// panel's, the size of the screen's free area (desktopPanel.js slides it and
+// keeps the pill).
 //
 // A Wayland app can't make its window the desktop or keep it above the
 // others, so the taskbar starts File Manager's desktop as a Wayland client
@@ -23,10 +24,7 @@ import Meta from 'gi://Meta';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const DESKTOP_TITLE = 'Patrone Desktop';
-const BUBBLE_TITLE = 'Patrone Desktop Bubble';
-// The bubble's window is the bubble's size, with room for its shadow above,
-// below and to the right (file-manager/src/bubble.rs)
-const BUBBLE_SHADOW = 12;
+const PANEL_TITLE = 'Patrone Desktop Panel';
 const DING_UUID = 'ding@rastersoft.com';
 // Started again when it ends on its own, waiting longer each time it ends
 // soon after starting; after the last, it's given up on
@@ -51,12 +49,11 @@ export class DesktopHost {
         this._encoder = new TextEncoder();
         /** File Manager's windows, once they show. */
         this.desktopWindow = null;
-        this.bubbleWindow = null;
+        this.panelWindow = null;
+        // Whether the panel's window has shown and been set up
+        this._panelSetUp = false;
         /** How many items the desktop has. */
         this.count = 0;
-        /** The bubble: its reach (a) and half height (b), and the Recycle
-         * Bin's place on its edge, from its top left corner. */
-        this.shape = null;
 
         global.display.connectObject(
             'window-created', (_, window) => this._watch(window),
@@ -64,7 +61,10 @@ export class DesktopHost {
             'restacked', () => this._keepDesktopDown(), this);
         Main.layoutManager.connectObject('monitors-changed', () => this._place(), this);
         this._settings.connectObject(
-            'changed::desktop-bubble', () => this._sendBubble(),
+            'changed::desktop-files', () => {
+                this._sendPanel();
+                this._queueBin();
+            },
             'changed::show-recycle-bin', () => this._queueBin(), this);
         this._bin?.actor.connectObject(
             'notify::x', () => this._queueBin(),
@@ -77,10 +77,10 @@ export class DesktopHost {
 
     /**
      * File Manager's windows stop taking the pointer while it's on one of
-     * the taskbar's own things over them (the bubble's pill, the Recycle
+     * the taskbar's own things over them (the panel's pill, the Recycle
      * Bin) or one of those is dragged. With a window's surface under them,
      * GNOME 50 ended their drag gestures as soon as they were pressed: a
-     * drag of the pill opened the bubble like a click, and the Recycle Bin
+     * drag of the pill opened the panel like a click, and the Recycle Bin
      * couldn't be moved. Clicks elsewhere on the desktop are unaffected.
      *
      * @param {string} owner - what asks: 'pill', 'bin'
@@ -103,7 +103,7 @@ export class DesktopHost {
             for (const child of actor.get_children())
                 walk(child);
         };
-        for (const window of [this.desktopWindow, this.bubbleWindow]) {
+        for (const window of [this.desktopWindow, this.panelWindow]) {
             const actor = window?.get_compositor_private();
             if (actor)
                 walk(actor);
@@ -124,8 +124,8 @@ export class DesktopHost {
 
     /**
      * Calls back when File Manager's desktop says something: 'count',
-     * 'shape', 'open' and 'close' (asks for the bubble to show or go), and
-     * 'bubble-window' (the bubble's window came or went).
+     * 'open' and 'close' (asks for the panel to show or go), and
+     * 'panel-window' (the panel's window came or went).
      *
      * @param {string} name - what
      * @param {Function|null} callback - called with no arguments; null stops
@@ -146,13 +146,13 @@ export class DesktopHost {
         return !!this.desktopWindow;
     }
 
-    /** The bubble's window actor, while it has one. */
-    get bubbleActor() {
-        return this.bubbleWindow?.get_compositor_private() ?? null;
+    /** The panel's window actor, while it has one. */
+    get panelActor() {
+        return this._panelSetUp ? this.panelWindow?.get_compositor_private() ?? null : null;
     }
 
     /**
-     * Tells File Manager's desktop something: 'open' or 'close' (the bubble
+     * Tells File Manager's desktop something: 'open' or 'close' (the panel
      * is opening or closing).
      *
      * @param {string} line
@@ -167,10 +167,46 @@ export class DesktopHost {
         }
     }
 
-    /** Puts the bubble's window in place and gives it the keyboard. */
-    focusBubble() {
-        this._placeBubble();
-        this.bubbleWindow?.activate(global.get_current_time());
+    /**
+     * Shows the panel's window, in place and above the windows, and gives it
+     * the keyboard. Above only while it's open: GNOME counts every window
+     * that's above, minimized or not, and one this big made it take each new
+     * window for covered, leaving it behind the one in front with no keyboard.
+     */
+    showPanel() {
+        const window = this.panelWindow;
+        if (!window || !this._panelSetUp)
+            return;
+        this._placePanel();
+        Main.wm.skipNextEffect(window.get_compositor_private());
+        window.make_above();
+        window.unminimize();
+        window.activate(global.get_current_time());
+    }
+
+    /**
+     * Puts the panel's window away: not above, and minimized, since a window
+     * that's there takes the keyboard when the last one closes, and one that
+     * covers the screen's free area leaves GNOME no free place for new
+     * windows. Not until it has first shown (minimized, it wouldn't, and the
+     * first open would have no icons), and not while the overview is open:
+     * desktopPanel.js asks again once it's closed.
+     */
+    hidePanel() {
+        const window = this.panelWindow;
+        if (!window || !this._panelSetUp)
+            return;
+        if (window.is_above())
+            window.unmake_above();
+        if (window.minimized || Main.overview.visible)
+            return;
+        Main.wm.skipNextEffect(window.get_compositor_private());
+        // GNOME won't minimize a window that's not in the window list. All
+        // at once, so nothing sees it there, but the overview would: its
+        // windows take it for a new one, and leave a handler behind.
+        window.show_in_window_list();
+        window.minimize();
+        this._hideFromWindowList(window);
     }
 
     _start() {
@@ -197,7 +233,7 @@ export class DesktopHost {
             process.wait_async(null, () => this._ended(client));
             this._sendArea();
             this._sendBin();
-            this._sendBubble();
+            this._sendPanel();
         } catch (e) {
             console.warn(`Patrone taskbar: can't start File Manager's desktop: ${e.message}`);
         }
@@ -239,14 +275,14 @@ export class DesktopHost {
     }
 
     _forget() {
-        for (const window of [this.desktopWindow, this.bubbleWindow])
+        for (const window of [this.desktopWindow, this.panelWindow])
             window?.disconnectObject(this);
-        const hadBubble = !!this.bubbleWindow;
+        const hadPanel = !!this.panelWindow;
         this.desktopWindow = null;
-        this.bubbleWindow = null;
-        this.shape = null;
-        if (hadBubble)
-            this._emit('bubble-window');
+        this.panelWindow = null;
+        this._panelSetUp = false;
+        if (hadPanel)
+            this._emit('panel-window');
     }
 
     _read(client, stream) {
@@ -268,20 +304,10 @@ export class DesktopHost {
 
     _handle(line) {
         const [what, ...rest] = line.split(/\s+/);
-        const numbers = rest.map(Number);
         switch (what) {
         case 'count':
-            this.count = numbers[0] || 0;
+            this.count = Number(rest[0]) || 0;
             this._emit('count');
-            break;
-        case 'shape':
-            this.shape = {
-                a: numbers[0],
-                b: numbers[1],
-                bin: rest.length >= 4 ? [numbers[2], numbers[3]] : null,
-            };
-            this._placeBubble();
-            this._emit('shape');
             break;
         case 'open':
         case 'close':
@@ -323,7 +349,7 @@ export class DesktopHost {
     }
 
     // The Recycle Bin: whether it's on the desktop, where it sits there
-    // (no icon goes under it), and its size (for its place on the bubble)
+    // (no icon goes under it, on the panel too), and its size
     _sendBin() {
         const origin = this._origin();
         const actor = this._bin?.actor;
@@ -331,7 +357,8 @@ export class DesktopHost {
             return;
         const [, , width, height] = actor.get_preferred_size();
         const [x, y] = this._bin.homePosition?.() ?? [actor.x, actor.y];
-        const shown = this._settings.get_boolean('show-recycle-bin') ? 1 : 0;
+        const shown = this._settings.get_boolean('show-recycle-bin') &&
+            this._settings.get_string('desktop-files') !== 'hidden' ? 1 : 0;
         this.tell(`bin ${shown} ${Math.round(x - origin[0])} ${Math.round(y - origin[1])} ` +
             `${Math.round(width)} ${Math.round(height)}`);
     }
@@ -346,15 +373,16 @@ export class DesktopHost {
         });
     }
 
-    _sendBubble() {
-        this.tell(`bubble ${this._settings.get_boolean('desktop-bubble') ? 'on' : 'off'}`);
+    _sendPanel() {
+        const mode = this._settings.get_string('desktop-files');
+        this.tell(`panel ${{panel: 'on', hidden: 'clean'}[mode] ?? 'off'}`);
     }
 
     _place() {
         this._sendArea();
         this._queueBin();
         this._placeDesktop();
-        this._placeBubble();
+        this._placePanel();
     }
 
     // The desktop's window covers the primary screen
@@ -364,17 +392,13 @@ export class DesktopHost {
             this.desktopWindow?.move_resize_frame(false, monitor.x, monitor.y, monitor.width, monitor.height);
     }
 
-    // The bubble's window, at the free area's left edge, its middle at the
-    // area's middle
-    _placeBubble() {
+    // The panel's window covers the screen's free area
+    _placePanel() {
         const where = this._where();
-        if (!where || !this.bubbleWindow || !this.shape)
+        if (!where || !this.panelWindow)
             return;
         const {area} = where;
-        const {a, b} = this.shape;
-        this.bubbleWindow.move_resize_frame(false, area.x,
-            Math.round(area.y + area.height / 2 - b - BUBBLE_SHADOW),
-            a + BUBBLE_SHADOW, 2 * b + 2 * BUBBLE_SHADOW);
+        this.panelWindow.move_resize_frame(false, area.x, area.y, area.width, area.height);
     }
 
     // File Manager's windows, known by their titles (which GTK sets before
@@ -393,18 +417,19 @@ export class DesktopHost {
         if (title === DESKTOP_TITLE && this.desktopWindow !== window) {
             this.desktopWindow = window;
             this._whenShown(window, () => this._setUpDesktop(window));
-        } else if (title === BUBBLE_TITLE && this.bubbleWindow !== window) {
-            this.bubbleWindow = window;
-            this._whenShown(window, () => this._setUpBubble(window));
+        } else if (title === PANEL_TITLE && this.panelWindow !== window) {
+            this.panelWindow = window;
+            this._whenShown(window, () => this._setUpPanel(window));
         }
     }
 
     _unmanaged(window) {
         if (window === this.desktopWindow)
             this.desktopWindow = null;
-        if (window === this.bubbleWindow) {
-            this.bubbleWindow = null;
-            this._emit('bubble-window');
+        if (window === this.panelWindow) {
+            this.panelWindow = null;
+            this._panelSetUp = false;
+            this._emit('panel-window');
         }
     }
 
@@ -460,20 +485,15 @@ export class DesktopHost {
         this._replaceDing(true);
     }
 
-    // The bubble: above the windows, on every workspace, unseen until it
-    // opens (desktopBubble.js shows its actor)
-    _setUpBubble(window) {
+    // The panel: on every workspace, put away until it opens (desktopPanel.js)
+    _setUpPanel(window) {
         this._hideFromWindowList(window);
         window.stick();
-        window.make_above();
-        this._placeBubble();
-        const actor = window.get_compositor_private();
-        if (actor) {
-            actor.set_pivot_point(0, 0.5);
-            actor.hide();
-        }
+        this._placePanel();
+        this._panelSetUp = true;
+        this.hidePanel();
         this._applyShield();
-        this._emit('bubble-window');
+        this._emit('panel-window');
     }
 
     // Clicking the desktop raises it above the Recycle Bin's drop target

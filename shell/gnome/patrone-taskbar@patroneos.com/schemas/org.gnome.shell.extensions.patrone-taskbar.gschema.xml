@@ -125,20 +125,63 @@
         stays in place when the screen size changes.
       </description>
     </key>
-    <key name="desktop-bubble" type="b">
-      <default>true</default>
-      <summary>Keep the desktop's files in a bubble at the left edge</summary>
+    <key name="desktop-files" type="s">
+      <choices>
+        <choice value="desktop"/>
+        <choice value="panel"/>
+        <choice value="hidden"/>
+      </choices>
+      <default>'desktop'</default>
+      <summary>Where the desktop's files show</summary>
       <description>
-        A small pill at the left edge of the primary screen, shown while no
-        window covers it, opens a bubble with the files in the Desktop
-        folder, which Patrone File Manager draws. Off, File Manager shows
-        them across the desktop. Patrone Settings sets it, on its Desktop
-        page.
+        "desktop", the default: Patrone File Manager shows the files in the
+        Desktop folder on the desktop. "panel": a small pill at the left edge
+        of the primary screen, shown while no window covers it, opens them in
+        a panel that slides out over the windows as a full layer of the
+        screen, and closes when a window opens. "hidden": a clean desktop,
+        with nothing on it, not even the Recycle Bin (whatever
+        show-recycle-bin says); the same panel opens from the
+        desktop-files-corner, or the desktop's or the taskbar's right-click
+        menu. Patrone Settings sets it, on its Desktop page.
+      </description>
+    </key>
+    <key name="desktop-files-corner" type="s">
+      <choices>
+        <choice value="none"/>
+        <choice value="top-left"/>
+        <choice value="top-right"/>
+        <choice value="bottom-left"/>
+        <choice value="bottom-right"/>
+      </choices>
+      <default>'none'</default>
+      <summary>The corner that shows the desktop's files on a clean desktop</summary>
+      <description>
+        Pointing at this corner of the primary screen shows the files, and
+        pointing at it again hides them. It does nothing while something else
+        uses the corner (desktop-corners-in-use).
+      </description>
+    </key>
+    <key name="desktop-corners-in-use" type="as">
+      <default>[]</default>
+      <summary>Which screen corners something else uses, and what</summary>
+      <description>
+        The taskbar keeps this up to date, for the Settings apps, which offer
+        only the other corners for desktop-files-corner. Each is
+        "corner:user", where the user is taskbar, window-buttons, hot-corner
+        or screen. Not for setting by hand.
+      </description>
+    </key>
+    <key name="desktop-bubble" type="b">
+      <default>false</default>
+      <summary>Replaced by desktop-files</summary>
+      <description>
+        The yes-or-no this was until 2026-10-30. Read once, so an account that
+        set it keeps its choice in desktop-files.
       </description>
     </key>
     <key name="desktop-bubble-introduced" type="b">
       <default>false</default>
-      <summary>Whether the desktop bubble has been opened yet</summary>
+      <summary>Whether the panel's pill has been opened yet</summary>
       <description>
         Until it has, its pill bounces now and then, with a tip saying what
         it does.
@@ -186,16 +229,18 @@
       <choices>
         <choice value="logo"/>
         <choice value="center"/>
+        <choice value="off"/>
       </choices>
       <default>'logo'</default>
-      <summary>Where the terminal opened at sign-in goes</summary>
+      <summary>Whether the terminal opens at sign-in, and where it goes</summary>
       <description>
         Patrone Terminal's first window after signing in. "logo": over the
         logo of Patrone's wallpaper, between the pictures in its corners, at
         any screen size (on another wallpaper, the same part of the screen).
         "center": at its own size, in the middle of the screen above the
-        taskbar. It's left alone once moved, resized or maximized. Patrone
-        Settings sets it, on its Desktop page.
+        taskbar. It's left alone once moved, resized or maximized. "off": it
+        doesn't open at sign-in (patrone-terminal's autostart script reads
+        this too). Patrone Settings sets it, on its Desktop page.
       </description>
     </key>
     <key name="suggested-apps" type="as">

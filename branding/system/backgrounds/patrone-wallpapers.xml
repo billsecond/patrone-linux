@@ -148,4 +148,122 @@
     <filename-dark>/usr/share/backgrounds/patrone/patrone-orbs.png</filename-dark>
     <options>zoom</options>
   </wallpaper>
+
+  <!-- Abstract designs, drawn by tools/make_abstract_wallpapers.py. The same
+       picture in both styles. -->
+  <wallpaper deleted="false">
+    <name>Patrone Silk</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-silk.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Liquid</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-liquid.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Nebula</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-nebula.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Shallows</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-shallows.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Marble</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-marble.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Ink</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-ink.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <!-- The gallery: the user's pictures, enlarged by
+       tools/make_gallery_wallpapers.py. The same picture in both styles. -->
+  <wallpaper deleted="false">
+    <name>Sapling in the Light</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-sapling-light.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Sapling on the Cliff</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-sapling-cliff.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Sapling on the Ledge</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-sapling-ledge.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Spheres in Gold</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-spheres-gold.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Spheres in Charcoal</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-spheres-charcoal.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Spheres in Shadow</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-spheres-shadow.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Storm Over the Hill</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-storm-hill.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Storm Sunburst</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-storm-sunburst.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Storm Clearing</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-storm-clearing.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Woodland Path</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-woodland-path.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Woodland Bend</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-woodland-bend.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Woodland Sunbeams</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-woodland-sunbeams.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Woodland Hollow</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-woodland-hollow.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
 </wallpapers>

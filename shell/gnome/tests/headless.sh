@@ -96,7 +96,7 @@ EOF
         echo '</xbel>'
     } > "$XDG_DATA_HOME/recently-used.xbel"
 
-    # And a Desktop folder of its own, for the desktop bubble, so the test
+    # And a Desktop folder of its own, for the desktop files panel, so the test
     # shell never shows (or trashes) the account's real desktop files
     local desktop=$base/desktop
     mkdir -p "$desktop/Projects" "$desktop/Photos"

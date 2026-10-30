@@ -7,7 +7,7 @@ behind the Patrone page in Patrone's build of GNOME Settings
 a picture of what it does (`src/preview.rs`, drawn with cairo).
 
 ```
-patrone-settings [--page taskbar|desktop|buttons|theme|pointer]
+patrone-settings [--page taskbar|desktop|wallpaper|buttons|theme|pointer]
 patrone-settings --set-theme THEME          apply a theme, and quit
 patrone-settings --set-title-buttons STYLE  apply a title bar button style, and quit
 patrone-settings --apply                    write the account's GTK styles as set
@@ -17,21 +17,29 @@ patrone-settings --export-previews DIR      save the choices' pictures as PNGs
 The taskbar's right-click menu has "Taskbar settings", which opens GNOME
 Settings' Patrone page, or this window's Taskbar page where Patrone's build
 of GNOME Settings isn't installed; the launcher's actions (its right-click
-menu in the Patrone menu and on the taskbar) open each page.
+menu in the Patrone menu and on the taskbar) open each page. Personalize, on
+the desktop's right-click menu, opens the Wallpaper page.
 
 The window is in GTK's own theme, light or dark with the desktop's style,
 as Patrone's other apps are (Ubuntu's Yaru doesn't load in plain GTK 4
 apps, and GTK 4.22's Default theme has to be asked for its dark variant).
-Until 0.3.8 it stayed light in the dark style.
+Until 0.3.8 it stayed light in the dark style. Its corners are 15 pixels, as
+in GNOME's apps (libadwaita's `--window-radius`); GTK's own theme has 8 at
+the top and none at the bottom. Patrone Terminal, File Manager and Task
+Manager set the same (2026-10-30), square when a window is maximized,
+snapped or full screen. An app's own rule outranks GTK's, so each
+has to say that itself. Classic's sheet loads above it, so Classic stays
+square.
 
 ## Pages
 
 | Page | Choices | Setting |
 | --- | --- | --- |
 | Taskbar | Size: Small (32 pixels), Medium (42, the default), Large (52). Layout: Left (the default), Centered, Split (Start on the left, the apps in the middle), Top (along the top of the screen). Start button: the Patrone P, one color, orb, grid, menu, circle, spark, prompt. Color: from the wallpaper (the default), or the theme's own; only the Patrone, Modern and Studio themes take the wallpaper's color, and the page says so. Pin icons: Patrone's (the default), or each app's own | `org.gnome.shell.extensions.patrone-taskbar` `size`, `layout`, `start-icon`, `color` and `pin-icons` (the taskbar's own schema; the page says so if the taskbar isn't installed, and leaves out Color and Pin icons for a taskbar older than 0.3.2). The Start button's icons are the taskbar's, from its `icons` folder |
-| Desktop | Desktop bubble: On (the default: the desktop's files in a bubble, which a pill at the screen's left edge opens, over any window) or Off (the files across the desktop); it changes at once. GNOME Settings' Desktop page has the same as a switch. Recycle Bin: On the desktop (the default) or Hidden. Terminal at sign-in: Over the logo (the default: large, over the wallpaper's logo, at any screen size) or Centered (at its own size, in the middle of the screen) | `org.gnome.shell.extensions.patrone-taskbar` `desktop-bubble` and `show-recycle-bin`, both yes-or-no, and `sign-in-terminal` (`logo` or `center`) (the taskbar's own schema; each is left out for a taskbar too old to have it). See `shell/gnome/README.md`, "The desktop bubble" and "The terminal at sign-in" |
-| Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps |
-| Theme | Themes: Patrone, Modern, Classic, Sapphire, Studio. Font: PatroneOS Sans (the default, the `fonts-patroneos` package), with PatroneOS Document for documents, or Noto Sans | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, and of `document-font-name` with them (PatroneOS Document with PatroneOS Sans), their sizes and styles kept (`src/font.rs`); a desktop still set to Patrone Sans, the font before, shows PatroneOS Sans picked; the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
+| Desktop | Desktop files: On the desktop (the default), In a panel (a pill at the screen's left edge slides them out over the windows as a full layer of the screen, which closes when a window opens) or Clean desktop (nothing on it, not even the Recycle Bin); it changes at once. On a clean desktop, Show your files from a corner: No corner, or a corner nothing else uses (the taskbar's list), and the Recycle Bin's choices are hidden. GNOME Settings' Desktop page has the same as two lists. Recycle Bin: On the desktop (the default) or Hidden. Terminal at sign-in: Over the logo (the default: large, over the wallpaper's logo, at any screen size), Centered (at its own size, in the middle of the screen) or Off (it doesn't open) | `org.gnome.shell.extensions.patrone-taskbar` `desktop-files` (`desktop`, `panel` or `hidden`), `desktop-files-corner`, `show-recycle-bin`, yes or no, and `sign-in-terminal` (`logo`, `center` or `off`) (the taskbar's own schema; each is left out for a taskbar too old to have it, and Off for one that doesn't have that choice). See `shell/gnome/README.md`, "Desktop files" and "The terminal at sign-in" |
+| Wallpaper | A picture, each of the wallpapers installed, or None. Background color: ten to pick from, or any other, shown with None (below) | GNOME's `org.gnome.desktop.background` and `org.gnome.desktop.screensaver`: `picture-uri`, `picture-uri-dark`, `picture-options`, `primary-color`, `secondary-color`, `color-shading-type` (`src/wallpaper.rs`), and `org.patrone.desktop background-color` for the color. It changes at once |
+| Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps; Patrone's own apps and GNOME Settings follow at once |
+| Theme | Themes: Patrone, Modern, Classic, Sapphire, Studio. Font: PatroneOS Sans (the default, the `fonts-patroneos` package), with PatroneOS Document for documents, or Noto Sans | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps; Patrone's own apps and GNOME Settings follow at once. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, and of `document-font-name` with them (PatroneOS Document with PatroneOS Sans), their sizes and styles kept (`src/font.rs`); a desktop still set to Patrone Sans, the font before, shows PatroneOS Sans picked; the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
 | Mouse pointer | Pointer: each cursor theme installed that GNOME can show (below), Patrone's first: Patrone Blue (the default), Patrone Black, Patrone White. Size: Default (24 pixels), Medium (32), Large (48), Larger (64), Largest (96), as GNOME Settings' Accessibility page has them | GNOME's `org.gnome.desktop.interface cursor-theme` and `cursor-size` (`src/cursor.rs`). The pointer changes at once (below) |
 
 The taskbar's layout, and the title bar buttons' corner and style, are the
@@ -57,8 +65,9 @@ in those themes. Until 2026-10-26 only Classic and Sapphire had title bars of
 their own, so choosing among the others seemed to do nothing to windows.
 
 GTK reads the account's `gtk.css` once, when an app starts (`gtksettings.c`
-loads it and never again), so open apps can't follow a change: they show
-it when they're next opened.
+loads it and never again), so an open app can't follow a change unless it
+does the work itself: Patrone's own apps and GNOME Settings do (below), and
+others show a change when they're next opened.
 
 Sapphire was Classic until 2026-10-26, when the user asked for Classic to be
 plainer and for the old look to stay as a theme of its own, without the word
@@ -95,9 +104,38 @@ Settings puts the style sheets (the theme's title bars from
 `data/titlebuttons/STYLE/`, installed in `/usr/share/patrone`) into the
 account's `~/.config/gtk-4.0/gtk.css` and `~/.config/gtk-3.0/gtk.css`, as
 `@import`s between two marked lines at the top. Anything else in those
-files is kept, and since it comes after, the account's own rules still win.
-GTK reads these files when an app starts, so apps that are open pick a
-change up when they're next opened; libadwaita apps read them too.
+files is kept, below Patrone's lines. GTK reads these files when an app
+starts, libadwaita apps included.
+
+So that a choice takes effect at once (the user, 2026-10-30: "not working
+when i click it live"), Patrone Settings, Patrone Terminal, File Manager and
+Task Manager (`src/live_style.rs`, the same file in each) and GNOME Settings
+(`cc-patrone-panel.c`) load those style sheets themselves, watch `gtk.css`,
+and load them again when it changes. Each rule in a GTK 4 sheet says
+`window:not(.patrone-live)` (a test checks), and these apps give their
+windows that class, so what GTK read at the start doesn't reach them, and
+nothing of the old style stays behind; the copy they load has the
+`:not(.patrone-live)` taken out. File Manager needs this most: its process
+stays running for the desktop, so without it a new style didn't reach its
+windows until the next sign-in, however often they were reopened. Browser Chooser, Unpack and Hyper-V setup
+open for moments at a time, so they don't, and their windows get the sheets
+from `gtk.css` as they always have.
+
+The account's own rules in `gtk.css` win in those apps: the sheets load one
+step below it (`STYLE_PROVIDER_PRIORITY_USER - 1`). In other apps a rule has
+to be as specific as the sheets' as well as below them, since GTK weighs that
+first and they say `window:not(.patrone-live)`: `window.csd headerbar` wins
+there, a plain `headerbar` doesn't. (GTK has no `:where()` to take that
+weight away, and those apps have only the one file.)
+
+Other apps that are open change only when they're next opened, and nothing
+Patrone can do from outside them changes that. GTK reloads a running app's
+styles only when `gtk-theme-name` or the dark preference changes, the
+reloaded layer isn't `gtk.css`, and libadwaita apps fix their theme name, so
+that can't reach them either (read in GTK 4.22's `gtksettings.c` and
+libadwaita 1.9's `adw-style-manager.c`). GTK 4 no longer loads modules into
+apps, as GTK 3 did. The pages say which apps change at once.
+
 `--set-theme` and `--set-title-buttons` do the same without a window, for
 GNOME Settings' Patrone page. `--apply` writes them for the settings as
 they are: an autostart entry (`/etc/xdg/autostart/org.patrone.Settings-apply.desktop`)
@@ -105,6 +143,44 @@ runs it at every sign-in, so every account has the same buttons from the
 start, and an account's lines move to new versions of the style sheets
 (Modern's and Studio's sheets went away when the buttons became their own
 setting, and came back in 0.3.1 with title bars only).
+
+## Wallpaper
+
+The user, 2026-10-30: "Right click and Personalize should also show me
+options for wallpaper", and "None should also be an option. allowing us to
+optionally choose also a background color." So Personalize, which opened the
+Theme page, opens this one.
+
+The pictures are the ones GNOME Settings' Appearance page lists: the
+`gnome-background-properties` lists in the account's and the system's data
+folders, read here (`src/wallpaper.rs`), so a list a package adds shows up
+in both. Picking one sets what that page sets, on the desktop and the lock
+screen. A wallpaper with a dark version shows that version on its card in
+the dark style. The wallpapers are up to 8K, so the cards' pictures load
+after the page opens, three at a time off the main thread, starting the
+first time the page shows, and are kept at 376 pixels wide in
+`~/.cache/patrone-settings/wallpapers`. All 21 took about 5 seconds the first
+time on the dev VM, and after that they come straight from the cache. A
+thumbnail is named for its picture and when that last changed, which each
+new `patrone-branding` does, so opening the page also removes those no
+wallpaper uses any more.
+
+None sets `picture-options` to `none`, which is what makes GNOME Shell show
+`primary-color` in place of the picture; `picture-uri` stays as it was. The
+taskbar's tint follows (`tint.js` reads the color then). The color is also
+kept in `org.patrone.desktop background-color`, default `#1851a8`, Patrone's
+Deep blue. GNOME's own `primary-color` defaults to near-black here, too dark
+to read as a choice, and this way a color stays chosen across pictures. Picking a color shows it at once, in
+place of any picture. Light colors work, though desktop icons' white labels
+read less well on them, as on a light wallpaper.
+
+GNOME Settings' Patrone page doesn't have this: its Appearance page has the
+pictures, though not None. A picture set there, or with File Manager's "Set
+as desktop background", lights its card here, and one that isn't in the
+lists, such as the account's own photo, leaves no card lit (`show_picked`).
+That matters because GTK ignores a click on a lit card in a group, so a card
+left lit couldn't be picked again. File Manager's also turns None off, since
+it would otherwise go on hiding the picture.
 
 ## Mouse pointer
 
@@ -224,3 +300,36 @@ was picked with its cards, and the pointer was screenshotted over the
 window (light, and in the dark style), over a card's dark picture and over
 the desktop: each time in the theme and at the size picked, sharp at 48,
 its shadow plain on all but the near-black picture.
+
+For 0.3.12 (2026-10-30), built on the dev VM from its branch, with Patrone
+Terminal, File Manager, Task Manager, GNOME Settings and GNOME's Calculator
+open in the throwaway shell: through five themes and the four button styles,
+a screenshot a second after each change showed all but the Calculator
+changed, title bars and buttons. Their title bars matched the same apps
+opened afresh in that style (only focus and stacking differed), so nothing of
+the last style stays behind. The Calculator kept its old look until it was
+opened again. Clicking Dots, Glossy and
+Round on the page changed the window's own title bar. On a new account with
+no `gtk.css` yet, the first change can take a few seconds, until GIO sees
+the new folder; sign-in writes that file. For Terminal at sign-in, a new
+shell per choice, running the package's autostart script: Over the logo
+opened it large and Centered at its own size, and Off opened nothing, while
+a terminal opened by hand soon after still opened. Not tried at a real
+sign-in.
+
+The Wallpaper page, in the same throwaway shell with File Manager 0.3.9: a
+right-click on the desktop and Personalize opened this page. None with no
+color chosen set `#1851a8`, and the desktop's pixels read `#1850a6`. Teal,
+Plum, Mist and an orange from the color dialog each set the desktop and
+lock screen and showed on the desktop within a few levels of the color. A
+color picked while a picture showed replaced it. The color was kept through
+a picture and back to None. The card lit followed every change, those made
+elsewhere included (the keys set with `gsettings`, as GNOME's page does).
+"Set as desktop background" with None on brought the picture back. An
+account's own photo set that way left no card lit, and clicking the card
+that had been lit, or None, then worked. Thumbnails: stray files went, and a
+wallpaper with a new modified time left one thumbnail, not two. Rules of
+the account's own below Patrone's lines, under Classic: a plain `headerbar`
+rule won in Task Manager and GNOME Settings and not in GNOME's Calculator,
+and `window.csd headerbar` won in all three. The lock screen itself wasn't
+shown: its settings were read back.

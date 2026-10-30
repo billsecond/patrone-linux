@@ -2,31 +2,33 @@
  * the account's ~/.config/gtk-4.0/gtk.css): clean and flat, title bars the
  * same color as the window with no line under them, light or dark. The
  * title bar buttons are a setting of their own (data/titlebuttons);
- * Modern's own are Round. */
+ * Modern's own are Round.
+ * Rules say window:not(.patrone-live): apps that follow a change while they run
+ * load this sheet themselves, without that, and their windows have the class. */
 
-headerbar {
+window:not(.patrone-live) headerbar {
   background-color: #ffffff;
   background-image: none;
   color: #1b1b1b;
   box-shadow: none;
 }
 
-headerbar:backdrop {
+window:not(.patrone-live) headerbar:backdrop {
   background-color: #ffffff;
   color: alpha(#1b1b1b, 0.5);
 }
 
-headerbar .title {
+window:not(.patrone-live) headerbar .title {
   font-weight: normal;
 }
 
 @media (prefers-color-scheme: dark) {
-  headerbar {
+  window:not(.patrone-live) headerbar {
     background-color: #1e1e20;
     color: #f2f2f4;
   }
 
-  headerbar:backdrop {
+  window:not(.patrone-live) headerbar:backdrop {
     background-color: #1e1e20;
     color: alpha(#f2f2f4, 0.5);
   }

@@ -7,7 +7,8 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 
 - **A Patrone page** in the sidebar, after Appearance and Ubuntu's Desktop
   page: the taskbar's size, layout, Start button icon, color and pin
-  icons, the desktop bubble, the Recycle Bin and the terminal at sign-in,
+  icons, where the desktop's files show, the corner of a clean desktop, the
+  Recycle Bin and the terminal at sign-in,
   the title bar buttons' corner and style, the theme, the font (Patrone
   Sans or Noto Sans), and the mouse pointer's theme and size (revision 16;
   GNOME's own pages have only the size, under Accessibility). The same
@@ -63,7 +64,7 @@ when it's built. So Patrone builds Ubuntu's GNOME Settings
 | `patches/patrone-hide-telemetry.patch` | Hides the Telemetry row |
 | `remote-login/cc-patrone-remote-login.c`, `.h` | The Remote Desktop tab, added to `panels/system/remote-desktop/`. It runs `/usr/libexec/patrone-remote-desktop/settings` through `pkexec` for the switch's state (`status`), turning it on or off, and the password; the connection file comes from `patrone-remote-desktop rdp-file`. Its "Other Ways to Connect" rows open Desktop Sharing's tab and GNOME's Secure Shell dialog |
 | `patches/patrone-remote-login.patch` | Builds that tab and, where the helper is installed, shows it in Remote Login's place as the page's first tab (`cc-remote-login-page.c`, `cc-remote-desktop-page.c`), keeps the page shown even where Desktop Sharing can't run, and gives System's Remote Desktop and Secure Shell rows plain subtitles |
-| `patches/patrone-desktop-switches.patch` | Ubuntu's Desktop page (`panels/ubuntu`): where Patrone's taskbar is installed, switches for the desktop bubble and the Recycle Bin on the desktop come first, in place of Ubuntu's Desktop Icons settings, and Ubuntu's Dock settings are hidden (revision 13; the user's OK, 2026-10-28). File Manager draws Patrone's desktop and the taskbar takes the dock's place, so Ubuntu's icons and dock are off then, and their switches there would bring them back beside Patrone's |
+| `patches/patrone-desktop-switches.patch` | Ubuntu's Desktop page (`panels/ubuntu`): where Patrone's taskbar is installed, Desktop Files, Show Files from a Corner (on a clean desktop, offering the corners the taskbar says are free) and Recycle Bin on the Desktop come first, in place of Ubuntu's Desktop Icons settings, and Ubuntu's Dock settings are hidden (revision 13; the user's OK, 2026-10-28). File Manager draws Patrone's desktop and the taskbar takes the dock's place, so Ubuntu's icons and dock are off then, and their switches there would bring them back beside Patrone's |
 | `patches/patrone-desktop-error-wording.patch` | The same page's error state, shown when it can't read the desktop's settings: "No desktop settings found" in place of "No Ubuntu settings found", and no request for a bug report in Launchpad, Ubuntu's bug tracker (revision 15; `docs/COMPLIANCE.md`, item 18) |
 | `build.sh` | Fetches Ubuntu's source, adds the page and the Remote Login page (each as a patch of its own) and the patches, versions it Ubuntu's version plus `patrone` and the revision, and builds |
 
@@ -90,7 +91,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone19_amd64.deb ./out/gnome-control-center-data_*patrone19_all.deb
+sudo apt install ./out/gnome-control-center_*patrone21_amd64.deb ./out/gnome-control-center-data_*patrone21_all.deb
 ```
 
 ## How it was checked
@@ -203,6 +204,26 @@ in that order, then Adwaita and Yaru; clicking Black, White and Blue set
 `cursor-theme` to `Patrone-Black`, `Patrone-White` and `Patrone`, and the
 pointer over the card was the new one a second later. (Revision 18 is the
 fonts change.)
+
+`1:50.3-0ubuntu0.2patrone20`, 2026-10-30: Settings' own window takes a new
+theme or title bar button style at once, whichever page it's on: from when
+it starts (the panel's `static_init` function), it loads the style sheets
+`gtk.css` names itself and watches that file, as Patrone's apps do
+(`settings/README.md`, "How styles reach apps"). Terminal at Sign-In has a
+third choice, Off, shown where the taskbar's setting takes it. Built on the
+dev VM from its branch with no warnings from the page, and checked in the
+throwaway shell: its title bar and buttons followed every theme and style
+with it open, and the Off card set `sign-in-terminal` to `off`.
+
+`1:50.3-0ubuntu0.2patrone21` (Desktop Files), 2026-10-30: built on the dev
+VM from the branch, with no warnings in the two panels, and run unpacked in
+`shell/gnome/tests/headless.sh`'s throwaway GNOME Shell, with Patrone
+Settings' new pictures bind-mounted in that one process. The Desktop page:
+Desktop Files, then on a clean desktop Show Files from a Corner, which listed
+only No Corner and the free corner, and marked a chosen corner as in use once
+GNOME's hot corner took it; picking No Corner set the setting; the Recycle
+Bin's switch went away. The Patrone page: Desktop Files and Show Your Files
+from a Corner, with their pictures.
 
 ## Keeping up with Ubuntu
 

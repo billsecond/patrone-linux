@@ -138,7 +138,7 @@ export class RecycleBin {
 
         // Taken off the desktop, it's offered back in GNOME's desktop menu:
         // the one a right-click on the empty desktop opens while the desktop
-        // bubble keeps the desktop icons out of sight (the user, 2026-10-27).
+        // panel keeps the desktop icons out of sight (the user, 2026-10-27).
         // GNOME makes one for each screen and wallpaper, so the item goes in
         // as each opens.
         this._desktopMenuItems = new Set();
@@ -161,6 +161,7 @@ export class RecycleBin {
 
         this._settings.connectObject(
             'changed::show-recycle-bin', () => this._place(),
+            'changed::desktop-files', () => this._place(),
             'changed::recycle-bin-dock', () => this._place(),
             'changed::recycle-bin-position', () => this._place(), this);
         global.display.connectObject(
@@ -174,7 +175,7 @@ export class RecycleBin {
         // Placed before the next frame, not right in the size's notify:
         // placing it can change its size again, and the two went round
         // forever, freezing the desktop until GNOME Shell crashed (taskbar
-        // 0.4.1, the user's desktop bubble with the bin off the desktop,
+        // 0.4.1, the user's desktop panel with the bin off the desktop,
         // 2026-10-27).
         this.actor.connect('notify::width', () => this._queuePlace());
         this.actor.connect('notify::height', () => this._queuePlace());
@@ -224,8 +225,8 @@ export class RecycleBin {
     }
 
     /**
-     * Holds it away from its own place: the desktop bubble (desktopBubble.js)
-     * lifts it above the windows while it's open, onto the bubble's edge.
+     * Holds it away from its own place: the desktop files panel
+     * (desktopPanel.js) carries it in above the windows while it's open.
      * Called again to move it; release() puts it back. Dropped while held,
      * it still docks where it was dropped, and comes back here.
      *
@@ -237,7 +238,6 @@ export class RecycleBin {
         if (this.actor.get_parent() !== parent) {
             this.actor.get_parent()?.remove_child(this.actor);
             parent.add_child(this.actor);
-            this.actor.add_style_class_name('on-bubble');
             // Left uncovered in its corner, the drop target's all but clear
             // window showed as a faint square
             this._showDropTarget(false);
@@ -270,12 +270,17 @@ export class RecycleBin {
         if (!this._held)
             return;
         this._held = null;
-        this.actor.remove_style_class_name('on-bubble');
         this.actor.get_parent()?.remove_child(this.actor);
         global.window_group.add_child(this.actor);
         this._showDropTarget(true);
         this._place();
         this._restack();
+    }
+
+    // A clean desktop has nothing on it, this included, whatever
+    // show-recycle-bin says (desktopPanel.js)
+    get _cleanDesktop() {
+        return this._settings.get_string('desktop-files') === 'hidden';
     }
 
     // "Show Recycle Bin" in one of GNOME's desktop menus, under Change
@@ -294,7 +299,7 @@ export class RecycleBin {
             menu._patroneShowBin = item;
             this._desktopMenuItems.add(item);
         }
-        item.visible = !this._settings.get_boolean('show-recycle-bin');
+        item.visible = !this._settings.get_boolean('show-recycle-bin') && !this._cleanDesktop;
     }
 
     // Shows or hides the drop target's window (a hidden window actor neither
@@ -323,13 +328,13 @@ export class RecycleBin {
     // (inside the taskbar), or where it was dropped, kept as a fraction of
     // the work area so it stays put when the screen size changes
     _place() {
-        // Held on the desktop bubble's edge, it shows there even while it's
+        // Held on the desktop files panel, it shows there even while it's
         // off the desktop (the user, 2026-10-27)
         if (this._held) {
             this._showAt(...this._held);
             return;
         }
-        this.actor.visible = this._settings.get_boolean('show-recycle-bin');
+        this.actor.visible = this._settings.get_boolean('show-recycle-bin') && !this._cleanDesktop;
         if (!this.actor.visible) {
             this._stopDropTarget();
             this._reserveArea();
@@ -590,7 +595,7 @@ export class RecycleBin {
         });
         // Back through Patrone Settings (its Desktop page), the
         // show-recycle-bin setting, or this item while it's on the desktop
-        // bubble, where it shows anyway
+        // panel, where it shows anyway
         this._menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._desktopItem = this._menu.addAction('Remove from desktop', () =>
             this._settings.set_boolean('show-recycle-bin',
@@ -605,6 +610,7 @@ export class RecycleBin {
                 : PopupMenu.Ornament.NO_DOT ?? PopupMenu.Ornament.NONE);
         }
         const shown = this._settings.get_boolean('show-recycle-bin');
+        this._desktopItem.visible = !this._cleanDesktop;
         this._desktopItem.label.text = shown ? 'Remove from desktop' : 'Show on desktop';
         this._desktopItem.setIcon(shown ? 'list-remove-symbolic' : 'list-add-symbolic');
         // Above it in the lower half of the screen, below it in the upper

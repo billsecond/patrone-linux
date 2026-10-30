@@ -96,7 +96,7 @@ wallpaper and the fastfetch setup, replacing Ubuntu's branding:
 | Text console login | `system/issue`: the name, then hostname, IP address and console | Replaces `/etc/issue` and `/etc/issue.net` |
 | Welcome message at login (SSH, console) | `system/motd/00-header`: "Welcome to PatroneOS 0.1 (...)" | Replaces Ubuntu's header; Ubuntu's help links, news and Ubuntu Pro ads are moved aside |
 | Desktop | The Neon Horizon wallpaper (its light version in the light style, the dark one in the dark style), blue accent color, Yaru's blue GTK theme and icons (GTK 3 apps don't follow the accent color), Ubuntu's dock off | `system/schemas/90_patrone.gschema.override`, new defaults that users' own settings still beat |
-| Wallpapers to choose from | Neon Horizon's family, wallpaper 03 and the generated wallpapers (below) in Settings → Appearance, and none of Ubuntu's | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties`. GNOME Shell depends on `ubuntu-wallpapers`, so the package provides it and replaces `ubuntu-wallpapers` and `ubuntu-wallpapers-resolute` (63 MB), which apt then removes |
+| Wallpapers to choose from | Neon Horizon's family, wallpaper 03, the generated wallpapers and the gallery (below) in Settings → Appearance and Patrone Settings' Wallpaper page (Personalize on the desktop's menu), and none of Ubuntu's | `system/backgrounds/patrone-wallpapers.xml` in `/usr/share/gnome-background-properties`. GNOME Shell depends on `ubuntu-wallpapers`, so the package provides it and replaces `ubuntu-wallpapers` and `ubuntu-wallpapers-resolute` (63 MB), which apt then removes |
 | Fonts | PatroneOS's own (`fonts-patroneos`, from [billsecond/patroneos-fonts](https://github.com/billsecond/patroneos-fonts)): PatroneOS Sans for the desktop, apps, window titles (semibold) and the login screen, PatroneOS Document for documents and PatroneOS Mono for monospace text; apps and web pages that ask for sans-serif, serif, monospace or system-ui get PatroneOS Sans, Serif and Mono, in Chromium and Flatpak apps too, with Noto behind them for scripts they don't cover. Documents that ask for Calibri get PatroneOS Document, and Arial or Helvetica PatroneOS Classic, each with the same width for every letter, so they keep their layout; the classic serif fonts stay with Liberation Serif and Caladea, and "Patrone Sans" (the font before, until 2026-10-29) is PatroneOS Sans. LibreOffice starts new documents in PatroneOS Document. Patrone Settings' Theme page can switch the desktop to Noto Sans | GNOME's font settings in the override above and `95-patrone-settings`; `system/fontconfig/05-patrone-fonts.conf` in `/etc/fonts/conf.d` and, for snaps (which don't read `conf.d`), `/etc/fonts/snap-override`; for Flatpak apps, which see neither, a copy in `/usr/share/fonts/patrone-fontconfig` with `system/fontconfig/flatpak-fonts.conf`, which their fontconfig finds through `FONTCONFIG_PATH` (`system/environment.d/60-patrone-fontconfig.conf`); LibreOffice's defaults in `system/libreoffice/patroneos-fonts.xcd`, in `/usr/lib/libreoffice/share/registry` |
 | Settings | Ubuntu's "Ubuntu Desktop" page is named "Desktop" | `system/settings/gnome-ubuntu-panel.desktop` replaces Ubuntu's (GNOME Settings names each page from its desktop file) |
 | Help | GNOME Help, with GNOME's own front page and pages about the guide and getting help, in GNOME's 45 languages, in place of Ubuntu's "Ubuntu Desktop Guide" with Ubuntu's logo | `help/`, copied from GNOME's release of `gnome-user-docs` 50.0 by `tools/make_help.sh`: the pages Ubuntu's `gnome-user-docs` leaves out for `ubuntu-docs`, which the package replaces (Provides, Conflicts, Replaces), as it does `ubuntu-wallpapers` |
@@ -155,16 +155,24 @@ Ubuntu's Yaru (the user, of the busy cursor), and it kept its folder, so
 didn't change. Patrone Settings' Mouse pointer page and GNOME Settings'
 Patrone page list the three first, Blue, Black, White.
 
-Each cursor has an edge, so it shows on light and dark, and a shadow down
-and to the right, which shows on light and mid-toned backgrounds (the user,
-2026-10-29: "set a shadow on the mouse"; the first one was too faint to
-notice). On near-black the edge does that job. The shadow fades out near
-the image's edge, so where a shape comes close to it (a hand's wrist, the
-arrow's tail) it never ends in a line: Xcursor images are their nominal
-size, as Adwaita's are, so there's no room past it. Where parts overlap,
-the fingers of a hand, a thin seam in the edge's color divides them. The
-badges on the arrow (copy, link, help, menu, no drop) are Patrone Blue in
-every theme.
+Each cursor has an edge, so it shows on light and dark, and a soft shadow
+down and to the right, which shows on light and mid-toned backgrounds and,
+as a darker band, on dark grey (the user, 2026-10-29: "set a shadow on the
+mouse", and 2026-10-30, that they couldn't see it). On near-black no black
+shadow can show, and the edge does that job. Each image is a quarter wider
+and taller than its nominal size, the extra on the right and at the bottom:
+a 24-pixel cursor is a 30-pixel image, the same cursor at the same size in
+the same place, with room for the shadow. Until 0.1.26 the shapes filled
+the nominal size, as Adwaita's do, so the shadow had a pixel or two. Programs
+go by the nominal size in the file: GNOME Shell (`meta-cursor-xcursor.c`)
+scales an image by it, and libXcursor and Wayland's cursor library look
+images up by it. GNOME Shell needs images to be square. The 96-pixel images
+stay at 96 (`MAX_IMAGE`): GNOME Remote Desktop sends anything bigger as a
+large pointer without checking the client takes them. Near an image's edge
+the shadow fades out, so it never ends in a line. Where parts overlap, the
+fingers of a hand, a thin seam in the edge's color divides them. The badges
+on the arrow (copy, link, help, menu, no drop) are Patrone Blue in every
+theme.
 
 The busy cursors are the boot spinner on a ring: "wait" alone, "progress"
 beside the arrow. The ring is Patrone's near-black in Blue and Black, and
@@ -178,7 +186,7 @@ HiDPI screens and fractional scales, into Xcursor files. The other 117
 names programs ask for are links: X11's (`left_ptr`, `xterm`, `watch`),
 Qt's, Chromium's and Mozilla's hashed names, and every name Yaru and Adwaita
 have. A name a theme lacks falls back to Adwaita's (`Inherits=Adwaita`). The
-package runs it when it's built (it needs only NumPy, about 30 seconds for
+package runs it when it's built (it needs only NumPy, about 40 seconds for
 the three), so the files aren't in the repository; the previews are. To see
 the themes or remake the previews (`--theme blue`, `black` or `white` draws
 one):
@@ -189,12 +197,20 @@ python tools/make_cursors.py --preview system/cursors/previews
 ```
 
 Checked on PatroneDev, 2026-10-29, with 0.1.25 as built from its branch:
-the package has the three folders, each with 43 cursors and 117 links,
-every image its nominal size, and only `Patrone` has `cursor.theme`. In a
-throwaway GNOME Shell, each theme picked at 24, 32 and 48 pixels with
-Patrone Settings' cards showed GNOME Shell's pointer in that theme and size
-over a light window, a dark-style window, a near-black picture and the
-desktop, its shadow plain on all but the near-black.
+the package has the three folders, each with 43 cursors and 117 links, and
+only `Patrone` has `cursor.theme`. In a throwaway GNOME Shell, each theme
+picked at 24, 32 and 48 pixels with Patrone Settings' cards showed GNOME
+Shell's pointer in that theme and size over a light window, a dark-style
+window, a near-black picture and the desktop.
+
+Over Remote Desktop, pointers aren't flattened. GNOME Remote Desktop sends
+32-bit pointers (`grd-rdp-cursor-renderer.c`), and on 2026-10-30, with 0.1.25,
+the pointer VMConnect's enhanced session put on the host was a 24 by 24
+32-bit one with 217 soft pixels, seen by reading it back from the host; what
+was wrong was how small and faint the shadow was. With 0.1.26, a throwaway
+GNOME Shell served by GNOME Remote Desktop to FreeRDP's Wayland client, in a
+second throwaway shell, showed each of the three themes with its whole shadow.
+That was FreeRDP: VMConnect itself hasn't been tried with the 30-pixel image.
 
 Flatpak apps get Patrone's cursors with no setting of Patrone's. Apps that
 name a cursor shape (the cursor-shape protocol) have GNOME Shell draw it
@@ -390,6 +406,103 @@ script and run it again.
 - **Adding one.** Write a function with `@design("Patrone Name")` that takes
   the canvas and `"dark"` or `"light"` and returns the picture, then add the
   pair to `system/backgrounds/patrone-wallpapers.xml`.
+
+### The abstract ones
+
+Six more designs (the user, 2026-10-30: "make a few more abstract ones (mroe
+than just lines drawn)"), for depth and light where the eleven above are
+clean shapes. `tools/make_abstract_wallpapers.py` draws them from Patrone's
+colors, with no photos, downloaded art or image models, so Patrone owns them
+outright and they're GPL-3+ like the rest of the branding. Each is one picture
+for both styles.
+
+| In Settings | Design | Size |
+| --- | --- | --- |
+| Patrone Silk | Blue satin in long folds: noise stretched along the cloth, creased, and lit from the top left with a cool light behind | 0.7 MB |
+| Patrone Liquid | Liquid metal in slow swells, a smooth surface reflecting a studio of soft lights | 1.2 MB |
+| Patrone Nebula | Clouds of lit gas in blue and violet, with stars behind | 1.0 MB |
+| Patrone Shallows | Sunlight on a seabed falling away into the distance: rays of an even grid are bent by the water's slope and gather where they cross, as real caustics do, and each color bends a little differently | 1.0 MB |
+| Patrone Marble | Polished dark blue stone with veins of gold | 2.9 MB |
+| Patrone Ink | Three colors of ink carried along a swirling current, 170 steps of a fluid-like flow in a 4K tank | 1.0 MB |
+
+They're 3840×2160 JPEGs saved as the gallery's are (below), 8 MB for all six,
+in `wallpapers/generated/` beside the others. To make them again (about 3
+minutes; on Windows, as the VM has no OpenCV):
+
+```
+python tools/make_abstract_wallpapers.py wallpapers/generated
+```
+
+Add design names to make only those. Like the others, they're deterministic:
+every "random" choice is a hash. Seven were tried; one, glossy beads of glass,
+wasn't good enough to keep.
+
+## Gallery wallpapers
+
+![Every gallery wallpaper, and the abstract ones after them](wallpapers/gallery/contact-sheet.jpg)
+
+Thirteen pictures the user chose (2026-10-30: "add these as images for
+possible wallpapers"), listed in Settings → Appearance. Each is one picture
+for both styles. The default stays Neon Horizon. Settings sorts by name, so
+each group's names start with the same word, which keeps the group together
+and after Neon Horizon.
+
+| Group | In Settings | What it shows |
+| --- | --- | --- |
+| Sapling | Sapling in the Light | A small green tree on black rock, shafts of light behind it |
+| | Sapling on the Cliff | The same on a slope, a blurred cliff behind it |
+| | Sapling on the Ledge | The darkest of the three, on a ledge with rust-colored edges |
+| Spheres | Spheres in Gold | Gold and charcoal spheres, a large gold one in the middle |
+| | Spheres in Charcoal | Mostly grey and charcoal, pitted, with a little gold |
+| | Spheres in Shadow | Deep shadows, bright gold at the edges |
+| Storm | Storm Over the Hill | A lone tree on a sloping hill, silver light through the clouds |
+| | Storm Sunburst | The same tree, rays of sun bursting behind it |
+| | Storm Clearing | The same, a gold field and the sky opening at the top right |
+| Woodland | Woodland Path | A straight path through tall trees and green mist |
+| | Woodland Bend | A track curving away through the trees |
+| | Woodland Sunbeams | Shafts of sunlight through the leaves |
+| | Woodland Hollow | Old mossy trunks round a dark hollow |
+
+### Where they come from
+
+All thirteen were made with an AI image generator. The originals
+(`wallpapers/gallery/originals/`, kept byte for byte, with plain file names
+in place of the ones they came with) carry C2PA manifests, signed by OpenAI:
+generated with ChatGPT (`gpt-image`) on 2026-10-30 between 13:21 and 13:26
+UTC. The manifests name the tool, the time and the signer, and nothing about
+the user; the wallpapers themselves carry no metadata. They come under the
+same terms as the Neon Horizon pictures (above, and `patrone-branding`'s
+copyright file).
+
+### How they're made
+
+`tools/make_gallery_wallpapers.py` (Python with OpenCV, NumPy and Pillow, on
+Windows, as the VM has no OpenCV) makes them, in about 20 seconds:
+
+```
+python tools/make_gallery_wallpapers.py wallpapers/gallery --sheet wallpapers/gallery/contact-sheet.jpg
+```
+
+- **The mesh.** Most of the pictures have a faint two-pixel mesh in their
+  dark areas, as image generators leave. Enlarged, it would show as a
+  screen-door pattern. A bilateral filter smooths it away and keeps the edges.
+- **4K.** The pictures are 1672×941. They're enlarged with Lanczos to
+  3840×2160 and their edges given a little definition. At full size on a 4K
+  screen, leaves and grass look a little soft and painted, which is the
+  limit of the source; 8K would add size and no detail.
+- **JPEG with grain.** Lossless, these are 6 to 12 MB each, about 120 MB for
+  all 13. As JPEGs at quality 92 they're 1 to 3 MB, 26 MB for all 13. JPEG
+  on its own leaves blotches in dark gradients, as it did with wallpaper 01.
+  Fine grain in the flat dark areas (1.2 levels of 255, a little coarser
+  than a pixel) survives it and keeps the gradients smooth. Every value in
+  the grain is a hash of its coordinates, so the same picture comes out the
+  same.
+- **Any screen.** Their subjects stay inside what 16:10 and 21:9 screens
+  show.
+
+To add one, put it in `wallpapers/gallery/originals/`, add it to `GALLERY`
+in the script, run the script and add it to
+`system/backgrounds/patrone-wallpapers.xml`.
 
 ## fastfetch
 

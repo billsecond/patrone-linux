@@ -327,7 +327,7 @@ impl Window {
         (!self.desktop).then(|| self.gtk_window())
     }
 
-    /// The tabs' content, which the desktop moves into its bubble.
+    /// The tabs' content, which the desktop moves into its panel.
     pub fn content(&self) -> gtk::Widget {
         self.stack.clone().upcast()
     }

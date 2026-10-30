@@ -60,6 +60,11 @@ window.patrone-terminal scrolledwindow,
 window.patrone-terminal vte-terminal {
     background-color: transparent;
 }
+/* The same corners as GNOME's apps, and square where the window meets the
+   screen's edges, which GTK's own rules can't do from below this one. */
+window.patrone-terminal.csd:not(.maximized):not(.fullscreen):not(.tiled):not(.tiled-top):not(.tiled-right):not(.tiled-bottom):not(.tiled-left) {
+    border-radius: 15px;
+}
 window.patrone-terminal headerbar {
     background-color: #0D121B;
     color: #D6DEEB;

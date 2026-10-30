@@ -1,8 +1,7 @@
 //! The desktop's icons (desktop.rs), laid out the way Windows lays out its
 //! desktop: down the left side first, then the next column, each icon where
-//! it was put unless Auto arrange is on. The same view shows the desktop
-//! bubble's files, in the places of the bubble's shape (bubble.rs), with the
-//! bubble drawn behind them.
+//! it was put unless Auto arrange is on. The same view shows the desktop files
+//! panel's files, each where it would be on the desktop.
 //!
 //! It shows the folder view's own list and selection with File Manager's own
 //! cells (filecell.rs), so the desktop's icons, thumbnails, names, renaming
@@ -17,16 +16,17 @@ use std::rc::Rc;
 use gtk::subclass::prelude::*;
 use gtk::{gdk, gio, glib, graphene, gsk, prelude::*};
 
-use crate::bubble::{self, Shape};
 use crate::config;
 use crate::filecell::{CellContext, CellKind, FileCell};
 
-/// Where the cells go: across the desktop, or in the bubble.
+/// Which window the cells are in: the desktop's, or the desktop files
+/// panel's, which always shows them, says so when there are none, and takes
+/// drops on the Recycle Bin riding on it.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 pub enum Layout {
     #[default]
     Desktop,
-    Bubble,
+    Panel,
 }
 
 /// x, y, width, height.
@@ -121,23 +121,15 @@ mod imp {
         pub rects: RefCell<Vec<Option<Rect>>>,
         pub grid: Cell<Grid>,
         pub layout: Cell<Layout>,
-        /// The screen's free area, in the desktop window.
+        /// The screen's free area, in the window.
         pub area: Cell<Option<Rect>>,
-        /// The Recycle Bin, while it's on the desktop: no icon goes under it.
+        /// The Recycle Bin, while it's in this window: no icon goes under it.
         pub avoid: Cell<Option<Rect>>,
-        /// The Recycle Bin's size, for its place on the bubble's edge.
-        pub bin_size: Cell<Option<(f64, f64)>>,
-        pub shape: RefCell<Option<Shape>>,
         pub auto_arrange: Cell<bool>,
         pub shown: Cell<bool>,
         pub single_click: Cell<bool>,
         /// Icons' places on the desktop by name, kept in the settings.
         pub saved: RefCell<HashMap<String, (i32, i32)>>,
-        /// The bubble's order, by name, once icons are moved in it (kept in
-        /// the settings); items not in it follow, in the list's order.
-        pub bubble_order: RefCell<Vec<String>>,
-        /// Each item's place in the bubble, by the shape's places.
-        pub bubble_slots: RefCell<Vec<Option<usize>>>,
         pub cursor: Cell<Option<u32>>,
         pub anchor: Cell<Option<u32>>,
         /// The icon pressed last and where: what a drag of it carries.
@@ -149,14 +141,9 @@ mod imp {
         pub band: Cell<Option<Rect>>,
         pub band_base: RefCell<Option<gtk::Bitset>>,
         pub drop_anchor: Cell<Option<((i32, i32), std::time::Instant)>>,
-        pub more: RefCell<Option<gtk::Button>>,
-        pub more_count: Cell<usize>,
         pub empty: RefCell<Option<gtk::Label>>,
         pub on_activate: Handler<u32>,
-        pub on_outside: Handler<()>,
-        pub on_more: Handler<()>,
         pub on_reveal: Handler<()>,
-        pub on_shape: Handler<()>,
         pub on_trash: Handler<Vec<gio::File>>,
     }
 
@@ -190,10 +177,6 @@ mod imp {
         }
 
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
-            let grid = self.obj();
-            if self.layout.get() == Layout::Bubble {
-                grid.draw_bubble(snapshot);
-            }
             self.parent_snapshot(snapshot);
             if let Some((x, y, width, height)) = self.band.get() {
                 let rect = graphene::Rect::new(x as f32, y as f32, width as f32, height as f32);
@@ -233,13 +216,6 @@ impl DesktopGrid {
         imp.auto_arrange.set(config::flag("desktop-auto-arrange"));
         imp.shown.set(config::flag("desktop-show-icons"));
         imp.saved.replace(load_places());
-        imp.bubble_order.replace(
-            config::settings()
-                .strv("desktop-bubble-order")
-                .iter()
-                .map(|name| name.to_string())
-                .collect(),
-        );
 
         let weak = grid.downgrade();
         selection.connect_items_changed(move |_, _, _, _| {
@@ -297,42 +273,25 @@ impl DesktopGrid {
 
     pub fn set_layout(&self, layout: Layout) {
         let imp = self.imp();
-        if imp.layout.replace(layout) == layout {
-            return;
+        if imp.layout.replace(layout) != layout {
+            self.rebuild();
         }
-        if layout == Layout::Bubble {
-            self.remove_css_class("desktop");
-            self.add_css_class("bubble");
-        } else {
-            self.remove_css_class("bubble");
-            self.add_css_class("desktop");
-        }
-        self.rebuild();
     }
 
-    /// The screen's free area (the work area), in the desktop window.
+    /// The screen's free area (the work area), in the window.
     pub fn set_area(&self, area: Rect) {
         self.imp().area.set(Some(area));
         self.rebuild();
     }
 
-    /// The Recycle Bin: where it is while it's on the desktop, and its size.
-    pub fn set_bin(&self, on_desktop: Option<Rect>, size: Option<(f64, f64)>) {
-        let imp = self.imp();
-        imp.avoid.set(on_desktop);
-        imp.bin_size.set(size);
+    /// The Recycle Bin: where it is, while it's in this window.
+    pub fn set_bin(&self, place: Option<Rect>) {
+        self.imp().avoid.set(place);
         self.rebuild();
     }
 
     pub fn set_single_click(&self, single: bool) {
         self.imp().single_click.set(single);
-    }
-
-    /// The bubble as laid out, and where its top is in its window: the
-    /// window is the bubble's size, with room for its shadow.
-    pub fn shape(&self) -> Option<(Shape, f64)> {
-        let shape = self.imp().shape.borrow().clone()?;
-        Some((shape, bubble::SHADOW))
     }
 
     /// Re-reads the View settings: icon size, Auto arrange, Show desktop
@@ -359,13 +318,11 @@ impl DesktopGrid {
     pub fn arrange_in_order(&self) {
         self.imp().saved.borrow_mut().clear();
         save_places(&HashMap::new());
-        self.imp().bubble_order.borrow_mut().clear();
-        save_bubble_order(&[]);
         self.rebuild();
     }
 
-    /// Files dropped on the Recycle Bin while it rides on the bubble's edge
-    /// (its own drop target is under the desktop then).
+    /// Files dropped on the Recycle Bin while it rides on the panel (its own
+    /// drop target is under the panel then).
     pub fn connect_trash(&self, handler: impl Fn(Vec<gio::File>) + 'static) {
         self.imp().on_trash.replace(Some(Rc::new(handler)));
     }
@@ -374,24 +331,9 @@ impl DesktopGrid {
         self.imp().on_activate.replace(Some(Rc::new(handler)));
     }
 
-    /// A click in the bubble's window but outside the bubble.
-    pub fn connect_outside(&self, handler: impl Fn(()) + 'static) {
-        self.imp().on_outside.replace(Some(Rc::new(handler)));
-    }
-
-    /// The bubble's "N more" place.
-    pub fn connect_more(&self, handler: impl Fn(()) + 'static) {
-        self.imp().on_more.replace(Some(Rc::new(handler)));
-    }
-
     /// An item was asked to be shown (a new folder, a paste, a rename).
     pub fn connect_reveal(&self, handler: impl Fn(()) + 'static) {
         self.imp().on_reveal.replace(Some(Rc::new(handler)));
-    }
-
-    /// The bubble's shape changed.
-    pub fn connect_shape(&self, handler: impl Fn(()) + 'static) {
-        self.imp().on_shape.replace(Some(Rc::new(handler)));
     }
 
     fn call<T>(handler: &Handler<T>, value: T) {
@@ -411,10 +353,7 @@ impl DesktopGrid {
         };
         let selection = self.selection();
         let n = selection.n_items() as usize;
-        let size = match imp.layout.get() {
-            Layout::Bubble => 48,
-            Layout::Desktop => icon_size(),
-        };
+        let size = icon_size();
         {
             let mut cells = imp.cells.borrow_mut();
             if imp.built_size.replace(size) != size {
@@ -482,62 +421,26 @@ impl DesktopGrid {
         let n = imp.cells.borrow().len();
         let mut places = vec![None; n];
         let mut grid_places = vec![None; n];
-        match imp.layout.get() {
-            Layout::Bubble => {
-                let Some((_, _, width, height)) = imp.area.get() else {
-                    imp.places.replace(places);
-                    return;
-                };
-                let shape = bubble::shape(width, height, n, imp.bin_size.get());
-                let top = bubble::SHADOW;
-                let overflow = n > shape.cells.len();
-                let shown = if overflow {
-                    shape.cells.len().saturating_sub(1)
-                } else {
-                    n
-                };
-                let names: Vec<String> = (0..n as u32).map(|p| self.name(p)).collect();
-                let mut slots = vec![None; n];
-                for (slot, index) in self.bubble_sequence(&names).into_iter().enumerate() {
-                    if slot >= shown {
-                        break;
-                    }
-                    let (x, y) = shape.cells[slot];
-                    places[index] = Some((x, y + top));
-                    slots[index] = Some(slot);
-                }
-                imp.bubble_slots.replace(slots);
-                imp.more_count.set(if overflow { n - shown } else { 0 });
-                let changed = imp.shape.borrow().as_ref() != Some(&shape);
-                imp.shape.replace(Some(shape));
-                if changed {
-                    Self::call(&imp.on_shape, ());
-                }
-            }
-            Layout::Desktop => {
-                imp.more_count.set(0);
-                let area = imp.area.get().unwrap_or((
-                    0.0,
-                    0.0,
-                    self.width().max(1) as f64,
-                    self.height().max(1) as f64,
-                ));
-                let pitch = pitch(icon_size());
-                let grid = Grid {
-                    x: area.0 + MARGIN,
-                    y: area.1 + MARGIN,
-                    pitch,
-                    columns: (((area.2 - 2.0 * MARGIN) / pitch.0).floor() as i32).max(1),
-                    rows: (((area.3 - 2.0 * MARGIN) / pitch.1).floor() as i32).max(1),
-                };
-                imp.grid.set(grid);
-                let names: Vec<String> = (0..n as u32).map(|p| self.name(p)).collect();
-                let assigned = self.assign(&grid, &names);
-                for (index, place) in assigned.into_iter().enumerate() {
-                    grid_places[index] = Some(place);
-                    places[index] = Some(grid.place(place));
-                }
-            }
+        let area = imp.area.get().unwrap_or((
+            0.0,
+            0.0,
+            self.width().max(1) as f64,
+            self.height().max(1) as f64,
+        ));
+        let pitch = pitch(icon_size());
+        let grid = Grid {
+            x: area.0 + MARGIN,
+            y: area.1 + MARGIN,
+            pitch,
+            columns: (((area.2 - 2.0 * MARGIN) / pitch.0).floor() as i32).max(1),
+            rows: (((area.3 - 2.0 * MARGIN) / pitch.1).floor() as i32).max(1),
+        };
+        imp.grid.set(grid);
+        let names: Vec<String> = (0..n as u32).map(|p| self.name(p)).collect();
+        let assigned = self.assign(&grid, &names);
+        for (index, place) in assigned.into_iter().enumerate() {
+            grid_places[index] = Some(place);
+            places[index] = Some(grid.place(place));
         }
         imp.places.replace(places);
         imp.grid_places.replace(grid_places);
@@ -633,18 +536,15 @@ impl DesktopGrid {
     /// Gives each cell its room.
     fn allocate_cells(&self, width: i32, height: i32) {
         let imp = self.imp();
-        if imp.area.get().is_none() && imp.layout.get() == Layout::Desktop {
+        if imp.area.get().is_none() {
             // Until the taskbar says where the free area is, the window.
             let grid = imp.grid.get();
             if grid.columns == 0 || self.width() != width || self.height() != height {
                 self.arrange();
             }
         }
-        let pitch = match imp.layout.get() {
-            Layout::Bubble => (bubble::CELL_WIDTH, bubble::CELL_HEIGHT),
-            Layout::Desktop => pitch(icon_size()),
-        };
-        let shown = imp.shown.get() || imp.layout.get() == Layout::Bubble;
+        let pitch = pitch(icon_size());
+        let shown = imp.shown.get() || imp.layout.get() == Layout::Panel;
         let places = imp.places.borrow().clone();
         let cells = imp.cells.borrow().clone();
         let mut rects = vec![None; cells.len()];
@@ -668,100 +568,23 @@ impl DesktopGrid {
             rects[index] = Some((cell_x, cell_y, cell_width as f64, cell_height as f64));
         }
         imp.rects.replace(rects);
-        self.allocate_extras(width, height, pitch);
+        self.allocate_empty();
     }
 
-    /// The bubble's "N more" and "Nothing on the desktop".
-    fn allocate_extras(&self, _width: i32, _height: i32, pitch: (f64, f64)) {
+    /// "Nothing on the desktop", where the first file would be in the empty
+    /// panel.
+    fn allocate_empty(&self) {
         let imp = self.imp();
-        let bubble = imp.layout.get() == Layout::Bubble;
-        let shape = self.shape();
-        let more_count = imp.more_count.get();
-        // "N more", in the bubble's last place.
-        let more_place = shape.as_ref().and_then(|(shape, top)| {
-            let shown = shape.cells.len().checked_sub(1)?;
-            let (x, y) = shape.cells.get(shown)?;
-            Some((*x, y + top))
-        });
-        match (bubble && more_count > 0, more_place) {
-            (true, Some((x, y))) => {
-                let more = self.more_button();
-                if let Some(label) = more
-                    .child()
-                    .and_then(|child| child.last_child())
-                    .and_downcast::<gtk::Label>()
-                {
-                    label.set_label(&format!("{more_count} more"));
-                }
-                more.set_child_visible(true);
-                let (_, width, _, _) = more.measure(gtk::Orientation::Horizontal, -1);
-                let width = width.min(pitch.0 as i32);
-                let (_, height, _, _) = more.measure(gtk::Orientation::Vertical, width);
-                more.size_allocate(
-                    &gtk::Allocation::new(
-                        (x + (pitch.0 - width as f64) / 2.0) as i32,
-                        (y + 2.0) as i32,
-                        width,
-                        height.min(pitch.1 as i32),
-                    ),
-                    -1,
-                );
-            }
-            _ => {
-                if let Some(more) = imp.more.borrow().as_ref() {
-                    more.set_child_visible(false);
-                }
-            }
+        if imp.layout.get() == Layout::Panel && imp.cells.borrow().is_empty() {
+            let empty = self.empty_label();
+            empty.set_child_visible(true);
+            let (_, width, _, _) = empty.measure(gtk::Orientation::Horizontal, -1);
+            let (_, height, _, _) = empty.measure(gtk::Orientation::Vertical, width);
+            let inset = (2.0 * MARGIN) as i32;
+            empty.size_allocate(&gtk::Allocation::new(inset, inset, width, height), -1);
+        } else if let Some(empty) = imp.empty.borrow().as_ref() {
+            empty.set_child_visible(false);
         }
-        // "Nothing on the desktop", where the first file would be.
-        let empty_place = shape
-            .as_ref()
-            .and_then(|(shape, top)| shape.cells.first().map(|(x, y)| (*x, y + top)));
-        match (bubble && imp.cells.borrow().is_empty(), empty_place) {
-            (true, Some((x, y))) => {
-                let empty = self.empty_label();
-                empty.set_child_visible(true);
-                let (_, width, _, _) = empty.measure(gtk::Orientation::Horizontal, -1);
-                let (_, height, _, _) = empty.measure(gtk::Orientation::Vertical, width);
-                empty.size_allocate(
-                    &gtk::Allocation::new(
-                        x as i32,
-                        (y + pitch.1 / 2.0 - height as f64 / 2.0) as i32,
-                        width,
-                        height,
-                    ),
-                    -1,
-                );
-            }
-            _ => {
-                if let Some(empty) = imp.empty.borrow().as_ref() {
-                    empty.set_child_visible(false);
-                }
-            }
-        }
-    }
-
-    fn more_button(&self) -> gtk::Button {
-        let imp = self.imp();
-        if let Some(more) = imp.more.borrow().as_ref() {
-            return more.clone();
-        }
-        let content = gtk::Box::new(gtk::Orientation::Vertical, 4);
-        content.append(&crate::icons::image("pfm-folder-desktop", 48));
-        content.append(&gtk::Label::new(None));
-        let more = gtk::Button::builder().child(&content).build();
-        more.add_css_class("flat");
-        more.add_css_class("more-cell");
-        more.set_tooltip_text(Some("Open the Desktop folder"));
-        let weak = self.downgrade();
-        more.connect_clicked(move |_| {
-            if let Some(grid) = weak.upgrade() {
-                Self::call(&grid.imp().on_more, ());
-            }
-        });
-        more.set_parent(self);
-        imp.more.replace(Some(more.clone()));
-        more
     }
 
     fn empty_label(&self) -> gtk::Label {
@@ -770,79 +593,10 @@ impl DesktopGrid {
             return empty.clone();
         }
         let empty = gtk::Label::new(Some("Nothing on the desktop"));
-        empty.add_css_class("bubble-empty");
+        empty.add_css_class("desktop-panel-empty");
         empty.set_parent(self);
         imp.empty.replace(Some(empty.clone()));
         empty
-    }
-
-    /// The bubble: half an ellipse out of the left edge, with a soft shadow
-    /// along its curve, in the style's colors.
-    fn draw_bubble(&self, snapshot: &gtk::Snapshot) {
-        let Some((shape, top)) = self.shape() else {
-            return;
-        };
-        let (width, height) = (self.width() as f64, self.height() as f64);
-        let cr = snapshot.append_cairo(&graphene::Rect::new(0.0, 0.0, width as f32, height as f32));
-        let (a, b) = (shape.a, shape.b);
-        let middle = top + b;
-        let half = |ra: f64, rb: f64, y: f64| {
-            cr.save().ok();
-            cr.translate(0.0, y);
-            cr.scale(ra.max(1.0), rb.max(1.0));
-            cr.arc(
-                0.0,
-                0.0,
-                1.0,
-                -std::f64::consts::FRAC_PI_2,
-                std::f64::consts::FRAC_PI_2,
-            );
-            cr.restore().ok();
-        };
-        let shadow = bubble::SHADOW;
-        let mut ring = shadow;
-        while ring > 0.0 {
-            half(
-                a + ring - shadow / 2.0,
-                b + ring - shadow / 2.0,
-                middle + shadow / 6.0,
-            );
-            cr.close_path();
-            cr.set_source_rgba(0.0, 0.0, 0.0, 0.02);
-            cr.fill().ok();
-            ring -= 2.0;
-        }
-        // Dark when the style's text is light.
-        let text = self.color();
-        let dark = text.red() + text.green() + text.blue() > 1.5;
-        half(a - 1.0, b - 1.0, middle);
-        cr.close_path();
-        if dark {
-            cr.set_source_rgba(34.0 / 255.0, 37.0 / 255.0, 44.0 / 255.0, 0.97);
-        } else {
-            cr.set_source_rgba(243.0 / 255.0, 244.0 / 255.0, 247.0 / 255.0, 0.97);
-        }
-        cr.fill().ok();
-        // The border along the curve only: the straight side is the screen's edge.
-        half(a - 1.0, b - 1.0, middle);
-        if dark {
-            cr.set_source_rgba(1.0, 1.0, 1.0, 0.09);
-        } else {
-            cr.set_source_rgba(0.0, 0.0, 0.0, 0.12);
-        }
-        cr.set_line_width(1.0);
-        cr.stroke().ok();
-    }
-
-    /// Whether a point is inside the bubble (always, on the desktop).
-    fn inside(&self, x: f64, y: f64) -> bool {
-        if self.imp().layout.get() != Layout::Bubble {
-            return true;
-        }
-        match self.shape() {
-            Some((shape, top)) => bubble::contains(shape.a, shape.b, x, y - top),
-            None => false,
-        }
     }
 
     /// The cell drawn at a point.
@@ -867,7 +621,7 @@ impl DesktopGrid {
     // --- Selecting and opening ---------------------------------------------------
 
     /// Moves the keyboard's place to an item, as a list's scroll_to does,
-    /// and in the bubble asks for the bubble to show.
+    /// and with the panel on asks for the panel to show.
     pub fn focus_item(&self, position: u32, focus: bool) {
         let imp = self.imp();
         if position as usize >= imp.cells.borrow().len() {
@@ -879,7 +633,7 @@ impl DesktopGrid {
             self.grab_focus();
         }
         self.show_selection();
-        if imp.layout.get() == Layout::Bubble {
+        if imp.layout.get() == Layout::Panel {
             Self::call(&imp.on_reveal, ());
         }
     }
@@ -998,10 +752,7 @@ impl DesktopGrid {
                 }
                 None => {
                     imp.pressed.set(None);
-                    if !grid.inside(x, y) {
-                        gesture.set_state(gtk::EventSequenceState::Claimed);
-                        Self::call(&imp.on_outside, ());
-                    } else if !control && !shift {
+                    if !control && !shift {
                         grid.selection().unselect_all();
                     }
                 }
@@ -1043,7 +794,7 @@ impl DesktopGrid {
         drag.connect_drag_begin(move |gesture, x, y| {
             let Some(grid) = weak.upgrade() else { return };
             let imp = grid.imp();
-            if grid.item_at(x, y).is_some() || !grid.inside(x, y) {
+            if grid.item_at(x, y).is_some() {
                 gesture.set_state(gtk::EventSequenceState::Denied);
                 return;
             }
@@ -1205,12 +956,9 @@ impl DesktopGrid {
             let Some(folder) = grid.imp().folder.borrow().clone() else {
                 return gdk::DragAction::empty();
             };
-            // The Recycle Bin on the bubble's edge takes anything.
+            // The Recycle Bin on the panel takes anything.
             if grid.over_bin(x, y) {
                 return gdk::DragAction::MOVE;
-            }
-            if !grid.inside(x, y) {
-                return gdk::DragAction::empty();
             }
             if grid.dragged_from_here(target) {
                 return gdk::DragAction::MOVE;
@@ -1233,9 +981,6 @@ impl DesktopGrid {
                 Self::call(&grid.imp().on_trash, files);
                 return true;
             }
-            if !grid.inside(x, y) {
-                return false;
-            }
             let here = files
                 .iter()
                 .all(|file| file.parent().is_some_and(|parent| parent.equal(&folder)));
@@ -1245,14 +990,12 @@ impl DesktopGrid {
                 return true;
             }
             let action = crate::dnd::drop_action(target, &folder);
-            if grid.imp().layout.get() == Layout::Desktop {
-                let grid_spec = grid.imp().grid.get();
-                let (pw, ph) = grid_spec.pitch;
-                let place = grid_spec.nearest(x - pw / 2.0, y - ph / 2.0);
-                grid.imp()
-                    .drop_anchor
-                    .set(Some((place, std::time::Instant::now())));
-            }
+            let grid_spec = grid.imp().grid.get();
+            let (pw, ph) = grid_spec.pitch;
+            let place = grid_spec.nearest(x - pw / 2.0, y - ph / 2.0);
+            grid.imp()
+                .drop_anchor
+                .set(Some((place, std::time::Instant::now())));
             let context = grid.imp().context.borrow().clone();
             let on_drop = context.and_then(|context| context.on_drop.borrow().clone());
             if let Some(on_drop) = on_drop {
@@ -1279,104 +1022,14 @@ impl DesktopGrid {
             })
     }
 
-    /// Whether a point is on the Recycle Bin riding on the bubble's edge
-    /// (it lies inside the bubble's window).
+    /// Whether a point is on the Recycle Bin riding on the panel (it lies
+    /// inside the panel's window).
     fn over_bin(&self, x: f64, y: f64) -> bool {
         let imp = self.imp();
-        if imp.layout.get() != Layout::Bubble {
-            return false;
-        }
-        let (Some((shape, top)), Some((width, height))) = (self.shape(), imp.bin_size.get()) else {
-            return false;
-        };
-        shape.bin.is_some_and(|(bx, by)| {
-            let by = by + top;
-            x >= bx && x < bx + width && y >= by && y < by + height
-        })
-    }
-
-    /// The order items show in the bubble: the order they were moved
-    /// into, then the rest in the list's order.
-    fn bubble_sequence(&self, names: &[String]) -> Vec<usize> {
-        let order = self.imp().bubble_order.borrow();
-        let mut sequence: Vec<usize> = order
-            .iter()
-            .filter_map(|name| names.iter().position(|other| other == name))
-            .collect();
-        for index in 0..names.len() {
-            if !sequence.contains(&index) {
-                sequence.push(index);
-            }
-        }
-        sequence
-    }
-
-    /// Icons dragged about the bubble: they go into the place where the
-    /// one dragged was let go, and the others make room.
-    fn move_in_bubble(&self, files: &[gio::File], x: f64, y: f64) {
-        let imp = self.imp();
-        let Some((shape, top)) = self.shape() else {
-            return;
-        };
-        let moved: Vec<String> = files
-            .iter()
-            .filter_map(|file| file.basename())
-            .map(|name| name.to_string_lossy().into_owned())
-            .collect();
-        let n = imp.cells.borrow().len() as u32;
-        let names: Vec<String> = (0..n).map(|p| self.name(p)).collect();
-        let places = imp.places.borrow().clone();
-        // Where the dragged icon's room would be, from where it was held.
-        let lead = imp
-            .pressed
-            .get()
-            .filter(|(position, _, _)| moved.contains(&self.name(*position)));
-        let (left, upper) = match lead.and_then(|(position, px, py)| {
-            places
-                .get(position as usize)
-                .copied()
-                .flatten()
-                .map(|(lx, ly)| (x - (px - lx), y - (py - ly)))
-        }) {
-            Some(corner) => corner,
-            None => (x - bubble::CELL_WIDTH / 2.0, y - bubble::CELL_HEIGHT / 2.0),
-        };
-        let shown = imp.bubble_slots.borrow().iter().flatten().count();
-        let Some(target) = shape
-            .cells
-            .iter()
-            .take(shown.max(1))
-            .enumerate()
-            .min_by(|(_, p), (_, q)| {
-                let distance =
-                    |(cx, cy): &(f64, f64)| (cx - left).powi(2) + (cy + top - upper).powi(2);
-                distance(p).total_cmp(&distance(q))
+        imp.layout.get() == Layout::Panel
+            && imp.avoid.get().is_some_and(|(bx, by, width, height)| {
+                x >= bx && x < bx + width && y >= by && y < by + height
             })
-            .map(|(slot, _)| slot)
-        else {
-            return;
-        };
-        let sequence: Vec<String> = self
-            .bubble_sequence(&names)
-            .into_iter()
-            .map(|index| names[index].clone())
-            .collect();
-        let (moving, mut rest): (Vec<String>, Vec<String>) = sequence
-            .iter()
-            .cloned()
-            .partition(|name| moved.contains(name));
-        // Into the target place, counted among the icons that stay.
-        let before = sequence
-            .iter()
-            .take(target)
-            .filter(|name| !moved.contains(name))
-            .count();
-        let at = before.min(rest.len());
-        rest.splice(at..at, moving);
-        save_bubble_order(&rest);
-        imp.bubble_order.replace(rest);
-        self.arrange();
-        self.queue_allocate();
     }
 
     /// Icons dragged about the desktop: the one dragged lands where it was
@@ -1384,10 +1037,6 @@ impl DesktopGrid {
     /// them back in order, as on Windows.
     fn move_icons(&self, files: &[gio::File], x: f64, y: f64) {
         let imp = self.imp();
-        if imp.layout.get() == Layout::Bubble {
-            self.move_in_bubble(files, x, y);
-            return;
-        }
         if imp.auto_arrange.get() {
             return;
         }
@@ -1483,13 +1132,6 @@ fn load_places() -> HashMap<String, (i32, i32)> {
         .value("desktop-positions")
         .get::<HashMap<String, (i32, i32)>>()
         .unwrap_or_default()
-}
-
-fn save_bubble_order(order: &[String]) {
-    let names: Vec<&str> = order.iter().map(String::as_str).collect();
-    if let Err(error) = config::settings().set_strv("desktop-bubble-order", names.as_slice()) {
-        eprintln!("patrone-file-manager: could not save the bubble's order: {error}");
-    }
 }
 
 fn save_places(places: &HashMap<String, (i32, i32)>) {
