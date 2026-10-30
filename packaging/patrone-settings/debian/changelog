@@ -9,6 +9,13 @@ patrone-settings (0.3.12) resolute; urgency=medium
   * Terminal at sign-in has a third choice, Off: it doesn't open
     (patrone-gnome-taskbar 0.4.11, patrone-terminal 0.1.9). A taskbar too
     old to have it doesn't show the card.
+  * A Wallpaper page (the user, 2026-10-30), which the desktop menu's
+    Personalize now opens: the wallpapers installed, or None and a
+    background color, from ten or any other. A color with no choice made is
+    Patrone Blue's dark tone (the new background-color setting). It changes
+    the desktop and the lock screen at once, as GNOME Settings' Appearance
+    page does. The cards' pictures load in the background and are kept in
+    the account's cache, because the wallpapers are up to 8K.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
 

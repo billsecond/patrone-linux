@@ -1,14 +1,15 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
 //! Desktop (the desktop's files in a bubble or across the desktop, the
-//! Recycle Bin, and where the terminal opens at sign-in), Title bar buttons (where minimize, maximize and close go,
-//! and their style), Theme (the theme, and the desktop's font: Patrone
+//! Recycle Bin, and whether and where the terminal opens at sign-in),
+//! Wallpaper (a picture, or None and a color), Title bar buttons (where
+//! minimize, maximize and close go, and their style), Theme (the theme, and the desktop's font: Patrone
 //! Sans or Noto Sans) and Mouse pointer (the cursor theme and size).
 //! Patrone's build of GNOME Settings has the same settings on its Patrone
 //! page, and uses this program to apply a theme or button style and for
 //! its pictures.
 //!
-//!   patrone-settings [--page taskbar|desktop|buttons|theme|pointer]
+//!   patrone-settings [--page taskbar|desktop|wallpaper|buttons|theme|pointer]
 //!   patrone-settings --set-theme THEME          apply a theme, and quit
 //!   patrone-settings --set-title-buttons STYLE  apply a button style, and quit
 //!   patrone-settings --apply                    write the account's GTK styles
@@ -20,13 +21,15 @@ mod font;
 mod live_style;
 mod preview;
 mod theme;
+mod wallpaper;
 
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
+use std::collections::VecDeque;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
 use gtk::prelude::*;
-use gtk::{gdk, gio, glib, pango};
+use gtk::{gdk, gdk_pixbuf, gio, glib, pango};
 
 use preview::Layout;
 
@@ -34,9 +37,10 @@ const APP_ID: &str = "org.patrone.Settings";
 const TASKBAR_SCHEMA: &str = "org.gnome.shell.extensions.patrone-taskbar";
 const DESKTOP_SCHEMA: &str = "org.patrone.desktop";
 const WINDOW_MANAGER_SCHEMA: &str = "org.gnome.desktop.wm.preferences";
-const PAGES: [(&str, &str, &str); 5] = [
+const PAGES: [(&str, &str, &str); 6] = [
     ("taskbar", "Taskbar", "user-desktop-symbolic"),
     ("desktop", "Desktop", "view-grid-symbolic"),
+    ("wallpaper", "Wallpaper", "preferences-desktop-wallpaper-symbolic"),
     ("buttons", "Title bar buttons", "window-maximize-symbolic"),
     ("theme", "Theme", "applications-graphics-symbolic"),
     ("pointer", "Mouse pointer", "input-mouse-symbolic"),
@@ -363,6 +367,7 @@ fn build_window(app: &gtk::Application) -> gtk::ApplicationWindow {
         .build();
     stack.add_named(&taskbar_page(), Some("taskbar"));
     stack.add_named(&desktop_page(), Some("desktop"));
+    stack.add_named(&wallpaper_page(), Some("wallpaper"));
     stack.add_named(&buttons_page(), Some("buttons"));
     stack.add_named(&theme_page(), Some("theme"));
     stack.add_named(&pointer_page(), Some("pointer"));
@@ -977,6 +982,182 @@ fn drawings_in(widget: &gtk::Widget) -> Vec<gtk::DrawingArea> {
     found
 }
 
+/// Loads the wallpaper cards' pictures, a few at a time, and redraws each as
+/// it comes. The pictures are up to 8K, so the page shows at once without
+/// them.
+fn load_thumbnails(jobs: Vec<(PathBuf, Rc<RefCell<Option<gdk_pixbuf::Pixbuf>>>, gtk::DrawingArea)>) {
+    const AT_ONCE: usize = 3;
+    let queue = Rc::new(RefCell::new(VecDeque::from(jobs)));
+    for _ in 0..AT_ONCE {
+        let queue = queue.clone();
+        glib::spawn_future_local(async move {
+            loop {
+                let Some((path, slot, picture)) = queue.borrow_mut().pop_front() else { break };
+                if let Ok(thumbnail) = gio::spawn_blocking(move || wallpaper::thumbnail(&path)).await {
+                    *slot.borrow_mut() = thumbnail.map(|thumbnail| thumbnail.pixbuf());
+                    picture.queue_draw();
+                }
+            }
+        });
+    }
+}
+
+fn wallpaper_page() -> gtk::ScrolledWindow {
+    let (scrolled, content) = page(
+        "Wallpaper",
+        "What's behind your desktop and on the lock screen: a picture, or None and a color \
+         of your own. It changes at once.",
+    );
+    let (Some(background), Some(desktop)) = (settings(wallpaper::BACKGROUND_SCHEMA), settings(DESKTOP_SCHEMA)) else {
+        note(&content, "GNOME's background settings aren't installed.");
+        return scrolled;
+    };
+    let wallpapers = Rc::new(wallpaper::installed());
+    let color = Rc::new(RefCell::new(desktop.string(wallpaper::COLOR_KEY).to_string()));
+
+    section_title(&content, "Background color");
+    note(&content, "Shown with None. Picking a color here shows it, in place of any picture.");
+    // Picks a color, and shows it
+    let show_color: Rc<dyn Fn(&str)> = {
+        let desktop = desktop.clone();
+        Rc::new(move |color: &str| {
+            if desktop.string(wallpaper::COLOR_KEY) != color {
+                let _ = desktop.set_string(wallpaper::COLOR_KEY, color);
+            }
+            wallpaper::show_color(color);
+        })
+    };
+    let row = gtk::FlowBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .column_spacing(6)
+        .row_spacing(6)
+        .max_children_per_line(12)
+        .build();
+    let mut swatches = Vec::new();
+    for (name, value) in wallpaper::COLORS {
+        let picture = gtk::DrawingArea::builder().content_width(40).content_height(26).build();
+        picture.set_draw_func(move |_, cr, width, height| {
+            preview::plain_color(cr, f64::from(width), f64::from(height), wallpaper::color_number(value));
+        });
+        let button = gtk::Button::builder().child(&picture).tooltip_text(name).css_classes(["patrone-swatch"]).build();
+        button.update_property(&[gtk::accessible::Property::Label(name)]);
+        let show_color = show_color.clone();
+        button.connect_clicked(move |_| show_color(value));
+        row.append(&button);
+        swatches.push((button, value));
+    }
+    let custom = gtk::ColorDialogButton::new(Some(gtk::ColorDialog::builder().with_alpha(false).build()));
+    custom.set_tooltip_text(Some("Any other color"));
+    custom.update_property(&[gtk::accessible::Property::Label("Any other color")]);
+    if let Ok(rgba) = gdk::RGBA::parse(color.borrow().as_str()) {
+        custom.set_rgba(&rgba);
+    }
+    let updating = Rc::new(Cell::new(false));
+    {
+        let show_color = show_color.clone();
+        let updating = updating.clone();
+        custom.connect_rgba_notify(move |button| {
+            if !updating.get() {
+                let rgba = button.rgba();
+                let channel = |value: f32| (value * 255.0).round() as u8;
+                show_color(&format!("#{:02x}{:02x}{:02x}", channel(rgba.red()), channel(rgba.green()), channel(rgba.blue())));
+            }
+        });
+    }
+    row.append(&custom);
+    content.append(&row);
+
+    section_title(&content, "Picture");
+    if wallpapers.is_empty() {
+        note(&content, "No wallpapers are installed.");
+    }
+    let mut items = Vec::with_capacity(wallpapers.len() + 1);
+    let none_color = color.clone();
+    items.push(Choice::new(
+        wallpaper::NONE,
+        "None",
+        "No picture, only the background color",
+        drawing(move |cr, w, h| preview::plain_color(cr, w, h, wallpaper::color_number(&none_color.borrow()))),
+    ));
+    let mut slots = Vec::with_capacity(wallpapers.len());
+    for item in wallpapers.iter() {
+        let slot: Rc<RefCell<Option<gdk_pixbuf::Pixbuf>>> = Rc::new(RefCell::new(None));
+        slots.push(slot.clone());
+        let detail = if item.dark.is_some() { "Changes with the light and dark style" } else { "The same in both styles" };
+        items.push(Choice::new(
+            item.picture.display().to_string(),
+            &item.name,
+            detail,
+            drawing(move |cr, w, h| preview::wallpaper(cr, w, h, slot.borrow().as_ref())),
+        ));
+    }
+    let list = wallpapers.clone();
+    let shown = background.clone();
+    let colors = desktop.clone();
+    let refresh = choices(&content, items, &wallpaper::picked(&background, &wallpapers), move |value| {
+        // Already so: a card lighting up to match the settings, which
+        // mustn't write them back over what set them
+        if wallpaper::picked(&shown, &list) == value {
+            return;
+        }
+        if value == wallpaper::NONE {
+            wallpaper::show_color(&colors.string(wallpaper::COLOR_KEY));
+        } else if let Some(item) = list.iter().find(|item| item.picture.display().to_string() == value) {
+            wallpaper::show_picture(item);
+        }
+    });
+    let cards = content.last_child().map(|flow| drawings_in(&flow)).unwrap_or_default();
+
+    // Each card shows its picture for the style that's on as the window opens
+    let dark = gtk::Settings::default()
+        .is_some_and(|settings| settings.gtk_interface_color_scheme() == gtk::InterfaceColorScheme::Dark);
+    let jobs: Vec<_> = wallpapers
+        .iter()
+        .zip(slots)
+        .zip(cards.iter().skip(1))
+        .map(|((item, slot), picture)| {
+            let path = item.dark.as_ref().filter(|_| dark).unwrap_or(&item.picture).clone();
+            (path, slot, picture.clone())
+        })
+        .collect();
+    // Only when the page is first opened: the window shows another page first
+    let jobs = RefCell::new(Some(jobs));
+    scrolled.connect_map(move |_| {
+        if let Some(jobs) = jobs.borrow_mut().take() {
+            load_thumbnails(jobs);
+        }
+    });
+
+    // The settings changed, here or elsewhere (GNOME Settings' Appearance
+    // page, File Manager's "Set as desktop background")
+    // (The handler holds the settings, so they last as long as the page)
+    let list = wallpapers.clone();
+    let shown = background.clone();
+    background.connect_changed(None, move |_, _| refresh(&wallpaper::picked(&shown, &list)));
+    let none_card = cards.first().cloned();
+    let show_picked = move |picked: &str| {
+        for (button, value) in &swatches {
+            if *value == picked {
+                button.add_css_class("picked");
+            } else {
+                button.remove_css_class("picked");
+            }
+        }
+        *color.borrow_mut() = picked.to_string();
+        if let Some(card) = &none_card {
+            card.queue_draw();
+        }
+        if let Ok(rgba) = gdk::RGBA::parse(picked) {
+            updating.set(true);
+            custom.set_rgba(&rgba);
+            updating.set(false);
+        }
+    };
+    show_picked(&desktop.string(wallpaper::COLOR_KEY));
+    desktop.connect_changed(Some(wallpaper::COLOR_KEY), move |settings, key| show_picked(&settings.string(key)));
+    scrolled
+}
+
 fn pointer_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Mouse pointer",
@@ -1085,6 +1266,7 @@ mod tests {
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page=buttons"])).as_deref(), Some("buttons"));
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page", "desktop"])).as_deref(), Some("desktop"));
         assert_eq!(super::requested_page(&args(&["patrone-settings", "--page=pointer"])).as_deref(), Some("pointer"));
+        assert_eq!(super::requested_page(&args(&["patrone-settings", "--page=wallpaper"])).as_deref(), Some("wallpaper"));
         assert_eq!(super::requested_page(&args(&["patrone-settings"])), None);
     }
 

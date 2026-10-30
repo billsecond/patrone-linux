@@ -7,7 +7,7 @@ behind the Patrone page in Patrone's build of GNOME Settings
 a picture of what it does (`src/preview.rs`, drawn with cairo).
 
 ```
-patrone-settings [--page taskbar|desktop|buttons|theme|pointer]
+patrone-settings [--page taskbar|desktop|wallpaper|buttons|theme|pointer]
 patrone-settings --set-theme THEME          apply a theme, and quit
 patrone-settings --set-title-buttons STYLE  apply a title bar button style, and quit
 patrone-settings --apply                    write the account's GTK styles as set
@@ -17,7 +17,8 @@ patrone-settings --export-previews DIR      save the choices' pictures as PNGs
 The taskbar's right-click menu has "Taskbar settings", which opens GNOME
 Settings' Patrone page, or this window's Taskbar page where Patrone's build
 of GNOME Settings isn't installed; the launcher's actions (its right-click
-menu in the Patrone menu and on the taskbar) open each page.
+menu in the Patrone menu and on the taskbar) open each page. Personalize, on
+the desktop's right-click menu, opens the Wallpaper page.
 
 The window is in GTK's own theme, light or dark with the desktop's style,
 as Patrone's other apps are (Ubuntu's Yaru doesn't load in plain GTK 4
@@ -30,6 +31,7 @@ Until 0.3.8 it stayed light in the dark style.
 | --- | --- | --- |
 | Taskbar | Size: Small (32 pixels), Medium (42, the default), Large (52). Layout: Left (the default), Centered, Split (Start on the left, the apps in the middle), Top (along the top of the screen). Start button: the Patrone P, one color, orb, grid, menu, circle, spark, prompt. Color: from the wallpaper (the default), or the theme's own; only the Patrone, Modern and Studio themes take the wallpaper's color, and the page says so. Pin icons: Patrone's (the default), or each app's own | `org.gnome.shell.extensions.patrone-taskbar` `size`, `layout`, `start-icon`, `color` and `pin-icons` (the taskbar's own schema; the page says so if the taskbar isn't installed, and leaves out Color and Pin icons for a taskbar older than 0.3.2). The Start button's icons are the taskbar's, from its `icons` folder |
 | Desktop | Desktop bubble: On (the default: the desktop's files in a bubble, which a pill at the screen's left edge opens, over any window) or Off (the files across the desktop); it changes at once. GNOME Settings' Desktop page has the same as a switch. Recycle Bin: On the desktop (the default) or Hidden. Terminal at sign-in: Over the logo (the default: large, over the wallpaper's logo, at any screen size), Centered (at its own size, in the middle of the screen) or Off (it doesn't open) | `org.gnome.shell.extensions.patrone-taskbar` `desktop-bubble` and `show-recycle-bin`, both yes-or-no, and `sign-in-terminal` (`logo`, `center` or `off`) (the taskbar's own schema; each is left out for a taskbar too old to have it, and Off for one that doesn't have that choice). See `shell/gnome/README.md`, "The desktop bubble" and "The terminal at sign-in" |
+| Wallpaper | A picture, each of the wallpapers installed, or None. Background color: ten to pick from, or any other, shown with None (below) | GNOME's `org.gnome.desktop.background` and `org.gnome.desktop.screensaver`: `picture-uri`, `picture-uri-dark`, `picture-options`, `primary-color`, `secondary-color`, `color-shading-type` (`src/wallpaper.rs`), and `org.patrone.desktop background-color` for the color. It changes at once |
 | Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps; Patrone's own apps and GNOME Settings follow at once |
 | Theme | Themes: Patrone, Modern, Classic, Sapphire, Studio. Font: PatroneOS Sans (the default, the `fonts-patroneos` package), with PatroneOS Document for documents, or Noto Sans | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps; Patrone's own apps and GNOME Settings follow at once. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, and of `document-font-name` with them (PatroneOS Document with PatroneOS Sans), their sizes and styles kept (`src/font.rs`); a desktop still set to Patrone Sans, the font before, shows PatroneOS Sans picked; the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
 | Mouse pointer | Pointer: each cursor theme installed that GNOME can show (below), Patrone's first: Patrone Blue (the default), Patrone Black, Patrone White. Size: Default (24 pixels), Medium (32), Large (48), Larger (64), Largest (96), as GNOME Settings' Accessibility page has them | GNOME's `org.gnome.desktop.interface cursor-theme` and `cursor-size` (`src/cursor.rs`). The pointer changes at once (below) |
@@ -126,6 +128,38 @@ runs it at every sign-in, so every account has the same buttons from the
 start, and an account's lines move to new versions of the style sheets
 (Modern's and Studio's sheets went away when the buttons became their own
 setting, and came back in 0.3.1 with title bars only).
+
+## Wallpaper
+
+The user, 2026-10-30: "Right click and Personalize should also show me
+options for wallpaper", and "None should also be an option. allowing us to
+optionally choose also a background color." So Personalize, which opened the
+Theme page, opens this one.
+
+The pictures are the ones GNOME Settings' Appearance page lists: the
+`gnome-background-properties` lists in the account's and the system's data
+folders, read here (`src/wallpaper.rs`), so a list a package adds shows up
+in both. Picking one sets what that page sets, on the desktop and the lock
+screen. A wallpaper with a dark version shows that version on its card in
+the dark style. The wallpapers are up to 8K, so the cards' pictures load
+after the page opens, three at a time off the main thread, starting the
+first time the page shows, and are kept at 376 pixels wide in
+`~/.cache/patrone-settings/wallpapers`. All 21 took about 5 seconds the first
+time on the dev VM, and after that they come straight from the cache.
+
+None sets `picture-options` to `none`, which is what makes GNOME Shell show
+`primary-color` in place of the picture; `picture-uri` stays as it was. The
+taskbar's tint follows (`tint.js` reads the color then). The color is also
+kept in `org.patrone.desktop background-color`, default `#1851a8`, Patrone's
+Deep blue. GNOME's own `primary-color` defaults to near-black here, too dark
+to read as a choice, and this way a color stays chosen across pictures. Picking a color shows it at once, in
+place of any picture. Light colors work, though desktop icons' white labels
+read less well on them, as on a light wallpaper.
+
+GNOME Settings' Patrone page doesn't have this: its Appearance page has the
+pictures, though not None. A picture set there, or with File Manager's "Set
+as desktop background", lights its card here. File Manager's also turns None
+off, since it would otherwise go on hiding the picture.
 
 ## Mouse pointer
 
@@ -261,3 +295,14 @@ shell per choice, running the package's autostart script: Over the logo
 opened it large and Centered at its own size, and Off opened nothing, while
 a terminal opened by hand soon after still opened. Not tried at a real
 sign-in.
+
+The Wallpaper page, in the same throwaway shell with File Manager 0.3.9: a
+right-click on the desktop and Personalize opened this page. None with no
+color chosen set `#1851a8`, and the desktop's pixels read `#1850a6`. Teal,
+Plum, Mist and an orange from the color dialog each set the desktop and
+lock screen and showed on the desktop within a few levels of the color. A
+color picked while a picture showed replaced it. The color was kept through
+a picture and back to None. The card lit followed every change, those made
+elsewhere included (the keys set with `gsettings`, as GNOME's page does).
+"Set as desktop background" with None on brought the picture back. The
+lock screen itself wasn't shown: its settings were read back.

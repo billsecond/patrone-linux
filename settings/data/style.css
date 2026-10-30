@@ -92,3 +92,20 @@
   border-radius: 8px;
   background: alpha(currentColor, 0.05);
 }
+
+/* The colors to pick from for the wallpaper; the picked one has a ring */
+.patrone-swatch {
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.patrone-swatch.picked {
+  outline-color: #288bfa;
+}
