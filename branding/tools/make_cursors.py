@@ -21,11 +21,19 @@ Adwaita's.
 
 Each shape is drawn from geometry on a 24-unit grid (one unit is a pixel at
 24), at four times the size and scaled down, which smooths the edges: a
-shaded body, an edge, and a shadow down and to the right. The shadow shows on
-light and mid-toned backgrounds; on near-black, the edge does that job.
-Where parts of a shape overlap, the fingers of a hand for one, a thin seam in
-the edge's color shows where one ends. Badges (copy, help, link, menu, no
-drop) are discs in Patrone Blue in every theme.
+shaded body, an edge, and a soft shadow down and to the right. The shadow
+shows on light and mid-toned backgrounds; on near-black, the edge does that
+job. Where parts of a shape overlap, the fingers of a hand for one, a thin
+seam in the edge's color shows where one ends. Badges (copy, help, link,
+menu, no drop) are discs in Patrone Blue in every theme.
+
+Each image is a quarter wider and taller than its nominal size (a 24-pixel
+cursor is a 30-pixel image), the extra on the right and at the bottom, which
+is what gives the shadow room: the shapes come within a pixel or two of the
+grid's edge. Cursors stay the same size: the file records the nominal size,
+which is the size programs look an image up by, and GNOME Shell, libXcursor
+and Wayland's cursor library show an image as it is, or scaled by its
+nominal size. No image is over 96 pixels (MAX_IMAGE).
 
 The busy cursors, "wait" (the spinner alone) and "progress" (the arrow with
 a small one), are the boot splash's spinner: a ring (Patrone's near-black;
@@ -52,6 +60,10 @@ import numpy as np
 
 SIZES = (24, 30, 32, 36, 48, 64, 72, 96)
 GRID = 24          # the design grid, in units
+CANVAS = 30        # the image's width and height, in units: the grid, and
+                   # room for the shadow to its right and below it
+MAX_IMAGE = 96     # the biggest image: GNOME Remote Desktop sends bigger
+                   # pointers as large pointers, which not every client takes
 SUPERSAMPLE = 4    # drawn this many times larger, then scaled down
 
 # Patrone's palette (branding/README.md)
@@ -66,10 +78,10 @@ INK = (0x1A, 0x1A, 0x1E)  # Patrone White's edge
 
 EDGE = 1.5             # the edge, in units
 SEAM = 0.7             # the line where overlapping parts meet
-DROP_X = 0.8           # the shadow, right and down, in units
-DROP_Y = 1.3
-DROP_BLUR = 1.1
-DROP_OPACITY = 0.8
+DROP_X = 1.8           # the shadow, right and down, in units
+DROP_Y = 2.4
+DROP_BLUR = 1.3
+DROP_OPACITY = 0.75
 DROP_FADE = 1.2        # it fades out this close to the image's edge, so it
                        # never ends in a line where a shape comes near it
 
@@ -564,11 +576,17 @@ ALIASES = {
 }
 
 
+def image_size(size):
+    """The width and height, in pixels, of the image of a cursor of a nominal
+    size."""
+    return min(math.ceil(size * CANVAS / GRID), max(size, MAX_IMAGE))
+
+
 class Canvas:
     def __init__(self, size):
-        self.size = size
+        self.size = image_size(size)
         self.unit = size / GRID  # pixels to a unit
-        n = size * SUPERSAMPLE
+        n = self.size * SUPERSAMPLE
         coords = (np.arange(n) + 0.5) / (SUPERSAMPLE * self.unit)
         self.x, self.y = np.meshgrid(coords, coords)
         self.shade = np.clip(self.y / GRID, 0, 1)[..., None]
@@ -717,8 +735,9 @@ def write_shadow_sheet(folder: Path, looks, flat, font, light, dark):
 
     names, sizes, zoom = ("default", "pointer", "text", "wait"), (24, 32, 48), 3
     backgrounds = (light, (0x6E, 0x80, 0xA0), dark)
-    label_w, row_h = 104, 24 * zoom + 8 + 4
-    width = label_w + sum(len(names) * (size + 8) for size in sizes) + 2 * (24 * zoom + 8)
+    big_size = image_size(24) * zoom
+    label_w, row_h = 104, big_size + 8 + 4
+    width = label_w + sum(len(names) * (image_size(size) + 8) for size in sizes) + 2 * (big_size + 8)
     sheet = Image.new("RGB", (width, len(looks) * len(backgrounds) * row_h), (0x80, 0x80, 0x80))
     pen = ImageDraw.Draw(sheet)
     for i, look in enumerate(looks):
@@ -731,12 +750,13 @@ def write_shadow_sheet(folder: Path, looks, flat, font, light, dark):
             x = label_w + 8
             for size in sizes:
                 for name in names:
-                    sheet.paste(flat(images[name, size], background), (x, y0 + (row_h - 4 - size) // 2))
-                    x += size + 8
+                    side = image_size(size)
+                    sheet.paste(flat(images[name, size], background), (x, y0 + (row_h - 4 - side) // 2))
+                    x += side + 8
             for name in names[:2]:
-                big = flat(images[name, 24], background).resize((24 * zoom, 24 * zoom), Image.NEAREST)
-                sheet.paste(big, (x, y0 + (row_h - 4 - 24 * zoom) // 2))
-                x += 24 * zoom + 8
+                big = flat(images[name, 24], background).resize((big_size, big_size), Image.NEAREST)
+                sheet.paste(big, (x, y0 + (row_h - 4 - big_size) // 2))
+                x += big_size + 8
     sheet.save(folder / "shadow-sheet.png", optimize=True)
     print(f"{folder}: shadow-sheet.png")
 
@@ -747,7 +767,8 @@ def write_sheets(folder: Path, look, flat, font, light, dark):
     # Every cursor at 24 (shown twice the size) and 48 pixels, on light and
     # dark, its hotspot a red dot
     columns = 4
-    tile_w, tile_h, label_h = 4 * 56, 56, 16
+    tile = image_size(24) * 2 + 8
+    tile_w, tile_h, label_h = 4 * tile, tile, 16
     names = list(SHAPES)
     rows = math.ceil(len(names) / columns)
     sheet = Image.new("RGB", (columns * tile_w, rows * (tile_h + label_h)), (0x80, 0x80, 0x80))
@@ -759,26 +780,28 @@ def write_sheets(folder: Path, look, flat, font, light, dark):
         for j, (size, background) in enumerate([(24, light), (24, dark), (48, light), (48, dark)]):
             rgba, xhot, yhot, _ = frames[size][len(frames[size]) // 4]
             zoom = 2 if size == 24 else 1
-            tile = Image.new("RGB", (56, 56), background)
-            tile.paste(flat(rgba, background).resize((size * zoom, size * zoom), Image.NEAREST), (4, 4))
-            ImageDraw.Draw(tile).rectangle([4 + xhot * zoom, 4 + yhot * zoom,
-                                            4 + xhot * zoom + zoom - 1, 4 + yhot * zoom + zoom - 1],
-                                           fill=(0xE0, 0x20, 0x20))
-            sheet.paste(tile, (x0 + j * 56, y0 + label_h))
+            side = image_size(size) * zoom
+            picture = Image.new("RGB", (tile, tile), background)
+            picture.paste(flat(rgba, background).resize((side, side), Image.NEAREST), (4, 4))
+            ImageDraw.Draw(picture).rectangle([4 + xhot * zoom, 4 + yhot * zoom,
+                                               4 + xhot * zoom + zoom - 1, 4 + yhot * zoom + zoom - 1],
+                                              fill=(0xE0, 0x20, 0x20))
+            sheet.paste(picture, (x0 + j * tile, y0 + label_h))
     sheet.save(folder / f"cursors-sheet{look.suffix}.png", optimize=True)
 
     # The busy cursors at 48 pixels, shown twice the size, on light and dark.
     # GIF frame times are in hundredths of a second: 20 and 30 alternate to
     # average 25 milliseconds.
     size, zoom = 48, 2
+    side = image_size(size) * zoom
     frames = {name: draw(name, size, look) for name in ("wait", "progress")}
     gif = []
     for n in range(LOOP_FRAMES):
-        frame = Image.new("RGB", (4 * size * zoom, size * zoom))
+        frame = Image.new("RGB", (4 * side, side))
         for j, (name, background) in enumerate([("wait", light), ("wait", dark),
                                                  ("progress", light), ("progress", dark)]):
-            image = flat(frames[name][n][0], background).resize((size * zoom, size * zoom), Image.LANCZOS)
-            frame.paste(image, (j * size * zoom, 0))
+            image = flat(frames[name][n][0], background).resize((side, side), Image.LANCZOS)
+            frame.paste(image, (j * side, 0))
         gif.append(frame)
     palette = gif[LOOP_FRAMES // 4].quantize(255, method=Image.Quantize.MEDIANCUT)
     gif = [f.quantize(palette=palette, dither=Image.Dither.NONE) for f in gif]

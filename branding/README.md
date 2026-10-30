@@ -155,16 +155,24 @@ Ubuntu's Yaru (the user, of the busy cursor), and it kept its folder, so
 didn't change. Patrone Settings' Mouse pointer page and GNOME Settings'
 Patrone page list the three first, Blue, Black, White.
 
-Each cursor has an edge, so it shows on light and dark, and a shadow down
-and to the right, which shows on light and mid-toned backgrounds (the user,
-2026-10-29: "set a shadow on the mouse"; the first one was too faint to
-notice). On near-black the edge does that job. The shadow fades out near
-the image's edge, so where a shape comes close to it (a hand's wrist, the
-arrow's tail) it never ends in a line: Xcursor images are their nominal
-size, as Adwaita's are, so there's no room past it. Where parts overlap,
-the fingers of a hand, a thin seam in the edge's color divides them. The
-badges on the arrow (copy, link, help, menu, no drop) are Patrone Blue in
-every theme.
+Each cursor has an edge, so it shows on light and dark, and a soft shadow
+down and to the right, which shows on light and mid-toned backgrounds and,
+as a darker band, on dark grey (the user, 2026-10-29: "set a shadow on the
+mouse", and 2026-10-30, that they couldn't see it). On near-black no black
+shadow can show, and the edge does that job. Each image is a quarter wider
+and taller than its nominal size, the extra on the right and at the bottom:
+a 24-pixel cursor is a 30-pixel image, the same cursor at the same size in
+the same place, with room for the shadow. Until 0.1.26 the shapes filled
+the nominal size, as Adwaita's do, so the shadow had a pixel or two. Programs
+go by the nominal size in the file: GNOME Shell (`meta-cursor-xcursor.c`)
+scales an image by it, and libXcursor and Wayland's cursor library look
+images up by it. GNOME Shell needs images to be square. The 96-pixel images
+stay at 96 (`MAX_IMAGE`): GNOME Remote Desktop sends anything bigger as a
+large pointer without checking the client takes them. Near an image's edge
+the shadow fades out, so it never ends in a line. Where parts overlap, the
+fingers of a hand, a thin seam in the edge's color divides them. The badges
+on the arrow (copy, link, help, menu, no drop) are Patrone Blue in every
+theme.
 
 The busy cursors are the boot spinner on a ring: "wait" alone, "progress"
 beside the arrow. The ring is Patrone's near-black in Blue and Black, and
@@ -178,7 +186,7 @@ HiDPI screens and fractional scales, into Xcursor files. The other 117
 names programs ask for are links: X11's (`left_ptr`, `xterm`, `watch`),
 Qt's, Chromium's and Mozilla's hashed names, and every name Yaru and Adwaita
 have. A name a theme lacks falls back to Adwaita's (`Inherits=Adwaita`). The
-package runs it when it's built (it needs only NumPy, about 30 seconds for
+package runs it when it's built (it needs only NumPy, about 40 seconds for
 the three), so the files aren't in the repository; the previews are. To see
 the themes or remake the previews (`--theme blue`, `black` or `white` draws
 one):
@@ -189,12 +197,20 @@ python tools/make_cursors.py --preview system/cursors/previews
 ```
 
 Checked on PatroneDev, 2026-10-29, with 0.1.25 as built from its branch:
-the package has the three folders, each with 43 cursors and 117 links,
-every image its nominal size, and only `Patrone` has `cursor.theme`. In a
-throwaway GNOME Shell, each theme picked at 24, 32 and 48 pixels with
-Patrone Settings' cards showed GNOME Shell's pointer in that theme and size
-over a light window, a dark-style window, a near-black picture and the
-desktop, its shadow plain on all but the near-black.
+the package has the three folders, each with 43 cursors and 117 links, and
+only `Patrone` has `cursor.theme`. In a throwaway GNOME Shell, each theme
+picked at 24, 32 and 48 pixels with Patrone Settings' cards showed GNOME
+Shell's pointer in that theme and size over a light window, a dark-style
+window, a near-black picture and the desktop.
+
+Over Remote Desktop, pointers aren't flattened. GNOME Remote Desktop sends
+32-bit pointers (`grd-rdp-cursor-renderer.c`), and on 2026-10-30, with 0.1.25,
+the pointer VMConnect's enhanced session put on the host was a 24 by 24
+32-bit one with 217 soft pixels, seen by reading it back from the host; what
+was wrong was how small and faint the shadow was. With 0.1.26, a throwaway
+GNOME Shell served by GNOME Remote Desktop to FreeRDP's Wayland client, in a
+second throwaway shell, showed each of the three themes with its whole shadow.
+That was FreeRDP: VMConnect itself hasn't been tried with the 30-pixel image.
 
 Flatpak apps get Patrone's cursors with no setting of Patrone's. Apps that
 name a cursor shape (the cursor-shape protocol) have GNOME Shell draw it
