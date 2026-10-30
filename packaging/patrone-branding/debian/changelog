@@ -1,3 +1,11 @@
+patrone-branding (0.1.29) resolute; urgency=medium
+
+  * Text has plain gray edges, not the colored fringes Ubuntu's subpixel
+    rendering gives it, on the desktop, in apps and on the login screen. An
+    account that has chosen otherwise keeps its choice.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 16:30:00 -0500
+
 patrone-branding (0.1.28) resolute; urgency=medium
 
   * The clock shows 12-hour time with AM or PM by default, on the taskbar
