@@ -114,7 +114,7 @@ root:
 └─$
 ```
 
-A failed command's exit status shows at the end of the first line, and the
+A failed command's exit status shows on its own line under the command, and the
 prompt reports the directory to the terminal. It's `shell-config/bashrc`,
 loaded from `~/.bash_aliases` (`shell-config/bash_aliases`), which Ubuntu's
 own `~/.bashrc` already reads, so Ubuntu's bash setup stays as it is. Both
