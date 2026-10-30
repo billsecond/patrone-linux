@@ -1,3 +1,15 @@
+patrone-gnome-taskbar (0.4.11) resolute; urgency=medium
+
+  * The desktop files bubble is off by default, and when it's on it's a
+    panel: a full layer of the screen that slides out of the left edge
+    over the windows, with the wallpaper behind the icons, each where it
+    would be on the desktop, and the taskbar in front. It closes by itself
+    as soon as a window opens on top of it, and with Escape, its Close
+    button, the pill, a click on the taskbar, a workspace change or the
+    overview. Accounts that turned it on or off keep their choice.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-gnome-taskbar (0.4.10) resolute; urgency=medium
 
   * The old folder, patrone-taskbar@patrone-linux, keeps the taskbar's

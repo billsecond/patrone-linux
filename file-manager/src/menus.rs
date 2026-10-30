@@ -789,12 +789,11 @@ pub fn background_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
 
 /// The desktop's right-click menu, as Windows 11's: View, Sort by, Refresh,
 /// Paste, Undo, New, Display settings, Personalize, Open in Terminal (the
-/// user, 2026-10-27). With the desktop bubble on it serves the empty
-/// desktop and the bubble's empty part, and shows the bubble's files.
+/// user, 2026-10-27). With the desktop files panel on it serves the empty
+/// desktop and the panel's empty part, and shows the panel's files.
 pub fn desktop_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
     let menu = Menu::new();
-    let bubble = crate::desktop::bubble_on();
-    if bubble {
+    if crate::desktop::panel_on() {
         menu.item(
             Icon::Color("pfm-nav-desktop"),
             "Open Desktop folder",
@@ -803,9 +802,8 @@ pub fn desktop_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
             crate::desktop::open_desktop_folder,
         );
         menu.separator();
-    } else {
-        menu.submenu(Icon::Glyph("view"), "View", true, desktop_view_items);
     }
+    menu.submenu(Icon::Glyph("view"), "View", true, desktop_view_items);
     let w = window.clone();
     menu.submenu(Icon::Glyph("sort"), "Sort by", true, move |sub| {
         desktop_sort_items(&w, sub)
@@ -922,6 +920,10 @@ fn desktop_view_items(menu: &Rc<Menu>) {
             let _ = config::settings().set_boolean("desktop-auto-arrange", !on);
         },
     );
+    // The panel always shows them: it's what it's opened for.
+    if crate::desktop::panel_on() {
+        return;
+    }
     menu.separator();
     menu.check(
         Icon::None,

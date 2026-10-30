@@ -126,19 +126,21 @@
       </description>
     </key>
     <key name="desktop-bubble" type="b">
-      <default>true</default>
-      <summary>Keep the desktop's files in a bubble at the left edge</summary>
+      <default>false</default>
+      <summary>Keep the desktop's files in a panel at the left edge</summary>
       <description>
-        A small pill at the left edge of the primary screen, shown while no
-        window covers it, opens a bubble with the files in the Desktop
-        folder, which Patrone File Manager draws. Off, File Manager shows
-        them across the desktop. Patrone Settings sets it, on its Desktop
-        page.
+        Off, the default, Patrone File Manager shows the files in the Desktop
+        folder across the desktop. On, a small pill at the left edge of the
+        primary screen, shown while no window covers it, opens them in a
+        panel that slides out over the windows as a full layer of the
+        screen, and closes when a window opens. (Named for the bubble the
+        panel replaced, so accounts' choices carry over.) Patrone Settings
+        sets it, on its Desktop page.
       </description>
     </key>
     <key name="desktop-bubble-introduced" type="b">
       <default>false</default>
-      <summary>Whether the desktop bubble has been opened yet</summary>
+      <summary>Whether the desktop files panel has been opened yet</summary>
       <description>
         Until it has, its pill bounces now and then, with a tip saying what
         it does.

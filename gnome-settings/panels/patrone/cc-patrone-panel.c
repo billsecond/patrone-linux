@@ -1,7 +1,7 @@
 /* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
- * button icon), the desktop (its files in a bubble or across it, the
+ * button icon), the desktop (its files in a panel or on it, the
  * Recycle Bin, and where the terminal opens at sign-in), the title bar
  * buttons (top right or top left, and their style), the theme and the desktop's font (PatroneOS Sans or Noto Sans,
  * which the page sets itself), and the mouse pointer (the cursor theme and
@@ -93,8 +93,8 @@ static const Choice pin_icons[] = {
 
 /* Yes-or-no settings: the first choice turns them on */
 static const Choice desktop_files[] = {
-  { "bubble", N_("On"), N_("The desktop's files in a bubble, opened from a pill at the screen's left edge") },
-  { "desktop", N_("Off"), N_("The desktop's files across the desktop, under your windows") },
+  { "bubble", N_("On"), N_("The desktop's files in a panel that slides out over your windows") },
+  { "desktop", N_("Off"), N_("The desktop's files on the desktop, under your windows. This is the default") },
 };
 
 static const Choice recycle_bin[] = {
@@ -1259,10 +1259,11 @@ cc_patrone_panel_init (CcPatronePanel *self)
 
       if (has_key (self->taskbar, "desktop-bubble"))
         {
-          group = add_group (page, _("Desktop Bubble"),
-                             _("On, the desktop's files are kept off the desktop: a small pill at "
-                               "the screen's left edge, shown whenever no window covers it, opens "
-                               "them. Click it, or drag it out. It changes at once."));
+          group = add_group (page, _("Desktop Files Panel"),
+                             _("Off by default: your files stay on the desktop. On, a small pill "
+                               "at the screen's left edge, shown whenever no window covers it, "
+                               "slides them out over your windows as a full layer of the screen. "
+                               "It closes when a window opens, or with Esc. It changes at once."));
           add_choices (self, group, self->taskbar, "desktop-bubble", read_boolean, write_boolean,
                        desktop_files, G_N_ELEMENTS (desktop_files), "files", 2);
         }

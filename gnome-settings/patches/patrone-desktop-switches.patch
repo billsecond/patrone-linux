@@ -1,7 +1,7 @@
 Description: Patrone's desktop switches on the Desktop page
  With Patrone's taskbar installed, File Manager draws the desktop and
  Ubuntu's desktop icons and dock are off, so the page has switches for the
- desktop bubble and the Recycle Bin where Desktop Icons' settings were, and
+ desktop files panel and the Recycle Bin where Desktop Icons' settings were, and
  no Dock settings: their switches would bring Ubuntu's icons or dock back
  beside Patrone's.
 Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
@@ -19,14 +19,14 @@ Forwarded: not-needed
 +          visible: false;
 +
 +          Adw.SwitchRow patrone_bubble_switch {
-+            title: _("Desktop _Bubble");
-+            subtitle: _("The desktop's files in a bubble, opened from the pill at the screen's left edge. Off, they show across the desktop.");
++            title: _("Desktop Files _Panel");
++            subtitle: _("Off by default: your files stay on the desktop. On, the pill at the screen's left edge slides them out over your windows as a full layer of the screen, and it closes when a window opens.");
 +            use-underline: true;
 +          }
 +
 +          Adw.SwitchRow patrone_bin_switch {
 +            title: _("_Recycle Bin on the Desktop");
-+            subtitle: _("Off, it's still in File Manager and on the bubble's edge, and right-clicking the desktop brings it back.");
++            subtitle: _("Off, it's still in File Manager and in the desktop files panel, and right-clicking the desktop brings it back.");
 +            use-underline: true;
 +          }
 +        }
@@ -97,7 +97,7 @@ Forwarded: not-needed
  
 -  /* Only load if we ding installed */
 +  /* Patrone's desktop settings, where its taskbar is installed: the
-+   * desktop bubble and the Recycle Bin. They change the desktop at once. */
++   * desktop files panel and the Recycle Bin. They change the desktop at once. */
 +  schema = g_settings_schema_source_lookup (schema_source, PATRONE_TASKBAR_SCHEMA, TRUE);
 +  if (schema && g_settings_schema_has_key (schema, "desktop-bubble"))
 +    {

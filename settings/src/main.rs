@@ -1,6 +1,6 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
-//! Desktop (the desktop's files in a bubble or across the desktop, the
+//! Desktop (the desktop's files in a panel or on the desktop, the
 //! Recycle Bin, and where the terminal opens at sign-in), Title bar buttons (where minimize, maximize and close go,
 //! and their style), Theme (the theme, and the desktop's font: Patrone
 //! Sans or Noto Sans) and Mouse pointer (the cursor theme and size).
@@ -86,8 +86,8 @@ const PIN_ICONS: [(&str, &str, &str); 2] = [
 /// Where the desktop's files show (the taskbar's desktop-bubble setting,
 /// on for the first).
 const DESKTOP_FILES: [(&str, &str, &str); 2] = [
-    ("bubble", "On", "The desktop's files in a bubble, opened from a pill at the screen's left edge"),
-    ("desktop", "Off", "The desktop's files across the desktop, under your windows"),
+    ("bubble", "On", "The desktop's files in a panel that slides out over your windows"),
+    ("desktop", "Off", "The desktop's files on the desktop, under your windows. This is the default"),
 ];
 
 /// Whether the Recycle Bin is on the desktop (its show-recycle-bin setting,
@@ -695,12 +695,13 @@ fn desktop_page() -> gtk::ScrolledWindow {
     // would end the app)
     let has_key = |key: &str| taskbar.settings_schema().is_some_and(|schema| schema.has_key(key));
     if has_key("desktop-bubble") {
-        section_title(&content, "Desktop bubble");
+        section_title(&content, "Desktop files panel");
         note(
             &content,
-            "On, the desktop's files are kept off the desktop: a small pill at the screen's \
-             left edge, shown whenever no window covers it, opens them. Click it, or drag it \
-             out. It changes at once.",
+            "Off by default: your files stay on the desktop. On, a small pill at the screen's \
+             left edge, shown whenever no window covers it, slides them out over your windows \
+             as a full layer of the screen. It closes when a window opens, or with Esc. It \
+             changes at once.",
         );
         let items = DESKTOP_FILES
             .iter()

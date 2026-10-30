@@ -172,22 +172,17 @@ Waiting on the user:
   ~/src/patrone-linux/out/patrone-default-apps_0.2.0_all.deb
   ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.4_all.deb`.
 
-- **The desktop bubble's off switch** (the user, 2026-10-28: "allow the
-  user to disable the desktop bubble, and put that somewhere in
-  settings"): Settings → **Desktop** → **Desktop Bubble**, the first switch
-  on GNOME Settings' own Desktop page, with **Recycle Bin on the Desktop**
-  under it; they take the place of Ubuntu's Desktop Icons settings there
-  (GNOME Settings `patrone10`), and since `patrone13` the page has no Dock
-  settings either (the user's OK, 2026-10-28: their switch would bring
-  Ubuntu's dock back beside the taskbar). Patrone Settings → Desktop calls it
-  "Desktop bubble: On / Off" now (`patrone-settings` 0.3.6). Off, the pill
-  goes and the files show across the desktop at once, no signing out; the
-  Recycle Bin stays docked in its corner, and if it's hidden too, the
-  desktop's right-click menu has Show Recycle Bin. Install:
-  `sudo apt install ~/src/patrone-linux/out/gnome-control-center_50.3-0ubuntu0.2patrone13_amd64.deb
-  ~/src/patrone-linux/out/gnome-control-center-data_50.3-0ubuntu0.2patrone13_all.deb
-  ~/src/patrone-linux/out/patrone-settings_0.3.6_amd64.deb`. Checked in
-  the throwaway shell (shell/gnome/README.md, "The desktop bubble").
+- **The desktop files panel** (the user, 2026-10-30: "Make the desktop
+  files bubble off on default, and instead of a bubble, make it a box that
+  comes out"; 2026-10-28: "allow the user to disable" it): off by default,
+  and accounts that chose keep their choice. Settings → **Desktop** →
+  **Desktop Files Panel** turns it on, at once, with **Recycle Bin on the
+  Desktop** under it; they take the place of Ubuntu's Desktop Icons and
+  Dock settings there. On, the pill slides the files out as a full layer of
+  the screen, which closes when a window opens on top of it. Taskbar 0.4.11
+  and File Manager 0.3.9 go together; Patrone Settings 0.3.12 and GNOME
+  Settings `patrone20` have the words. Checked in the throwaway shell, not
+  yet in a fresh install (shell/gnome/README.md, "The desktop files panel").
 
 - **Remote Desktop first in Settings** (the user, 2026-10-28: "make the
   Remote Desktop as the main and first option that enables rdp, call it by

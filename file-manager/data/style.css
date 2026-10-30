@@ -1167,27 +1167,20 @@ progressbar.operation-progress progress {
   font-size: 9pt;
 }
 
-/* --- The desktop and the desktop bubble (desktop.rs) --------------------------- */
+/* --- The desktop and the desktop files panel (desktop.rs) ---------------------- */
 
 /* The desktop's window is see-through: the wallpaper is GNOME's. Drawn
    fully clear, GTK gives a window no picture and GNOME never shows it, so
-   it's 1% black. The bubble's window is clear but for the bubble. */
+   it's 1% black. So is the panel's window, which has the wallpaper under it
+   while it's open (the taskbar's desktopPanel.js). */
 window.desktop {
   background-color: rgba(0, 0, 0, 0.01);
-  box-shadow: none;
-}
-
-window.desktop-bubble {
-  background: none;
   box-shadow: none;
 }
 
 window.desktop .tab-content,
 window.desktop .file-list,
 window.desktop .content,
-window.desktop-bubble .tab-content,
-window.desktop-bubble .file-list,
-window.desktop-bubble .content,
 .desktop-backdrop {
   background: none;
 }
@@ -1253,12 +1246,29 @@ desktopgrid.desktop entry.rename-entry {
   color: var(--text);
 }
 
-desktopgrid button.more-cell {
-  padding: 4px;
-  border-radius: 4px;
+desktopgrid .desktop-panel-empty {
+  font-size: 1.2em;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.45);
 }
 
-desktopgrid .bubble-empty {
-  font-style: italic;
+/* The panel's bar, floating over the wallpaper: what this is, and the ways
+   out of it, so a screen that looks like the desktop doesn't look as if the
+   windows had gone. */
+.desktop-panel-bar {
+  margin: 12px;
+  padding: 4px 4px 4px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--menu-border);
+  background-color: var(--menu);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.desktop-panel-bar .title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.desktop-panel-bar .count {
   color: var(--text-secondary);
 }
