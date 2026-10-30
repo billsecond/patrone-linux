@@ -386,8 +386,8 @@ class Clock {
             style_class: 'patrone-clock',
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._time = new St.Label({style_class: 'patrone-clock-time', x_align: Clutter.ActorAlign.CENTER});
-        this._date = new St.Label({style_class: 'patrone-clock-date', x_align: Clutter.ActorAlign.CENTER});
+        this._time = new St.Label({style_class: 'patrone-clock-time', x_align: Clutter.ActorAlign.END});
+        this._date = new St.Label({style_class: 'patrone-clock-date', x_align: Clutter.ActorAlign.END});
         this.actor.add_child(this._time);
         this.actor.add_child(this._date);
         // The date is laid out last, so by then the rest of the clock has its place
