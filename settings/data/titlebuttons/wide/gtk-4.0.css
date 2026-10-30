@@ -2,17 +2,19 @@
  * them into the account's ~/.config/gtk-4.0/gtk.css): flat and wide, in the
  * title's color, close turning red under the pointer. Every property is set
  * in every state, so libadwaita's buttons and the GTK theme's come out the
- * same. */
+ * same.
+ * Rules say window:not(.patrone-live): apps that follow a change while they run
+ * load this sheet themselves, without that, and their windows have the class. */
 
-windowcontrols {
+window:not(.patrone-live) windowcontrols {
   border-spacing: 0;
   margin: 0;
 }
 
-windowcontrols > button,
-windowcontrols > button:hover,
-windowcontrols > button:active,
-windowcontrols > button:backdrop {
+window:not(.patrone-live) windowcontrols > button,
+window:not(.patrone-live) windowcontrols > button:hover,
+window:not(.patrone-live) windowcontrols > button:active,
+window:not(.patrone-live) windowcontrols > button:backdrop {
   min-width: 46px;
   min-height: 32px;
   margin: 0;
@@ -25,10 +27,10 @@ windowcontrols > button:backdrop {
   color: inherit;
 }
 
-windowcontrols > button > image,
-windowcontrols > button:hover > image,
-windowcontrols > button:active > image,
-windowcontrols > button:backdrop > image {
+window:not(.patrone-live) windowcontrols > button > image,
+window:not(.patrone-live) windowcontrols > button:hover > image,
+window:not(.patrone-live) windowcontrols > button:active > image,
+window:not(.patrone-live) windowcontrols > button:backdrop > image {
   min-width: 16px;
   min-height: 16px;
   margin: 0;
@@ -41,16 +43,16 @@ windowcontrols > button:backdrop > image {
   -gtk-icon-size: 16px;
 }
 
-windowcontrols > button:hover {
+window:not(.patrone-live) windowcontrols > button:hover {
   background-color: alpha(currentColor, 0.1);
 }
 
-windowcontrols > button:active {
+window:not(.patrone-live) windowcontrols > button:active {
   background-color: alpha(currentColor, 0.18);
 }
 
-windowcontrols > button.close:hover,
-windowcontrols > button.close:active {
+window:not(.patrone-live) windowcontrols > button.close:hover,
+window:not(.patrone-live) windowcontrols > button.close:active {
   background-color: #c42b1c;
   color: #ffffff;
 }

@@ -1,3 +1,17 @@
+patrone-settings (0.3.12) resolute; urgency=medium
+
+  * Patrone's own apps and GNOME Settings now take a new theme or title bar
+    button style at once, this window first (the user: "not working when i
+    click it live"). GTK reads the account's gtk.css once, when an app
+    starts; these apps now load its style sheets themselves and watch it.
+    Other apps that are open change when they're next opened: GTK gives
+    nothing outside an app a way to reload them.
+  * Terminal at sign-in has a third choice, Off: it doesn't open
+    (patrone-gnome-taskbar 0.4.11, patrone-terminal 0.1.9). A taskbar too
+    old to have it doesn't show the card.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-settings (0.3.11) resolute; urgency=medium
 
   * The Mouse pointer page lists Patrone's three cursor themes first, in

@@ -29,9 +29,9 @@ Until 0.3.8 it stayed light in the dark style.
 | Page | Choices | Setting |
 | --- | --- | --- |
 | Taskbar | Size: Small (32 pixels), Medium (42, the default), Large (52). Layout: Left (the default), Centered, Split (Start on the left, the apps in the middle), Top (along the top of the screen). Start button: the Patrone P, one color, orb, grid, menu, circle, spark, prompt. Color: from the wallpaper (the default), or the theme's own; only the Patrone, Modern and Studio themes take the wallpaper's color, and the page says so. Pin icons: Patrone's (the default), or each app's own | `org.gnome.shell.extensions.patrone-taskbar` `size`, `layout`, `start-icon`, `color` and `pin-icons` (the taskbar's own schema; the page says so if the taskbar isn't installed, and leaves out Color and Pin icons for a taskbar older than 0.3.2). The Start button's icons are the taskbar's, from its `icons` folder |
-| Desktop | Desktop bubble: On (the default: the desktop's files in a bubble, which a pill at the screen's left edge opens, over any window) or Off (the files across the desktop); it changes at once. GNOME Settings' Desktop page has the same as a switch. Recycle Bin: On the desktop (the default) or Hidden. Terminal at sign-in: Over the logo (the default: large, over the wallpaper's logo, at any screen size) or Centered (at its own size, in the middle of the screen) | `org.gnome.shell.extensions.patrone-taskbar` `desktop-bubble` and `show-recycle-bin`, both yes-or-no, and `sign-in-terminal` (`logo` or `center`) (the taskbar's own schema; each is left out for a taskbar too old to have it). See `shell/gnome/README.md`, "The desktop bubble" and "The terminal at sign-in" |
-| Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps |
-| Theme | Themes: Patrone, Modern, Classic, Sapphire, Studio. Font: PatroneOS Sans (the default, the `fonts-patroneos` package), with PatroneOS Document for documents, or Noto Sans | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, and of `document-font-name` with them (PatroneOS Document with PatroneOS Sans), their sizes and styles kept (`src/font.rs`); a desktop still set to Patrone Sans, the font before, shows PatroneOS Sans picked; the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
+| Desktop | Desktop bubble: On (the default: the desktop's files in a bubble, which a pill at the screen's left edge opens, over any window) or Off (the files across the desktop); it changes at once. GNOME Settings' Desktop page has the same as a switch. Recycle Bin: On the desktop (the default) or Hidden. Terminal at sign-in: Over the logo (the default: large, over the wallpaper's logo, at any screen size), Centered (at its own size, in the middle of the screen) or Off (it doesn't open) | `org.gnome.shell.extensions.patrone-taskbar` `desktop-bubble` and `show-recycle-bin`, both yes-or-no, and `sign-in-terminal` (`logo`, `center` or `off`) (the taskbar's own schema; each is left out for a taskbar too old to have it, and Off for one that doesn't have that choice). See `shell/gnome/README.md`, "The desktop bubble" and "The terminal at sign-in" |
+| Title bar buttons | Position: top right (minimize, maximize, then close in the corner) or top left (close in the corner, then minimize, maximize). Style: Theme's own, Wide, Round, Dots, Glossy | Position: GNOME's `org.gnome.desktop.wm.preferences button-layout`; open apps follow at once. Style: `org.patrone.desktop title-buttons`, plus its style sheet for apps; Patrone's own apps and GNOME Settings follow at once |
+| Theme | Themes: Patrone, Modern, Classic, Sapphire, Studio. Font: PatroneOS Sans (the default, the `fonts-patroneos` package), with PatroneOS Document for documents, or Noto Sans | Theme: `org.patrone.desktop theme` (`data/org.patrone.desktop.gschema.xml`), plus the theme's style for apps; Patrone's own apps and GNOME Settings follow at once. Font: the family of GNOME's `org.gnome.desktop.interface font-name` and `org.gnome.desktop.wm.preferences titlebar-font`, and of `document-font-name` with them (PatroneOS Document with PatroneOS Sans), their sizes and styles kept (`src/font.rs`); a desktop still set to Patrone Sans, the font before, shows PatroneOS Sans picked; the monospace font stays. Open apps follow at once. A font that isn't installed can't be picked, and its card names its package |
 | Mouse pointer | Pointer: each cursor theme installed that GNOME can show (below), Patrone's first: Patrone Blue (the default), Patrone Black, Patrone White. Size: Default (24 pixels), Medium (32), Large (48), Larger (64), Largest (96), as GNOME Settings' Accessibility page has them | GNOME's `org.gnome.desktop.interface cursor-theme` and `cursor-size` (`src/cursor.rs`). The pointer changes at once (below) |
 
 The taskbar's layout, and the title bar buttons' corner and style, are the
@@ -57,8 +57,9 @@ in those themes. Until 2026-10-26 only Classic and Sapphire had title bars of
 their own, so choosing among the others seemed to do nothing to windows.
 
 GTK reads the account's `gtk.css` once, when an app starts (`gtksettings.c`
-loads it and never again), so open apps can't follow a change: they show
-it when they're next opened.
+loads it and never again), so an open app can't follow a change unless it
+does the work itself: Patrone's own apps and GNOME Settings do (below), and
+others show a change when they're next opened.
 
 Sapphire was Classic until 2026-10-26, when the user asked for Classic to be
 plainer and for the old look to stay as a theme of its own, without the word
@@ -96,8 +97,28 @@ Settings puts the style sheets (the theme's title bars from
 account's `~/.config/gtk-4.0/gtk.css` and `~/.config/gtk-3.0/gtk.css`, as
 `@import`s between two marked lines at the top. Anything else in those
 files is kept, and since it comes after, the account's own rules still win.
-GTK reads these files when an app starts, so apps that are open pick a
-change up when they're next opened; libadwaita apps read them too.
+GTK reads these files when an app starts, libadwaita apps included.
+
+So that a choice takes effect at once (the user, 2026-10-30: "not working
+when i click it live"), Patrone Settings, Patrone Terminal, File Manager and
+Task Manager (`src/live_style.rs`, the same file in each) and GNOME Settings
+(`cc-patrone-panel.c`) load those style sheets themselves, watch `gtk.css`,
+and load them again when it changes. Each rule in a GTK 4 sheet says
+`window:not(.patrone-live)` (a test checks), and these apps give their
+windows that class, so what GTK read at the start doesn't reach them, and
+nothing of the old style stays behind; the copy they load has the
+`:not(.patrone-live)` taken out. Browser Chooser, Unpack and Hyper-V setup
+open for moments at a time, so they don't, and their windows get the sheets
+from `gtk.css` as they always have.
+
+Other apps that are open change only when they're next opened, and nothing
+Patrone can do from outside them changes that. GTK reloads a running app's
+styles only when `gtk-theme-name` or the dark preference changes, the
+reloaded layer isn't `gtk.css`, and libadwaita apps fix their theme name, so
+that can't reach them either (read in GTK 4.22's `gtksettings.c` and
+libadwaita 1.9's `adw-style-manager.c`). GTK 4 no longer loads modules into
+apps, as GTK 3 did. The pages say which apps change at once.
+
 `--set-theme` and `--set-title-buttons` do the same without a window, for
 GNOME Settings' Patrone page. `--apply` writes them for the settings as
 they are: an autostart entry (`/etc/xdg/autostart/org.patrone.Settings-apply.desktop`)
@@ -224,3 +245,19 @@ was picked with its cards, and the pointer was screenshotted over the
 window (light, and in the dark style), over a card's dark picture and over
 the desktop: each time in the theme and at the size picked, sharp at 48,
 its shadow plain on all but the near-black picture.
+
+For 0.3.12 (2026-10-30), built on the dev VM from its branch, with Patrone
+Terminal, File Manager, Task Manager, GNOME Settings and GNOME's Calculator
+open in the throwaway shell: through five themes and the four button styles,
+a screenshot a second after each change showed all but the Calculator
+changed, title bars and buttons. Their title bars matched the same apps
+opened afresh in that style (only focus and stacking differed), so nothing of
+the last style stays behind. The Calculator kept its old look until it was
+opened again. Clicking Dots, Glossy and
+Round on the page changed the window's own title bar. On a new account with
+no `gtk.css` yet, the first change can take a few seconds, until GIO sees
+the new folder; sign-in writes that file. For Terminal at sign-in, a new
+shell per choice, running the package's autostart script: Over the logo
+opened it large and Centered at its own size, and Off opened nothing, while
+a terminal opened by hand soon after still opened. Not tried at a real
+sign-in.

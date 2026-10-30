@@ -17,6 +17,7 @@
 
 mod cursor;
 mod font;
+mod live_style;
 mod preview;
 mod theme;
 
@@ -97,11 +98,12 @@ const RECYCLE_BIN: [(&str, &str, &str); 2] = [
     ("hidden", "Hidden", "Still in File Manager's navigation pane"),
 ];
 
-/// Where the terminal opened at sign-in goes (the taskbar's
+/// Whether the terminal opens at sign-in, and where it goes (the taskbar's
 /// sign-in-terminal setting).
-const SIGN_IN_TERMINAL: [(&str, &str, &str); 2] = [
+const SIGN_IN_TERMINAL: [(&str, &str, &str); 3] = [
     ("logo", "Over the logo", "Large, over the wallpaper's logo, at any screen size"),
     ("center", "Centered", "At its own size, in the middle of the screen"),
+    ("off", "Off", "It doesn't open when you sign in"),
 ];
 
 /// The taskbar's icons folder: in the account's extensions, or the system's.
@@ -318,6 +320,7 @@ fn load_style() {
             &provider,
             gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
+        live_style::follow(&display);
     }
 }
 
@@ -724,11 +727,18 @@ fn desktop_page() -> gtk::ScrolledWindow {
         section_title(&content, "Terminal at sign-in");
         note(
             &content,
-            "Patrone Terminal opens each time you sign in. Once you move it, it stays where you \
-             put it. A new choice is for the next sign-in.",
+            "Whether Patrone Terminal opens when you sign in, and where it goes. Once you move \
+             it, it stays where you put it. A new choice is for the next sign-in.",
         );
+        // An older taskbar's setting has no "off"
+        let takes = |value: &str| {
+            taskbar
+                .settings_schema()
+                .is_some_and(|schema| schema.key("sign-in-terminal").range_check(&value.to_variant()))
+        };
         let items = SIGN_IN_TERMINAL
             .iter()
+            .filter(|&&(value, _, _)| takes(value))
             .map(|&(value, title, detail)| {
                 Choice::new(value, title, detail, drawing(move |cr, w, h| preview::sign_in_terminal(cr, w, h, value)))
             })
@@ -792,7 +802,8 @@ fn buttons_page() -> gtk::ScrolledWindow {
     };
     note(
         &content,
-        "The same in every app. Apps that are open pick up a new style when they're next opened.",
+        "The same in every app. Patrone's own apps and GNOME Settings change at once. Other \
+         apps that are open change when they're next opened.",
     );
     let items = theme::BUTTON_STYLES
         .iter()
@@ -816,8 +827,8 @@ fn theme_page() -> gtk::ScrolledWindow {
         "The look of the taskbar, title bars and window buttons, and the \
          desktop's font. Where the taskbar's buttons go (the Taskbar page) and \
          which corner the window buttons go in (Title bar buttons) are up to \
-         you: themes don't change them. Apps that are open pick up a new theme \
-         when they're next opened.",
+         you: themes don't change them. Patrone's own apps and GNOME Settings \
+         change at once. Other apps that are open change when they're next opened.",
     );
     let Some(desktop) = settings(DESKTOP_SCHEMA) else {
         note(&content, "Patrone Settings isn't installed properly: its settings schema is missing.");

@@ -736,7 +736,7 @@ pub fn sign_in_terminal(cr: &Context, w: f64, h: f64, place: &str) {
     // a terminal's own size is about half a 1920 by 1080 screen
     if place == "logo" {
         terminal_window(cr, w * 0.114, h * 0.086, w * 0.719, h * 0.74);
-    } else {
+    } else if place == "center" {
         let (tw, th) = (w * 0.48, top * 0.64);
         terminal_window(cr, (w - tw) / 2.0, (top - th) / 2.0, tw, th);
     }
