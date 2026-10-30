@@ -6,6 +6,9 @@ patrone-file-manager (0.3.9) resolute; urgency=medium
     page (patrone-settings 0.3.12), where it opened Theme.
   * "Set as desktop background" works after the wallpaper is set to None,
     which would have gone on hiding the picture.
+  * Open Desktop folder, and anything else on the desktop that opens a
+    folder, works after File Manager has been updated. Until the next
+    sign-in, the desktop tried to start the old program, which was gone.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
 
