@@ -386,16 +386,36 @@ class Clock {
             style_class: 'patrone-clock',
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._time = new St.Label({style_class: 'patrone-clock-time', x_align: Clutter.ActorAlign.END});
-        this._date = new St.Label({style_class: 'patrone-clock-date', x_align: Clutter.ActorAlign.END});
+        this._time = new St.Label({style_class: 'patrone-clock-time', x_align: Clutter.ActorAlign.CENTER});
+        this._date = new St.Label({style_class: 'patrone-clock-date', x_align: Clutter.ActorAlign.CENTER});
         this.actor.add_child(this._time);
         this.actor.add_child(this._date);
+        // The date is laid out last, so by then the rest of the clock has its place
+        this._date.connectObject('notify::allocation', () => this._center(), this.actor);
 
         this._interfaceSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
         this._interfaceSettings.connectObject('changed::clock-format', () => this._update(), this.actor);
         this._wallClock = new GnomeDesktop.WallClock();
         this._wallClock.connectObject('notify::clock', () => this._update(), this.actor);
         this._update();
+    }
+
+    /**
+     * Evens out the space above and below the text. A font's lines leave more
+     * room above its figures than below them, and two lines can fill the bar,
+     * so this places the figures themselves. It goes by the time's: the date's
+     * slashes reach past them. (The layout's pixels are a scaled screen's, so
+     * they're measured against the line's height on the stage.)
+     */
+    _center() {
+        const [ink, line] = this._time.clutter_text.get_layout().get_pixel_extents();
+        const scale = this._time.height / line.height;
+        const figures = ink.height * scale;
+        const offset = ink.y * scale;
+        const gap = Math.round(figures * 0.7);
+        const top = Math.floor((this.actor.height - 2 * figures - gap) / 2);
+        this._time.translation_y = top - offset;
+        this._date.translation_y = top + figures + gap - offset - this._date.y;
     }
 
     _update() {

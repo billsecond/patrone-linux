@@ -83,9 +83,9 @@ From the left:
   means it's running, a longer blue one that it's in front.
 - On the right, the **tray**: the top bar's own status icons and menus
   (network, sound, power, input sources, other apps' indicators), then the
-  clock (time over date, the way Windows users expect), with the calendar
-  and notifications behind it, and the **Show desktop** sliver at the far
-  right.
+  clock (time over date, the way Windows users expect, centered with even
+  space above and below), with the calendar and notifications behind it,
+  and the **Show desktop** sliver at the far right.
 
 Clicking a button works as on Windows: it starts the app, shows its window,
 or minimizes it when it's already in front; with several windows each click

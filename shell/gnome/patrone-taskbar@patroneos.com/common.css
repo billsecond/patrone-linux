@@ -92,7 +92,7 @@
 .patrone-clock-time,
 .patrone-clock-date {
   font-size: 10.5pt;
-  text-align: right;
+  text-align: center;
 }
 
 /* Show desktop: the sliver at the far right */
