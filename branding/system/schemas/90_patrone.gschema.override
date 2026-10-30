@@ -19,6 +19,9 @@ cursor-theme='Patrone'
 font-name='PatroneOS Sans 11'
 document-font-name='PatroneOS Document 11'
 monospace-font-name='PatroneOS Mono 11'
+# 12-hour time with AM or PM, on the taskbar and the lock screen, whatever the
+# language, in place of the 24-hour time GNOME starts with
+clock-format='12h'
 
 [org.gnome.desktop.interface:ubuntu]
 gtk-theme='Yaru-blue'
