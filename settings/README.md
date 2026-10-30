@@ -24,10 +24,10 @@ The window is in GTK's own theme, light or dark with the desktop's style,
 as Patrone's other apps are (Ubuntu's Yaru doesn't load in plain GTK 4
 apps, and GTK 4.22's Default theme has to be asked for its dark variant).
 Until 0.3.8 it stayed light in the dark style. Its corners are 15 pixels, as
-libadwaita's are in GNOME's apps; GTK's own theme has 8 at the top and none
-at the bottom, and Task Manager's Yaru has 12. Patrone Terminal, File Manager
-and Task Manager set the same (2026-10-30), square when a window is
-maximized, snapped or full screen. An app's own rule outranks GTK's, so each
+in GNOME's apps (libadwaita's `--window-radius`); GTK's own theme has 8 at
+the top and none at the bottom. Patrone Terminal, File Manager and Task
+Manager set the same (2026-10-30), square when a window is maximized,
+snapped or full screen. An app's own rule outranks GTK's, so each
 has to say that itself. Classic's sheet loads above it, so Classic stays
 square.
 
