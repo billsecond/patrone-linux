@@ -1,8 +1,9 @@
 # Patrone's GDM
 
-Patrone builds Ubuntu's GDM (`gdm3`) again with one change, so the login
-screen doesn't keep a stalled boot splash on screen for 10 seconds on a
-Hyper-V VM.
+Patrone builds Ubuntu's GDM (`gdm3`) again with two changes: the login screen
+doesn't keep a stalled boot splash on screen for 10 seconds on a Hyper-V VM
+(below), and a desktop can be unlocked after its screen is locked
+([Unlocking a desktop](#unlocking-a-desktop)).
 
 The user saw it on the dev VM (2026-10-27): the boot splash's spinner turned
 for only a few seconds, then the logo stood still until the login screen.
@@ -29,11 +30,38 @@ the full 10 seconds.
 | File | |
 | --- | --- |
 | `patches/patrone-hyperv-boot-display.patch` | Counts a display on the VMBus as the boot display: `hyperv_drm` takes over the framebuffer the VM's firmware booted on. Other computers are checked as before |
+| `patches/patrone-unlock-seatless-session.patch` | Unlocks a session with no seat after its lock screen takes the password |
 | `build.sh` | Fetches Ubuntu's source, adds the patch, versions it Ubuntu's version plus `patrone` and the revision, and builds. From revision 2 it names Patrone as the packages' maintainer and Ubuntu Developers as the original one, as Debian's guidelines for derivatives have it, and adds Patrone's patch to the copyright file (`docs/COMPLIANCE.md`, item 13) |
 
 GDM still deactivates the splash as it starts: Plymouth has to let go of the
 screen before GNOME Shell can take it. Without the wait, the splash stands
 still only while the login screen starts, about a second.
+
+## Unlocking a desktop
+
+Patrone's desktops have no seat: the screen shows them through a viewer in a
+session of its own (`remote-desktop/README.md`). Nothing locks them by itself
+(`libexec/no-lock`), but the lock button and Super+L do. GDM then checks the
+password, asks logind to activate the session on its display's seat, and only
+after that unlocks it. logind refuses (`SessionNotOnSeat: Session 3 not on seat
+seat0`), so GDM stopped there: the lock screen took the right password, cleared
+it and stayed, and only restarting got back to the desktop. After a password
+check that didn't come from a login screen, GDM now also unlocks the account's
+graphical sessions with no seat, and then carries on as before. It can't go by
+who asked: GNOME Shell runs as a user service, outside any logind session, and
+an account with a Patrone desktop has two sessions, the desktop and the screen's
+viewer, so GDM's own guess at the session can be the wrong one.
+
+`switch_to_compatible_user_session()` itself has to stay as it is: at sign-in,
+that failed activation is how GDM learns it can't switch to the desktop, so it
+goes on to start the screen's viewer.
+
+`50.1-0ubuntu0.1patrone4`, on a fresh install in a QEMU VM (2026-10-30): the
+lock button and Super+L lock the desktop, the right password unlocks it, a wrong
+one doesn't, and signing out afterwards leaves nothing behind. That holds with
+the desktop started by the screen's sign-in, and with it started by a Remote
+Desktop sign-in and the screen signing in after. The journal still shows the
+`SessionNotOnSeat` line at each unlock, from the unchanged path that runs after.
 
 ## Building
 

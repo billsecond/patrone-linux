@@ -332,7 +332,9 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
 `libexec/no-lock` runs at every GNOME login (from `/etc/xdg/autostart`). In a
 session with no seat, which is how these desktops run, it turns off GNOME's
 screen lock and blanking, after saving the account's own settings, and puts
-them back at the next login in a plain GNOME session on the screen.
+them back at the next login in a plain GNOME session on the screen. The lock
+button and Super+L still lock such a session, and Patrone's GDM unlocks it
+(`gdm/README.md`).
 
 ## Things to know
 
