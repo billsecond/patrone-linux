@@ -53,10 +53,10 @@ VIRTUAL_ENV_DISABLE_PROMPT=1
     if (( EUID == 0 )); then
         frame=red name=9 symbol='#'
     fi
-    PROMPT="%F{$frame}┌──\${VIRTUAL_ENV:+(\${VIRTUAL_ENV:t})─}(%B%F{$name}%n㉿%m%b%F{$frame})-[%B%f%(6~.%-1~/…/%4~.%5~)%b%F{$frame}]"$'\n'"└─%B%F{$name}$symbol%b%f "
+    PROMPT="%(1V.%F{red}✗ exit code %1v%f"$'\n'".)%F{$frame}┌──\${VIRTUAL_ENV:+(\${VIRTUAL_ENV:t})─}(%B%F{$name}%n㉿%m%b%F{$frame})-[%B%f%(6~.%-1~/…/%4~.%5~)%b%F{$frame}]"$'\n'"└─%B%F{$name}$symbol%b%f "
 }
-# The last command's exit status when it failed, and the number of background jobs
-RPROMPT='%(?..%F{red}%? ✗%f)%(1j. %F{yellow}%j⚙%f.)'
+# The number of background jobs
+RPROMPT='%(1j.%F{yellow}%j⚙%f.)'
 
 # Tell the terminal its title and the current directory, so a new tab opens
 # in the same directory (OSC 7).
@@ -73,11 +73,22 @@ _patrone_report_directory() {
     done
     printf '\e]7;file://%s%s\e\\' "$HOST" "$url"
 }
+# A failed command's exit status goes on its own line under the command, in
+# front of the prompt, so it isn't taken for the next command's. It shows once,
+# after a command that ran, and not after an empty line or an unfinished one.
+_patrone_ran=
 _patrone_precmd() {
+    local code=$?
+    psvar[1]=
+    if [[ -n $_patrone_ran ]] && (( code != 0 )); then
+        psvar[1]=$code
+    fi
+    _patrone_ran=
     print -Pn '\e]2;%n@%m: %~\a'
     _patrone_report_directory
 }
 _patrone_preexec() {
+    _patrone_ran=1
     print -rn -- $'\e]2;'"${1//[[:cntrl:]]/ }"$'\a'
 }
 autoload -Uz add-zsh-hook

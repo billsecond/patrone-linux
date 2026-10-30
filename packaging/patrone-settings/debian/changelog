@@ -1,3 +1,35 @@
+patrone-settings (0.3.13) resolute; urgency=medium
+
+  * The Desktop page's "Desktop bubble" is "Desktop files": on the desktop
+    (the default), in a panel, or a clean desktop, with new pictures, and
+    on a clean desktop the corner that shows the files, offering only
+    corners nothing else uses.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
+patrone-settings (0.3.12) resolute; urgency=medium
+
+  * Patrone's own apps and GNOME Settings now take a new theme or title bar
+    button style at once, this window first (the user: "not working when i
+    click it live"). GTK reads the account's gtk.css once, when an app
+    starts; these apps now load its style sheets themselves and watch it.
+    Other apps that are open change when they're next opened: GTK gives
+    nothing outside an app a way to reload them.
+  * Terminal at sign-in has a third choice, Off: it doesn't open
+    (patrone-gnome-taskbar 0.4.11, patrone-terminal 0.1.9). A taskbar too
+    old to have it doesn't show the card.
+  * A Wallpaper page (the user, 2026-10-30), which the desktop menu's
+    Personalize now opens: the wallpapers installed, or None and a
+    background color, from ten or any other. A color with no choice made is
+    Patrone Blue's dark tone (the new background-color setting). It changes
+    the desktop and the lock screen at once, as GNOME Settings' Appearance
+    page does. The cards' pictures load in the background and are kept in
+    the account's cache, because the wallpapers are up to 8K.
+  * Its window corners match GNOME's apps, at 15 pixels, where they were 8
+    at the top and square at the bottom.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-settings (0.3.11) resolute; urgency=medium
 
   * The Mouse pointer page lists Patrone's three cursor themes first, in

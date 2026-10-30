@@ -1020,6 +1020,10 @@ pub fn set_background(window: &Window) {
     let uri = file.uri();
     let _ = settings.set_string("picture-uri", &uri);
     let _ = settings.set_string("picture-uri-dark", &uri);
+    // With the wallpaper set to None, GNOME would go on hiding the picture
+    if settings.string("picture-options") == "none" {
+        let _ = settings.set_string("picture-options", "zoom");
+    }
 }
 
 /// Windows' "Map network drive": a network folder's address, signing in if

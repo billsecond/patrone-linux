@@ -17,6 +17,8 @@ Package: patrone-file-manager
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, gvfs, fonts-inter | fonts-noto-core
 Recommends: gvfs-backends, xdg-user-dirs, xdg-utils, pkexec, acl
+# The desktop files panel takes both: they talk over a pipe
+Breaks: patrone-gnome-taskbar (<< 0.4.12)
 Description: file manager for PatroneOS
  Patrone File Manager is the file manager of PatroneOS, and it works
  the way Windows users expect: tabs, the command bar, breadcrumbs, the
@@ -25,4 +27,4 @@ Description: file manager for PatroneOS
  Properties, and copying, moving and deleting with progress, conflict
  handling and undo. It works with the Recycle Bin (the trash),
  removable drives and network places through GIO. It also draws the
- desktop and the desktop bubble, which Patrone's taskbar hosts.
+ desktop and the desktop files panel, which Patrone's taskbar hosts.

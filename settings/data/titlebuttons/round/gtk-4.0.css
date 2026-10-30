@@ -1,27 +1,29 @@
 /* Patrone's Round title bar buttons for GTK 4 apps (Patrone Settings imports
  * them into the account's ~/.config/gtk-4.0/gtk.css): small symbols in soft
  * circles. Every property is set in every state, so libadwaita's buttons
- * and the GTK theme's come out the same. */
+ * and the GTK theme's come out the same.
+ * Rules say window:not(.patrone-live): apps that follow a change while they run
+ * load this sheet themselves, without that, and their windows have the class. */
 
-windowcontrols {
+window:not(.patrone-live) windowcontrols {
   border-spacing: 6px;
   margin: 0;
 }
 
-windowcontrols.start {
+window:not(.patrone-live) windowcontrols.start {
   margin-left: 6px;
   margin-right: 6px;
 }
 
-windowcontrols.end {
+window:not(.patrone-live) windowcontrols.end {
   margin-left: 6px;
   margin-right: 6px;
 }
 
-windowcontrols > button,
-windowcontrols > button:hover,
-windowcontrols > button:active,
-windowcontrols > button:backdrop {
+window:not(.patrone-live) windowcontrols > button,
+window:not(.patrone-live) windowcontrols > button:hover,
+window:not(.patrone-live) windowcontrols > button:active,
+window:not(.patrone-live) windowcontrols > button:backdrop {
   min-width: 24px;
   min-height: 24px;
   margin: 0;
@@ -34,10 +36,10 @@ windowcontrols > button:backdrop {
   color: inherit;
 }
 
-windowcontrols > button > image,
-windowcontrols > button:hover > image,
-windowcontrols > button:active > image,
-windowcontrols > button:backdrop > image {
+window:not(.patrone-live) windowcontrols > button > image,
+window:not(.patrone-live) windowcontrols > button:hover > image,
+window:not(.patrone-live) windowcontrols > button:active > image,
+window:not(.patrone-live) windowcontrols > button:backdrop > image {
   min-width: 16px;
   min-height: 16px;
   margin: 0;
@@ -51,10 +53,10 @@ windowcontrols > button:backdrop > image {
   -gtk-icon-size: 16px;
 }
 
-windowcontrols > button:hover > image {
+window:not(.patrone-live) windowcontrols > button:hover > image {
   background-color: alpha(currentColor, 0.16);
 }
 
-windowcontrols > button:active > image {
+window:not(.patrone-live) windowcontrols > button:active > image {
   background-color: alpha(currentColor, 0.28);
 }

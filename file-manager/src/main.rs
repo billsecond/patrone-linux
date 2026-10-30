@@ -3,7 +3,6 @@
 
 mod addressbar;
 mod archive;
-mod bubble;
 mod clipboard;
 mod commandbar;
 mod commands;
@@ -22,6 +21,7 @@ mod glyph;
 mod hints;
 mod home;
 mod icons;
+mod live_style;
 mod location;
 mod menu;
 mod menus;
@@ -65,7 +65,7 @@ Opens a File Manager window for each folder. A file opens in its app.
                      folders open at the last sign-out if Folder Options
                      says to
       --quit         Close every File Manager window
-      --desktop      Draw the desktop and the desktop bubble (the
+      --desktop      Draw the desktop and the desktop files panel (the
                      taskbar starts it, and hosts its windows)
   -h, --help         Show this help
   -V, --version      Show the version
@@ -136,6 +136,7 @@ pub fn load_style() {
         &over_theme,
         gtk::STYLE_PROVIDER_PRIORITY_USER + 1,
     );
+    live_style::follow(&display);
     gtk::Window::set_default_icon_name(APP_ID);
 }
 

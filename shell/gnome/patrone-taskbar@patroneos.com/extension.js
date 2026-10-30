@@ -5,7 +5,7 @@ import Gio from 'gi://Gio';
 
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import {DesktopBubble} from './desktopBubble.js';
+import {DesktopPanel} from './desktopPanel.js';
 import {DesktopHost} from './desktopHost.js';
 import {Taskbar} from './taskbar.js';
 import {startExtra} from './util.js';
@@ -25,6 +25,14 @@ function renameInShellLists(uuid) {
     }
 }
 
+// The desktop-bubble yes-or-no became desktop-files (2026-10-30): an account
+// that chose keeps its choice, once.
+function carryOverDesktopFiles(settings) {
+    const bubble = settings.get_user_value('desktop-bubble');
+    if (bubble && !settings.get_user_value('desktop-files'))
+        settings.set_string('desktop-files', bubble.get_boolean() ? 'panel' : 'desktop');
+}
+
 export default class PatroneTaskbarExtension extends Extension {
     enable() {
         try {
@@ -33,17 +41,23 @@ export default class PatroneTaskbarExtension extends Extension {
             console.warn(`Patrone Taskbar: couldn't rename its old ID in the account's lists: ${e}`);
         }
         this._taskbar = new Taskbar(this);
+        try {
+            carryOverDesktopFiles(this._taskbar.settings);
+        } catch (e) {
+            console.warn(`Patrone Taskbar: couldn't carry over the desktop bubble's setting: ${e}`);
+        }
         this._desktopHost = startExtra('desktop',
             () => new DesktopHost(this._taskbar.settings, this._taskbar.recycleBin));
         if (this._desktopHost) {
-            this._desktopBubble = startExtra('desktop bubble',
-                () => new DesktopBubble(this._taskbar.settings, this._taskbar.recycleBin, this._desktopHost));
+            this._desktopPanel = startExtra('desktop panel',
+                () => new DesktopPanel(this._taskbar.settings, this._taskbar.recycleBin, this._desktopHost));
+            this._taskbar.showDesktopFiles = () => this._desktopPanel?.open();
         }
     }
 
     disable() {
-        this._desktopBubble?.destroy();
-        this._desktopBubble = null;
+        this._desktopPanel?.destroy();
+        this._desktopPanel = null;
         this._desktopHost?.destroy();
         this._desktopHost = null;
         this._taskbar.destroy();

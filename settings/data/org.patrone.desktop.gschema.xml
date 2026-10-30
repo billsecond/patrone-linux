@@ -42,5 +42,14 @@
         GTK settings. Which corner they go in is GNOME's button-layout.
       </description>
     </key>
+    <key name="background-color" type="s">
+      <default>'#1851a8'</default>
+      <summary>The color shown when the wallpaper is None</summary>
+      <description>
+        A color as #rrggbb, chosen on Patrone Settings' Wallpaper page. None
+        puts it in GNOME's primary-color and sets picture-options to "none".
+        It's kept here so that it's still there after a picture.
+      </description>
+    </key>
   </schema>
 </schemalist>

@@ -1,15 +1,15 @@
-Description: Patrone's desktop switches on the Desktop page
+Description: Patrone's desktop settings on the Desktop page
  With Patrone's taskbar installed, File Manager draws the desktop and
- Ubuntu's desktop icons and dock are off, so the page has switches for the
- desktop bubble and the Recycle Bin where Desktop Icons' settings were, and
- no Dock settings: their switches would bring Ubuntu's icons or dock back
- beside Patrone's.
+ Ubuntu's desktop icons and dock are off, so the page has Patrone's settings
+ where Desktop Icons' were: where the desktop's files show, the corner of a
+ clean desktop, and the Recycle Bin. It has no Dock settings either: their
+ switches would bring Ubuntu's icons or dock back beside Patrone's.
 Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
 Forwarded: not-needed
 ---
 --- a/panels/ubuntu/cc-ubuntu-panel.blp
 +++ b/panels/ubuntu/cc-ubuntu-panel.blp
-@@ -47,6 +47,24 @@
+@@ -47,6 +47,38 @@
  
        Adw.PreferencesPage {
  
@@ -18,15 +18,29 @@ Forwarded: not-needed
 +        Adw.PreferencesGroup patrone_desktop_group {
 +          visible: false;
 +
-+          Adw.SwitchRow patrone_bubble_switch {
-+            title: _("Desktop _Bubble");
-+            subtitle: _("The desktop's files in a bubble, opened from the pill at the screen's left edge. Off, they show across the desktop.");
++          Adw.ComboRow patrone_files_row {
++            title: _("Desktop _Files");
++            subtitle: _("Where the files on your desktop show. A clean desktop keeps everything off it, the Recycle Bin too.");
 +            use-underline: true;
++            model: StringList {
++              strings [
++                _("On the Desktop"),
++                _("In a Panel"),
++                _("Clean Desktop"),
++              ]
++            };
++          }
++
++          Adw.ComboRow patrone_corner_row {
++            title: _("Show Files from a _Corner");
++            subtitle: _("Point at the corner to show your files, and at it again to hide them. Only corners nothing else uses are here.");
++            use-underline: true;
++            visible: false;
 +          }
 +
 +          Adw.SwitchRow patrone_bin_switch {
 +            title: _("_Recycle Bin on the Desktop");
-+            subtitle: _("Off, it's still in File Manager and on the bubble's edge, and right-clicking the desktop brings it back.");
++            subtitle: _("Off, it's still in File Manager and with your files, and right-clicking the desktop brings it back.");
 +            use-underline: true;
 +          }
 +        }
@@ -47,17 +61,20 @@ Forwarded: not-needed
  #define GNOME_SHELL_SCHEMA "org.gnome.shell"
  #define GNOME_SHELL_ENABLED_EXTENSIONS "enabled-extensions"
  #define GNOME_SHELL_DISABLED_EXTENSIONS "disabled-extensions"
-@@ -61,6 +65,9 @@
+@@ -61,6 +65,12 @@
  struct _CcUbuntuPanel {
    CcPanel                 parent_instance;
  
 +  AdwPreferencesGroup    *patrone_desktop_group;
-+  AdwSwitchRow           *patrone_bubble_switch;
++  AdwComboRow            *patrone_files_row;
++  AdwComboRow            *patrone_corner_row;
 +  AdwSwitchRow           *patrone_bin_switch;
++  GPtrArray              *patrone_corners;
++  gboolean                patrone_updating;
    AdwPreferencesGroup    *ding_preferences_group;
    GtkSwitch              *ding_switch;
    GtkCenterBox           *no_settings_view;
-@@ -81,6 +88,7 @@
+@@ -81,6 +91,7 @@
    AdwSwitchRow           *tiling_assistant_popup_switch;
    AdwSwitchRow           *tiling_assistant_tiling_group;
  
@@ -65,15 +82,16 @@ Forwarded: not-needed
    GSettings              *ding_settings;
    GSettings              *dock_settings;
    GSettings              *interface_settings;
-@@ -109,6 +117,7 @@
+@@ -109,6 +120,8 @@
  
    g_clear_object (&self->gnome_shell_settings);
    g_clear_object (&self->tiling_assistant_settings);
 +  g_clear_object (&self->patrone_taskbar_settings);
++  g_clear_pointer (&self->patrone_corners, g_ptr_array_unref);
    g_clear_object (&self->ding_settings);
    g_clear_object (&self->dock_settings);
    g_clear_object (&self->dock_monitors_list);
-@@ -127,6 +136,7 @@
+@@ -127,6 +140,7 @@
  {
    gboolean enabled = FALSE;
  
@@ -81,31 +99,166 @@ Forwarded: not-needed
    enabled |= gtk_widget_is_visible (GTK_WIDGET (self->dock_preferences_group));
    enabled |= gtk_widget_is_visible (GTK_WIDGET (self->ding_preferences_group));
    enabled |= gtk_widget_is_visible (GTK_WIDGET (self->tiling_assistant_preferences_group));
-@@ -996,6 +1006,9 @@
+@@ -985,6 +999,120 @@
+   adw_combo_row_set_selected (self->dock_monitor_row, selection);
+ }
+ 
++/* The desktop-files setting's values, in the row's order */
++static const char * const patrone_files[] = { "desktop", "panel", "hidden" };
++
++static const struct
++{
++  const char *value;
++  const char *title;
++} patrone_corners[] = {
++  { "none", N_("No Corner") },
++  { "top-left", N_("Top Left") },
++  { "top-right", N_("Top Right") },
++  { "bottom-left", N_("Bottom Left") },
++  { "bottom-right", N_("Bottom Right") },
++};
++
++static gboolean
++patrone_files_get_mapping (GValue   *value,
++                           GVariant *variant,
++                           gpointer  user_data)
++{
++  const char *mode = g_variant_get_string (variant, NULL);
++
++  for (guint i = 0; i < G_N_ELEMENTS (patrone_files); i++)
++    {
++      if (g_str_equal (mode, patrone_files[i]))
++        {
++          g_value_set_uint (value, i);
++          return TRUE;
++        }
++    }
++  return FALSE;
++}
++
++static GVariant *
++patrone_files_set_mapping (const GValue       *value,
++                           const GVariantType *type,
++                           gpointer            user_data)
++{
++  guint selected = g_value_get_uint (value);
++
++  return g_variant_new_string (patrone_files[MIN (selected, G_N_ELEMENTS (patrone_files) - 1)]);
++}
++
++/* Whether something else uses a corner, from the taskbar's list of
++ * "corner:user" */
++static gboolean
++patrone_corner_in_use (GStrv in_use, const char *corner)
++{
++  g_autofree char *prefix = g_strconcat (corner, ":", NULL);
++
++  for (guint i = 0; in_use[i] != NULL; i++)
++    {
++      if (g_str_has_prefix (in_use[i], prefix))
++        return TRUE;
++    }
++  return FALSE;
++}
++
++/* The corner row, on a clean desktop: the corners nothing else uses, and the
++ * one chosen whatever it is, saying so if something has taken it. The Recycle
++ * Bin's switch means nothing there: it's off the desktop whatever it says. */
++static void
++patrone_desktop_sync (CcUbuntuPanel *self)
++{
++  g_autofree char *mode = g_settings_get_string (self->patrone_taskbar_settings, "desktop-files");
++  g_autofree char *corner = g_settings_get_string (self->patrone_taskbar_settings,
++                                                   "desktop-files-corner");
++  g_auto(GStrv) in_use = g_settings_get_strv (self->patrone_taskbar_settings,
++                                              "desktop-corners-in-use");
++  g_autoptr(GtkStringList) list = gtk_string_list_new (NULL);
++  gboolean clean = g_str_equal (mode, "hidden");
++  guint selected = 0;
++
++  gtk_widget_set_visible (GTK_WIDGET (self->patrone_corner_row), clean);
++  gtk_widget_set_visible (GTK_WIDGET (self->patrone_bin_switch), !clean);
++
++  g_clear_pointer (&self->patrone_corners, g_ptr_array_unref);
++  self->patrone_corners = g_ptr_array_new ();
++  for (guint i = 0; i < G_N_ELEMENTS (patrone_corners); i++)
++    {
++      const char *value = patrone_corners[i].value;
++      gboolean in_use_now = patrone_corner_in_use (in_use, value);
++      gboolean chosen = g_str_equal (value, corner);
++      g_autofree char *title = NULL;
++
++      if (in_use_now && !chosen)
++        continue;
++      if (chosen)
++        selected = self->patrone_corners->len;
++      title = in_use_now
++        ? g_strdup_printf (_("%s (in use)"), _(patrone_corners[i].title))
++        : g_strdup (_(patrone_corners[i].title));
++      gtk_string_list_append (list, title);
++      g_ptr_array_add (self->patrone_corners, (gpointer) value);
++    }
++
++  self->patrone_updating = TRUE;
++  adw_combo_row_set_model (self->patrone_corner_row, G_LIST_MODEL (list));
++  adw_combo_row_set_selected (self->patrone_corner_row, selected);
++  self->patrone_updating = FALSE;
++}
++
++static void
++on_patrone_corner_changed (CcUbuntuPanel *self)
++{
++  guint selected = adw_combo_row_get_selected (self->patrone_corner_row);
++
++  if (self->patrone_updating || self->patrone_corners == NULL ||
++      selected >= self->patrone_corners->len)
++    return;
++  g_settings_set_string (self->patrone_taskbar_settings, "desktop-files-corner",
++                         g_ptr_array_index (self->patrone_corners, selected));
++}
++
+ static void
+ cc_ubuntu_panel_class_init (CcUbuntuPanelClass *klass)
+ {
+@@ -996,6 +1124,10 @@
    gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/control-center/ubuntu/cc-ubuntu-panel.ui");
  
    gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, no_settings_view);
 +  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_desktop_group);
-+  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_bubble_switch);
++  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_files_row);
++  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_corner_row);
 +  gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, patrone_bin_switch);
    gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, ding_preferences_group);
    gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, ding_switch);
    gtk_widget_class_bind_template_child (widget_class, CcUbuntuPanel, ding_icon_size_row);
-@@ -1529,9 +1542,32 @@
+@@ -1529,9 +1661,45 @@
        g_warning ("No GNOME Shell is installed here. Please fix your installation.");
      }
  
 -  /* Only load if we ding installed */
-+  /* Patrone's desktop settings, where its taskbar is installed: the
-+   * desktop bubble and the Recycle Bin. They change the desktop at once. */
++  /* Patrone's desktop settings, where its taskbar is installed: where the
++   * desktop's files show, the corner of a clean desktop, and the Recycle Bin.
++   * They change the desktop at once. */
 +  schema = g_settings_schema_source_lookup (schema_source, PATRONE_TASKBAR_SCHEMA, TRUE);
-+  if (schema && g_settings_schema_has_key (schema, "desktop-bubble"))
++  if (schema && g_settings_schema_has_key (schema, "desktop-files"))
 +    {
 +      self->patrone_taskbar_settings = g_settings_new_full (schema, NULL, NULL);
 +
-+      g_settings_bind (self->patrone_taskbar_settings, "desktop-bubble",
-+                       self->patrone_bubble_switch, "active",
-+                       G_SETTINGS_BIND_DEFAULT);
++      g_settings_bind_with_mapping (self->patrone_taskbar_settings, "desktop-files",
++                                    self->patrone_files_row, "selected",
++                                    G_SETTINGS_BIND_DEFAULT,
++                                    patrone_files_get_mapping,
++                                    patrone_files_set_mapping,
++                                    NULL, NULL);
++      g_signal_connect_object (self->patrone_corner_row, "notify::selected",
++                               G_CALLBACK (on_patrone_corner_changed), self, G_CONNECT_SWAPPED);
++      g_signal_connect_object (self->patrone_taskbar_settings, "changed::desktop-files",
++                               G_CALLBACK (patrone_desktop_sync), self, G_CONNECT_SWAPPED);
++      g_signal_connect_object (self->patrone_taskbar_settings, "changed::desktop-files-corner",
++                               G_CALLBACK (patrone_desktop_sync), self, G_CONNECT_SWAPPED);
++      g_signal_connect_object (self->patrone_taskbar_settings, "changed::desktop-corners-in-use",
++                               G_CALLBACK (patrone_desktop_sync), self, G_CONNECT_SWAPPED);
++      patrone_desktop_sync (self);
 +      if (g_settings_schema_has_key (schema, "show-recycle-bin"))
 +        g_settings_bind (self->patrone_taskbar_settings, "show-recycle-bin",
 +                         self->patrone_bin_switch, "active",
@@ -126,7 +279,7 @@ Forwarded: not-needed
      {
        self->ding_settings = g_settings_new_full (schema, NULL, NULL);
  
-@@ -1575,13 +1611,17 @@
+@@ -1575,13 +1743,17 @@
      }
    else
      {
@@ -147,7 +300,7 @@ Forwarded: not-needed
      {
        GtkExpression *expression;
  
-@@ -1678,7 +1718,9 @@
+@@ -1678,7 +1850,9 @@
      }
    else
      {

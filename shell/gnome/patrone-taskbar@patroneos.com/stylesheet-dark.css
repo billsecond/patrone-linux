@@ -259,24 +259,3 @@
   border-top-width: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
-/* The desktop bubble (desktopBubble.js) */
-.patrone-desktop-bubble {
-  -patrone-bubble-fill: rgba(34, 37, 44, 0.97);
-  -patrone-bubble-border: rgba(255, 255, 255, 0.09);
-}
-
-.patrone-bubble-item,
-.patrone-bubble-empty,
-.patrone-desktop-icon.on-bubble .patrone-desktop-icon-label {
-  color: #f2f3f5;
-}
-
-.patrone-bubble-item:hover,
-.patrone-desktop-icon.on-bubble:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.patrone-bubble-item:active,
-.patrone-desktop-icon.on-bubble:active {
-  background-color: rgba(255, 255, 255, 0.05);
-}

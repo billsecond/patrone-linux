@@ -487,7 +487,8 @@ export class Taskbar {
             'changed::layout', () => this._applyLayout(),
             'changed::start-icon', () => this._applyStartIcon(),
             'changed::color', () => this._applyColor(),
-            'changed::pin-icons', () => this._refreshIcons(), this);
+            'changed::pin-icons', () => this._refreshIcons(),
+            'changed::desktop-files', () => this._syncDesktopFilesItem(), this);
         // Patrone Settings' theme, when Patrone Settings is installed
         const desktopSchema = Gio.SettingsSchemaSource.get_default()?.lookup(DESKTOP_SCHEMA, true);
         this._desktopSettings = desktopSchema
@@ -877,6 +878,10 @@ export class Taskbar {
         }
     }
 
+    _syncDesktopFilesItem() {
+        this._desktopFilesItem.visible = this.settings.get_string('desktop-files') !== 'desktop';
+    }
+
     // Right-click on the bar itself
 
     _buildBackgroundMenu() {
@@ -893,6 +898,11 @@ export class Taskbar {
         }, 'utilities-system-monitor-symbolic');
         this._backgroundMenu.addAction('Show desktop', () => this.toggleDesktop(),
             'user-desktop-symbolic');
+        // With the files off the desktop, a way to them with windows in the
+        // way (extension.js sets showDesktopFiles)
+        this._desktopFilesItem = this._backgroundMenu.addAction('Show desktop files',
+            () => this.showDesktopFiles?.(), 'folder-symbolic');
+        this._syncDesktopFilesItem();
         // Settings' Patrone page, or Patrone Settings at its Taskbar page,
         // when either is installed
         this._settingsSeparator = new PopupMenu.PopupSeparatorMenuItem();

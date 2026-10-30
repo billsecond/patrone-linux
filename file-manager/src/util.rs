@@ -51,6 +51,9 @@ pub fn header_box() -> gtk::Box {
 pub fn window_controls(side: gtk::PackType) -> gtk::WindowControls {
     let controls = gtk::WindowControls::new(side);
     controls.set_valign(gtk::Align::Center);
+    // GTK's header bars do this themselves. Left showing, an empty set's
+    // margins in some button styles pushed the tabs along.
+    controls.bind_property("empty", &controls, "visible").invert_boolean().sync_create().build();
     controls
 }
 
