@@ -1,3 +1,12 @@
+fonts-patroneos (1.1.0) resolute; urgency=medium
+
+  * PatroneOS's fonts 1.1.0, from their release: PatroneOS Sans is redrawn,
+    with new letter shapes, proportions and spacing, narrower letters, a
+    single-storey g and a heavier Bold. Mono, Document, Serif and Classic
+    keep their glyphs.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 14:00:00 -0500
+
 fonts-patroneos (1.0.0) resolute; urgency=medium
 
   * PatroneOS's fonts 1.0.0, from their release: PatroneOS Sans, Mono,
