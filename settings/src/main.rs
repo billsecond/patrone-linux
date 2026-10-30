@@ -1,6 +1,6 @@
 //! Patrone Settings: the settings Patrone adds to the desktop's own, in a
 //! window of their own. Pages: Taskbar (its size, layout and Start icon),
-//! Desktop (the desktop's files in a bubble or across the desktop, the
+//! Desktop (where the desktop's files show, the corner of a clean desktop, the
 //! Recycle Bin, and whether and where the terminal opens at sign-in),
 //! Wallpaper (a picture, or None and a color), Title bar buttons (where
 //! minimize, maximize and close go, and their style), Theme (the theme, and the desktop's font: Patrone
@@ -88,11 +88,21 @@ const PIN_ICONS: [(&str, &str, &str); 2] = [
     ("app", "Each app's own", "The icon of the app each one opens, in its own style"),
 ];
 
-/// Where the desktop's files show (the taskbar's desktop-bubble setting,
-/// on for the first).
-const DESKTOP_FILES: [(&str, &str, &str); 2] = [
-    ("bubble", "On", "The desktop's files in a bubble, opened from a pill at the screen's left edge"),
-    ("desktop", "Off", "The desktop's files across the desktop, under your windows"),
+/// Where the desktop's files show (the taskbar's desktop-files setting).
+const DESKTOP_FILES: [(&str, &str, &str); 3] = [
+    ("desktop", "On the desktop", "Your files and the Recycle Bin on the desktop, under your windows. This is the default"),
+    ("panel", "In a panel", "A pill at the screen's left edge slides them out over your windows"),
+    ("hidden", "Clean desktop", "Nothing on the desktop, not even the Recycle Bin"),
+];
+
+/// The corners a clean desktop can show the files from (its
+/// desktop-files-corner setting). The page hides the ones in use.
+const DESKTOP_CORNERS: [(&str, &str, &str); 5] = [
+    ("none", "No corner", "Right-click the desktop or the taskbar to show your files"),
+    ("top-left", "Top left", "Point here to show or hide your files"),
+    ("top-right", "Top right", "Point here to show or hide your files"),
+    ("bottom-left", "Bottom left", "Point here to show or hide your files"),
+    ("bottom-right", "Bottom right", "Point here to show or hide your files"),
 ];
 
 /// Whether the Recycle Bin is on the desktop (its show-recycle-bin setting,
@@ -243,6 +253,9 @@ fn export_previews(dir: &Path) -> glib::ExitCode {
     }
     for &(value, _, _) in &DESKTOP_FILES {
         pictures.push((format!("files-{value}"), drawing(move |cr, w, h| preview::desktop_files(cr, w, h, value))));
+    }
+    for &(value, _, _) in &DESKTOP_CORNERS {
+        pictures.push((format!("corner-{value}"), drawing(move |cr, w, h| preview::desktop_corner(cr, w, h, value))));
     }
     for &(value, _, _) in &RECYCLE_BIN {
         pictures.push((format!("bin-{value}"), drawing(move |cr, w, h| preview::recycle_bin(cr, w, h, value))));
@@ -690,6 +703,93 @@ fn yes_no_choices(content: &gtk::Box, settings: &gio::Settings, key: &'static st
     settings.connect_changed(Some(key), move |settings, key| refresh(value(settings.boolean(key))));
 }
 
+/// What uses a corner, in words, from the taskbar's list of "corner:user"
+/// (desktop-corners-in-use).
+fn corner_user(in_use: &[impl AsRef<str>], corner: &str) -> Option<&'static str> {
+    let user = in_use
+        .iter()
+        .find_map(|entry| entry.as_ref().strip_prefix(corner)?.strip_prefix(':'))?;
+    Some(match user {
+        "taskbar" => "the taskbar",
+        "window-buttons" => "the title bar buttons of maximized windows",
+        "hot-corner" => "GNOME's hot corner",
+        "screen" => "another screen beside it",
+        _ => "something else",
+    })
+}
+
+/// The Desktop files choices, and, for a clean desktop, the corner's: the
+/// ones in use are left out, unless it's the one chosen, which says what
+/// took it. `bin` is the Recycle Bin's section, which a clean desktop hides:
+/// it's off the desktop whatever that says.
+fn desktop_files_sections(content: &gtk::Box, taskbar: &gio::Settings, bin: &gtk::Box) {
+    section_title(content, "Desktop files");
+    note(
+        content,
+        "Where the files on your desktop show. A clean desktop keeps everything off it, the \
+         Recycle Bin too. It changes at once.",
+    );
+    let items = DESKTOP_FILES
+        .iter()
+        .map(|&(value, title, detail)| {
+            Choice::new(value, title, detail, drawing(move |cr, w, h| preview::desktop_files(cr, w, h, value)))
+        })
+        .collect();
+    let refresh = choices(content, items, &taskbar.string("desktop-files"), setter(taskbar, "desktop-files"));
+    bind(taskbar, "desktop-files", refresh);
+
+    let corner = gtk::Box::new(gtk::Orientation::Vertical, content.spacing());
+    section_title(&corner, "Show your files from a corner");
+    note(
+        &corner,
+        "Point at the corner to show your files, and at it again to hide them. Only corners \
+         nothing else uses are here. The Recycle Bin comes with your files, and it's always \
+         in File Manager.",
+    );
+    note(&corner, "");
+    let warning = corner.last_child().and_downcast::<gtk::Label>();
+    let items = DESKTOP_CORNERS
+        .iter()
+        .map(|&(value, title, detail)| {
+            Choice::new(value, title, detail, drawing(move |cr, w, h| preview::desktop_corner(cr, w, h, value)))
+        })
+        .collect();
+    let refresh = choices(&corner, items, &taskbar.string("desktop-files-corner"), setter(taskbar, "desktop-files-corner"));
+    bind(taskbar, "desktop-files-corner", refresh);
+    let flow = corner.last_child().and_downcast::<gtk::FlowBox>();
+    content.append(&corner);
+    content.append(bin);
+
+    let bin = bin.clone();
+    let update = Rc::new(move |taskbar: &gio::Settings| {
+        let clean = taskbar.string("desktop-files") == "hidden";
+        corner.set_visible(clean);
+        bin.set_visible(!clean);
+        let in_use: Vec<String> =
+            taskbar.strv("desktop-corners-in-use").iter().map(ToString::to_string).collect();
+        let current = taskbar.string("desktop-files-corner");
+        for (index, (value, _, _)) in DESKTOP_CORNERS.iter().enumerate() {
+            if let Some(child) = flow.as_ref().and_then(|flow| flow.child_at_index(index as i32)) {
+                child.set_visible(corner_user(&in_use, value).is_none() || *value == current.as_str());
+            }
+        }
+        if let Some(warning) = &warning {
+            let user = corner_user(&in_use, &current);
+            warning.set_visible(user.is_some());
+            if let Some(user) = user {
+                warning.set_label(&format!(
+                    "The corner you picked is used by {user} now, so it doesn't show your files. Pick another."
+                ));
+            }
+        }
+    });
+    update(taskbar);
+    for key in ["desktop-files", "desktop-files-corner", "desktop-corners-in-use"] {
+        let update = update.clone();
+        taskbar.connect_changed(Some(key), move |settings, _| update(settings));
+    }
+}
+
 fn desktop_page() -> gtk::ScrolledWindow {
     let (scrolled, content) = page(
         "Desktop",
@@ -703,31 +803,21 @@ fn desktop_page() -> gtk::ScrolledWindow {
     // An older taskbar's settings may have neither (reading a missing key
     // would end the app)
     let has_key = |key: &str| taskbar.settings_schema().is_some_and(|schema| schema.has_key(key));
-    if has_key("desktop-bubble") {
-        section_title(&content, "Desktop bubble");
-        note(
-            &content,
-            "On, the desktop's files are kept off the desktop: a small pill at the screen's \
-             left edge, shown whenever no window covers it, opens them. Click it, or drag it \
-             out. It changes at once.",
-        );
-        let items = DESKTOP_FILES
-            .iter()
-            .map(|&(value, title, detail)| {
-                Choice::new(value, title, detail, drawing(move |cr, w, h| preview::desktop_files(cr, w, h, value)))
-            })
-            .collect();
-        yes_no_choices(&content, &taskbar, "desktop-bubble", items, "bubble", "desktop");
-    }
+    let bin = gtk::Box::new(gtk::Orientation::Vertical, content.spacing());
     if has_key("show-recycle-bin") {
-        section_title(&content, "Recycle Bin");
+        section_title(&bin, "Recycle Bin");
         let items = RECYCLE_BIN
             .iter()
             .map(|&(value, title, detail)| {
                 Choice::new(value, title, detail, drawing(move |cr, w, h| preview::recycle_bin(cr, w, h, value)))
             })
             .collect();
-        yes_no_choices(&content, &taskbar, "show-recycle-bin", items, "shown", "hidden");
+        yes_no_choices(&bin, &taskbar, "show-recycle-bin", items, "shown", "hidden");
+    }
+    if has_key("desktop-files") {
+        desktop_files_sections(&content, &taskbar, &bin);
+    } else {
+        content.append(&bin);
     }
     if has_key("sign-in-terminal") {
         section_title(&content, "Terminal at sign-in");
@@ -752,7 +842,7 @@ fn desktop_page() -> gtk::ScrolledWindow {
         let refresh = choices(&content, items, &taskbar.string("sign-in-terminal"), setter(&taskbar, "sign-in-terminal"));
         bind(&taskbar, "sign-in-terminal", refresh);
     }
-    if !has_key("desktop-bubble") && !has_key("show-recycle-bin") && !has_key("sign-in-terminal") {
+    if !has_key("desktop-files") && !has_key("show-recycle-bin") && !has_key("sign-in-terminal") {
         note(&content, "The taskbar installed is older than these settings: update patrone-gnome-taskbar.");
     }
     scrolled
@@ -1248,6 +1338,15 @@ fn pointer_page() -> gtk::ScrolledWindow {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_corner_in_use_says_what_uses_it() {
+        let in_use = ["bottom-left:taskbar", "top-right:window-buttons", "top-left:hot-corner"];
+        assert_eq!(super::corner_user(&in_use, "bottom-left"), Some("the taskbar"));
+        assert_eq!(super::corner_user(&in_use, "top-left"), Some("GNOME's hot corner"));
+        assert_eq!(super::corner_user(&in_use, "bottom-right"), None);
+        assert_eq!(super::corner_user(&in_use, "none"), None);
+    }
+
     use super::side_of;
 
     #[test]

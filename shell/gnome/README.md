@@ -145,7 +145,7 @@ Right-click an app in the menu to add it to Favorites or pin it to the taskbar.
 ### The Recycle Bin on the desktop
 
 Patrone File Manager draws the desktop's files (below, "The desktop and the
-bubble: File Manager's windows"); before 0.4.0 Ubuntu's desktop icons
+panel: File Manager's windows"); before 0.4.0 Ubuntu's desktop icons
 extension did, with its Home and Trash icons turned off
 (`92_patrone-taskbar.gschema.override`, `show-home` and `show-trash`). The
 taskbar draws its own **Recycle Bin** (`recycleBin.js`), as the user asked
@@ -225,96 +225,182 @@ moved, inside the taskbar.
 Not done: docked top left it can still sit where the first desktop file
 would; the reserved strip moves that file over one column.
 
-### The desktop bubble
+### Desktop files: on the desktop, in a panel, or a clean desktop
 
-The user's design (2026-10-26): the desktop's files kept off the desktop,
-in a bubble that comes out of the screen's left edge (`desktopBubble.js`).
-On for every account. **To turn it off** (the user asked for a switch,
-2026-10-28): Settings → Desktop → Desktop Bubble, the first switch on
-GNOME Settings' own Desktop page, where the desktop's settings are looked
-for (`gnome-settings/patches/patrone-desktop-switches.patch`; with
-Patrone's taskbar it takes the place of Ubuntu's Desktop Icons settings,
-whose switch would bring Ubuntu's icons back beside Patrone's, and the
-page has no Dock settings, for the same reason). Patrone
-Settings → Desktop → Desktop bubble and GNOME Settings → Patrone have it
-too, and they're all the `desktop-bubble` setting, which the desktop
-follows at once: off, the pill goes and File Manager puts the files across
-the desktop; on, they go back into the bubble. Signing out isn't needed.
-The Recycle Bin stays reachable either way: with the bubble off it sits
-docked in its corner (bottom right unless moved), and when it's hidden too
-(the switch under Desktop Bubble, or "Remove from desktop"), the empty
-desktop's right-click menu has **Show Recycle Bin**, and File Manager's
-navigation pane lists it.
+Where the desktop's files show (the `desktop-files` setting, Patrone
+Settings → Desktop → Desktop files, and the same on GNOME Settings' Desktop
+and Patrone pages). It changes at once; signing out isn't needed.
+
+- **On the desktop**, the default: the files and the Recycle Bin, as usual.
+- **In a panel** (the user, 2026-10-30, in place of the bubble of 2026-10-26:
+  "instead of a bubble, make it a box that comes out (like a full layer of
+  the screen, it should close once something on top of it spawns open"): a
+  pill at the screen's left edge opens them.
+- **Clean desktop** (the user, the same day: "it doesn't show fiels on the
+  desktop including the recycle bin ... I just hate clutter on the desktop
+  and thats not how it should be used"): nothing on the desktop at all, no
+  files, no Recycle Bin, no pill. The same panel shows the files when asked,
+  optionally from a corner.
+
+The default stays on the desktop: it's what a new user expects, and a clean
+desktop with no corner picked has nothing to find. An account's own choice
+of the setting this replaced (`desktop-bubble`, the panel's yes-or-no) is
+carried over once, at sign-in (`extension.js`); an account that never chose
+gets the default, so its files are back on the desktop.
+
+The choices are on GNOME Settings' own Desktop page, where the desktop's
+settings are looked for
+(`gnome-settings/patches/patrone-desktop-switches.patch`; with Patrone's
+taskbar they take the place of Ubuntu's Desktop Icons settings, whose switch
+would bring Ubuntu's icons back beside Patrone's, and the page has no Dock
+settings, for the same reason).
+
+#### The corner of a clean desktop
+
+The user: "allowing the user to pick (optionally) a corner that is not
+pre-occupied with any configuration that shows the files until they point
+the mouse to that same corner again." (`desktopCorner.js`, and the
+`desktop-files-corner` setting: `none` or a corner of the primary screen.)
+
+- **Pointing at it shows the files**, and pointing at it again hides them.
+  The pointer has to stay 150 milliseconds, so brushing past does nothing,
+  and has to leave before it can point again, so the files don't go as soon
+  as they've come. The panel slides in from that corner's side, left or
+  right. Everything else about the panel is the same: a window opening on
+  top closes it, and so do Escape and its Close button. The corner does
+  nothing in the overview, under a dialog of the shell's, over a fullscreen
+  window, or while the mouse button is held (a window dragged there to tile
+  it).
+- **Only free corners are offered.** The taskbar works out what uses each
+  corner of the primary screen and keeps it in `desktop-corners-in-use`,
+  from which both Settings apps offer the rest, so they can't disagree:
+  - the **taskbar**: both corners on its edge (the Menu button at one end,
+    Show Desktop at the other), bottom or top with its layout;
+  - **window buttons**: the corner with Close, since a maximized window's
+    Close is in the screen's corner (`button-layout`; top right by default);
+  - **GNOME's hot corner**, when it's on (`enable-hot-corners`, off in
+    Ubuntu's settings, top left, or top right right to left);
+  - **another screen** beside the corner, where the pointer goes on instead
+    of stopping.
+
+  The pill isn't in a corner, and a clean desktop has none. So by default
+  (the taskbar along the bottom, Close at the top right) the one free corner
+  is the top left. With the taskbar along the top, it's the two bottom ones.
+- **A corner that gets taken stands down**, rather than fight: it stops
+  showing the files at once, says so once in a notification, and Settings
+  says what took it and offers the free ones. The choice isn't moved, so it
+  works again if the other thing goes away. This follows the settings above
+  and the screens as they change, with no signing out.
+
+#### Reaching the Recycle Bin and files on a clean desktop
+
+The Recycle Bin comes in on the panel, wherever that's opened from, and it's
+always in File Manager's navigation pane. With no corner, or with windows in
+the way: the empty desktop's right-click menu has **Show desktop files**,
+**Open Desktop folder** and **Open Recycle Bin**, and the taskbar's has
+**Show desktop files**. `show-recycle-bin` keeps its value but means nothing
+here, so the Settings apps hide it, and the bin's menu doesn't offer to put
+it on the desktop.
+
+#### The panel
 
 - **The pill**: a small Patrone-blue tab at the middle of the primary
   screen's left edge, shown whenever no window covers its spot (a window
   moved over it, or maximized, hides it). Hovering shows how many items the
   desktop has. Until it's first opened, it bounces every six seconds with
-  a tip, "Your desktop files are in here: click, or drag it out" (the user
-  asked for that; `desktop-bubble-introduced` remembers it was opened).
-- **Clicking it, or dragging it out**, opens the bubble: half an ellipse
-  growing out of the edge, with a little overshoot, the pill riding at its
-  tip as a handle. Dragged, it follows the pointer; let go more than a
-  quarter of the way out and it opens, else it goes back. Dragging the
-  pill back, clicking it, clicking outside the bubble or Escape closes it.
-- **Patrone File Manager draws it** since 0.4.0 (the user, 2026-10-27:
-  "The desktop and the roll out menu must be an extension of the file
-  explorer app"), in a window of its own that the taskbar hosts (next
-  section): the bubble, its shadow and its files, which are File Manager's
-  own icons, thumbnails, names and selection. The taskbar keeps the pill,
-  grows that window's actor out of the edge (its scale, from the middle of
-  its left edge, as it grew its own bubble), and carries the Recycle Bin.
-- **Its size** follows the files (`file-manager/src/bubble.rs`, which was
-  `bubbleShape.js` here): 250 pixels across for one file or none, growing a
-  little wider than tall until it's as tall as the screen, then wider, up
-  to half the screen. On a 1600×900 screen that holds 43 files; with more,
-  the last place is "N more", which opens the Desktop folder. Its window is
-  the bubble's size, with room for its shadow: as big as the bubble could
-  grow, its clear part took the drops meant for windows under it.
+  a tip, "Your desktop files are in here: click, or drag it out"
+  (`desktop-bubble-introduced` remembers it was opened).
+- **Clicking it, or dragging it out**, slides the panel out of the edge (a
+  corner on the right brings it from that edge).
+  Dragged, it follows the pointer; let go more than a quarter of the way
+  out and it opens, else it goes back. It takes 260 milliseconds with no
+  overshoot (a whole layer has nowhere to bounce to), and 200 back. It runs
+  on a `Clutter.Timeline` of its own, not `ease()`: with no graphics card
+  (Patrone's Hyper-V VMs, for one) GNOME ends every `ease()` at once, and
+  the panel would just appear. The account's Reduce Animation setting
+  (`enable-animations`) still counts: off, it goes at once. Past the left
+  edge it's cut off, so it can't show on a screen to the left.
+- **What it is**: a full layer of the screen's free area, over the windows,
+  with the taskbar in front of it, the account's wallpaper behind the icons
+  (`Background.BackgroundManager`, the same picture as the desktop's), and
+  each icon where it would be on the desktop, at the desktop's icon size.
+  So it looks like the desktop pulled over the windows, and the icons'
+  white names read as they do on the desktop. Because it looks that much
+  like the desktop, a small bar at its top right says what it is: Desktop,
+  how many items, **Open in File Manager** (which also reaches icons past
+  the screen's last column), and **Close**. The pill rides on its edge as a
+  handle, and with the panel open it's at the screen's right edge.
+- **It closes by itself as soon as a window opens on top of it** (the
+  user's ask). Above the windows, it would hide that window, so any
+  normal window, dialog or utility window shown on this workspace closes
+  it (`_windowShown`, on the window's `shown` signal, so also one coming
+  back from being minimized), and the keyboard goes to that window even if
+  GNOME kept it from taking it: back where it was, the window from before
+  would come up over it. The panel's own menus aren't windows that count.
+  So opening a file or folder closes it when its window shows, not when
+  it's clicked, and a slow app leaves the panel up until it has something
+  to show. File Manager's dialogs (Properties, delete) count too.
+- **It also closes** with Escape (a rename takes the first one), the Close
+  button, the pill or corner, a press on the taskbar or another part of the shell,
+  anything else taking the keyboard, a change of workspace, the overview,
+  or the screens changing. The keyboard goes back where it was, unless
+  that's on another workspace: the workspace you changed to stays.
+  **A click on its empty part doesn't close it**: there's no outside to
+  click, and that's the desktop's own, for the rubber band and the
+  right-click menu.
+- **Patrone File Manager draws the icons** (the user, 2026-10-27: "The
+  desktop and the roll out menu must be an extension of the file explorer
+  app"), in a window of its own that the taskbar hosts (next section),
+  clear but for them and the bar. The taskbar keeps the pill, slides that
+  window's actor (`translation-x`, with a clip for what's past the edge)
+  and the wallpaper under it, and draws a soft shadow on the windows along
+  the moving edge.
 - **The files** are those in the Desktop folder (`xdg-user-dir DESKTOP`),
-  hidden ones left out, folders first, then by the desktop's Sort by,
-  filling down the left side first as on Windows. Everything File Manager's
-  desktop does works here (`file-manager/README.md`, "The desktop"):
-  opening, File Manager's right-click menus (on the empty part, the
-  desktop's own, with Open Desktop folder first), renaming in place, keys,
-  the rubber band, and dragging to and from File Manager's windows.
-  Icons dragged about the bubble go where they're let go, and ones
-  dropped on the Recycle Bin on its edge go to the Recycle Bin (File
-  Manager 0.3.1: the bubble takes those drops, since the bin's own drop
-  target stays under the desktop while it rides there).
-  Files an app drags, held over the pill for half a second, open the
-  bubble so they can be dropped in it.
-- **The Recycle Bin** leaves its corner as the bubble grows and rides on
-  the bubble's lower right edge, above the windows (`recycleBin.hold()`),
-  then goes back when it closes (`release()`). It still opens, empties and
-  docks as usual while it's there. Since 0.3.12 it sits centred on the
-  edge, half in the bubble and half out, and it's there even while it's
-  off the desktop (from the start of the bubble's opening, since it has no
-  corner to come from); its menu's last item then reads **Show on
-  desktop** (the user's asks, 2026-10-27). Off the desktop it has never
-  been drawn, and its place reads as NaN: 0.4.0 to 0.4.2 started it from
-  there and put it nowhere, so the bubble opened without it (0.4.3).
-  Turned off (as at every screen lock), the bubble stops taking File
-  Manager's desktop's calls before that desktop ends, or the calls queued
-  checks on its removed pill (0.4.3).
-- **The bubble opens over any window**, like a menu (the user's choice:
-  only the pill needs the desktop showing). Its window is kept above the
-  others (`make_above`) and gets the keyboard while it's open; the pill and
-  the Recycle Bin sit right above it, under its own menus and tooltips
-  (`_restackLayer`: they're among the windows' actors, which Mutter
-  restacks). Anything else taking the keyboard, a press on the taskbar or
-  another part of the shell, a click on the desktop, Escape, or opening a
-  file closes it; the keyboard goes back where it was. Closed, its window
-  stays, unseen (its actor hidden), and isn't let keep the keyboard.
+  hidden ones left out, as on the desktop: the same places, so turning the
+  panel on or off moves nothing, and icons dragged about the panel are
+  where they were left on the desktop too. Everything File Manager's desktop
+  does works here (`file-manager/README.md`, "The desktop"): opening, its
+  right-click menus (on the empty part, the desktop's own, with Open
+  Desktop folder first), renaming in place, keys, the rubber band. A new
+  folder or a paste on the empty desktop opens the panel on what it made.
+  With nothing on the desktop it says so.
+- **Dragging**: the panel hides the windows, so files an app drags, held
+  over the pill for half a second, open it to drop them in, or close it, to
+  reach the windows under it.
+- **The Recycle Bin** comes in on the panel, in the place it has on the
+  desktop, above the windows (`recycleBin.hold()`), even while it's off the
+  desktop (its menu's last item then reads **Show on desktop**), and goes
+  back when it closes (`release()`). It still opens, empties and docks as
+  usual while it's there. Files dropped on it go to the Recycle Bin: the
+  panel's window takes those drops, since the bin's own drop target stays
+  under the panel while it's there.
+- **Keyboard**: the panel has it while it's open, with File Manager's
+  keys: arrows, Enter, F2, Delete and the rest.
+- **Closed, its window is minimized and not above** (`hidePanel`), not just
+  unseen: a window that's there, as big as the free area, would leave GNOME
+  no free place for new windows, and takes the keyboard when the last one
+  closes. And GNOME counts every window that's above, minimized or not:
+  left above, this one made it take each new window for covered, so a window
+  started from a terminal, say, opened behind the one in front with no
+  keyboard. `hidePanel` does nothing until the window has first shown, or
+  it never would, and the first open would have only the wallpaper.
+  GNOME won't minimize a window that's off the window list, so it's put
+  back on it for that one step, which the overview mustn't see: its
+  windows take it for a new one and leave a handler behind (a closing
+  panel waits for the overview to close). Turned off (as at every screen
+  lock), the panel stops taking File Manager's desktop's calls before that
+  desktop ends, or the calls queued checks on its removed pill (0.4.3).
 - **Ubuntu's desktop icons** are off while File Manager draws the desktop
   (next section). Should they run anyway, their windows (marked
-  `customJS_ding`) wait in a hidden actor of the bubble's, where they
+  `customJS_ding`) wait in a hidden actor of the panel's, where they
   neither draw nor take clicks (clipping their actors to nothing didn't
   work: mutter still drew them), and aren't let keep the keyboard.
 
-Not done: the bubble on screens other than the primary one.
+Not done: the panel on screens other than the primary one. The pill still
+hides while a window covers it; the taskbar's right-click menu reaches the
+panel then.
 
-### The desktop and the bubble: File Manager's windows
+### The desktop and the panel: File Manager's windows
 
 Since 0.4.0 Patrone File Manager draws the desktop (`patrone-file-manager
 --desktop`; `file-manager/README.md`, "The desktop"), and the taskbar
@@ -328,19 +414,20 @@ desktop or keep one above the others, so the shell does.
 - **It knows the two windows by their titles**, and only from that client:
   "Patrone Desktop", made a desktop window (no taskbar button, Alt+Tab or
   moving; on every workspace; under every window, the Recycle Bin and its
-  drop target) as big as the primary screen; and "Patrone Desktop Bubble",
-  kept above the windows, off the window list, on every workspace, and
-  shown only while the bubble is open (desktopBubble.js). Neither plays
+  drop target) as big as the primary screen; and "Patrone Desktop Panel",
+  as big as the screen's free area, off the window list, on every
+  workspace, and minimized unless the panel is open, when it's above the
+  windows (desktopPanel.js). Neither plays
   GNOME's opening animation. Showing gives a window the keyboard; it goes
   back where it was.
 - **They talk over File Manager's standard input and output**, a line at a
   time (the list is at the top of `file-manager/src/desktop.rs`): the
   screen's free area, the Recycle Bin (whether it's on the desktop, its
-  place there, its size), the `desktop-bubble` setting and the bubble
-  opening and closing go to File Manager; the item count (the pill's tip),
-  the bubble's shape (its window's size, the pill's and the Recycle Bin's
-  places), asks to open or close the bubble, and Show Recycle Bin come
-  back. File Manager keeps those two pipes to itself, so the apps it opens
+  place there, its size), the `desktop-files` setting and the panel
+  opening and closing go to File Manager; the item count (the pill's tip
+  and the panel's bar), asks to open or close the panel, and Show Recycle
+  Bin come back. File Manager keeps those two pipes to itself, so the apps
+  it opens
   can't write into them.
 - **Ubuntu's desktop icons go**: once File Manager's desktop shows, the
   taskbar adds `ding@rastersoft.com` to GNOME's `disabled-extensions`
@@ -352,9 +439,9 @@ desktop or keep one above the others, so the shell does.
   windows** because those windows stop taking the pointer while it's on
   one of them, or one is dragged (`shieldPointer`): with a client's
   surface under them, GNOME 50 ended their drag gestures the moment they
-  were pressed (dragging the pill opened the bubble like a click, and the
+  were pressed (dragging the pill opened the panel like a click, and the
   Recycle Bin couldn't be moved). Not while an app drags something, so
-  the bubble can take the drop.
+  the panel can take the drop.
 
 ### The terminal at sign-in
 
@@ -421,8 +508,11 @@ the taskbar follows when it's installed):
 | `show-recycle-bin` | `true` | Show the Recycle Bin on the desktop |
 | `recycle-bin-dock` | `'bottom-right'` | `bottom-right`, `bottom-left`, `top-right`, `top-left`, or `none` (where it's dropped) |
 | `recycle-bin-position` | `(1.0, 1.0)` | Where it is when not docked, across and down the free area from 0 to 1 |
-| `desktop-bubble` | `true` | The desktop's files in the bubble at the left edge, not across the desktop |
-| `desktop-bubble-introduced` | `false` | Whether the bubble has been opened yet; until then its pill bounces with a tip |
+| `desktop-files` | `'desktop'` | Where the desktop's files show: `desktop`, `panel` or `hidden` (a clean desktop) |
+| `desktop-files-corner` | `'none'` | The corner that shows them on a clean desktop |
+| `desktop-corners-in-use` | `[]` | What uses each corner, `corner:user`; the taskbar keeps it, for the Settings apps |
+| `desktop-bubble` | `false` | Replaced by `desktop-files`; read once to carry an account's choice over |
+| `desktop-bubble-introduced` | `false` | Whether the panel has been opened yet; until then its pill bounces with a tip |
 | `ding-replaced` | `false` | Whether the taskbar turned Ubuntu's desktop icons off (for File Manager's desktop), so it may turn them back on |
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
 | `art-app` | `''` | The art slot's app; empty for ArtCraft, else the first drawing app installed |
@@ -466,12 +556,21 @@ the taskbar follows when it's installed):
 - Built as a GNOME Shell extension now, while the desktop is GNOME-based.
 - Light or dark follows the system style (Settings → Appearance), with
   Patrone blue (`#288bfa`) for focus and selection.
-- The desktop's files go in a bubble out of the left edge, opened from a
+- (2026-10-26, replaced 2026-10-30, below) The desktop's files go in a bubble out of the left edge, opened from a
   pill there, with the Recycle Bin riding on its edge. Asked: the files show
   only in the bubble; the pill shows while its own spot is clear and the
   bubble opens over windows; on by default, the pill bouncing with a tip
   until it's first opened.
-- (2026-10-27) The desktop and the bubble are Patrone File Manager's, as
+- (2026-10-30) The bubble is now a panel, off by default: a full layer of
+  the screen that slides out, and closes when a window opens on top of it
+  (the rest was left to judgment: the wallpaper behind the icons, their
+  places from the desktop, the small bar, a click on its empty part
+  staying open, and sliding even with no graphics card).
+- (2026-10-30) A third choice, a clean desktop, with an optional corner:
+  only free corners are offered, a corner that's taken stands down, and the
+  panel comes in from that corner's side (left to judgment too, with the
+  list of what counts as taken and the default staying on the desktop).
+- (2026-10-27) The desktop and the panel are Patrone File Manager's, as
   Windows' desktop is Explorer's, with Windows' desktop right-click menu
   and dragging to and from File Manager; the Recycle Bin stays the
   taskbar's.
@@ -489,8 +588,9 @@ the taskbar follows when it's installed):
 | `recycleBin.js` | The Recycle Bin on the desktop |
 | `startupWindows.js` | The terminal opened at sign-in, put over the wallpaper's logo |
 | `dropTarget.js` | The Recycle Bin's drop target, a small GTK 4 window run with `gjs -m` (never imported by GNOME Shell) |
-| `desktopHost.js` | Patrone File Manager's desktop: starts it, makes its windows the desktop and the bubble, talks to it, turns Ubuntu's desktop icons off |
-| `desktopBubble.js` | The desktop bubble's pill, its opening and closing (File Manager draws the bubble), and the Recycle Bin on its edge |
+| `desktopHost.js` | Patrone File Manager's desktop: starts it, makes its windows the desktop and the panel, talks to it, turns Ubuntu's desktop icons off |
+| `desktopCorner.js` | What uses the screen's corners, and the corner that shows the files on a clean desktop |
+| `desktopPanel.js` | The desktop files panel's pill, its sliding, wallpaper and closing (File Manager draws the icons), and the Recycle Bin on its edge |
 | `recent.js` | Recent files (`~/.local/share/recently-used.xbel`) and pinned folders (`~/.config/gtk-3.0/bookmarks`) |
 | `common.css`, `stylesheet-light.css`, `stylesheet-dark.css` | Sizes and shapes in the first, colors in the others (GNOME Shell loads one of the two, which imports the first). St lets an importing sheet's rules beat the imported sheet's, however specific, so a color that replaces one the light and dark sheets set (the royal theme's) goes in both of them, after it |
 | `icons/` | The menu button's icons: `patrone-start.svg` and `start-orb.svg` in color, `patrone-start-light.svg` (the P in light tones, for Royal's green button, where the blues washed out), the `-symbolic` ones drawn in the bar's text color. The four with the P are drawn from the PatroneOS logo by `branding/tools/make_logos.py`, its slit and stem gap opened up for the button's 20 to 32 pixels: change that, not them. The Recycle Bin's, `recycle-bin.svg` and `recycle-bin-full.svg`. The slots' icons, `pin-web.svg`, `pin-terminal.svg`, `pin-files.svg` and `pin-mail.svg` (the terminal's and files' are Patrone Terminal's and Patrone File Manager's own) |
@@ -544,7 +644,7 @@ tests/headless.sh stop
 It also fills the recent files list with a few sample files, gives the
 shell a Desktop folder of its own with a few more
 (`/tmp/patrone-taskbar-test/desktop`, through `user-dirs.dirs`), so the
-desktop bubble never shows or trashes the account's real desktop files,
+desktop files panel never shows or trashes the account's real desktop files,
 and leaves out two of Ubuntu's extensions that reach outside the test: the
 desktop icons
 (when they start, they end every desktop-icons process of the account,
@@ -575,6 +675,65 @@ extension off (the top bar comes back) and on again. Later, with
 running app by dragging it in, and reordering the menu's Favorites; and,
 with Patrone Settings running in the shell, all three sizes and four
 themes.
+
+From a code review of the same versions (2026-10-30), in this shell, which
+had missed it because the panel was open in the other tests: with Text
+Editor in front and the panel closed, Calculator started with no activation
+token (as from a terminal) opened behind it with no keyboard in the panel and
+clean modes, and in front on the desktop. Now it's in front with the
+keyboard in all three, and the panel is above only while it's open. Also:
+the panel's window going through its first show with `hidePanel` called
+early, and a change of workspace with the panel open staying on the new
+workspace, with the keyboard on the window there.
+
+A clean desktop and its corner (taskbar 0.4.12 with File Manager 0.3.10,
+Patrone Settings 0.3.13 and GNOME Settings `patrone21`, 2026-10-30, unpacked
+from their packages and run in this throwaway shell on the dev VM, nothing
+installed there). `desktop-files` at `desktop` in a fresh account. The
+carry-over: `desktop-bubble` true gave `panel`, false gave `desktop`, and a
+choice in `desktop-files` wasn't overwritten. Clean: no icons, pill or
+Recycle Bin. At the top left, with the default settings the only corner
+offered: pointing showed the files, staying did nothing more, leaving and
+pointing again hid them and then showed them, a touch of 60 milliseconds did
+nothing, Escape closed it. GNOME's hot corner turned on: the corner stood
+down with a notification, the overview opened instead, and turned off it
+worked again. Close moved to the left: top left taken, top right free, and
+with that picked the panel came in from the right (a frame mid-slide) and
+went back the same way. The taskbar along the top: both top corners taken,
+and the bottom right worked. The right-click menus: Show desktop files from
+the desktop's and the taskbar's, Open Recycle Bin opening it in File Manager,
+and no way to put the bin on the desktop from its menu. Patrone Settings by
+clicks, offering No corner and Top left, and saying what took the corner;
+GNOME Settings' Desktop page with its two lists, picking No Corner by
+keyboard; its Patrone page showing both groups. Not tried: a real screen, a
+fullscreen window over the corner, a screen beside the corner, and right to
+left.
+
+The desktop files panel (the same versions, 2026-10-30, the
+branch's taskbar and File Manager in this throwaway shell on the dev VM,
+1600×900, nothing installed there): the setting off in a fresh account,
+with the files on the desktop and no pill, and an explicit choice kept over
+that default. Turned on, the pill and its tip, an empty desktop,
+and the window minimized while closed. Opened by a click and by a drag past
+a quarter, a shorter drag going back, a drag back closing it; a frame in
+the middle of the slide (the shadow, the pill on the edge, the bin and bar
+going along) with no graphics card; light and dark, and with the taskbar
+along the top, the window right under it at 1600×857. Each way of closing:
+a new window (it goes on top with the keyboard, even started with no
+activation token), double-clicking a text file and an image with Enter
+(when their windows showed), Escape, the Close button, the pill, a click on
+the taskbar, a change of workspace and the overview (no errors, and put
+away once it closed). A click on the empty part leaving it open, and the
+desktop's own right-click menu there; rename in place, the first Escape
+cancelling only that. Dragging an icon (its place saved with the desktop's),
+a drop on the bin (File Manager took it; the test's folder has no Recycle
+Bin, so it asked to delete, and that dialog closed the panel), the bin off
+the desktop riding on the panel, a new folder on the closed desktop opening
+the panel with its name being edited, an empty desktop, and turning it off
+while open, with the files back in their places. Not tried: on a real
+screen with a graphics card, a screen to the left of the primary one
+(where the clip matters), files from another app held over the pill, and
+a screen reader on the bar.
 
 The desktop bubble (2026-10-26, 1600×900, light and dark): the pill and
 its first-run tip; the bubble with 1, 7, 20 and 60 files (the last at half

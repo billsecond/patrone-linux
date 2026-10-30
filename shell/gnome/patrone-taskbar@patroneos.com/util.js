@@ -30,7 +30,7 @@ export function launchApp(app, newWindow = true) {
 
 /**
  * Starts one of the taskbar's extras (the Recycle Bin, the windows placed at
- * sign-in, the desktop bubble), or logs why it couldn't: a fault in one
+ * sign-in, the desktop panel), or logs why it couldn't: a fault in one
  * mustn't cost the whole taskbar, as one in the Recycle Bin did at the
  * user's sign-in (2026-10-27).
  *

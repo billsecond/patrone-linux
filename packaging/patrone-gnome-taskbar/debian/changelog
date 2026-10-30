@@ -1,3 +1,19 @@
+patrone-gnome-taskbar (0.4.12) resolute; urgency=medium
+
+  * The desktop files bubble is off by default, and when it's on it's a
+    panel: a full layer of the screen that slides out of the left edge
+    over the windows, with the wallpaper behind the icons, each where it
+    would be on the desktop, and the taskbar in front. It closes by itself
+    as soon as a window opens on top of it, and with Escape, its Close
+    button, the pill, a click on the taskbar, a workspace change or the
+    overview. Accounts that turned it on or off keep their choice.
+  * A third choice, a clean desktop: nothing on it, not even the Recycle
+    Bin. A corner nothing else uses can show the files and hide them again,
+    and stands down if something else takes it. Show desktop files on the
+    taskbar's right-click menu while the files are off the desktop.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-gnome-taskbar (0.4.11) resolute; urgency=medium
 
   * sign-in-terminal can be off: patrone-terminal's autostart script doesn't

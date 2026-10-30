@@ -229,11 +229,12 @@ Properties adds the name to `.hidden`, which every GTK app honors.
 
 ## The desktop
 
-Since 0.3.0 File Manager draws the desktop and the desktop bubble, as
+Since 0.3.0 File Manager draws the desktop and, since 0.3.10, the desktop
+files panel, as
 Explorer draws Windows' desktop (the user, 2026-10-27: "The desktop and the
 roll out menu must be an extension of the file explorer app, while
 supporting the desktop and all it can do"), in place of Ubuntu's desktop
-icons extension and the taskbar's own bubble. `patrone-file-manager
+icons extension and the taskbar's own bubble, as it was. `patrone-file-manager
 --desktop` (`src/desktop.rs`) shows the Desktop folder (`xdg-user-dir
 DESKTOP`, made if missing) with File Manager's own view, cells, menus,
 commands and undo, so the icons, thumbnails, names, selection, renaming,
@@ -242,26 +243,32 @@ dragging, conflicts and undo are File Manager's.
 - **The taskbar runs it.** A Wayland app can't make its window the desktop
   or keep it above the others, so Patrone's taskbar starts it as a Wayland
   client of its own and finds its windows by their titles ("Patrone
-  Desktop", "Patrone Desktop Bubble"; `shell/gnome/README.md`, "The desktop
-  and the bubble"). The two talk over the desktop's standard input and
+  Desktop", "Patrone Desktop Panel"; `shell/gnome/README.md`, "The desktop
+  and the panel"). The two talk over the desktop's standard input and
   output, a line at a time (the list is at the top of `src/desktop.rs`):
   the screen's free area, the Recycle Bin's place and size and whether
-  it's on the desktop, the bubble setting and the bubble opening and
-  closing, one way; the item count, the bubble's shape and requests to
-  open or close it, the other. It runs on its own (not on D-Bus, not
+  it's on the desktop, whether the files are in the panel (and whether the
+  desktop is a clean one) and the panel opening and closing, one way; the item count and requests to open or close it, the
+  other. It runs on its own (not on D-Bus, not
   sharing a process with File Manager's windows), so the taskbar can start
   and stop it, and a fault in either never closes the other. Opening a
   folder from the desktop opens a File Manager window; dialogs (conflicts,
   Properties, delete) belong to no window, so GNOME centres them.
 - **Two windows.** One as big as the screen, with the icons on it (a
   desktop window: under every other window, on every workspace, no taskbar
-  button), and, while the taskbar's `desktop-bubble` setting is on, the
-  bubble's, which takes the icons into half an ellipse at the left edge
-  (`src/bubble.rs`, the taskbar's old `bubbleShape.js` with the same sizes)
-  and leaves the desktop empty but still taking right-clicks, drops and
-  keys. The view moves between them (`Window::content`), and the bubble's
-  window runs the desktop window's commands (`win.*`). New, Paste and drops
-  on the empty desktop open the bubble on what they made.
+  button), and, while the taskbar's `desktop-files` setting has them off
+  the desktop, the desktop files panel's, as big as the screen's free area,
+  which takes the
+  icons and leaves the desktop empty but still taking right-clicks, drops
+  and keys. It's clear but for the icons and a small bar (Desktop, how many
+  items, Open in File Manager, Close), since the taskbar slides it out with
+  the wallpaper under it (`shell/gnome/README.md`, "The desktop files
+  panel"), and the icons keep their desktop places (`Layout::Panel`
+  differs from the desktop only in always showing them, saying so when
+  there are none, and taking drops on the Recycle Bin). The view moves
+  between the windows (`Window::content`), and the panel's window runs the
+  desktop window's commands (`win.*`). New, Paste and drops on the empty
+  desktop open the panel on what they made.
 - **Icons on the desktop** (`src/desktopgrid.rs`, a widget of its own in
   place of a list view): down the left side first, then the next column,
   as on Windows; each stays where it's put (dragged about the desktop, or
@@ -281,27 +288,27 @@ dragging, conflicts and undo are File Manager's.
   (Folder, Shortcut, Text Document and the Templates folder's files),
   Show Recycle Bin while it's off the desktop, Display settings (GNOME
   Settings' Displays), Personalize (Patrone Settings' Wallpaper page, else
-  GNOME's Appearance) and Open in Terminal. In the bubble, Open Desktop
-  folder comes first and View is left out (the bubble lays itself out). On
-  an icon, File Manager's own menu (without Open in new tab).
-- **Keys:** File Manager's, from the desktop or the bubble: Delete,
+  GNOME's Appearance) and Open in Terminal. With the panel on, Show desktop
+  files (while it's closed) and Open Desktop folder come first, with Open
+  Recycle Bin on a clean desktop, which has no other way to it on screen,
+  and Show desktop icons is left out (the panel always shows them). On an
+  icon, File Manager's own menu (without Open in new tab).
+- **Keys:** File Manager's, from the desktop or the panel: Delete,
   Shift+Delete, F2, Ctrl+A, Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+Z, Ctrl+Y,
   Ctrl+Shift+N, F5, Alt+Enter, Ctrl+Shift+C, Shift+F10 and the Menu key.
-  Ctrl+mouse wheel changes the icon size. Escape closes the bubble.
-- **Dragging** works between the desktop (or the bubble) and File Manager
+  Ctrl+mouse wheel changes the icon size. Escape closes the panel.
+- **Dragging** works between the desktop (or the panel) and File Manager
   both ways with Windows' rules (`src/dnd.rs`): a move on the same drive, a
   copy to another, Shift to move and Ctrl to copy. Holding Ctrl or Shift
   over a window that isn't in front reaches it through GNOME, which picks
   the drag's action from the keys and hands it to the drop
   (`dnd::drop_action`); before, a window that didn't have the keyboard
-  never saw them. Files held over the bubble's pill for half a second open
-  the bubble, to drop them in. Icons dragged about the bubble go where
-  they're let go and the others make room (the order is kept in
-  `desktop-bubble-order`; Sort by clears it); dropped on a folder, they
-  go into it. Dropped on the Recycle Bin riding on the bubble's edge, they
-  go to the Recycle Bin: its own drop target stays under the desktop
-  while it rides there, so the bubble takes those drops itself (the bin
-  lies inside the bubble's window). Anything File Manager drags carries
+  never saw them. Files held over the panel's pill for half a second open
+  the panel, to drop them in, or close it, for the windows under it.
+  Dropped on the Recycle Bin riding on the panel, they go to the Recycle
+  Bin: its own drop target stays under the panel while it's there, so the
+  panel takes those drops itself (the bin lies inside the panel's window).
+  Anything File Manager drags carries
   the files' addresses, so other apps take them too (Text Editor opens a
   text file dropped on it).
 - **Launchers** (`.desktop` files), as Ubuntu's desktop icons did them: one
@@ -351,7 +358,7 @@ counts behind "frequent folders" in `history.ini` beside it. Pinned folders
 and Favorites are settings (`pinned-folders`, `favorite-files`). The
 desktop's View and Sort by are `desktop-icon-size`, `desktop-auto-arrange`,
 `desktop-show-icons` and `desktop-sort`, its icons' places
-`desktop-positions`, and the bubble's order `desktop-bubble-order`.
+`desktop-positions`.
 
 ## Icons
 

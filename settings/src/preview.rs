@@ -667,38 +667,58 @@ fn recycle_bin_icon(cr: &Context, x: f64, y: f64, s: f64) {
 
 const FILE_COLORS: [u32; 6] = [0x3d8eff, 0xf2b636, 0x4c9a55, 0xd9473f, 0x5aa0ff, 0xc061cb];
 
-/// Where the desktop's files show: in a bubble out of the left edge, the
-/// pill at its tip and the Recycle Bin on its lower right, or across the
-/// desktop with the Recycle Bin in its corner.
+/// Where the desktop's files show: on the desktop, in the panel, drawn
+/// sliding out over a window, with the wallpaper under the files, the pill
+/// on its edge and the Recycle Bin in its corner, or nowhere: a clean
+/// desktop, with nothing on it.
 pub fn desktop_files(cr: &Context, w: f64, h: f64, place: &str) {
     desktop(cr, w, h);
     let top = plain_taskbar(cr, w, h);
     let s = top * 0.17;
-    if place == "bubble" {
-        let (a, b, middle) = (w * 0.44, top * 0.44, top / 2.0);
-        let _ = cr.save();
-        cr.translate(0.0, middle);
-        cr.scale(a, b);
-        cr.arc(0.0, 0.0, 1.0, -PI / 2.0, PI / 2.0);
-        let _ = cr.restore();
-        cr.close_path();
+    if place == "hidden" {
+        return;
+    }
+    let panel = place == "panel";
+    let reach = if panel { w * 0.8 } else { w };
+    if panel {
+        rounded(cr, w * 0.46, top * 0.12, w * 0.46, top * 0.74, 3.0);
         color(cr, 0xf3f4f7, 0.97);
         let _ = cr.fill();
-        // Down the left side, then the next column; the Recycle Bin where a
-        // third file of the second column would go
-        for (i, &rgb) in FILE_COLORS.iter().take(5).enumerate() {
-            let (column, row) = ((i / 3) as f64, (i % 3) as f64);
-            desktop_file(cr, 7.0 + column * s * 1.3, middle - s * 1.75 + row * s * 1.2, s, rgb, 0x5a5f6b);
-        }
-        recycle_bin_icon(cr, 7.0 + s * 1.45, middle + s * 0.7, s * 0.8);
-        fill_rounded(cr, a - 2.5, middle - top * 0.12, 5.0, top * 0.24, 2.5, 0x288bfa, 1.0);
-    } else {
-        for (i, &rgb) in FILE_COLORS.iter().enumerate() {
-            let (column, row) = ((i / 3) as f64, (i % 3) as f64);
-            desktop_file(cr, 7.0 + column * s * 1.3, 8.0 + row * s * 1.25, s, rgb, 0xffffff);
-        }
-        recycle_bin_icon(cr, w - s - 10.0, top - s * 1.25, s * 0.85);
+        fill_rounded(cr, w * 0.46, top * 0.12, w * 0.46, top * 0.13, 3.0, 0xd5d9e0, 1.0);
+        let _ = cr.save();
+        cr.rectangle(0.0, 0.0, reach, top);
+        cr.clip();
+        desktop(cr, w, h);
+        let _ = cr.restore();
+        cr.rectangle(reach, 0.0, 4.0, top);
+        color(cr, 0x000000, 0.22);
+        let _ = cr.fill();
     }
+    for (i, &rgb) in FILE_COLORS.iter().enumerate() {
+        let (column, row) = ((i / 3) as f64, (i % 3) as f64);
+        desktop_file(cr, 7.0 + column * s * 1.3, 8.0 + row * s * 1.25, s, rgb, 0xffffff);
+    }
+    recycle_bin_icon(cr, reach - s - 10.0, top - s * 1.25, s * 0.85);
+    if panel {
+        fill_rounded(cr, reach - 5.0, top / 2.0 - top * 0.12, 5.0, top * 0.24, 2.5, 0x288bfa, 1.0);
+    }
+}
+
+/// A clean desktop, with the corner that shows its files marked, or none.
+pub fn desktop_corner(cr: &Context, w: f64, h: f64, corner: &str) {
+    desktop(cr, w, h);
+    plain_taskbar(cr, w, h);
+    if corner == "none" {
+        return;
+    }
+    let x = if corner.ends_with("left") { 0.0 } else { w };
+    let y = if corner.starts_with("top") { 0.0 } else { h };
+    cr.arc(x, y, h * 0.34, 0.0, 2.0 * PI);
+    color(cr, 0x288bfa, 0.35);
+    let _ = cr.fill();
+    cr.arc(x, y, h * 0.2, 0.0, 2.0 * PI);
+    color(cr, 0x288bfa, 0.95);
+    let _ = cr.fill();
 }
 
 /// A Patrone Terminal window, see-through: its title bar, then a prompt.

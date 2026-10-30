@@ -9,4 +9,4 @@ NoDisplay=true
 StartupNotify=true
 Categories=GNOME;GTK;Settings;DesktopSettings;X-GNOME-Settings-Panel;X-GNOME-PersonalSettings;X-GNOME-PersonalizationSettings;
 # Search terms that find the Patrone page
-Keywords=Patrone;Taskbar;Start;Layout;Centered;Top;Theme;Classic;Sapphire;Modern;Studio;Title;Buttons;Minimize;Maximize;Close;Desktop;Bubble;Recycle;Font;Mouse;Pointer;Cursor;
+Keywords=Patrone;Taskbar;Start;Layout;Centered;Top;Theme;Classic;Sapphire;Modern;Studio;Title;Buttons;Minimize;Maximize;Close;Desktop;Files;Panel;Corner;Clean;Recycle;Font;Mouse;Pointer;Cursor;

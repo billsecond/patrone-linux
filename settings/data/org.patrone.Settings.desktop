@@ -6,7 +6,7 @@ Icon=org.patrone.Settings
 Terminal=false
 Type=Application
 Categories=GTK;Settings;DesktopSettings;
-Keywords=Taskbar;Desktop;Bubble;Recycle;Wallpaper;Background;Picture;Color;Theme;Font;Title;Buttons;Minimize;Maximize;Close;Appearance;Mouse;Pointer;Cursor;Patrone;
+Keywords=Taskbar;Desktop;Files;Panel;Corner;Clean;Recycle;Wallpaper;Background;Picture;Color;Theme;Font;Title;Buttons;Minimize;Maximize;Close;Appearance;Mouse;Pointer;Cursor;Patrone;
 StartupNotify=true
 Actions=taskbar;desktop;wallpaper;buttons;theme;pointer;
 

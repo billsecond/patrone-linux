@@ -5,10 +5,13 @@
 //!
 //! `patrone-file-manager --desktop` shows the Desktop folder in two
 //! windows: one as big as the screen, with the icons on it, and, while the
-//! taskbar's desktop bubble is on, the bubble, which takes the icons and
+//! taskbar's desktop files panel is on, the panel, which takes the icons and
 //! leaves the desktop itself empty (it still takes right-clicks, drops and
-//! keys). Both are File Manager's own view of the folder, with its cells,
-//! menus, commands and undo.
+//! keys). The panel's window covers the screen's free area, clear but for
+//! the icons and a small bar saying what it is, with the wallpaper under it
+//! (the taskbar's), and each icon where it would be on the desktop. Both are
+//! File Manager's own view of the folder, with its cells, menus, commands
+//! and undo.
 //!
 //! The taskbar starts it and hosts its windows: a Wayland app can't make
 //! its window the desktop or keep it above the others, so GNOME Shell does
@@ -17,15 +20,13 @@
 //! at a time:
 //!
 //! - in: `area X Y W H` (the screen's free area, in the desktop window),
-//!   `bin SHOWN X Y W H` (the Recycle Bin: whether it's on the desktop,
-//!   where, and its size), `bubble on|off`, `open` and `close` (the
-//!   bubble opening and closing);
-//! - out: `count N` (how many items the desktop has), `shape A B [X Y]`
-//!   (the bubble's reach and half height, and where the Recycle Bin rides
-//!   on its edge, from the bubble's top left corner; its window is the
-//!   bubble's size, with room for its shadow, `bubble::SHADOW`, above,
-//!   below and to the right), `open` and `close` (asks for the bubble to
-//!   show or go), `show-bin` (Show Recycle Bin, from the menu).
+//!   `bin SHOWN X Y W H` (the Recycle Bin: whether it's on the desktop, and
+//!   where it is, or would be, with its size), `panel on|clean|off` (the
+//!   files in the panel, on a clean desktop as well, or on the desktop), `open` and
+//!   `close` (the panel opening and closing);
+//! - out: `count N` (how many items the desktop has), `open` and `close`
+//!   (asks for the panel to show or go), `show-bin` (Show Recycle Bin, from
+//!   the menu).
 //!
 //! It runs apart from File Manager's windows (its own process, not on
 //! D-Bus), so the taskbar can start and stop it with the desktop, and a
@@ -40,7 +41,6 @@ use std::rc::Rc;
 
 use gtk::{gdk, gio, glib, prelude::*};
 
-use crate::bubble;
 use crate::config;
 use crate::desktopgrid::{DesktopGrid, ICON_SIZES, Layout, Rect};
 use crate::places::{self, Special};
@@ -49,18 +49,26 @@ use crate::window::Window;
 
 /// The windows' titles, by which the taskbar knows them.
 const DESKTOP_TITLE: &str = "Patrone Desktop";
-const BUBBLE_TITLE: &str = "Patrone Desktop Bubble";
+const PANEL_TITLE: &str = "Patrone Desktop Panel";
 
 struct Desktop {
     app: gtk::Application,
     window: Window,
     folder: gio::File,
-    /// The desktop's window while the files are in the bubble.
+    /// The desktop's window while the files are in the panel.
     backdrop: gtk::Box,
-    bubble: RefCell<Option<gtk::Window>>,
-    bubble_on: Cell<bool>,
-    bubble_open: Cell<bool>,
+    panel: RefCell<Option<gtk::Window>>,
+    panel_on: Cell<bool>,
+    /// Nothing on the desktop: the taskbar opens the panel from a corner,
+    /// and has no pill.
+    clean: Cell<bool>,
+    panel_open: Cell<bool>,
+    /// How many items the desktop has, on the panel's bar.
+    count: gtk::Label,
     bin_shown: Cell<bool>,
+    /// Where the Recycle Bin is, or would be, in the desktop window.
+    bin: Cell<Option<Rect>>,
+    /// The screen's free area, in the desktop window.
     area: Cell<Option<Rect>>,
 }
 
@@ -171,15 +179,20 @@ fn start(app: &gtk::Application) {
     backdrop.set_hexpand(true);
     backdrop.set_vexpand(true);
     backdrop.set_focusable(true);
+    let count = gtk::Label::new(None);
+    count.add_css_class("count");
     let desktop = Rc::new(Desktop {
         app: app.clone(),
         window,
         folder,
         backdrop,
-        bubble: RefCell::default(),
-        bubble_on: Cell::new(false),
-        bubble_open: Cell::new(false),
+        panel: RefCell::default(),
+        panel_on: Cell::new(false),
+        clean: Cell::new(false),
+        panel_open: Cell::new(false),
+        count,
         bin_shown: Cell::new(true),
+        bin: Cell::new(None),
         area: Cell::new(None),
     });
     DESKTOP.with(|slot| slot.replace(Some(desktop.clone())));
@@ -209,8 +222,6 @@ impl Desktop {
 
     fn connect(self: &Rc<Self>) {
         if let Some(grid) = self.grid() {
-            grid.connect_outside(|_| send("close"));
-            grid.connect_more(|_| open_desktop_folder());
             grid.connect_trash(|files| {
                 glib::spawn_future_local(async move {
                     crate::ops::trash(None, files, true).await;
@@ -219,16 +230,10 @@ impl Desktop {
             let weak = Rc::downgrade(self);
             grid.connect_reveal(move |_| {
                 if let Some(desktop) = weak.upgrade()
-                    && desktop.bubble_on.get()
-                    && !desktop.bubble_open.get()
+                    && desktop.panel_on.get()
+                    && !desktop.panel_open.get()
                 {
                     send("open");
-                }
-            });
-            let weak = Rc::downgrade(self);
-            grid.connect_shape(move |_| {
-                if let Some(desktop) = weak.upgrade() {
-                    desktop.send_shape();
                 }
             });
         }
@@ -260,8 +265,8 @@ impl Desktop {
         self.connect_backdrop();
     }
 
-    /// The empty desktop, while the files are in the bubble: its menu,
-    /// drops (into the Desktop folder, then shown in the bubble) and keys.
+    /// The empty desktop, while the files are in the panel: its menu, drops
+    /// (into the Desktop folder, then shown in the panel) and keys.
     fn connect_backdrop(self: &Rc<Self>) {
         let backdrop = &self.backdrop;
         let menu = gtk::GestureClick::new();
@@ -272,7 +277,6 @@ impl Desktop {
                 return;
             };
             gesture.set_state(gtk::EventSequenceState::Claimed);
-            desktop.close_bubble();
             desktop.window.tab().select_none();
             if let Some(widget) = gesture.widget() {
                 crate::menus::desktop_menu(&desktop.window, &widget, x, y);
@@ -286,7 +290,6 @@ impl Desktop {
             let Some(desktop) = weak.upgrade() else {
                 return;
             };
-            desktop.close_bubble();
             desktop.window.tab().select_none();
             if let Some(widget) = gesture.widget() {
                 widget.grab_focus();
@@ -324,13 +327,6 @@ impl Desktop {
         backdrop.add_controller(crate::window::file_shortcuts());
     }
 
-    /// A click on the empty desktop, outside the open bubble, closes it.
-    fn close_bubble(&self) {
-        if self.bubble_open.get() {
-            send("close");
-        }
-    }
-
     /// The desktop's Sort by, from the settings.
     fn apply_sort(&self) {
         let sort = Column::from_id(&config::string("desktop-sort")).unwrap_or(Column::Name);
@@ -344,75 +340,90 @@ impl Desktop {
     }
 
     fn send_count(&self) {
-        send(&format!("count {}", self.window.tab().n_items()));
+        let items = self.window.tab().n_items();
+        send(&format!("count {items}"));
+        self.count.set_label(&match items {
+            0 => "No items".to_owned(),
+            1 => "1 item".to_owned(),
+            n => format!("{n} items"),
+        });
     }
 
-    fn send_shape(&self) {
-        if !self.bubble_on.get() {
-            return;
-        }
-        let Some((shape, _)) = self.grid().and_then(|grid| grid.shape()) else {
+    /// The free area, for the window the icons are in. In the panel's it's
+    /// the whole window, but the same size, so they keep their places.
+    fn apply_area(&self) {
+        let (Some((x, y, width, height)), Some(grid)) = (self.area.get(), self.grid()) else {
             return;
         };
-        // The window is the bubble's size; the taskbar moves and sizes it
-        // to match.
-        if let Some(bubble) = self.bubble.borrow().as_ref() {
-            let (width, height) = bubble_size(&shape);
-            bubble.set_default_size(width, height);
-        }
-        match shape.bin {
-            Some((x, y)) => send(&format!("shape {} {} {} {}", shape.a, shape.b, x, y)),
-            None => send(&format!("shape {} {}", shape.a, shape.b)),
+        if self.panel_on.get() {
+            grid.set_area((0.0, 0.0, width, height));
+        } else {
+            grid.set_area((x, y, width, height));
         }
     }
 
-    /// The files in the bubble, or on the desktop.
-    fn set_bubble(self: &Rc<Self>, on: bool) {
-        let has_bubble = self.bubble.borrow().is_some();
-        self.bubble_on.set(on);
-        if on == has_bubble {
+    /// The Recycle Bin, for the window the icons are in: on the desktop only
+    /// while it's shown there, on the panel always.
+    fn apply_bin(&self) {
+        let Some(grid) = self.grid() else { return };
+        let place = self
+            .bin
+            .get()
+            .filter(|_| self.panel_on.get() || self.bin_shown.get());
+        match (place, self.area.get()) {
+            (Some((x, y, width, height)), Some((ax, ay, _, _))) if self.panel_on.get() => {
+                grid.set_bin(Some((x - ax, y - ay, width, height)));
+            }
+            _ => grid.set_bin(place),
+        }
+    }
+
+    /// The files in the panel, or on the desktop.
+    fn set_panel(self: &Rc<Self>, on: bool) {
+        let has_panel = self.panel.borrow().is_some();
+        self.panel_on.set(on);
+        if on == has_panel {
             return;
         }
         let content = self.window.content();
         let Some(grid) = self.grid() else { return };
         if on {
-            grid.set_layout(Layout::Bubble);
+            grid.set_layout(Layout::Panel);
             self.window.window.set_child(Some(&self.backdrop));
-            let bubble = self.make_bubble();
-            bubble.set_child(Some(&content));
-            bubble.present();
-            self.bubble.replace(Some(bubble));
-            self.send_shape();
+            let panel = self.make_panel(&content);
+            panel.present();
+            self.panel.replace(Some(panel));
         } else {
-            self.bubble_open.set(false);
-            if let Some(bubble) = self.bubble.take() {
-                bubble.set_child(None::<&gtk::Widget>);
-                bubble.destroy();
+            self.panel_open.set(false);
+            if let Some(panel) = self.panel.take() {
+                if let Some(overlay) = panel.child().and_downcast::<gtk::Overlay>() {
+                    overlay.set_child(None::<&gtk::Widget>);
+                }
+                panel.destroy();
             }
             grid.set_layout(Layout::Desktop);
             self.window.window.set_child(Some(&content));
         }
+        self.apply_area();
+        self.apply_bin();
     }
 
-    /// The bubble's window: the bubble's size, clear around its curve. The
-    /// taskbar keeps it above the windows and shows it only while the
-    /// bubble is open. (As big as the bubble can grow, its clear part took
-    /// the drops meant for the windows under it.)
-    fn make_bubble(self: &Rc<Self>) -> gtk::Window {
-        let bubble = gtk::Window::builder()
+    /// The panel's window: the screen's free area, clear but for the icons
+    /// and its bar. The taskbar puts the wallpaper under it, keeps it above
+    /// the windows and shows it only while the panel is open.
+    fn make_panel(self: &Rc<Self>, content: &gtk::Widget) -> gtk::Window {
+        let panel = gtk::Window::builder()
             .application(&self.app)
-            .title(BUBBLE_TITLE)
+            .title(PANEL_TITLE)
             .decorated(false)
             .build();
-        bubble.add_css_class("desktop-bubble");
+        panel.add_css_class("desktop");
         // Its menus and keys run the desktop window's commands.
-        bubble.insert_action_group("win", Some(&self.window.window));
-        let (width, height) = self
-            .grid()
-            .and_then(|grid| grid.shape())
-            .map_or((400, 600), |(shape, _)| bubble_size(&shape));
-        bubble.set_default_size(width, height);
-        bubble.connect_close_request(|_| glib::Propagation::Stop);
+        panel.insert_action_group("win", Some(&self.window.window));
+        if let Some((_, _, width, height)) = self.area.get() {
+            panel.set_default_size(width as i32, height as i32);
+        }
+        panel.connect_close_request(|_| glib::Propagation::Stop);
         let keys = gtk::EventControllerKey::new();
         keys.connect_key_pressed(|_, key, _, _| {
             if key == gdk::Key::Escape {
@@ -421,8 +432,34 @@ impl Desktop {
             }
             glib::Propagation::Proceed
         });
-        bubble.add_controller(keys);
-        bubble
+        panel.add_controller(keys);
+        let overlay = gtk::Overlay::new();
+        overlay.set_child(Some(content));
+        overlay.add_overlay(&self.panel_bar());
+        panel.set_child(Some(&overlay));
+        panel
+    }
+
+    /// The panel's bar: it looks like the desktop, so this says what it is,
+    /// and the ways out of it. "Open in File Manager" also reaches the icons
+    /// past the screen's last column.
+    fn panel_bar(&self) -> gtk::Box {
+        let bar = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+        bar.add_css_class("desktop-panel-bar");
+        bar.set_halign(gtk::Align::End);
+        bar.set_valign(gtk::Align::Start);
+        let title = gtk::Label::new(Some("Desktop"));
+        title.add_css_class("title");
+        bar.append(&title);
+        bar.append(&self.count);
+        let open = gtk::Button::with_label("Open in File Manager");
+        open.add_css_class("flat");
+        open.connect_clicked(|_| open_desktop_folder());
+        bar.append(&open);
+        let close = crate::glyph::button("close", "Close (Esc)");
+        close.connect_clicked(|_| send("close"));
+        bar.append(&close);
+        bar
     }
 
     fn handle(self: &Rc<Self>, words: &[&str]) {
@@ -435,10 +472,8 @@ impl Desktop {
                     return;
                 };
                 self.area.set(Some((x, y, width, height)));
-                if let Some(grid) = self.grid() {
-                    grid.set_area((x, y, width, height));
-                }
-                self.send_shape();
+                self.apply_area();
+                self.apply_bin();
             }
             Some("bin") => {
                 let shown = words.get(1) == Some(&"1");
@@ -448,21 +483,21 @@ impl Desktop {
                     return;
                 };
                 self.bin_shown.set(shown);
-                if let Some(grid) = self.grid() {
-                    grid.set_bin(
-                        shown.then_some((x, y, width, height)),
-                        Some((width, height)),
-                    );
-                }
+                self.bin.set(Some((x, y, width, height)));
+                self.apply_bin();
             }
-            Some("bubble") => self.set_bubble(words.get(1) == Some(&"on")),
+            Some("panel") => {
+                let state = words.get(1).copied();
+                self.clean.set(state == Some("clean"));
+                self.set_panel(state == Some("on") || state == Some("clean"));
+            }
             Some("open") => {
-                self.bubble_open.set(true);
+                self.panel_open.set(true);
                 if let Some(grid) = self.grid() {
                     grid.grab_focus();
                 }
             }
-            Some("close") => self.bubble_open.set(false),
+            Some("close") => self.panel_open.set(false),
             _ => {}
         }
     }
@@ -477,19 +512,31 @@ fn handle(line: &str) {
     desktop.handle(&words);
 }
 
-/// The bubble's window: the bubble, with room for its shadow.
-fn bubble_size(shape: &bubble::Shape) -> (i32, i32) {
-    (
-        (shape.a + bubble::SHADOW) as i32,
-        (2.0 * shape.b + 2.0 * bubble::SHADOW) as i32,
-    )
-}
-
 // --- What the desktop's menus run ---------------------------------------------------
 
-/// Whether the desktop's files are in the bubble.
-pub fn bubble_on() -> bool {
-    desktop().is_some_and(|desktop| desktop.bubble_on.get())
+/// Whether the desktop's files are in the panel.
+pub fn panel_on() -> bool {
+    desktop().is_some_and(|desktop| desktop.panel_on.get())
+}
+
+/// Whether the panel is open.
+pub fn panel_open() -> bool {
+    desktop().is_some_and(|desktop| desktop.panel_open.get())
+}
+
+/// Whether the desktop is a clean one, with nothing on it.
+pub fn clean() -> bool {
+    desktop().is_some_and(|desktop| desktop.clean.get())
+}
+
+/// Show desktop files: asks the taskbar for the panel.
+pub fn show_files() {
+    send("open");
+}
+
+/// Open Recycle Bin, in a File Manager window.
+pub fn open_recycle_bin() {
+    open_in_file_manager(&[gio::File::for_uri("trash:///")]);
 }
 
 /// Whether the Recycle Bin is on the desktop.
