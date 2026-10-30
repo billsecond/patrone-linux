@@ -1,3 +1,12 @@
+patrone-remote-desktop (0.5.8) resolute; urgency=medium
+
+  * Signing in through Remote Desktop or Hyper-V's enhanced session unlocks
+    the account's login keyring with that password, as the login screen
+    does. It stayed locked, so anything that needed a saved password asked
+    for it again.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-remote-desktop (0.5.7) resolute; urgency=medium
 
   * The sign-in screen's font is PatroneOS Sans, PatroneOS's own, in place of
