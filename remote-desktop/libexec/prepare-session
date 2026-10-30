@@ -106,6 +106,9 @@ printf '%s\n' "$secret" | "${grdctl[@]}" set-credentials "$user" 2> /dev/null
 session=gnome-headless-session@$user.service
 if ! systemctl is-active --quiet "$session"; then
     for id in $(loginctl list-sessions --no-legend | awk -v user="$user" '$3 == user { print $1 }'); do
+        # One that's closing is no desktop, whatever is still in it: the
+        # viewer has gone from it, so it'd look like a plain GNOME session
+        [ "$(loginctl show-session "$id" -p State --value)" != closing ] || continue
         case $(loginctl show-session "$id" -p Type --value) in
             wayland | x11)
                 if ! viewer_session "$id"; then

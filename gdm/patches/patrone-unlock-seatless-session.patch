@@ -1,0 +1,74 @@
+Description: Unlock a session with no seat after its lock screen's password
+ When a session's lock screen takes the right password, GDM activates the
+ session on its display's seat and then unlocks it. Patrone's desktops have
+ no seat: the screen shows them through a viewer in a session of its own.
+ logind refuses to activate one on a seat (SessionNotOnSeat), and GDM gave
+ up there, so the lock screen took the password and stayed locked, with no
+ way back but restarting. After a password check that didn't come from a
+ login screen, GDM now also unlocks the account's graphical sessions with
+ no seat. Everything else goes as before.
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: no
+Last-Update: 2026-10-30
+---
+--- a/daemon/gdm-manager.c
++++ b/daemon/gdm-manager.c
+@@ -1836,6 +1836,39 @@
+         return looking_for == current;
+ }
+ 
++/* Unlocks the graphical sessions of an account that have no seat. logind won't
++ * activate those on one, so switch_to_compatible_user_session() never gets as
++ * far as unlocking them. An account has one desktop at a time, and whoever
++ * unlocks it runs as a user service, outside any session, so this can't go by
++ * the session of the caller, nor by which session GDM finds for the account: a
++ * Patrone desktop's account also has the session that shows it on the screen.
++ */
++static void
++unlock_seatless_sessions (GdmManager *manager,
++                          uid_t       uid)
++{
++        g_auto (GStrv) sessions = NULL;
++        int i;
++
++        if (sd_uid_get_sessions (uid, 0, &sessions) <= 0) {
++                return;
++        }
++
++        for (i = 0; sessions[i] != NULL; i++) {
++                g_autofree char *seat = NULL;
++                g_autofree char *type = NULL;
++
++                if (sd_session_get_seat (sessions[i], &seat) >= 0 ||
++                    sd_session_get_type (sessions[i], &type) < 0) {
++                        continue;
++                }
++
++                if (g_strcmp0 (type, "wayland") == 0 || g_strcmp0 (type, "x11") == 0) {
++                        session_unlock (manager, sessions[i]);
++                }
++        }
++}
++
+ static void
+ on_session_reauthenticated (GdmSession *session,
+                             const char *service_name,
+@@ -1843,6 +1876,7 @@
+                             GdmManager *manager)
+ {
+         gboolean fail_if_already_switched = FALSE;
++        uid_t caller_uid;
+         GdmDisplay *login_display = gdm_display_store_find (manager->display_store,
+                                                             lookup_by_reauth_pid,
+                                                             GINT_TO_POINTER (pid_of_caller));
+@@ -1872,6 +1906,10 @@
+                 }
+         }
+ 
++        if (login_display == NULL && sd_pid_get_owner_uid (pid_of_caller, &caller_uid) >= 0) {
++                unlock_seatless_sessions (manager, caller_uid);
++        }
++
+         /* There should already be a session running, so jump to its
+          * VT. In the event we're already on the right VT, (i.e. user
+          * used an unlock screen instead of a user switched login screen),
