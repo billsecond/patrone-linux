@@ -102,11 +102,15 @@ override_dh_auto_install:
 	cp -r system/desktop-provision/. $(pkg)/usr/share/desktop-provision/
 	install -Dm644 logos/patrone-logo-text-dark.png $(pkg)/usr/share/desktop-provision/slides/patrone-logo.png
 	# Wallpapers 02 (Neon Horizon) and 03 and their variants
-	# (tools/make_wallpapers.py), and the generated designs
-	# (tools/make_generated_wallpapers.py), listed in Settings > Appearance
+	# (tools/make_wallpapers.py), the generated designs
+	# (tools/make_generated_wallpapers.py and make_abstract_wallpapers.py)
+	# and the gallery (tools/make_gallery_wallpapers.py), listed in
+	# Settings > Appearance
 	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone \
 	    wallpapers/patrone-back-02-*.png wallpapers/patrone-back-03-*.png
-	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/generated/patrone-*.png
+	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone \
+	    wallpapers/generated/patrone-*.png wallpapers/generated/patrone-*.jpg
+	install -Dm644 -t $(pkg)/usr/share/backgrounds/patrone wallpapers/gallery/patrone-*.jpg
 	# Wallpaper 01's family is retired. Its names lead to 02's, so a desktop
 	# set to one of them still has a wallpaper.
 	for name in light plain plain-light clean mark mark-light badge midnight blue graphite watermark; do \
