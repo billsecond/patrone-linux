@@ -545,10 +545,10 @@ pub fn display_settings() {
     spawn(&["gnome-control-center".into(), "display".into()]);
 }
 
-/// Personalize: Patrone Settings' Theme page, or GNOME's Appearance.
+/// Personalize: Patrone Settings' Wallpaper page, or GNOME's Appearance.
 pub fn personalize() {
     if glib::find_program_in_path("patrone-settings").is_some() {
-        spawn(&["patrone-settings".into(), "--page".into(), "theme".into()]);
+        spawn(&["patrone-settings".into(), "--page".into(), "wallpaper".into()]);
     } else {
         spawn(&["gnome-control-center".into(), "background".into()]);
     }

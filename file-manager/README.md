@@ -280,7 +280,7 @@ dragging, conflicts and undo are File Manager's.
   once, as on Windows), Refresh, Paste, Paste shortcut, Undo and Redo, New
   (Folder, Shortcut, Text Document and the Templates folder's files),
   Show Recycle Bin while it's off the desktop, Display settings (GNOME
-  Settings' Displays), Personalize (Patrone Settings' Theme page, else
+  Settings' Displays), Personalize (Patrone Settings' Wallpaper page, else
   GNOME's Appearance) and Open in Terminal. In the bubble, Open Desktop
   folder comes first and View is left out (the bubble lays itself out). On
   an icon, File Manager's own menu (without Open in new tab).
