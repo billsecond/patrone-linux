@@ -197,26 +197,56 @@ impl Thumbnail {
     }
 }
 
-/// A card's picture. The wallpapers are up to 8K, so this runs off the main
-/// thread and keeps what it makes: the first time takes a second or two for
-/// each, and after that they come straight from the account's cache.
-pub fn thumbnail(picture: &Path) -> Option<Thumbnail> {
+fn thumbnail_folder() -> PathBuf {
+    glib::user_cache_dir().join("patrone-settings").join("wallpapers")
+}
+
+/// Where a picture's thumbnail is kept: named for the picture and when it was
+/// last changed, so a new version of it gets a new thumbnail.
+fn thumbnail_file(picture: &Path) -> Option<PathBuf> {
     let modified = fs::metadata(picture).and_then(|data| data.modified()).ok()?;
     let stamp = modified.duration_since(std::time::UNIX_EPOCH).ok()?.as_secs();
     let name = format!("{}:{stamp}:{THUMBNAIL_WIDTH}", picture.display());
     let key = glib::compute_checksum_for_string(glib::ChecksumType::Sha256, &name)?;
-    let folder = glib::user_cache_dir().join("patrone-settings").join("wallpapers");
-    let cached = folder.join(format!("{key}.png"));
+    Some(thumbnail_folder().join(format!("{key}.png")))
+}
+
+/// A card's picture. The wallpapers are up to 8K, so this runs off the main
+/// thread and keeps what it makes: the first time takes a second or two for
+/// each, and after that they come straight from the account's cache.
+pub fn thumbnail(picture: &Path) -> Option<Thumbnail> {
+    let cached = thumbnail_file(picture)?;
     if let Ok(pixbuf) = Pixbuf::from_file(&cached) {
         return Some(Thumbnail::of(&pixbuf));
     }
     let pixbuf = Pixbuf::from_file_at_scale(picture, THUMBNAIL_WIDTH, -1, true).ok()?;
     // Written whole, then moved: another window may be reading the folder
-    let partial = folder.join(format!("{key}.{}.part", std::process::id()));
-    if fs::create_dir_all(&folder).is_ok() && pixbuf.savev(&partial, "png", &[]).is_ok() {
+    let partial = cached.with_extension(format!("{}.part", std::process::id()));
+    if fs::create_dir_all(thumbnail_folder()).is_ok() && pixbuf.savev(&partial, "png", &[]).is_ok() {
         let _ = fs::rename(&partial, &cached);
     }
     Some(Thumbnail::of(&pixbuf))
+}
+
+/// Removes the thumbnails no wallpaper uses any more: each new
+/// patrone-branding gives the wallpapers new modified times, and so new
+/// thumbnails, and without this the old ones would stay for good.
+pub fn remove_unused_thumbnails(pictures: &[PathBuf]) {
+    let used: Vec<PathBuf> = pictures.iter().filter_map(|picture| thumbnail_file(picture)).collect();
+    remove_others(&thumbnail_folder(), &used);
+}
+
+/// Removes everything in `folder` but `used`, and what this process is
+/// writing there.
+fn remove_others(folder: &Path, used: &[PathBuf]) {
+    let Ok(entries) = fs::read_dir(folder) else { return };
+    let writing = format!(".{}.part", std::process::id());
+    for path in entries.flatten().map(|entry| entry.path()) {
+        let name = path.file_name().unwrap_or_default().to_string_lossy();
+        if !used.contains(&path) && !name.ends_with(&writing) {
+            let _ = fs::remove_file(&path);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -275,6 +305,26 @@ mod tests {
             assert_eq!(wallpapers[0].name, "Neon Horizon");
             assert!(wallpapers[0].dark.is_some());
         }
+    }
+
+    #[test]
+    fn removes_the_thumbnails_nothing_uses() {
+        let folder = std::env::temp_dir().join(format!("patrone-wallpaper-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&folder);
+        fs::create_dir_all(&folder).unwrap();
+        let writing = format!("new.{}.part", std::process::id());
+        for name in ["used.png", "old.png", "crashed.1.part", &writing] {
+            fs::write(folder.join(name), "").unwrap();
+        }
+        remove_others(&folder, &[folder.join("used.png")]);
+        let mut left: Vec<String> = fs::read_dir(&folder)
+            .unwrap()
+            .flatten()
+            .map(|entry| entry.file_name().to_string_lossy().into_owned())
+            .collect();
+        left.sort();
+        assert_eq!(left, [writing, "used.png".to_string()]);
+        let _ = fs::remove_dir_all(&folder);
     }
 
     #[test]

@@ -98,8 +98,8 @@ Settings puts the style sheets (the theme's title bars from
 `data/titlebuttons/STYLE/`, installed in `/usr/share/patrone`) into the
 account's `~/.config/gtk-4.0/gtk.css` and `~/.config/gtk-3.0/gtk.css`, as
 `@import`s between two marked lines at the top. Anything else in those
-files is kept, and since it comes after, the account's own rules still win.
-GTK reads these files when an app starts, libadwaita apps included.
+files is kept, below Patrone's lines. GTK reads these files when an app
+starts, libadwaita apps included.
 
 So that a choice takes effect at once (the user, 2026-10-30: "not working
 when i click it live"), Patrone Settings, Patrone Terminal, File Manager and
@@ -112,6 +112,13 @@ nothing of the old style stays behind; the copy they load has the
 `:not(.patrone-live)` taken out. Browser Chooser, Unpack and Hyper-V setup
 open for moments at a time, so they don't, and their windows get the sheets
 from `gtk.css` as they always have.
+
+The account's own rules in `gtk.css` win in those apps: the sheets load one
+step below it (`STYLE_PROVIDER_PRIORITY_USER - 1`). In other apps a rule has
+to be as specific as the sheets' as well as below them, since GTK weighs that
+first and they say `window:not(.patrone-live)`: `window.csd headerbar` wins
+there, a plain `headerbar` doesn't. (GTK has no `:where()` to take that
+weight away, and those apps have only the one file.)
 
 Other apps that are open change only when they're next opened, and nothing
 Patrone can do from outside them changes that. GTK reloads a running app's
@@ -145,7 +152,10 @@ the dark style. The wallpapers are up to 8K, so the cards' pictures load
 after the page opens, three at a time off the main thread, starting the
 first time the page shows, and are kept at 376 pixels wide in
 `~/.cache/patrone-settings/wallpapers`. All 21 took about 5 seconds the first
-time on the dev VM, and after that they come straight from the cache.
+time on the dev VM, and after that they come straight from the cache. A
+thumbnail is named for its picture and when that last changed, which each
+new `patrone-branding` does, so opening the page also removes those no
+wallpaper uses any more.
 
 None sets `picture-options` to `none`, which is what makes GNOME Shell show
 `primary-color` in place of the picture; `picture-uri` stays as it was. The
@@ -158,8 +168,11 @@ read less well on them, as on a light wallpaper.
 
 GNOME Settings' Patrone page doesn't have this: its Appearance page has the
 pictures, though not None. A picture set there, or with File Manager's "Set
-as desktop background", lights its card here. File Manager's also turns None
-off, since it would otherwise go on hiding the picture.
+as desktop background", lights its card here, and one that isn't in the
+lists, such as the account's own photo, leaves no card lit (`show_picked`).
+That matters because GTK ignores a click on a lit card in a group, so a card
+left lit couldn't be picked again. File Manager's also turns None off, since
+it would otherwise go on hiding the picture.
 
 ## Mouse pointer
 
@@ -304,5 +317,11 @@ lock screen and showed on the desktop within a few levels of the color. A
 color picked while a picture showed replaced it. The color was kept through
 a picture and back to None. The card lit followed every change, those made
 elsewhere included (the keys set with `gsettings`, as GNOME's page does).
-"Set as desktop background" with None on brought the picture back. The
-lock screen itself wasn't shown: its settings were read back.
+"Set as desktop background" with None on brought the picture back. An
+account's own photo set that way left no card lit, and clicking the card
+that had been lit, or None, then worked. Thumbnails: stray files went, and a
+wallpaper with a new modified time left one thumbnail, not two. Rules of
+the account's own below Patrone's lines, under Classic: a plain `headerbar`
+rule won in Task Manager and GNOME Settings and not in GNOME's Calculator,
+and `window.csd headerbar` won in all three. The lock screen itself wasn't
+shown: its settings were read back.

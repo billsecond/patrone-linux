@@ -523,13 +523,20 @@ fn choices(content: &gtk::Box, items: Vec<Choice>, current: &str, pick: impl Fn(
     }
     content.append(&flow);
 
-    Box::new(move |value: &str| {
-        for (button, choice) in &buttons {
-            if choice == value && !button.is_active() {
-                button.set_active(true);
-            }
+    Box::new(move |value: &str| show_picked(&buttons, value))
+}
+
+/// Lights the card for a setting's value, and no card if none is for it: a
+/// value set elsewhere, such as the account's own photo as the wallpaper.
+/// GTK ignores a click on a lit card in a group, so a card left lit couldn't
+/// be picked again.
+fn show_picked<T: AsRef<str>>(buttons: &[(gtk::ToggleButton, T)], value: &str) {
+    for (button, choice) in buttons {
+        let lit = choice.as_ref() == value;
+        if button.is_active() != lit {
+            button.set_active(lit);
         }
-    })
+    }
 }
 
 /// A card's name and description for screen readers, which otherwise hear
@@ -599,13 +606,7 @@ fn icon_choices(content: &gtk::Box, current: &str, pick: impl Fn(&str) + 'static
     }
     content.append(&flow);
 
-    Box::new(move |value: &str| {
-        for (button, choice) in &buttons {
-            if *choice == value && !button.is_active() {
-                button.set_active(true);
-            }
-        }
-    })
+    Box::new(move |value: &str| show_picked(&buttons, value))
 }
 
 fn taskbar_page() -> gtk::ScrolledWindow {
@@ -959,13 +960,7 @@ fn font_choices(content: &gtk::Box, current: &str, installed: &[String], pick: i
     }
     content.append(&flow);
 
-    Box::new(move |value: &str| {
-        for (button, choice) in &buttons {
-            if *choice == value && !button.is_active() {
-                button.set_active(true);
-            }
-        }
-    })
+    Box::new(move |value: &str| show_picked(&buttons, value))
 }
 
 /// The drawings inside `widget`, to redraw.
@@ -1120,11 +1115,16 @@ fn wallpaper_page() -> gtk::ScrolledWindow {
             (path, slot, picture.clone())
         })
         .collect();
+    let pictures: Vec<PathBuf> = wallpapers
+        .iter()
+        .flat_map(|item| std::iter::once(item.picture.clone()).chain(item.dark.clone()))
+        .collect();
     // Only when the page is first opened: the window shows another page first
-    let jobs = RefCell::new(Some(jobs));
+    let jobs = RefCell::new(Some((jobs, pictures)));
     scrolled.connect_map(move |_| {
-        if let Some(jobs) = jobs.borrow_mut().take() {
+        if let Some((jobs, pictures)) = jobs.borrow_mut().take() {
             load_thumbnails(jobs);
+            gio::spawn_blocking(move || wallpaper::remove_unused_thumbnails(&pictures));
         }
     });
 
