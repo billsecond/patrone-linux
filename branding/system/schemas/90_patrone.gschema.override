@@ -22,8 +22,13 @@ monospace-font-name='PatroneOS Mono 11'
 # 12-hour time with AM or PM, on the taskbar and the lock screen, whatever the
 # language, in place of the 24-hour time GNOME starts with
 clock-format='12h'
+# Plain gray edges on text. Ubuntu sets 'rgba' for its session and the login
+# screen, which fringes letters with color; fontconfig's side of this is in
+# 05-patrone-fonts.conf, for the apps that go by that instead
+font-antialiasing='grayscale'
 
 [org.gnome.desktop.interface:ubuntu]
+font-antialiasing='grayscale'
 gtk-theme='Yaru-blue'
 icon-theme='Yaru-blue'
 cursor-theme='Patrone'
@@ -34,6 +39,7 @@ monospace-font-name='PatroneOS Mono 11'
 # Ubuntu sets the login screen's cursors too ([schema:GNOME-Greeter])
 [org.gnome.desktop.interface:GNOME-Greeter]
 cursor-theme='Patrone'
+font-antialiasing='grayscale'
 
 # PatroneOS's fonts (fonts-patroneos): PatroneOS Sans for the desktop, apps
 # and window titles (semibold), PatroneOS Document for documents and
