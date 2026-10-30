@@ -16,9 +16,9 @@ set -euo pipefail
 
 # Patrone's revision of the patches: one more with each change to them, so a
 # new build of the same Ubuntu version installs as an upgrade
-revision=4
+revision=5
 # What changed in it, for the package's changelog
-changes="Patrone's build: Hyper-V's synthetic video counts as the boot display, so on a generation 2 VM the login screen no longer waits 10 seconds for a primary GPU, and a session with no seat, as Patrone's desktops are, unlocks after its lock screen takes the password. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's patches."
+changes="Patrone's build: Hyper-V's synthetic video counts as the boot display, so on a generation 2 VM the login screen no longer waits 10 seconds for a primary GPU, a session with no seat, as Patrone's desktops are, unlocks after its lock screen takes the password, and a session that's slow to register no longer gets a login screen over it when the boot splash quits. Patrone maintains this build, with Ubuntu as the original maintainer, and the copyright file names Patrone's patches."
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/.." && pwd)
@@ -33,7 +33,8 @@ pull-lp-source gdm3 "$version"
 cd gdm3-*/
 
 cp "$here"/patches/*.patch debian/patches/
-printf '%s\n' patrone-hyperv-boot-display.patch patrone-unlock-seatless-session.patch >> debian/patches/series
+printf '%s\n' patrone-hyperv-boot-display.patch patrone-unlock-seatless-session.patch \
+    patrone-splash-quit-fallback.patch >> debian/patches/series
 QUILT_PATCHES=debian/patches quilt push -a
 
 # Patrone maintains this build, so Patrone is its maintainer and Ubuntu the
@@ -55,8 +56,9 @@ cat >> debian/copyright << 'EOF'
 
 PatroneOS's build of GDM (gdm/ in
 https://github.com/billsecond/patroneos) adds
-debian/patches/patrone-hyperv-boot-display.patch and
-debian/patches/patrone-unlock-seatless-session.patch:
+debian/patches/patrone-hyperv-boot-display.patch,
+debian/patches/patrone-unlock-seatless-session.patch and
+debian/patches/patrone-splash-quit-fallback.patch:
 
     Copyright © 2026  William Daugherty
 

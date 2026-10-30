@@ -1,0 +1,30 @@
+Description: Quit the splash as usual when a session is slow to register
+ Once a session registers, GDM waits 10 seconds for it to register its
+ display too, which quits the splash and leaves its last frame for the
+ session to paint over. If that hasn't come, a fallback quits the splash
+ with a plain "plymouth quit", and Plymouth takes the screen back to the
+ first VT. GDM reads that as someone switching to an empty VT and starts a
+ login screen there, over the session that's running. GNOME Shell registers
+ its display at once, so it never gets here. GNOME Kiosk doesn't, and
+ gdm-wayland-session registers for it after the same 10 seconds, so the two
+ race. PatroneOS's disc runs its installer in GNOME Kiosk, and about one boot
+ in seven showed a login screen in its place. The session has the screen by
+ then, so the fallback now quits the splash as the usual path does.
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: no
+Last-Update: 2026-10-30
+---
+--- a/daemon/gdm-manager.c
++++ b/daemon/gdm-manager.c
+@@ -202,7 +202,10 @@
+         manager->plymouth_quit_timeout_id = 0;
+ 
+         if (manager->plymouth_is_running) {
+-                plymouth_quit_without_transition ();
++                /* The session has the screen by now, and a plain quit would
++                 * take it back to Plymouth's VT, where GDM would start a
++                 * login screen over the session. */
++                plymouth_quit_with_transition ();
+                 manager->plymouth_is_running = FALSE;
+         }
+ }
