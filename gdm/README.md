@@ -1,9 +1,10 @@
 # Patrone's GDM
 
-Patrone builds Ubuntu's GDM (`gdm3`) again with two changes: the login screen
+Patrone builds Ubuntu's GDM (`gdm3`) again with three changes: the login screen
 doesn't keep a stalled boot splash on screen for 10 seconds on a Hyper-V VM
-(below), and a desktop can be unlocked after its screen is locked
-([Unlocking a desktop](#unlocking-a-desktop)).
+(below), a desktop can be unlocked after its screen is locked
+([Unlocking a desktop](#unlocking-a-desktop)), and the disc's installer doesn't
+get a login screen over it ([The disc's login screen](#the-discs-login-screen)).
 
 The user saw it on the dev VM (2026-10-27): the boot splash's spinner turned
 for only a few seconds, then the logo stood still until the login screen.
@@ -31,6 +32,7 @@ the full 10 seconds.
 | --- | --- |
 | `patches/patrone-hyperv-boot-display.patch` | Counts a display on the VMBus as the boot display: `hyperv_drm` takes over the framebuffer the VM's firmware booted on. Other computers are checked as before |
 | `patches/patrone-unlock-seatless-session.patch` | Unlocks a session with no seat after its lock screen takes the password |
+| `patches/patrone-splash-quit-fallback.patch` | Quits the boot splash the usual way when a session is slow to register, so the screen stays on that session |
 | `build.sh` | Fetches Ubuntu's source, adds the patch, versions it Ubuntu's version plus `patrone` and the revision, and builds. From revision 2 it names Patrone as the packages' maintainer and Ubuntu Developers as the original one, as Debian's guidelines for derivatives have it, and adds Patrone's patch to the copyright file (`docs/COMPLIANCE.md`, item 13) |
 
 GDM still deactivates the splash as it starts: Plymouth has to let go of the
@@ -62,6 +64,34 @@ one doesn't, and signing out afterwards leaves nothing behind. That holds with
 the desktop started by the screen's sign-in, and with it started by a Remote
 Desktop sign-in and the screen signing in after. The journal still shows the
 `SessionNotOnSeat` line at each unlock, from the unchanged path that runs after.
+
+## The disc's login screen
+
+"Install PatroneOS" boots to the installer alone, in a GNOME Kiosk session that
+GDM logs in by itself (`installer/README.md`). About one boot in seven showed the
+login screen with "Live session user" in its place. Clicking the account went
+straight to the installer, which had been running behind it all along.
+
+Once a session registers, GDM gives it 10 seconds to register its display too,
+which quits the splash with `plymouth quit --retain-splash`. If that hasn't
+come, a fallback runs a plain `plymouth quit`, and Plymouth takes the screen
+back to the first VT. GDM reads that as someone switching to an empty VT and
+starts a login screen there. GNOME Shell registers its display at once, so
+desktops and login screens never get to the fallback. GNOME Kiosk doesn't
+register: `gdm-wayland-session` does it for it after the same 10 seconds, so
+the two timers race, and which one wins comes down to fractions of a second.
+The fallback now quits the splash the way the usual path does. The session
+already has the screen by then, and nothing shows the splash's last frame.
+
+Checked on the disc built from a55bff4, in QEMU, booting it with a GDM swapped
+in and its debug log on the serial port (2026-10-30). As it is, 3 of 20 boots
+showed the login screen, most of them with the machine busy. With the fallback
+forced to run first, after 3 seconds, both boots did, and the log has `VT changed
+from 2 to 1` and `creating new display on seat0 because of VT change`. With that
+same forcing and this patch, neither did, and there was no VT change.
+`50.1-0ubuntu0.1patrone5` as built went to the installer on all 5 boots with the
+machine busy. Installed on a fresh install, it left the login screen, signing in
+and out, locking and unlocking, and Remote Desktop's sign-in working as before.
 
 ## Building
 
