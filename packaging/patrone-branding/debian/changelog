@@ -1,3 +1,16 @@
+patrone-branding (0.1.27) resolute; urgency=medium
+
+  * Thirteen more wallpapers to choose from in Settings > Appearance, from
+    the user's pictures (2026-10-30, "add these as images for possible
+    wallpapers"): Sapling in the Light, on the Cliff and on the Ledge;
+    Spheres in Gold, in Charcoal and in Shadow; Storm Over the Hill, Storm
+    Sunburst and Storm Clearing; and Woodland Path, Bend, Sunbeams and
+    Hollow. They're enlarged to 3840x2160 JPEGs of 1 to 3 MB
+    (tools/make_gallery_wallpapers.py), 26 MB in all. The default stays
+    Neon Horizon.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-branding (0.1.25) resolute; urgency=medium
 
   * Two more cursor themes, the same shapes in other colors (the user,
