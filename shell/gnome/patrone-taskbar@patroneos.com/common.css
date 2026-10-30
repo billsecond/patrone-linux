@@ -91,7 +91,7 @@
 
 .patrone-clock-time,
 .patrone-clock-date {
-  font-size: 10.5pt;
+  font-size: 9pt;
   text-align: right;
 }
 
@@ -149,7 +149,7 @@
 
 .patrone-taskbar.size-small .patrone-clock-time,
 .patrone-taskbar.size-small .patrone-clock-date {
-  font-size: 8.5pt;
+  font-size: 8pt;
 }
 
 .patrone-taskbar.size-large {
@@ -190,7 +190,7 @@
 
 .patrone-taskbar.size-large .patrone-clock-time,
 .patrone-taskbar.size-large .patrone-clock-date {
-  font-size: 12pt;
+  font-size: 10.5pt;
 }
 
 /* Dragging: the gap a taskbar button will land in, and in Start's Pinned,

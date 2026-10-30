@@ -412,7 +412,7 @@ class Clock {
         const scale = this._time.height / line.height;
         const figures = ink.height * scale;
         const offset = ink.y * scale;
-        const gap = Math.round(figures * 0.7);
+        const gap = Math.round(figures * 0.8);
         const top = Math.floor((this.actor.height - 2 * figures - gap) / 2);
         this._time.translation_y = top - offset;
         this._date.translation_y = top + figures + gap - offset - this._date.y;

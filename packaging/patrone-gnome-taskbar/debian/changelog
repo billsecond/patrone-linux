@@ -1,3 +1,11 @@
+patrone-gnome-taskbar (0.4.15) resolute; urgency=medium
+
+  * The clock's text is smaller, with a little more room between the time
+    and the date, so it sits quietly beside the tray icons: 9 pt on the
+    normal taskbar, 8 pt on the small one and 10.5 pt on the large one.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 16:00:00 -0500
+
 patrone-gnome-taskbar (0.4.14) resolute; urgency=medium
 
   * The clock's time and date are right-aligned again, keeping the even
