@@ -1,3 +1,15 @@
+patrone-shell-config (0.3.0) resolute; urgency=medium
+
+  * Windows commands typed in a shell, such as ipconfig, Get-ChildItem or
+    cls, in any case, now say they're invalid and name the Linux command to
+    use, with the usual options where they differ. It works in bash and zsh
+    for every account, new or existing: /usr/lib/command-not-found, which
+    both shells run, is now Patrone's, and Ubuntu's stays beside it for
+    every other command (dpkg-divert).
+  * Recommends command-not-found, which sets that up for zsh.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 12:00:00 -0500
+
 patrone-shell-config (0.2.3) resolute; urgency=medium
 
   * A failed command's exit status goes on its own line under the command,
