@@ -2,28 +2,30 @@
  * account's ~/.config/gtk-4.0/gtk.css): pale blue-grey title bars in the
  * light style, deep navy ones with a line of Patrone Blue under them in the
  * dark style. The title bar buttons are a setting of their own
- * (data/titlebuttons); Patrone's own are Wide. */
+ * (data/titlebuttons); Patrone's own are Wide.
+ * Rules say window:not(.patrone-live): apps that follow a change while they run
+ * load this sheet themselves, without that, and their windows have the class. */
 
-headerbar {
+window:not(.patrone-live) headerbar {
   background-color: #e8eef7;
   background-image: none;
   color: #14223a;
   box-shadow: inset 0 -1px #c9d6ea;
 }
 
-headerbar:backdrop {
+window:not(.patrone-live) headerbar:backdrop {
   background-color: #f1f4f9;
   color: alpha(#14223a, 0.6);
 }
 
 @media (prefers-color-scheme: dark) {
-  headerbar {
+  window:not(.patrone-live) headerbar {
     background-color: #16213a;
     color: #e8eef7;
     box-shadow: inset 0 -1px #288bfa;
   }
 
-  headerbar:backdrop {
+  window:not(.patrone-live) headerbar:backdrop {
     background-color: #1b2233;
     color: alpha(#e8eef7, 0.55);
     box-shadow: inset 0 -1px alpha(#288bfa, 0.4);

@@ -7,6 +7,8 @@
 use std::f64::consts::PI;
 
 use gtk::cairo::{Context, Filter, FontSlant, FontWeight, Format, ImageSurface, LineCap, LineJoin, LinearGradient};
+use gtk::gdk::prelude::GdkCairoContextExt;
+use gtk::gdk_pixbuf::Pixbuf;
 
 use crate::cursor::Cursor;
 
@@ -736,7 +738,7 @@ pub fn sign_in_terminal(cr: &Context, w: f64, h: f64, place: &str) {
     // a terminal's own size is about half a 1920 by 1080 screen
     if place == "logo" {
         terminal_window(cr, w * 0.114, h * 0.086, w * 0.719, h * 0.74);
-    } else {
+    } else if place == "center" {
         let (tw, th) = (w * 0.48, top * 0.64);
         terminal_window(cr, (w - tw) / 2.0, (top - th) / 2.0, tw, th);
     }
@@ -815,4 +817,35 @@ pub fn pointer_size(cr: &Context, w: f64, h: f64, arrow: Option<&Cursor>, size: 
     let x = (w - f64::from(image.width) * scale) / 2.0 + image.xhot * scale;
     let y = (h - f64::from(image.height) * scale) / 2.0 + image.yhot * scale;
     pointer(cr, arrow, x, y, size);
+}
+
+/// A plain color, for the None card and the colors to pick from, with a thin
+/// line so that one like the window's own still shows.
+pub fn plain_color(cr: &Context, w: f64, h: f64, rgb: u32) {
+    fill_rounded(cr, 0.0, 0.0, w, h, 6.0, rgb, 1.0);
+    rounded(cr, 0.5, 0.5, w - 1.0, h - 1.0, 6.0);
+    color(cr, 0x808080, 0.35);
+    cr.set_line_width(1.0);
+    let _ = cr.stroke();
+}
+
+/// A wallpaper's picture, filling the card as GNOME's zoom fills a screen, or
+/// an empty card until it has loaded.
+#[allow(deprecated)] // GDK's other ways to draw a pixbuf take far more code
+pub fn wallpaper(cr: &Context, w: f64, h: f64, picture: Option<&Pixbuf>) {
+    let Some(picture) = picture else {
+        fill_rounded(cr, 0.0, 0.0, w, h, 8.0, 0x808080, 0.18);
+        return;
+    };
+    let _ = cr.save();
+    rounded(cr, 0.0, 0.0, w, h, 8.0);
+    cr.clip();
+    let (pw, ph) = (f64::from(picture.width()), f64::from(picture.height()));
+    let scale = (w / pw).max(h / ph);
+    cr.translate((w - pw * scale) / 2.0, (h - ph * scale) / 2.0);
+    cr.scale(scale, scale);
+    cr.set_source_pixbuf(picture, 0.0, 0.0);
+    cr.source().set_filter(Filter::Good);
+    let _ = cr.paint();
+    let _ = cr.restore();
 }

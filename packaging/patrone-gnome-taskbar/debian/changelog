@@ -1,3 +1,11 @@
+patrone-gnome-taskbar (0.4.11) resolute; urgency=medium
+
+  * sign-in-terminal can be off: patrone-terminal's autostart script doesn't
+    open the terminal, and a terminal the user opens soon after signing in
+    isn't placed.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-gnome-taskbar (0.4.10) resolute; urgency=medium
 
   * The old folder, patrone-taskbar@patrone-linux, keeps the taskbar's

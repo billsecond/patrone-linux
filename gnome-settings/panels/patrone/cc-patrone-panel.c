@@ -45,6 +45,15 @@
 #define PREVIEWS_DIR "/usr/share/patrone/settings/previews"
 #define TASKBAR_ICONS "gnome-shell/extensions/patrone-taskbar@patroneos.com/icons"
 
+/* The lines Patrone Settings keeps in the account's gtk.css, and how the
+ * style sheets they import keep off windows that follow a change themselves
+ * (settings/src/live_style.rs in Patrone's repository) */
+#define STYLE_BEGIN "/* Patrone Settings: theme "
+#define STYLE_END "/* Patrone Settings: end of theme */"
+#define STYLE_IMPORT "@import url(\"file://"
+#define STYLE_LIVE_CLASS "patrone-live"
+#define STYLE_LIVE_SCOPE ":not(.patrone-live)"
+
 /* The title bar buttons at the top right or top left (GNOME's
  * button-layout), close nearest the corner */
 #define LAYOUT_RIGHT "appmenu:minimize,maximize,close"
@@ -105,6 +114,7 @@ static const Choice recycle_bin[] = {
 static const Choice sign_in_terminal[] = {
   { "logo", N_("Over the Logo"), N_("Large, over the wallpaper's logo, at any screen size") },
   { "center", N_("Centered"), N_("At its own size, in the middle of the screen") },
+  { "off", N_("Off"), N_("It doesn't open when you sign in") },
 };
 
 static const Choice sides[] = {
@@ -865,6 +875,19 @@ has_key (GSettings *settings, const char *key)
   return schema != NULL && g_settings_schema_has_key (schema, key);
 }
 
+/* Whether a string setting takes a value */
+static gboolean
+key_takes (GSettings *settings, const char *key, const char *value)
+{
+  g_autoptr(GSettingsSchema) schema = NULL;
+  g_autoptr(GSettingsSchemaKey) schema_key = NULL;
+  g_autoptr(GVariant) variant = g_variant_ref_sink (g_variant_new_string (value));
+
+  g_object_get (settings, "settings-schema", &schema, NULL);
+  schema_key = g_settings_schema_get_key (schema, key);
+  return g_settings_schema_key_range_check (schema_key, variant);
+}
+
 static void
 choice_set_free (ChoiceSet *set)
 {
@@ -1276,11 +1299,16 @@ cc_patrone_panel_init (CcPatronePanel *self)
 
       if (has_key (self->taskbar, "sign-in-terminal"))
         {
+          /* An older taskbar's setting has no "off", the last choice */
+          guint choices = G_N_ELEMENTS (sign_in_terminal) -
+                          (key_takes (self->taskbar, "sign-in-terminal", "off") ? 0 : 1);
+
           group = add_group (page, _("Terminal at Sign-In"),
-                             _("Patrone Terminal opens each time you sign in. Once you move it, "
-                               "it stays where you put it. A new choice is for the next sign-in."));
+                             _("Whether Patrone Terminal opens when you sign in, and where it goes. "
+                               "Once you move it, it stays where you put it. A new choice is for "
+                               "the next sign-in."));
           add_choices (self, group, self->taskbar, "sign-in-terminal", read_string, write_string,
-                       sign_in_terminal, G_N_ELEMENTS (sign_in_terminal), "terminal", 2);
+                       sign_in_terminal, choices, "terminal", 3);
         }
     }
   else
@@ -1300,7 +1328,8 @@ cc_patrone_panel_init (CcPatronePanel *self)
     {
       group = add_group (page, _("Title Bar Button Style"),
                          _("How minimize, maximize and close look, the same in every app. "
-                           "Apps that are open pick up a new style when they're next opened."));
+                           "Patrone's own apps and this window change at once. Other apps that "
+                           "are open change when they're next opened."));
       add_choices (self, group, self->desktop, "title-buttons", read_string, write_title_buttons,
                    button_styles, G_N_ELEMENTS (button_styles), "titlebuttons", 3);
     }
@@ -1309,8 +1338,9 @@ cc_patrone_panel_init (CcPatronePanel *self)
     {
       group = add_group (page, _("Theme"),
                          _("The look of the taskbar and title bars, and of the window buttons "
-                           "when their style is the theme's own. Apps that are open pick up "
-                           "a new theme when they're next opened."));
+                           "when their style is the theme's own. Patrone's own apps and this "
+                           "window change at once. Other apps that are open change when they're "
+                           "next opened."));
       add_choices (self, group, self->desktop, "theme", read_string, write_theme,
                    themes, G_N_ELEMENTS (themes), "theme", 3);
     }
@@ -1363,6 +1393,103 @@ cc_patrone_panel_init (CcPatronePanel *self)
   adw_navigation_page_set_child (ADW_NAVIGATION_PAGE (self), view);
 }
 
+/* GTK reads the account's gtk.css once, when an app starts, so on its own
+ * this window never sees a new theme or button style. Here it loads the
+ * style sheets gtk.css names itself, and again whenever gtk.css changes
+ * (the way Patrone's apps do: settings/src/live_style.rs). */
+static void
+load_live_style (GtkCssProvider *provider)
+{
+  g_autofree char *path = g_build_filename (g_get_user_config_dir (), "gtk-4.0", "gtk.css", NULL);
+  g_autofree char *gtk_css = NULL;
+  g_autoptr(GString) css = g_string_new (NULL);
+  const char *begin, *end;
+
+  if (g_file_get_contents (path, &gtk_css, NULL, NULL) &&
+      (begin = strstr (gtk_css, STYLE_BEGIN)) != NULL &&
+      (end = strstr (begin, STYLE_END)) != NULL)
+    {
+      g_autofree char *marked = g_strndup (begin, end - begin);
+      g_auto(GStrv) lines = g_strsplit (marked, "\n", -1);
+
+      for (guint i = 0; lines[i] != NULL; i++)
+        {
+          g_autofree char *sheet = NULL;
+
+          if (g_str_has_prefix (lines[i], STYLE_IMPORT) && g_str_has_suffix (lines[i], "\");"))
+            {
+              const char *name = lines[i] + strlen (STYLE_IMPORT);
+              g_autofree char *sheet_path = g_strndup (name, strlen (name) - strlen ("\");"));
+
+              if (g_file_get_contents (sheet_path, &sheet, NULL, NULL))
+                g_string_append_printf (css, "%s\n", sheet);
+            }
+        }
+    }
+  g_string_replace (css, STYLE_LIVE_SCOPE, "", 0);
+  gtk_css_provider_load_from_string (provider, css->str);
+}
+
+static void
+on_gtk_css_changed (GFileMonitor      *monitor,
+                    GFile             *file,
+                    GFile             *other_file,
+                    GFileMonitorEvent  event,
+                    gpointer           provider)
+{
+  /* A file part-way through being written shows as Changed, then
+   * ChangesDoneHint when it's whole */
+  if (event != G_FILE_MONITOR_EVENT_CHANGED)
+    load_live_style (provider);
+}
+
+static void
+mark_live_windows (GListModel *windows)
+{
+  for (guint i = 0; i < g_list_model_get_n_items (windows); i++)
+    {
+      g_autoptr(GtkWidget) window = g_list_model_get_item (windows, i);
+
+      gtk_widget_add_css_class (window, STYLE_LIVE_CLASS);
+    }
+}
+
+/* For as long as the app runs */
+static void
+follow_styles (void)
+{
+  static gboolean following = FALSE;
+  GdkDisplay *display = gdk_display_get_default ();
+  g_autofree char *path = NULL;
+  g_autoptr(GFile) file = NULL;
+  GListModel *windows;
+  GtkCssProvider *provider;
+  GFileMonitor *monitor;
+
+  if (following || display == NULL)
+    return;
+  following = TRUE;
+
+  windows = gtk_window_get_toplevels ();
+  mark_live_windows (windows);
+  g_signal_connect (windows, "items-changed", G_CALLBACK (mark_live_windows), NULL);
+
+  provider = gtk_css_provider_new ();
+  /* The sheets' dark rules follow the desktop's light or dark style */
+  g_object_bind_property (gtk_settings_get_for_display (display), "gtk-interface-color-scheme",
+                          provider, "prefers-color-scheme", G_BINDING_SYNC_CREATE);
+  /* Just under gtk.css, so the account's own rules in it win here too */
+  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
+                                              GTK_STYLE_PROVIDER_PRIORITY_USER - 1);
+  load_live_style (provider);
+
+  path = g_build_filename (g_get_user_config_dir (), "gtk-4.0", "gtk.css", NULL);
+  file = g_file_new_for_path (path);
+  monitor = g_file_monitor_file (file, G_FILE_MONITOR_NONE, NULL, NULL);
+  if (monitor != NULL)
+    g_signal_connect (monitor, "changed", G_CALLBACK (on_gtk_css_changed), provider);
+}
+
 /* The page shows only where Patrone's taskbar or Patrone Settings is
  * installed */
 void
@@ -1372,6 +1499,7 @@ cc_patrone_panel_static_init_func (void)
   g_autoptr(GSettings) desktop = settings_if_installed (DESKTOP_SCHEMA);
   CcApplication *application;
 
+  follow_styles ();
   if (taskbar != NULL || desktop != NULL)
     return;
   application = CC_APPLICATION (g_application_get_default ());

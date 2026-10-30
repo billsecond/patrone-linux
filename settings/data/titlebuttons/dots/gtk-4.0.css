@@ -2,27 +2,29 @@
  * them into the account's ~/.config/gtk-4.0/gtk.css): red, yellow and green
  * dots, their symbols showing on hover, grey in windows in the background.
  * Every property is set in every state, so libadwaita's buttons and the GTK
- * theme's come out the same. */
+ * theme's come out the same.
+ * Rules say window:not(.patrone-live): apps that follow a change while they run
+ * load this sheet themselves, without that, and their windows have the class. */
 
-windowcontrols {
+window:not(.patrone-live) windowcontrols {
   border-spacing: 8px;
   margin: 0;
 }
 
-windowcontrols.start {
+window:not(.patrone-live) windowcontrols.start {
   margin-left: 6px;
   margin-right: 6px;
 }
 
-windowcontrols.end {
+window:not(.patrone-live) windowcontrols.end {
   margin-left: 6px;
   margin-right: 6px;
 }
 
-windowcontrols > button,
-windowcontrols > button:hover,
-windowcontrols > button:active,
-windowcontrols > button:backdrop {
+window:not(.patrone-live) windowcontrols > button,
+window:not(.patrone-live) windowcontrols > button:hover,
+window:not(.patrone-live) windowcontrols > button:active,
+window:not(.patrone-live) windowcontrols > button:backdrop {
   min-width: 14px;
   min-height: 14px;
   margin: 0;
@@ -35,10 +37,10 @@ windowcontrols > button:backdrop {
   color: transparent;
 }
 
-windowcontrols > button > image,
-windowcontrols > button:hover > image,
-windowcontrols > button:active > image,
-windowcontrols > button:backdrop > image {
+window:not(.patrone-live) windowcontrols > button > image,
+window:not(.patrone-live) windowcontrols > button:hover > image,
+window:not(.patrone-live) windowcontrols > button:active > image,
+window:not(.patrone-live) windowcontrols > button:backdrop > image {
   min-width: 12px;
   min-height: 12px;
   margin: 0;
@@ -52,18 +54,18 @@ windowcontrols > button:backdrop > image {
   -gtk-icon-size: 12px;
 }
 
-windowcontrols > button.minimize > image {
+window:not(.patrone-live) windowcontrols > button.minimize > image {
   background-color: #febc2e;
 }
 
-windowcontrols > button.maximize > image {
+window:not(.patrone-live) windowcontrols > button.maximize > image {
   background-color: #28c840;
 }
 
-windowcontrols:hover > button > image {
+window:not(.patrone-live) windowcontrols:hover > button > image {
   color: rgba(0, 0, 0, 0.6);
 }
 
-windowcontrols > button:backdrop > image {
+window:not(.patrone-live) windowcontrols > button:backdrop > image {
   background-color: #c9c9cc;
 }

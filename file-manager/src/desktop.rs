@@ -35,6 +35,7 @@ use std::cell::{Cell, RefCell};
 use std::ffi::OsString;
 use std::io::{BufRead, Write};
 use std::os::fd::{AsFd, OwnedFd};
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use gtk::{gdk, gio, glib, prelude::*};
@@ -513,16 +514,24 @@ pub fn open_in_file_manager(folders: &[gio::File]) {
     if folders.is_empty() {
         return;
     }
-    let program: OsString = std::env::current_exe()
-        .map(|path| path.into_os_string())
-        .unwrap_or_else(|_| "patrone-file-manager".into());
-    let mut argv = vec![program];
+    let mut argv = vec![file_manager_program(std::env::current_exe().ok())];
     argv.extend(
         folders
             .iter()
             .map(|folder| OsString::from(folder.uri().as_str())),
     );
     spawn(&argv);
+}
+
+/// The program to open folders with: this one, so a copy run from a build
+/// folder opens itself, unless it's gone. An update replaces the program under
+/// the running desktop, and the path the system then gives for it ends in
+/// " (deleted)", which nothing can start.
+fn file_manager_program(running: Option<PathBuf>) -> OsString {
+    running
+        .filter(|path| path.exists())
+        .map(PathBuf::into_os_string)
+        .unwrap_or_else(|| "patrone-file-manager".into())
 }
 
 /// Starts a program and lets it run, with nothing of the desktop's.
@@ -545,10 +554,10 @@ pub fn display_settings() {
     spawn(&["gnome-control-center".into(), "display".into()]);
 }
 
-/// Personalize: Patrone Settings' Theme page, or GNOME's Appearance.
+/// Personalize: Patrone Settings' Wallpaper page, or GNOME's Appearance.
 pub fn personalize() {
     if glib::find_program_in_path("patrone-settings").is_some() {
-        spawn(&["patrone-settings".into(), "--page".into(), "theme".into()]);
+        spawn(&["patrone-settings".into(), "--page".into(), "wallpaper".into()]);
     } else {
         spawn(&["gnome-control-center".into(), "background".into()]);
     }
@@ -581,4 +590,35 @@ pub fn step_icon_size(bigger: bool) {
         (index + 1).min(ICON_SIZES.len() - 1)
     };
     let _ = config::settings().set_string("desktop-icon-size", ICON_SIZES[next].0);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_program_an_update_replaced_is_started_by_name() {
+        let replaced = PathBuf::from("/usr/bin/patrone-file-manager (deleted)");
+        assert_eq!(
+            file_manager_program(Some(replaced)),
+            OsString::from("patrone-file-manager")
+        );
+    }
+
+    #[test]
+    fn a_program_still_there_is_started_from_its_path() {
+        let running = std::env::current_exe().unwrap();
+        assert_eq!(
+            file_manager_program(Some(running.clone())),
+            running.into_os_string()
+        );
+    }
+
+    #[test]
+    fn with_no_path_the_program_is_started_by_name() {
+        assert_eq!(
+            file_manager_program(None),
+            OsString::from("patrone-file-manager")
+        );
+    }
 }
