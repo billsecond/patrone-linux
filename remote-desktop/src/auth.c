@@ -5,9 +5,10 @@
  * with the connection as stdin and stdout. It reads a username, a password and
  * the client's address, each ended by a NUL byte, and checks them with PAM
  * (/etc/pam.d/patrone-remote-desktop: the account's own password, and
- * membership of the remote-desktop group). On success it runs prepare-session,
- * which gets the account's desktop ready and answers "ok PORT SECRET";
- * otherwise it answers "denied".
+ * membership of the remote-desktop group). On success it unlocks the account's
+ * login keyring with that password, then runs prepare-session, which gets the
+ * account's desktop ready and answers "ok PORT SECRET"; otherwise it answers
+ * "denied".
  *
  * With --vmconnect it serves /run/patrone-remote-desktop/vmconnect-auth.sock,
  * which only the login screen of Hyper-V's enhanced session (the greeter, as
@@ -77,6 +78,7 @@
 #define VMCONNECT_SERVICE_NAME "patrone-remote-desktop-vmconnect"
 #define REMOTE_GROUP "remote-desktop"
 #define PROXY_GROUP "patrone-rdp"
+#define SYSTEMCTL "/usr/bin/systemctl"
 #define FIELD_MAX 512
 #define READ_TIMEOUT_SECONDS 30
 
@@ -176,8 +178,52 @@ static int conversation(int count, const struct pam_message** messages,
 	return PAM_SUCCESS;
 }
 
+/* Unlocks the account's login keyring with the password it has just signed in
+ * with, as the login screen does: pam_gnome_keyring keeps it in PAM's auth
+ * stack, and takes it to the keyring daemon in the session stack. The desktop
+ * itself starts through GDM's autologin, which has no password to unlock it
+ * with, so apps that keep secrets there would ask for it. The daemon runs under
+ * the account's service manager, so that starts first, and this comes before
+ * the desktop, so that nothing on it finds the keyring locked. It never fails
+ * the sign-in: a keyring with another password goes on asking for it. */
+static void unlock_keyring(pam_handle_t* pam, const char* user)
+{
+	struct passwd* account = getpwnam(user);
+	char unit[64];
+	char runtime[64];
+
+	if (!account)
+		return;
+	snprintf(unit, sizeof(unit), "user@%u.service", (unsigned)account->pw_uid);
+	snprintf(runtime, sizeof(runtime), "XDG_RUNTIME_DIR=/run/user/%u",
+	         (unsigned)account->pw_uid);
+
+	/* stdin and stdout are the connection, which carries only the answer. */
+	pid_t child = fork();
+	if (child == 0)
+	{
+		int null = open("/dev/null", O_RDWR | O_CLOEXEC);
+		if (null >= 0)
+		{
+			dup2(null, STDIN_FILENO);
+			dup2(null, STDOUT_FILENO);
+		}
+		execl(SYSTEMCTL, SYSTEMCTL, "start", unit, (char*)NULL);
+		_exit(127);
+	}
+	if (child > 0)
+		waitpid(child, NULL, 0);
+
+	int status = pam_putenv(pam, runtime);
+	if (status == PAM_SUCCESS)
+		status = pam_open_session(pam, PAM_SILENT);
+	if (status != PAM_SUCCESS)
+		fprintf(stderr, "couldn't unlock the login keyring of %s: %s\n", user,
+		        pam_strerror(pam, status));
+}
+
 /* Hyper-V's console has no remote host for PAM: it's at the computer. */
-static int check(const Request* request, const char* service)
+static int check(const Request* request, const char* service, int signing_in)
 {
 	struct pam_conv conv = { conversation, (void*)request };
 	pam_handle_t* pam = NULL;
@@ -192,6 +238,8 @@ static int check(const Request* request, const char* service)
 	if (status != PAM_SUCCESS)
 		fprintf(stderr, "refused %s from %s: %s\n", request->user, request->client,
 		        pam ? pam_strerror(pam, status) : "PAM failed to start");
+	else if (signing_in)
+		unlock_keyring(pam, request->user);
 	if (pam)
 		pam_end(pam, status);
 	return status == PAM_SUCCESS;
@@ -463,7 +511,7 @@ static int confirm(const char* user)
 		length = 0;
 	request.password[length] = '\0';
 
-	if (request.password[0] && check(&request, SERVICE_NAME))
+	if (request.password[0] && check(&request, SERVICE_NAME, 0))
 	{
 		ok = 1;
 		if (winpr_InitializeSSL(WINPR_SSL_INIT_DEFAULT) && nt_hash_hex(request.password, hex))
@@ -509,7 +557,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	int ok = check(&request, service);
+	int ok = check(&request, service, 1);
 	explicit_bzero(request.password, sizeof(request.password));
 	if (!ok)
 	{

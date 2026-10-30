@@ -6,4 +6,7 @@ auth     requisite  pam_nologin.so
 auth     requisite  pam_succeed_if.so uid >= 1000 quiet
 auth     optional   pam_faildelay.so delay=2000000
 @include common-auth
+auth     optional   pam_gnome_keyring.so
 @include common-account
+# Unlocks the login keyring with the password just checked (auth.c)
+session  optional   pam_gnome_keyring.so

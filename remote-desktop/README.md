@@ -142,9 +142,11 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    with PAM (`/etc/pam.d/patrone-remote-desktop`: in the `remote-desktop`
    group, UID 1000 or above, the account's own password, the account not
    locked or expired), so a hash that still matches doesn't let in an
-   account that's been locked or taken out of the group. Then it runs
-   `prepare-session`. The proxy connects to `127.0.0.1` on the answered port
-   with NLA, signing in with the secret, and passes the session through:
+   account that's been locked or taken out of the group. Then it unlocks
+   the account's login keyring with the password, through
+   `pam_gnome_keyring` in the same PAM service, which wipes it afterwards,
+   and runs `prepare-session`. The proxy connects to `127.0.0.1` on the
+   answered port with NLA, signing in with the secret, and passes the session through:
    display, input, clipboard, audio, and resizing with the client's window.
 5. **Keeping the hashes current**: a `pam-auth-update` profile
    (`/usr/share/pam-configs/patrone-remote-desktop`) adds `pam_exec` to
@@ -271,8 +273,9 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    can open, and forgets the password. PAM checks them with
    `/etc/pam.d/patrone-remote-desktop-vmconnect`: an account with UID 1000
    or above, its own password, not locked or expired, and no `/etc/nologin`;
-   no remote-desktop group, as at the computer's own screen. Then
-   `prepare-session` gets the desktop ready, as for Remote Desktop.
+   no remote-desktop group, as at the computer's own screen. Then `auth`
+   unlocks the login keyring and `prepare-session` gets the desktop ready,
+   as for Remote Desktop.
 
    On "ok", the login screen sends the proxy a Server Redirection PDU with
    the account, the desktop's port and its secret. The proxy's own client
@@ -351,8 +354,10 @@ them back at the next login in a plain GNOME session on the screen.
   starts ("Failed: The connection is closed"). The package's drop-in
   (`gnome-headless-session@.service.d/patrone-static-user.conf`) runs it as
   the `gdm` account; drop it once Ubuntu fixes the unit.
-- **The login keyring stays locked.** Nothing unlocks it when the desktop
-  starts, so apps that keep passwords there may ask for it.
+- **The login keyring opens with the sign-in's password.** GDM's autologin,
+  which starts the desktop, has no password, so `auth` unlocks it first. A
+  keyring whose password isn't the account's still asks for it once per
+  desktop. That happens if the account's password was changed outside PAM.
 - **The screen doesn't lock by itself yet.** Leaving the machine, sign out
   of the screen's session, or connect from elsewhere.
 - **Each account's GNOME Remote Desktop listens on all interfaces**, on its
