@@ -23,7 +23,13 @@ the desktop's right-click menu, opens the Wallpaper page.
 The window is in GTK's own theme, light or dark with the desktop's style,
 as Patrone's other apps are (Ubuntu's Yaru doesn't load in plain GTK 4
 apps, and GTK 4.22's Default theme has to be asked for its dark variant).
-Until 0.3.8 it stayed light in the dark style.
+Until 0.3.8 it stayed light in the dark style. Its corners are 15 pixels, as
+libadwaita's are in GNOME's apps; GTK's own theme has 8 at the top and none
+at the bottom, and Task Manager's Yaru has 12. Patrone Terminal, File Manager
+and Task Manager set the same (2026-10-30), square when a window is
+maximized, snapped or full screen. An app's own rule outranks GTK's, so each
+has to say that itself. Classic's sheet loads above it, so Classic stays
+square.
 
 ## Pages
 
@@ -109,7 +115,9 @@ and load them again when it changes. Each rule in a GTK 4 sheet says
 `window:not(.patrone-live)` (a test checks), and these apps give their
 windows that class, so what GTK read at the start doesn't reach them, and
 nothing of the old style stays behind; the copy they load has the
-`:not(.patrone-live)` taken out. Browser Chooser, Unpack and Hyper-V setup
+`:not(.patrone-live)` taken out. File Manager needs this most: its process
+stays running for the desktop, so without it a new style didn't reach its
+windows until the next sign-in, however often they were reopened. Browser Chooser, Unpack and Hyper-V setup
 open for moments at a time, so they don't, and their windows get the sheets
 from `gtk.css` as they always have.
 

@@ -1,6 +1,12 @@
 /* Patrone Settings: a side list of pages and cards to pick from, in the
  * system's light or dark colors with Patrone blue for the picked card. */
 
+/* The same corners as GNOME's apps, and square where the window meets the
+ * screen's edges, which GTK's own rules can't do from below this one. */
+window.csd:not(.maximized):not(.fullscreen):not(.tiled):not(.tiled-top):not(.tiled-right):not(.tiled-bottom):not(.tiled-left) {
+  border-radius: 15px;
+}
+
 .patrone-side {
   padding: 18px 10px;
   background-color: alpha(currentColor, 0.035);

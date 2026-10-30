@@ -16,6 +16,8 @@ patrone-settings (0.3.12) resolute; urgency=medium
     the desktop and the lock screen at once, as GNOME Settings' Appearance
     page does. The cards' pictures load in the background and are kept in
     the account's cache, because the wallpapers are up to 8K.
+  * Its window corners match GNOME's apps, at 15 pixels, where they were 8
+    at the top and square at the bottom.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
 
