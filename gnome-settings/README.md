@@ -90,7 +90,7 @@ needs the network), or a given version (`build.sh 1:50.3-0ubuntu0.2`).
 Install the two packages that go together:
 
 ```
-sudo apt install ./out/gnome-control-center_*patrone19_amd64.deb ./out/gnome-control-center-data_*patrone19_all.deb
+sudo apt install ./out/gnome-control-center_*patrone20_amd64.deb ./out/gnome-control-center-data_*patrone20_all.deb
 ```
 
 ## How it was checked
@@ -203,6 +203,16 @@ in that order, then Adwaita and Yaru; clicking Black, White and Blue set
 `cursor-theme` to `Patrone-Black`, `Patrone-White` and `Patrone`, and the
 pointer over the card was the new one a second later. (Revision 18 is the
 fonts change.)
+
+`1:50.3-0ubuntu0.2patrone20`, 2026-10-30: Settings' own window takes a new
+theme or title bar button style at once, whichever page it's on: from when
+it starts (the panel's `static_init` function), it loads the style sheets
+`gtk.css` names itself and watches that file, as Patrone's apps do
+(`settings/README.md`, "How styles reach apps"). Terminal at Sign-In has a
+third choice, Off, shown where the taskbar's setting takes it. Built on the
+dev VM from its branch with no warnings from the page, and checked in the
+throwaway shell: its title bar and buttons followed every theme and style
+with it open, and the Off card set `sign-in-terminal` to `off`.
 
 ## Keeping up with Ubuntu
 
