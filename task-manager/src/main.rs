@@ -12,6 +12,7 @@ mod details;
 mod format;
 mod graph;
 mod history;
+mod live_style;
 mod model;
 mod netdiag;
 mod performance;
@@ -158,6 +159,7 @@ fn load_style() {
             &provider,
             gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
+        live_style::follow(&display);
     }
 }
 

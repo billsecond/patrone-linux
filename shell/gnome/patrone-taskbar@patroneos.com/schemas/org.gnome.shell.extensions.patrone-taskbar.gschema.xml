@@ -229,16 +229,18 @@
       <choices>
         <choice value="logo"/>
         <choice value="center"/>
+        <choice value="off"/>
       </choices>
       <default>'logo'</default>
-      <summary>Where the terminal opened at sign-in goes</summary>
+      <summary>Whether the terminal opens at sign-in, and where it goes</summary>
       <description>
         Patrone Terminal's first window after signing in. "logo": over the
         logo of Patrone's wallpaper, between the pictures in its corners, at
         any screen size (on another wallpaper, the same part of the screen).
         "center": at its own size, in the middle of the screen above the
-        taskbar. It's left alone once moved, resized or maximized. Patrone
-        Settings sets it, on its Desktop page.
+        taskbar. It's left alone once moved, resized or maximized. "off": it
+        doesn't open at sign-in (patrone-terminal's autostart script reads
+        this too). Patrone Settings sets it, on its Desktop page.
       </description>
     </key>
     <key name="suggested-apps" type="as">

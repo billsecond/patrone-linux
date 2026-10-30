@@ -81,9 +81,11 @@ window.file-manager {
   background-color: var(--surface);
 }
 
-window.file-manager.csd,
+/* The same corners as GNOME's apps, and square where the window meets the
+   screen's edges, which GTK's own rules can't do from below this one. */
+window.file-manager.csd:not(.maximized):not(.fullscreen):not(.tiled):not(.tiled-top):not(.tiled-right):not(.tiled-bottom):not(.tiled-left),
 window.fluent-dialog.csd {
-  border-radius: 8px;
+  border-radius: 15px;
 }
 
 /* The title bar is a headerbar node (util::header_box), so the title bar

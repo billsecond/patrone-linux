@@ -8,6 +8,30 @@ patrone-file-manager (0.3.10) resolute; urgency=medium
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
 
+patrone-file-manager (0.3.9) resolute; urgency=medium
+
+  * Takes a new theme or title bar button style from Patrone Settings at
+    once. Until now it kept the old one until the next sign-in, however
+    often it was reopened: its process stays running, so a new window
+    didn't read the style again.
+  * The desktop menu's Personalize opens Patrone Settings' new Wallpaper
+    page (patrone-settings 0.3.12), where it opened Theme.
+  * "Set as desktop background" works after the wallpaper is set to None,
+    which would have gone on hiding the picture.
+  * Open Desktop folder, and anything else on the desktop that opens a
+    folder, works after File Manager has been updated. Until the next
+    sign-in, the desktop tried to start the old program, which was gone.
+  * Its window corners match GNOME's apps and Patrone's other apps, at 15
+    pixels, where they were 8, and they're square when it's maximized,
+    snapped or full screen, where it kept them round.
+  * Tabs start in the same place in every title bar button style: the empty
+    set of window buttons is hidden, as GTK's header bars hide theirs, and
+    its margins no longer push them along.
+  * Package tests run one at a time. Together, tests that first use GIO and
+    GTK crashed the test program about one build in ten.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-file-manager (0.3.8) resolute; urgency=medium
 
   * Paths, permissions and commands in PatroneOS Mono, PatroneOS's own

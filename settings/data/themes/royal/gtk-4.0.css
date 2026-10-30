@@ -2,30 +2,32 @@
  * "royal") for GTK 4 apps (Patrone Settings imports it into the
  * account's ~/.config/gtk-4.0/gtk.css): glossy sapphire blue title bars
  * with white titles. The title bar buttons are a setting of their own
- * (data/titlebuttons); Sapphire's own are Glossy. */
+ * (data/titlebuttons); Sapphire's own are Glossy.
+ * Rules say window:not(.patrone-live): apps that follow a change while they run
+ * load this sheet themselves, without that, and their windows have the class. */
 
-headerbar {
+window:not(.patrone-live) headerbar {
   background-color: #0b5ce6;
   background-image: linear-gradient(to bottom, #4a95ff 0%, #0b5ce6 14%, #0a52d0 82%, #0846b8 100%);
   color: #ffffff;
   box-shadow: none;
 }
 
-headerbar:backdrop {
+window:not(.patrone-live) headerbar:backdrop {
   background-image: linear-gradient(to bottom, #a9c3f0, #7d9ee0);
   color: #eef2fc;
 }
 
-headerbar .title,
-headerbar label {
+window:not(.patrone-live) headerbar .title,
+window:not(.patrone-live) headerbar label {
   color: inherit;
   font-weight: bold;
 }
 
-headerbar button:not(.suggested-action):not(.destructive-action) {
+window:not(.patrone-live) headerbar button:not(.suggested-action):not(.destructive-action) {
   color: #ffffff;
 }
 
-headerbar button:not(.suggested-action):not(.destructive-action):hover {
+window:not(.patrone-live) headerbar button:not(.suggested-action):not(.destructive-action):hover {
   background-color: rgba(255, 255, 255, 0.16);
 }

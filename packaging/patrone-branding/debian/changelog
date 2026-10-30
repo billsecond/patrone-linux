@@ -1,3 +1,14 @@
+patrone-branding (0.1.26) resolute; urgency=medium
+
+  * The cursors' shadow is one you can see at the usual size (the user,
+    2026-10-30). It reached the screen, Remote Desktop included, but it was
+    small and faint, boxed into the same square as the cursor. Each image
+    is now a quarter bigger than its nominal size, on the right and at the
+    bottom, with the cursors themselves the same size and in the same
+    place, and the shadow falls further down and to the right.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
+
 patrone-branding (0.1.25) resolute; urgency=medium
 
   * Two more cursor themes, the same shapes in other colors (the user,

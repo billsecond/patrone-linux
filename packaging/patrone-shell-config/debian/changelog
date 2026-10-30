@@ -1,3 +1,13 @@
+patrone-shell-config (0.2.3) resolute; urgency=medium
+
+  * A failed command's exit status goes on its own line under the command,
+    as "✗ exit code 130", where it sat on the prompt and looked like the
+    next command's. It shows once, after a command that ran, so it no longer
+    stays on later prompts after an empty line. bash has it at once; an
+    account's own ~/.zshrc is a copy, so zsh has it in new accounts.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 10:30:00 -0500
+
 patrone-shell-config (0.2.2) resolute; urgency=medium
 
   * The system's new name, PatroneOS (2026-10-29), in the shells' default

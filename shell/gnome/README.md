@@ -454,8 +454,10 @@ the user's other choice, at its own size in the middle of the screen
 ("or it loads normal size, dead center"): the `sign-in-terminal` setting,
 `logo` or `center`, which Patrone Settings' Desktop page and GNOME
 Settings' Patrone page set ("Terminal at sign-in", Over the logo or
-Centered). On Wayland an app can't place its own window, so the shell does
-it (`startupWindows.js`).
+Centered). A third choice (the user, 2026-10-30), `off` (Off), keeps it
+closed: the autostart script reads the setting and stops there, and a
+terminal opened by hand soon after signing in isn't placed. On Wayland an
+app can't place its own window, so the shell does it (`startupWindows.js`).
 
 - The place is set in the wallpaper's picture, not the screen: over the
   logo, from just right of the `>_` prompt at the bottom left to just left
@@ -515,7 +517,7 @@ the taskbar follows when it's installed):
 | `terminal-app` | `''` | The terminal slot's app; empty for Patrone Terminal (or another terminal) |
 | `art-app` | `''` | The art slot's app; empty for ArtCraft, else the first drawing app installed |
 | `web-search-url` | `'https://www.google.com/search?q=%s'` | Where web searches go |
-| `sign-in-terminal` | `'logo'` | Where the terminal opened at sign-in goes: `logo` (over the wallpaper's logo) or `center` (its own size, in the middle) |
+| `sign-in-terminal` | `'logo'` | Whether the terminal opens at sign-in and where it goes: `logo` (over the wallpaper's logo), `center` (its own size, in the middle) or `off` (it doesn't open) |
 
 ## Decisions (with the user, 2026-10-26)
 

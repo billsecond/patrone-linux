@@ -3,7 +3,8 @@
 // wallpaper's logo, which shows through its see-through background, the
 // way the user arranged it (2026-10-26), or with the sign-in-terminal
 // setting at "center", at its own size in the middle of the screen (the
-// user: "or it loads normal size, dead center"). On Wayland an app can't
+// user: "or it loads normal size, dead center"). At "off", the autostart
+// entry doesn't open it and nothing here places it. On Wayland an app can't
 // place its own window, so the shell does it. Only the first terminal
 // window opened soon after signing in is placed, and it's left alone once
 // the user moves, resizes, maximizes or tiles it. Until then it keeps its
@@ -140,9 +141,13 @@ export class StartupWindows {
             return;
         this._stopWaiting();
 
-        this._window = window;
         // Read once: a new choice is for the next sign-in
-        this._where = this._settings.get_string('sign-in-terminal');
+        const where = this._settings.get_string('sign-in-terminal');
+        // Off, nothing opened it at sign-in: the user did, and it's theirs
+        if (where === 'off')
+            return;
+        this._window = window;
+        this._where = where;
         window.connectObject(
             'position-changed', () => this._onMoved(),
             'unmanaged', () => this._leave(), this);

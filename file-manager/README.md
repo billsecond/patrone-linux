@@ -287,7 +287,7 @@ dragging, conflicts and undo are File Manager's.
   once, as on Windows), Refresh, Paste, Paste shortcut, Undo and Redo, New
   (Folder, Shortcut, Text Document and the Templates folder's files),
   Show Recycle Bin while it's off the desktop, Display settings (GNOME
-  Settings' Displays), Personalize (Patrone Settings' Theme page, else
+  Settings' Displays), Personalize (Patrone Settings' Wallpaper page, else
   GNOME's Appearance) and Open in Terminal. With the panel on, Show desktop
   files (while it's closed) and Open Desktop folder come first, with Open
   Recycle Bin on a clean desktop, which has no other way to it on screen,

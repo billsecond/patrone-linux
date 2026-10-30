@@ -21,6 +21,7 @@ mod glyph;
 mod hints;
 mod home;
 mod icons;
+mod live_style;
 mod location;
 mod menu;
 mod menus;
@@ -135,6 +136,7 @@ pub fn load_style() {
         &over_theme,
         gtk::STYLE_PROVIDER_PRIORITY_USER + 1,
     );
+    live_style::follow(&display);
     gtk::Window::set_default_icon_name(APP_ID);
 }
 

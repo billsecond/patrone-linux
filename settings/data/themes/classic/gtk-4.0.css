@@ -1,37 +1,39 @@
 /* Patrone's Classic theme for GTK 4 apps (Patrone Settings imports it into
  * the account's ~/.config/gtk-4.0/gtk.css): plain and square. Solid slate
  * title bars with white titles, and square windows. The title bar buttons
- * are a setting of their own (data/titlebuttons). */
+ * are a setting of their own (data/titlebuttons).
+ * Rules say window:not(.patrone-live): apps that follow a change while they run
+ * load this sheet themselves, without that, and their windows have the class. */
 
-headerbar {
+window:not(.patrone-live) headerbar {
   background-color: #3d4b63;
   background-image: none;
   color: #ffffff;
   box-shadow: none;
 }
 
-headerbar:backdrop {
+window:not(.patrone-live) headerbar:backdrop {
   background-color: #6d778a;
   color: #e9ecf1;
 }
 
-headerbar .title,
-headerbar label {
+window:not(.patrone-live) headerbar .title,
+window:not(.patrone-live) headerbar label {
   color: inherit;
   font-weight: bold;
 }
 
-headerbar button:not(.suggested-action):not(.destructive-action) {
+window:not(.patrone-live) headerbar button:not(.suggested-action):not(.destructive-action) {
   color: #ffffff;
   border-radius: 2px;
 }
 
-headerbar button:not(.suggested-action):not(.destructive-action):hover {
+window:not(.patrone-live) headerbar button:not(.suggested-action):not(.destructive-action):hover {
   background-color: rgba(255, 255, 255, 0.14);
 }
 
 /* Square windows */
-window.csd,
-window.csd > .titlebar {
+window.csd:not(.patrone-live),
+window.csd:not(.patrone-live) > .titlebar {
   border-radius: 0;
 }

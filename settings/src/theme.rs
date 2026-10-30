@@ -86,8 +86,11 @@ fn without_theme(text: &str) -> String {
     text.to_string()
 }
 
-/// `text` with `sheets` imported at the top, between Patrone's marked lines
-/// (the account's own rules come after, so they still win).
+/// `text` with `sheets` imported at the top, between Patrone's marked lines.
+/// The account's own rules come after. In the apps that load the sheets
+/// themselves (live_style.rs) those rules always win; in others a rule has to
+/// be as specific as the sheet's too, which say `window:not(.patrone-live)`:
+/// `window.csd headerbar`, not `headerbar`.
 fn with_sheets(text: &str, sheets: &[PathBuf]) -> String {
     let rest = without_theme(text);
     if sheets.is_empty() {
@@ -117,7 +120,8 @@ fn write_style(config_dir: &Path, version: &str, sheets: &[PathBuf]) -> io::Resu
 }
 
 /// Writes the account's GTK 3 and GTK 4 style sheets for the theme and
-/// title bar button style that are set. Apps pick them up when they're next
+/// title bar button style that are set. Patrone's apps and GNOME Settings
+/// follow at once (live_style.rs); other apps read them when they're next
 /// opened.
 pub fn write_styles(desktop: &gio::Settings) {
     let theme = desktop.string("theme");
@@ -215,6 +219,38 @@ mod tests {
                 }
             }
         }
+    }
+
+    /// GTK keeps what it read from gtk.css for as long as an app runs, so a
+    /// rule in a GTK 4 sheet that reached the windows of apps that load the
+    /// sheets themselves (live_style.rs) would stay after a change.
+    #[test]
+    fn gtk4_sheets_keep_off_windows_that_follow_changes() {
+        let tree = Path::new(env!("CARGO_MANIFEST_DIR")).join("data");
+        let mut sheets_read = 0;
+        for folder in ["themes", "titlebuttons"] {
+            for entry in fs::read_dir(tree.join(folder)).unwrap() {
+                let sheet = entry.unwrap().path().join("gtk-4.0.css");
+                if !sheet.is_file() {
+                    continue;
+                }
+                sheets_read += 1;
+                let mut text = fs::read_to_string(&sheet).unwrap();
+                while let (Some(begin), Some(end)) = (text.find("/*"), text.find("*/")) {
+                    text.replace_range(begin..end + 2, "");
+                }
+                for rule in text.split('{') {
+                    let selectors = rule.rsplit(['}', ';']).next().unwrap().trim();
+                    if selectors.is_empty() || selectors.starts_with('@') {
+                        continue;
+                    }
+                    for selector in selectors.split(',') {
+                        assert!(selector.contains(":not(.patrone-live)"), "{}: {selector}", sheet.display());
+                    }
+                }
+            }
+        }
+        assert_eq!(sheets_read, 9);
     }
 
     #[test]

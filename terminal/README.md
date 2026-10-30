@@ -89,7 +89,9 @@ Ubuntu's terminal (Ptyxis) from the app grid. Deleting
 `--autostart` writes `~/.config/autostart/org.patrone.Terminal.desktop` from
 `data/autostart/`, so GNOME opens a terminal at every login. The package
 installs the same entry for everyone as
-`/etc/xdg/autostart/org.patrone.Terminal.desktop`. GNOME's login screen
+`/etc/xdg/autostart/org.patrone.Terminal.desktop`. Its script stops if
+"Terminal at sign-in" in Patrone Settings is Off (the taskbar's
+`sign-in-terminal` setting). GNOME's login screen
 doesn't run autostart entries, and a Patrone Desktop session opens its own
 terminal from the compositor.
 
@@ -114,7 +116,7 @@ root:
 └─$
 ```
 
-A failed command's exit status shows at the end of the first line, and the
+A failed command's exit status shows on its own line under the command, and the
 prompt reports the directory to the terminal. It's `shell-config/bashrc`,
 loaded from `~/.bash_aliases` (`shell-config/bash_aliases`), which Ubuntu's
 own `~/.bashrc` already reads, so Ubuntu's bash setup stays as it is. Both

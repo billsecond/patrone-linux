@@ -1,14 +1,14 @@
 [Desktop Entry]
 Name=Patrone Settings
-Comment=Taskbar, desktop, title bar buttons, theme and mouse pointer
+Comment=Taskbar, desktop, wallpaper, title bar buttons, theme and mouse pointer
 Exec=patrone-settings
 Icon=org.patrone.Settings
 Terminal=false
 Type=Application
 Categories=GTK;Settings;DesktopSettings;
-Keywords=Taskbar;Desktop;Files;Panel;Corner;Clean;Recycle;Theme;Font;Title;Buttons;Minimize;Maximize;Close;Appearance;Mouse;Pointer;Cursor;Patrone;
+Keywords=Taskbar;Desktop;Files;Panel;Corner;Clean;Recycle;Wallpaper;Background;Picture;Color;Theme;Font;Title;Buttons;Minimize;Maximize;Close;Appearance;Mouse;Pointer;Cursor;Patrone;
 StartupNotify=true
-Actions=taskbar;desktop;buttons;theme;pointer;
+Actions=taskbar;desktop;wallpaper;buttons;theme;pointer;
 
 [Desktop Action taskbar]
 Name=Taskbar settings
@@ -17,6 +17,10 @@ Exec=patrone-settings --page taskbar
 [Desktop Action desktop]
 Name=Desktop
 Exec=patrone-settings --page desktop
+
+[Desktop Action wallpaper]
+Name=Wallpaper
+Exec=patrone-settings --page wallpaper
 
 [Desktop Action buttons]
 Name=Title bar buttons
