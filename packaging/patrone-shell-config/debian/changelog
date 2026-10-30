@@ -1,3 +1,13 @@
+patrone-shell-config (0.3.1) resolute; urgency=medium
+
+  * In bash in Patrone Terminal, every command printed PS1:0:0} in front of
+    its output, and a command with no output left the next prompt on that
+    line. What VTE's terminals put in PS0 ends in a backslash, and the prompt's
+    part came right after it, so bash read the two as its \$ escape. The
+    prompt's part now goes first, so the terminal's own marks reach it too.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 13:00:00 -0500
+
 patrone-shell-config (0.3.0) resolute; urgency=medium
 
   * Windows commands typed in a shell, such as ipconfig, Get-ChildItem or

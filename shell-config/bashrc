@@ -55,8 +55,10 @@ fi
 
 # bash expands PS0 when it's about to run a command, and not for an empty line,
 # so this notes that one ran. It prints nothing: it's an empty part of PS1, with
-# the note made while working out where that part starts.
+# the note made while working out where that part starts. It goes first because
+# what VTE's terminals put in PS0 ends in a backslash, and bash reads a backslash
+# right before this "$" as its own \$, which printed the rest of it as text.
 __patrone_ran=0
 if [[ $PS0 != *__patrone_ran* ]]; then
-    PS0+='${PS1:$((__patrone_ran=1, 0)):0}'
+    PS0='${PS1:$((__patrone_ran=1, 0)):0}'"$PS0"
 fi

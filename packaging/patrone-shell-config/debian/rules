@@ -8,6 +8,7 @@ pkg = debian/patrone-shell-config
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	bash tests/windows-commands.sh
+	bash tests/prompt.sh
 endif
 
 override_dh_auto_install:
