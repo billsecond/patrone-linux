@@ -343,7 +343,8 @@ it on the desktop.
 - **It also closes** with Escape (a rename takes the first one), the Close
   button, the pill or corner, a press on the taskbar or another part of the shell,
   anything else taking the keyboard, a change of workspace, the overview,
-  or the screens changing. The keyboard goes back where it was.
+  or the screens changing. The keyboard goes back where it was, unless
+  that's on another workspace: the workspace you changed to stays.
   **A click on its empty part doesn't close it**: there's no outside to
   click, and that's the desktop's own, for the rubber band and the
   right-click menu.
@@ -375,9 +376,14 @@ it on the desktop.
   under the panel while it's there.
 - **Keyboard**: the panel has it while it's open, with File Manager's
   keys: arrows, Enter, F2, Delete and the rest.
-- **Closed, its window is minimized** (`hidePanel`), not just unseen: a
-  window that's there, as big as the free area, would leave GNOME no free
-  place for new windows, and takes the keyboard when the last one closes.
+- **Closed, its window is minimized and not above** (`hidePanel`), not just
+  unseen: a window that's there, as big as the free area, would leave GNOME
+  no free place for new windows, and takes the keyboard when the last one
+  closes. And GNOME counts every window that's above, minimized or not:
+  left above, this one made it take each new window for covered, so a window
+  started from a terminal, say, opened behind the one in front with no
+  keyboard. `hidePanel` does nothing until the window has first shown, or
+  it never would, and the first open would have only the wallpaper.
   GNOME won't minimize a window that's off the window list, so it's put
   back on it for that one step, which the overview mustn't see: its
   windows take it for a new one and leave a handler behind (a closing
@@ -409,15 +415,15 @@ desktop or keep one above the others, so the shell does.
   "Patrone Desktop", made a desktop window (no taskbar button, Alt+Tab or
   moving; on every workspace; under every window, the Recycle Bin and its
   drop target) as big as the primary screen; and "Patrone Desktop Panel",
-  as big as the screen's free area, kept above the windows, off the window
-  list, on every workspace, and minimized unless the panel is open
-  (desktopPanel.js). Neither plays
+  as big as the screen's free area, off the window list, on every
+  workspace, and minimized unless the panel is open, when it's above the
+  windows (desktopPanel.js). Neither plays
   GNOME's opening animation. Showing gives a window the keyboard; it goes
   back where it was.
 - **They talk over File Manager's standard input and output**, a line at a
   time (the list is at the top of `file-manager/src/desktop.rs`): the
   screen's free area, the Recycle Bin (whether it's on the desktop, its
-  place there, its size), the `desktop-bubble` setting and the panel
+  place there, its size), the `desktop-files` setting and the panel
   opening and closing go to File Manager; the item count (the pill's tip
   and the panel's bar), asks to open or close the panel, and Show Recycle
   Bin come back. File Manager keeps those two pipes to itself, so the apps
@@ -668,6 +674,16 @@ running app by dragging it in, and reordering the menu's Favorites; and,
 with Patrone Settings running in the shell, all three sizes and four
 themes.
 
+From a code review of the same versions (2026-10-30), in this shell, which
+had missed it because the panel was open in the other tests: with Text
+Editor in front and the panel closed, Calculator started with no activation
+token (as from a terminal) opened behind it with no keyboard in the panel and
+clean modes, and in front on the desktop. Now it's in front with the
+keyboard in all three, and the panel is above only while it's open. Also:
+the panel's window going through its first show with `hidePanel` called
+early, and a change of workspace with the panel open staying on the new
+workspace, with the keyboard on the window there.
+
 A clean desktop and its corner (taskbar 0.4.12 with File Manager 0.3.10,
 Patrone Settings 0.3.13 and GNOME Settings `patrone21`, 2026-10-30, unpacked
 from their packages and run in this throwaway shell on the dev VM, nothing
@@ -693,9 +709,9 @@ left.
 
 The desktop files panel (the same versions, 2026-10-30, the
 branch's taskbar and File Manager in this throwaway shell on the dev VM,
-1600×900, nothing installed there): `desktop-bubble` false in a fresh
-account, with the files on the desktop and no pill, and an explicit true
-kept over that default. Turned on, the pill and its tip, an empty desktop,
+1600×900, nothing installed there): the setting off in a fresh account,
+with the files on the desktop and no pill, and an explicit choice kept over
+that default. Turned on, the pill and its tip, an empty desktop,
 and the window minimized while closed. Opened by a click and by a drag past
 a quarter, a shorter drag going back, a drag back closing it; a frame in
 the middle of the slide (the shadow, the pill on the edge, the bin and bar

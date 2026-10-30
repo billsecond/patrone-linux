@@ -50,6 +50,8 @@ export class DesktopHost {
         /** File Manager's windows, once they show. */
         this.desktopWindow = null;
         this.panelWindow = null;
+        // Whether the panel's window has shown and been set up
+        this._panelSetUp = false;
         /** How many items the desktop has. */
         this.count = 0;
 
@@ -146,7 +148,7 @@ export class DesktopHost {
 
     /** The panel's window actor, while it has one. */
     get panelActor() {
-        return this.panelWindow?.get_compositor_private() ?? null;
+        return this._panelSetUp ? this.panelWindow?.get_compositor_private() ?? null : null;
     }
 
     /**
@@ -165,26 +167,38 @@ export class DesktopHost {
         }
     }
 
-    /** Shows the panel's window, in place, and gives it the keyboard. */
+    /**
+     * Shows the panel's window, in place and above the windows, and gives it
+     * the keyboard. Above only while it's open: GNOME counts every window
+     * that's above, minimized or not, and one this big made it take each new
+     * window for covered, leaving it behind the one in front with no keyboard.
+     */
     showPanel() {
         const window = this.panelWindow;
-        if (!window)
+        if (!window || !this._panelSetUp)
             return;
         this._placePanel();
         Main.wm.skipNextEffect(window.get_compositor_private());
+        window.make_above();
         window.unminimize();
         window.activate(global.get_current_time());
     }
 
     /**
-     * Puts the panel's window away: minimized, since a window that's there
-     * takes the keyboard when the last one closes, and one that covers the
-     * screen's free area leaves GNOME no free place for new windows. Not
-     * while the overview is open: desktopPanel.js asks again once it's closed.
+     * Puts the panel's window away: not above, and minimized, since a window
+     * that's there takes the keyboard when the last one closes, and one that
+     * covers the screen's free area leaves GNOME no free place for new
+     * windows. Not until it has first shown (minimized, it wouldn't, and the
+     * first open would have no icons), and not while the overview is open:
+     * desktopPanel.js asks again once it's closed.
      */
     hidePanel() {
         const window = this.panelWindow;
-        if (!window || window.minimized || Main.overview.visible)
+        if (!window || !this._panelSetUp)
+            return;
+        if (window.is_above())
+            window.unmake_above();
+        if (window.minimized || Main.overview.visible)
             return;
         Main.wm.skipNextEffect(window.get_compositor_private());
         // GNOME won't minimize a window that's not in the window list. All
@@ -266,6 +280,7 @@ export class DesktopHost {
         const hadPanel = !!this.panelWindow;
         this.desktopWindow = null;
         this.panelWindow = null;
+        this._panelSetUp = false;
         if (hadPanel)
             this._emit('panel-window');
     }
@@ -413,6 +428,7 @@ export class DesktopHost {
             this.desktopWindow = null;
         if (window === this.panelWindow) {
             this.panelWindow = null;
+            this._panelSetUp = false;
             this._emit('panel-window');
         }
     }
@@ -469,13 +485,12 @@ export class DesktopHost {
         this._replaceDing(true);
     }
 
-    // The panel: above the windows, on every workspace, put away until it
-    // opens (desktopPanel.js)
+    // The panel: on every workspace, put away until it opens (desktopPanel.js)
     _setUpPanel(window) {
         this._hideFromWindowList(window);
         window.stick();
-        window.make_above();
         this._placePanel();
+        this._panelSetUp = true;
         this.hidePanel();
         this._applyShield();
         this._emit('panel-window');

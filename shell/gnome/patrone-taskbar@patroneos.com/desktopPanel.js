@@ -442,15 +442,21 @@ export class DesktopPanel {
         this._pill.remove_style_class_name('open');
         this._pillIcon.icon_name = 'pan-end-symbolic';
         this._releaseBin();
-        // The keyboard back where it was, on the window that just opened, or
-        // nowhere: GNOME would give it to the Recycle Bin's drop target
+        // The keyboard back where it was, or on the window that just opened.
+        // Not on another workspace: activating a window there goes back to
+        // it, after a change of workspace closed the panel. Failing that it's
+        // GNOME's pick, or nowhere if that's the panel, still going while the
+        // overview is open, or the Recycle Bin's drop target.
         const back = this._returnFocus;
         this._returnFocus = null;
         if (hadKeyboard) {
+            const workspace = global.workspace_manager.get_active_workspace();
+            const focus = global.display.focus_window;
             if (back && back !== panelWindow && !back.minimized &&
-                global.display.list_all_windows().includes(back))
+                global.display.list_all_windows().includes(back) &&
+                back.located_on_workspace(workspace))
                 back.activate(global.get_current_time());
-            else
+            else if (focus === panelWindow || focus?.get_window_type() === Meta.WindowType.DESKTOP)
                 global.display.unset_input_focus(global.get_current_time());
         }
         this._follow();

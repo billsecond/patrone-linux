@@ -256,8 +256,9 @@ dragging, conflicts and undo are File Manager's.
   Properties, delete) belong to no window, so GNOME centres them.
 - **Two windows.** One as big as the screen, with the icons on it (a
   desktop window: under every other window, on every workspace, no taskbar
-  button), and, while the taskbar's `desktop-bubble` setting is on, the
-  desktop files panel's, as big as the screen's free area, which takes the
+  button), and, while the taskbar's `desktop-files` setting has them off
+  the desktop, the desktop files panel's, as big as the screen's free area,
+  which takes the
   icons and leaves the desktop empty but still taking right-clicks, drops
   and keys. It's clear but for the icons and a small bar (Desktop, how many
   items, Open in File Manager, Close), since the taskbar slides it out with
