@@ -7,7 +7,10 @@ Copyright: 2026 William Daugherty
 License: GPL-3+
 
 Files: usr/share/backgrounds/patrone/patrone-back-*.png
-       usr/share/backgrounds/patrone/*.jpg
+       usr/share/backgrounds/patrone/patrone-sapling-*.jpg
+       usr/share/backgrounds/patrone/patrone-spheres-*.jpg
+       usr/share/backgrounds/patrone/patrone-storm-*.jpg
+       usr/share/backgrounds/patrone/patrone-woodland-*.jpg
        usr/share/pixmaps/patrone-logo*
        usr/share/patrone/logos/*
        usr/share/plymouth/themes/patrone/watermark.png
@@ -19,7 +22,7 @@ Files: usr/share/backgrounds/patrone/patrone-back-*.png
 Copyright: 2026 William Daugherty, as far as these files are protected by
  copyright
 Comment: The PatroneOS logo, the Neon Horizon wallpapers (02 and 03) and the
- gallery's (the .jpg files), and everything drawn from them. Both Neon Horizon pictures were made with an AI
+ gallery's, and everything drawn from them. Both Neon Horizon pictures were made with an AI
  image generator: the originals (branding/wallpapers/patrone-back-02.png and
  patrone-back-03.png in the source) carry C2PA manifests, signed by OpenAI,
  recording that they were generated with ChatGPT (gpt-image) on 2026-10-29.
@@ -41,8 +44,8 @@ Comment: The PatroneOS logo, the Neon Horizon wallpapers (02 and 03) and the
  Intelligence, Part 2", January 2025), so these files are offered under
  GPL-3+ only as far as anyone holds copyright in them. The PatroneOS name
  and logo are also trademarks, which no copyright licence covers. Patrone's
- other wallpapers (the other patrone-*.png) are drawn by code
- (tools/make_generated_wallpapers.py), with no image model.
+ other wallpapers are drawn by code (tools/make_generated_wallpapers.py and
+ make_abstract_wallpapers.py), with no image model.
 License: GPL-3+
 
 Files: usr/share/plymouth/themes/patrone/bullet.png

@@ -391,9 +391,39 @@ script and run it again.
   the canvas and `"dark"` or `"light"` and returns the picture, then add the
   pair to `system/backgrounds/patrone-wallpapers.xml`.
 
+### The abstract ones
+
+Six more designs (the user, 2026-10-30: "make a few more abstract ones (mroe
+than just lines drawn)"), for depth and light where the eleven above are
+clean shapes. `tools/make_abstract_wallpapers.py` draws them from Patrone's
+colors, with no photos, downloaded art or image models, so Patrone owns them
+outright and they're GPL-3+ like the rest of the branding. Each is one picture
+for both styles.
+
+| In Settings | Design | Size |
+| --- | --- | --- |
+| Patrone Silk | Blue satin in long folds: noise stretched along the cloth, creased, and lit from the top left with a cool light behind | 0.7 MB |
+| Patrone Liquid | Liquid metal in slow swells, a smooth surface reflecting a studio of soft lights | 1.2 MB |
+| Patrone Nebula | Clouds of lit gas in blue and violet, with stars behind | 1.0 MB |
+| Patrone Shallows | Sunlight on a seabed falling away into the distance: rays of an even grid are bent by the water's slope and gather where they cross, as real caustics do, and each color bends a little differently | 1.0 MB |
+| Patrone Marble | Polished dark blue stone with veins of gold | 2.9 MB |
+| Patrone Ink | Three colors of ink carried along a swirling current, 170 steps of a fluid-like flow in a 4K tank | 1.0 MB |
+
+They're 3840×2160 JPEGs saved as the gallery's are (below), 8 MB for all six,
+in `wallpapers/generated/` beside the others. To make them again (about 3
+minutes; on Windows, as the VM has no OpenCV):
+
+```
+python tools/make_abstract_wallpapers.py wallpapers/generated
+```
+
+Add design names to make only those. Like the others, they're deterministic:
+every "random" choice is a hash. Seven were tried; one, glossy beads of glass,
+wasn't good enough to keep.
+
 ## Gallery wallpapers
 
-![Every gallery wallpaper](wallpapers/gallery/contact-sheet.jpg)
+![Every gallery wallpaper, and the abstract ones after them](wallpapers/gallery/contact-sheet.jpg)
 
 Thirteen pictures the user chose (2026-10-30: "add these as images for
 possible wallpapers"), listed in Settings → Appearance. Each is one picture

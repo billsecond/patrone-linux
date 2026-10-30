@@ -5,7 +5,8 @@ usage: make_gallery_wallpapers.py OUT_DIR [--sheet FILE] [--size W H] [NAME...]
 Reads OUT_DIR/originals/NAME.png, the 1672x941 pictures as the user supplied
 them, and writes OUT_DIR/patrone-NAME.jpg, 3840x2160 unless --size says
 otherwise (all of them unless names are given). With --sheet, a contact sheet
-of all of them.
+of all of them, and of the abstract designs beside them in ../generated
+(make_abstract_wallpapers.py).
 
   1. The picture is smoothed where it's flat, edges kept: image generators
      leave a faint two-pixel mesh in dark areas, which enlarging would make
@@ -45,6 +46,16 @@ GALLERY = {
     "woodland-sunbeams": "Woodland Sunbeams",
     "woodland-hollow": "Woodland Hollow",
 }
+# The abstract designs (make_abstract_wallpapers.py), on the same sheet.
+# NAME: name in Settings.
+ABSTRACT = {
+    "silk": "Patrone Silk",
+    "liquid": "Patrone Liquid",
+    "nebula": "Patrone Nebula",
+    "shallows": "Patrone Shallows",
+    "marble": "Patrone Marble",
+    "ink": "Patrone Ink",
+}
 QUALITY = 92
 GRAIN = 1.2         # levels of 255
 GRAIN_SEED = 2026
@@ -78,22 +89,25 @@ def save(path, img):
     Image.fromarray(rgb).save(path, "JPEG", quality=QUALITY, subsampling=0, optimize=True, progressive=True)
 
 
-def sheet(out_dir, path, tile=(480, 270), pad=12, label=26):
-    """Every wallpaper, a row to each group, with its name."""
+def sheet(out_dir, path, tile=(480, 270), pad=12, label=26, columns=4):
+    """Every wallpaper with its name, a row to each group of the gallery,
+    then the abstract designs."""
     groups = {}
     for name in GALLERY:
-        groups.setdefault(name.split("-")[0], []).append(name)
-    columns = max(map(len, groups.values()))
+        groups.setdefault(name.split("-")[0], []).append((out_dir, name, GALLERY[name]))
+    generated = os.path.join(out_dir, os.pardir, "generated")
+    designs = [(generated, name, title) for name, title in ABSTRACT.items()]
+    rows = list(groups.values()) + [designs[i:i + columns] for i in range(0, len(designs), columns)]
     w, h = tile
-    canvas = Image.new("RGB", (columns * (w + pad) + pad, len(groups) * (h + label + pad) + pad), (243, 246, 251))
+    canvas = Image.new("RGB", (columns * (w + pad) + pad, len(rows) * (h + label + pad) + pad), (243, 246, 251))
     draw = ImageDraw.Draw(canvas)
     font = label_font(15) or ImageFont.load_default(15)
-    for row, names in enumerate(groups.values()):
-        for col, name in enumerate(names):
+    for row, items in enumerate(rows):
+        for col, (folder, name, title) in enumerate(items):
             x, y = pad + col * (w + pad), pad + row * (h + label + pad)
-            with Image.open(os.path.join(out_dir, f"patrone-{name}.jpg")) as img:
+            with Image.open(os.path.join(folder, f"patrone-{name}.jpg")) as img:
                 canvas.paste(img.convert("RGB").resize(tile, Image.LANCZOS), (x, y))
-            draw.text((x, y + h + 5), GALLERY[name], fill=(20, 34, 58), font=font)
+            draw.text((x, y + h + 5), title, fill=(20, 34, 58), font=font)
     canvas.save(path, "JPEG", quality=88, optimize=True)
 
 

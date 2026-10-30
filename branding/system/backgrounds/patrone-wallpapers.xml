@@ -149,6 +149,44 @@
     <options>zoom</options>
   </wallpaper>
 
+  <!-- Abstract designs, drawn by tools/make_abstract_wallpapers.py. The same
+       picture in both styles. -->
+  <wallpaper deleted="false">
+    <name>Patrone Silk</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-silk.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Liquid</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-liquid.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Nebula</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-nebula.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Shallows</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-shallows.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Marble</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-marble.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Patrone Ink</name>
+    <filename>/usr/share/backgrounds/patrone/patrone-ink.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+
   <!-- The gallery: the user's pictures, enlarged by
        tools/make_gallery_wallpapers.py. The same picture in both styles. -->
   <wallpaper deleted="false">

@@ -8,6 +8,11 @@ patrone-branding (0.1.27) resolute; urgency=medium
     Hollow. They're enlarged to 3840x2160 JPEGs of 1 to 3 MB
     (tools/make_gallery_wallpapers.py), 26 MB in all. The default stays
     Neon Horizon.
+  * Six more abstract wallpapers, drawn by code from Patrone's colors (the
+    user: "make a few more abstract ones"): Patrone Silk, Liquid, Nebula,
+    Shallows, Marble and Ink. Each is a form shaded with light, or ink
+    simulated in water, not a flat drawing
+    (tools/make_abstract_wallpapers.py), 8 MB in all.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
 
