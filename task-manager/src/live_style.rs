@@ -63,7 +63,8 @@ pub fn follow(display: &gdk::Display) {
         .bind_property("gtk-interface-color-scheme", &provider, "prefers-color-scheme")
         .sync_create()
         .build();
-    gtk::style_context_add_provider_for_display(display, &provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
+    // Just under gtk.css, so the account's own rules in it win here too
+    gtk::style_context_add_provider_for_display(display, &provider, gtk::STYLE_PROVIDER_PRIORITY_USER - 1);
 
     let path = glib::user_config_dir().join("gtk-4.0").join("gtk.css");
     let load = {

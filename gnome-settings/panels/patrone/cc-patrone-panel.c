@@ -1478,8 +1478,9 @@ follow_styles (void)
   /* The sheets' dark rules follow the desktop's light or dark style */
   g_object_bind_property (gtk_settings_get_for_display (display), "gtk-interface-color-scheme",
                           provider, "prefers-color-scheme", G_BINDING_SYNC_CREATE);
+  /* Just under gtk.css, so the account's own rules in it win here too */
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_USER);
+                                              GTK_STYLE_PROVIDER_PRIORITY_USER - 1);
   load_live_style (provider);
 
   path = g_build_filename (g_get_user_config_dir (), "gtk-4.0", "gtk.css", NULL);

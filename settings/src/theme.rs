@@ -86,8 +86,11 @@ fn without_theme(text: &str) -> String {
     text.to_string()
 }
 
-/// `text` with `sheets` imported at the top, between Patrone's marked lines
-/// (the account's own rules come after, so they still win).
+/// `text` with `sheets` imported at the top, between Patrone's marked lines.
+/// The account's own rules come after. In the apps that load the sheets
+/// themselves (live_style.rs) those rules always win; in others a rule has to
+/// be as specific as the sheet's too, which say `window:not(.patrone-live)`:
+/// `window.csd headerbar`, not `headerbar`.
 fn with_sheets(text: &str, sheets: &[PathBuf]) -> String {
     let rest = without_theme(text);
     if sheets.is_empty() {
