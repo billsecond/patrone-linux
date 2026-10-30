@@ -1,8 +1,10 @@
-patrone-file-manager (0.3.9) resolute; urgency=medium
+patrone-file-manager (0.3.10) resolute; urgency=medium
 
   * The desktop files panel in place of the bubble: the desktop's icons in
     their own places, in a window as big as the screen's free area, with a
     small bar saying what it is, Open in File Manager and Close.
+  * On a clean desktop, the desktop's right-click menu has Show desktop
+    files and Open Recycle Bin.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
 

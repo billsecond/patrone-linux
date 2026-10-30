@@ -229,7 +229,7 @@ Properties adds the name to `.hidden`, which every GTK app honors.
 
 ## The desktop
 
-Since 0.3.0 File Manager draws the desktop and, since 0.3.9, the desktop
+Since 0.3.0 File Manager draws the desktop and, since 0.3.10, the desktop
 files panel, as
 Explorer draws Windows' desktop (the user, 2026-10-27: "The desktop and the
 roll out menu must be an extension of the file explorer app, while
@@ -247,8 +247,8 @@ dragging, conflicts and undo are File Manager's.
   and the panel"). The two talk over the desktop's standard input and
   output, a line at a time (the list is at the top of `src/desktop.rs`):
   the screen's free area, the Recycle Bin's place and size and whether
-  it's on the desktop, the panel setting and the panel opening and
-  closing, one way; the item count and requests to open or close it, the
+  it's on the desktop, whether the files are in the panel (and whether the
+  desktop is a clean one) and the panel opening and closing, one way; the item count and requests to open or close it, the
   other. It runs on its own (not on D-Bus, not
   sharing a process with File Manager's windows), so the taskbar can start
   and stop it, and a fault in either never closes the other. Opening a
@@ -287,10 +287,11 @@ dragging, conflicts and undo are File Manager's.
   (Folder, Shortcut, Text Document and the Templates folder's files),
   Show Recycle Bin while it's off the desktop, Display settings (GNOME
   Settings' Displays), Personalize (Patrone Settings' Theme page, else
-  GNOME's Appearance) and Open in Terminal. With the panel on, Open Desktop
-  folder comes first and Show desktop icons is left out (the panel always
-  shows them). On an icon, File Manager's own menu (without Open in new
-  tab).
+  GNOME's Appearance) and Open in Terminal. With the panel on, Show desktop
+  files (while it's closed) and Open Desktop folder come first, with Open
+  Recycle Bin on a clean desktop, which has no other way to it on screen,
+  and Show desktop icons is left out (the panel always shows them). On an
+  icon, File Manager's own menu (without Open in new tab).
 - **Keys:** File Manager's, from the desktop or the panel: Delete,
   Shift+Delete, F2, Ctrl+A, Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+Z, Ctrl+Y,
   Ctrl+Shift+N, F5, Alt+Enter, Ctrl+Shift+C, Shift+F10 and the Menu key.

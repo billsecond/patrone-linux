@@ -18,7 +18,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, gvfs, fonts-inter | fonts-noto-core
 Recommends: gvfs-backends, xdg-user-dirs, xdg-utils, pkexec, acl
 # The desktop files panel takes both: they talk over a pipe
-Breaks: patrone-gnome-taskbar (<< 0.4.11)
+Breaks: patrone-gnome-taskbar (<< 0.4.12)
 Description: file manager for PatroneOS
  Patrone File Manager is the file manager of PatroneOS, and it works
  the way Windows users expect: tabs, the command bar, breadcrumbs, the

@@ -665,14 +665,18 @@ fn recycle_bin_icon(cr: &Context, x: f64, y: f64, s: f64) {
 
 const FILE_COLORS: [u32; 6] = [0x3d8eff, 0xf2b636, 0x4c9a55, 0xd9473f, 0x5aa0ff, 0xc061cb];
 
-/// Where the desktop's files show: on the desktop, or in the panel, drawn
+/// Where the desktop's files show: on the desktop, in the panel, drawn
 /// sliding out over a window, with the wallpaper under the files, the pill
-/// on its edge and the Recycle Bin in its corner.
+/// on its edge and the Recycle Bin in its corner, or nowhere: a clean
+/// desktop, with nothing on it.
 pub fn desktop_files(cr: &Context, w: f64, h: f64, place: &str) {
     desktop(cr, w, h);
     let top = plain_taskbar(cr, w, h);
     let s = top * 0.17;
-    let panel = place == "bubble";
+    if place == "hidden" {
+        return;
+    }
+    let panel = place == "panel";
     let reach = if panel { w * 0.8 } else { w };
     if panel {
         rounded(cr, w * 0.46, top * 0.12, w * 0.46, top * 0.74, 3.0);
@@ -696,6 +700,23 @@ pub fn desktop_files(cr: &Context, w: f64, h: f64, place: &str) {
     if panel {
         fill_rounded(cr, reach - 5.0, top / 2.0 - top * 0.12, 5.0, top * 0.24, 2.5, 0x288bfa, 1.0);
     }
+}
+
+/// A clean desktop, with the corner that shows its files marked, or none.
+pub fn desktop_corner(cr: &Context, w: f64, h: f64, corner: &str) {
+    desktop(cr, w, h);
+    plain_taskbar(cr, w, h);
+    if corner == "none" {
+        return;
+    }
+    let x = if corner.ends_with("left") { 0.0 } else { w };
+    let y = if corner.starts_with("top") { 0.0 } else { h };
+    cr.arc(x, y, h * 0.34, 0.0, 2.0 * PI);
+    color(cr, 0x288bfa, 0.35);
+    let _ = cr.fill();
+    cr.arc(x, y, h * 0.2, 0.0, 2.0 * PI);
+    color(cr, 0x288bfa, 0.95);
+    let _ = cr.fill();
 }
 
 /// A Patrone Terminal window, see-through: its title bar, then a prompt.

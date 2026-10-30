@@ -790,10 +790,20 @@ pub fn background_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
 /// The desktop's right-click menu, as Windows 11's: View, Sort by, Refresh,
 /// Paste, Undo, New, Display settings, Personalize, Open in Terminal (the
 /// user, 2026-10-27). With the desktop files panel on it serves the empty
-/// desktop and the panel's empty part, and shows the panel's files.
+/// desktop and the panel's empty part, and shows the panel's files. A clean
+/// desktop has nothing on it, so this is also its way to the Recycle Bin.
 pub fn desktop_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
     let menu = Menu::new();
     if crate::desktop::panel_on() {
+        if !crate::desktop::panel_open() {
+            menu.item(
+                Icon::Color("pfm-nav-desktop"),
+                "Show desktop files",
+                None,
+                true,
+                crate::desktop::show_files,
+            );
+        }
         menu.item(
             Icon::Color("pfm-nav-desktop"),
             "Open Desktop folder",
@@ -801,6 +811,15 @@ pub fn desktop_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
             true,
             crate::desktop::open_desktop_folder,
         );
+        if crate::desktop::clean() {
+            menu.item(
+                Icon::Color("pfm-nav-trash"),
+                "Open Recycle Bin",
+                None,
+                true,
+                crate::desktop::open_recycle_bin,
+            );
+        }
         menu.separator();
     }
     menu.submenu(Icon::Glyph("view"), "View", true, desktop_view_items);
@@ -857,7 +876,7 @@ pub fn desktop_menu(window: &Window, widget: &gtk::Widget, x: f64, y: f64) {
         move |sub| new_items(&w, sub),
     );
     menu.separator();
-    if !crate::desktop::bin_shown() {
+    if !crate::desktop::bin_shown() && !crate::desktop::clean() {
         menu.item(
             Icon::Color("pfm-nav-trash"),
             "Show Recycle Bin",

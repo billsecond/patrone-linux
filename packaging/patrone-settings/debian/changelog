@@ -1,7 +1,9 @@
-patrone-settings (0.3.12) resolute; urgency=medium
+patrone-settings (0.3.13) resolute; urgency=medium
 
-  * The Desktop page's "Desktop bubble" is "Desktop files panel": what it
-    does now, a new picture, and that it's off by default.
+  * The Desktop page's "Desktop bubble" is "Desktop files": on the desktop
+    (the default), in a panel, or a clean desktop, with new pictures, and
+    on a clean desktop the corner that shows the files, offering only
+    corners nothing else uses.
 
  -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 09:00:00 -0500
 

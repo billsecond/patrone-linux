@@ -1,7 +1,7 @@
 /* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
  * Patrone's page in GNOME Settings: the taskbar (size, layout, Start
- * button icon), the desktop (its files in a panel or on it, the
+ * button icon), the desktop (where its files show, a clean one's corner, the
  * Recycle Bin, and where the terminal opens at sign-in), the title bar
  * buttons (top right or top left, and their style), the theme and the desktop's font (PatroneOS Sans or Noto Sans,
  * which the page sets itself), and the mouse pointer (the cursor theme and
@@ -91,11 +91,23 @@ static const Choice pin_icons[] = {
   { "app", N_("Each App's Own"), N_("The icon of the app each one opens, in its own style") },
 };
 
-/* Yes-or-no settings: the first choice turns them on */
 static const Choice desktop_files[] = {
-  { "bubble", N_("On"), N_("The desktop's files in a panel that slides out over your windows") },
-  { "desktop", N_("Off"), N_("The desktop's files on the desktop, under your windows. This is the default") },
+  { "desktop", N_("On the Desktop"), N_("Your files and the Recycle Bin on the desktop, under your windows. This is the default") },
+  { "panel", N_("In a Panel"), N_("A pill at the screen's left edge slides them out over your windows") },
+  { "hidden", N_("Clean Desktop"), N_("Nothing on the desktop, not even the Recycle Bin") },
 };
+
+/* The corners a clean desktop can show the files from: the ones in use are
+ * hidden (desktop_files_sync) */
+static const Choice desktop_corners[] = {
+  { "none", N_("No Corner"), N_("Right-click the desktop or the taskbar to show your files") },
+  { "top-left", N_("Top Left"), N_("Point here to show or hide your files") },
+  { "top-right", N_("Top Right"), N_("Point here to show or hide your files") },
+  { "bottom-left", N_("Bottom Left"), N_("Point here to show or hide your files") },
+  { "bottom-right", N_("Bottom Right"), N_("Point here to show or hide your files") },
+};
+
+/* Yes-or-no settings: the first choice turns them on */
 
 static const Choice recycle_bin[] = {
   { "shown", N_("On the Desktop"), N_("Docked to a corner; drop files on it to delete them") },
@@ -240,6 +252,9 @@ struct _CcPatronePanel
   GSettings *interface;
   GFile *icons_dir;
   GPtrArray *choice_sets;
+  ChoiceSet *corner_set;
+  AdwPreferencesGroup *corner_group;
+  AdwPreferencesGroup *bin_group;
 
   /* The mouse pointer: the themes installed and their choices, the arrow
    * of the theme that's set and the sizes' pictures, which draw it */
@@ -1051,7 +1066,7 @@ make_card (CcPatronePanel *self, const char *prefix, const Choice *choice)
 /* A row of choices for one setting, in a group; `prefix` names their
  * pictures, or is NULL for Start button icons, "font" for fonts, or
  * "pointer" or "pointer-size" for the mouse pointer's */
-static void
+static ChoiceSet *
 add_choices (CcPatronePanel      *self,
              AdwPreferencesGroup *group,
              GSettings           *settings,
@@ -1118,6 +1133,68 @@ add_choices (CcPatronePanel      *self,
 
   adw_preferences_group_add (group, flow);
   g_ptr_array_add (self->choice_sets, set);
+  return set;
+}
+
+/* What uses a corner, in words, from the taskbar's list of "corner:user"
+ * (desktop-corners-in-use) */
+static const char *
+corner_user (GStrv in_use, const char *corner)
+{
+  g_autofree char *prefix = g_strconcat (corner, ":", NULL);
+
+  for (guint i = 0; in_use[i] != NULL; i++)
+    {
+      const char *user;
+
+      if (!g_str_has_prefix (in_use[i], prefix))
+        continue;
+      user = in_use[i] + strlen (prefix);
+      if (g_str_equal (user, "taskbar"))
+        return _("the taskbar");
+      if (g_str_equal (user, "window-buttons"))
+        return _("the title bar buttons of maximized windows");
+      if (g_str_equal (user, "hot-corner"))
+        return _("GNOME's hot corner");
+      if (g_str_equal (user, "screen"))
+        return _("another screen beside it");
+      return _("something else");
+    }
+  return NULL;
+}
+
+/* A clean desktop has the corner's choices and no Recycle Bin ones (it's off
+ * the desktop whatever those say). Corners in use are left out, unless it's
+ * the one chosen, which says what took it */
+static void
+desktop_files_sync (CcPatronePanel *self)
+{
+  g_autofree char *mode = g_settings_get_string (self->taskbar, "desktop-files");
+  g_autofree char *corner = g_settings_get_string (self->taskbar, "desktop-files-corner");
+  g_auto(GStrv) in_use = g_settings_get_strv (self->taskbar, "desktop-corners-in-use");
+  gboolean clean = g_str_equal (mode, "hidden");
+  const char *user = corner_user (in_use, corner);
+  g_autofree char *description = NULL;
+
+  gtk_widget_set_visible (GTK_WIDGET (self->corner_group), clean);
+  if (self->bin_group != NULL)
+    gtk_widget_set_visible (GTK_WIDGET (self->bin_group), !clean);
+  for (guint i = 0; i < self->corner_set->buttons->len; i++)
+    {
+      GtkWidget *button = g_ptr_array_index (self->corner_set->buttons, i);
+      const char *value = g_object_get_data (G_OBJECT (button), "patrone-value");
+
+      gtk_widget_set_visible (gtk_widget_get_parent (button),
+                              corner_user (in_use, value) == NULL || g_str_equal (value, corner));
+    }
+  if (user != NULL)
+    description = g_strdup_printf (_("The corner you picked is used by %s now, so it doesn't "
+                                     "show your files. Pick another."), user);
+  else
+    description = g_strdup (_("Point at the corner to show your files, and at it again to hide "
+                              "them. Only corners nothing else uses are here. The Recycle Bin "
+                              "comes with your files, and it's always in File Manager."));
+  adw_preferences_group_set_description (self->corner_group, description);
 }
 
 static AdwPreferencesGroup *
@@ -1257,22 +1334,38 @@ cc_patrone_panel_init (CcPatronePanel *self)
                        pin_icons, G_N_ELEMENTS (pin_icons), "pins", 2);
         }
 
-      if (has_key (self->taskbar, "desktop-bubble"))
+      if (has_key (self->taskbar, "desktop-files"))
         {
-          group = add_group (page, _("Desktop Files Panel"),
-                             _("Off by default: your files stay on the desktop. On, a small pill "
-                               "at the screen's left edge, shown whenever no window covers it, "
-                               "slides them out over your windows as a full layer of the screen. "
-                               "It closes when a window opens, or with Esc. It changes at once."));
-          add_choices (self, group, self->taskbar, "desktop-bubble", read_boolean, write_boolean,
-                       desktop_files, G_N_ELEMENTS (desktop_files), "files", 2);
+          group = add_group (page, _("Desktop Files"),
+                             _("Where the files on your desktop show. A clean desktop keeps "
+                               "everything off it, the Recycle Bin too. It changes at once."));
+          add_choices (self, group, self->taskbar, "desktop-files", read_string, write_string,
+                       desktop_files, G_N_ELEMENTS (desktop_files), "files", 3);
+
+          self->corner_group = add_group (page, _("Show Your Files from a Corner"), NULL);
+          self->corner_set = add_choices (self, self->corner_group, self->taskbar,
+                                          "desktop-files-corner", read_string, write_string,
+                                          desktop_corners, G_N_ELEMENTS (desktop_corners),
+                                          "corner", 3);
         }
 
       if (has_key (self->taskbar, "show-recycle-bin"))
         {
           group = add_group (page, _("Recycle Bin"), NULL);
+          self->bin_group = group;
           add_choices (self, group, self->taskbar, "show-recycle-bin", read_boolean, write_boolean,
                        recycle_bin, G_N_ELEMENTS (recycle_bin), "bin", 2);
+        }
+
+      if (self->corner_group != NULL)
+        {
+          desktop_files_sync (self);
+          g_signal_connect_object (self->taskbar, "changed::desktop-files",
+                                   G_CALLBACK (desktop_files_sync), self, G_CONNECT_SWAPPED);
+          g_signal_connect_object (self->taskbar, "changed::desktop-files-corner",
+                                   G_CALLBACK (desktop_files_sync), self, G_CONNECT_SWAPPED);
+          g_signal_connect_object (self->taskbar, "changed::desktop-corners-in-use",
+                                   G_CALLBACK (desktop_files_sync), self, G_CONNECT_SWAPPED);
         }
 
       if (has_key (self->taskbar, "sign-in-terminal"))

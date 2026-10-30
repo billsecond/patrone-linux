@@ -172,17 +172,17 @@ Waiting on the user:
   ~/src/patrone-linux/out/patrone-default-apps_0.2.0_all.deb
   ~/src/patrone-linux/out/patrone-gnome-taskbar_0.4.4_all.deb`.
 
-- **The desktop files panel** (the user, 2026-10-30: "Make the desktop
-  files bubble off on default, and instead of a bubble, make it a box that
-  comes out"; 2026-10-28: "allow the user to disable" it): off by default,
-  and accounts that chose keep their choice. Settings → **Desktop** →
-  **Desktop Files Panel** turns it on, at once, with **Recycle Bin on the
-  Desktop** under it; they take the place of Ubuntu's Desktop Icons and
-  Dock settings there. On, the pill slides the files out as a full layer of
-  the screen, which closes when a window opens on top of it. Taskbar 0.4.11
-  and File Manager 0.3.9 go together; Patrone Settings 0.3.12 and GNOME
-  Settings `patrone20` have the words. Checked in the throwaway shell, not
-  yet in a fresh install (shell/gnome/README.md, "The desktop files panel").
+- **Desktop files** (the user, 2026-10-30: "Make the desktop files bubble
+  off on default, and instead of a bubble, make it a box that comes out",
+  then "allow for another option ... so that it doesn't show fiels on the
+  desktop including the recycle bin"): Settings → **Desktop** → **Desktop
+  Files**: On the Desktop (the default), In a Panel, or Clean Desktop, with
+  an optional corner that shows the files and hides them again, offering
+  only corners nothing else uses. It takes the place of Ubuntu's Desktop
+  Icons and Dock settings there. Taskbar 0.4.12 and File Manager 0.3.10 go
+  together; Patrone Settings 0.3.13 and GNOME Settings `patrone21` have the
+  words. Checked in the throwaway shell, not yet in a fresh install
+  (shell/gnome/README.md, "Desktop files").
 
 - **Remote Desktop first in Settings** (the user, 2026-10-28: "make the
   Remote Desktop as the main and first option that enables rdp, call it by

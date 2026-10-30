@@ -21,7 +21,8 @@
 //!
 //! - in: `area X Y W H` (the screen's free area, in the desktop window),
 //!   `bin SHOWN X Y W H` (the Recycle Bin: whether it's on the desktop, and
-//!   where it is, or would be, with its size), `panel on|off`, `open` and
+//!   where it is, or would be, with its size), `panel on|clean|off` (the
+//!   files in the panel, on a clean desktop as well, or on the desktop), `open` and
 //!   `close` (the panel opening and closing);
 //! - out: `count N` (how many items the desktop has), `open` and `close`
 //!   (asks for the panel to show or go), `show-bin` (Show Recycle Bin, from
@@ -57,6 +58,9 @@ struct Desktop {
     backdrop: gtk::Box,
     panel: RefCell<Option<gtk::Window>>,
     panel_on: Cell<bool>,
+    /// Nothing on the desktop: the taskbar opens the panel from a corner,
+    /// and has no pill.
+    clean: Cell<bool>,
     panel_open: Cell<bool>,
     /// How many items the desktop has, on the panel's bar.
     count: gtk::Label,
@@ -183,6 +187,7 @@ fn start(app: &gtk::Application) {
         backdrop,
         panel: RefCell::default(),
         panel_on: Cell::new(false),
+        clean: Cell::new(false),
         panel_open: Cell::new(false),
         count,
         bin_shown: Cell::new(true),
@@ -480,7 +485,11 @@ impl Desktop {
                 self.bin.set(Some((x, y, width, height)));
                 self.apply_bin();
             }
-            Some("panel") => self.set_panel(words.get(1) == Some(&"on")),
+            Some("panel") => {
+                let state = words.get(1).copied();
+                self.clean.set(state == Some("clean"));
+                self.set_panel(state == Some("on") || state == Some("clean"));
+            }
             Some("open") => {
                 self.panel_open.set(true);
                 if let Some(grid) = self.grid() {
@@ -507,6 +516,26 @@ fn handle(line: &str) {
 /// Whether the desktop's files are in the panel.
 pub fn panel_on() -> bool {
     desktop().is_some_and(|desktop| desktop.panel_on.get())
+}
+
+/// Whether the panel is open.
+pub fn panel_open() -> bool {
+    desktop().is_some_and(|desktop| desktop.panel_open.get())
+}
+
+/// Whether the desktop is a clean one, with nothing on it.
+pub fn clean() -> bool {
+    desktop().is_some_and(|desktop| desktop.clean.get())
+}
+
+/// Show desktop files: asks the taskbar for the panel.
+pub fn show_files() {
+    send("open");
+}
+
+/// Open Recycle Bin, in a File Manager window.
+pub fn open_recycle_bin() {
+    open_in_file_manager(&[gio::File::for_uri("trash:///")]);
 }
 
 /// Whether the Recycle Bin is on the desktop.

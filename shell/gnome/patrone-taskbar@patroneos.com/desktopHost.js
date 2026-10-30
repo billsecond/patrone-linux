@@ -59,7 +59,10 @@ export class DesktopHost {
             'restacked', () => this._keepDesktopDown(), this);
         Main.layoutManager.connectObject('monitors-changed', () => this._place(), this);
         this._settings.connectObject(
-            'changed::desktop-bubble', () => this._sendPanel(),
+            'changed::desktop-files', () => {
+                this._sendPanel();
+                this._queueBin();
+            },
             'changed::show-recycle-bin', () => this._queueBin(), this);
         this._bin?.actor.connectObject(
             'notify::x', () => this._queueBin(),
@@ -339,7 +342,8 @@ export class DesktopHost {
             return;
         const [, , width, height] = actor.get_preferred_size();
         const [x, y] = this._bin.homePosition?.() ?? [actor.x, actor.y];
-        const shown = this._settings.get_boolean('show-recycle-bin') ? 1 : 0;
+        const shown = this._settings.get_boolean('show-recycle-bin') &&
+            this._settings.get_string('desktop-files') !== 'hidden' ? 1 : 0;
         this.tell(`bin ${shown} ${Math.round(x - origin[0])} ${Math.round(y - origin[1])} ` +
             `${Math.round(width)} ${Math.round(height)}`);
     }
@@ -355,7 +359,8 @@ export class DesktopHost {
     }
 
     _sendPanel() {
-        this.tell(`panel ${this._settings.get_boolean('desktop-bubble') ? 'on' : 'off'}`);
+        const mode = this._settings.get_string('desktop-files');
+        this.tell(`panel ${{panel: 'on', hidden: 'clean'}[mode] ?? 'off'}`);
     }
 
     _place() {

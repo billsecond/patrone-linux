@@ -161,6 +161,7 @@ export class RecycleBin {
 
         this._settings.connectObject(
             'changed::show-recycle-bin', () => this._place(),
+            'changed::desktop-files', () => this._place(),
             'changed::recycle-bin-dock', () => this._place(),
             'changed::recycle-bin-position', () => this._place(), this);
         global.display.connectObject(
@@ -276,6 +277,12 @@ export class RecycleBin {
         this._restack();
     }
 
+    // A clean desktop has nothing on it, this included, whatever
+    // show-recycle-bin says (desktopPanel.js)
+    get _cleanDesktop() {
+        return this._settings.get_string('desktop-files') === 'hidden';
+    }
+
     // "Show Recycle Bin" in one of GNOME's desktop menus, under Change
     // Background, added the first time it opens and shown while the bin's
     // off the desktop
@@ -292,7 +299,7 @@ export class RecycleBin {
             menu._patroneShowBin = item;
             this._desktopMenuItems.add(item);
         }
-        item.visible = !this._settings.get_boolean('show-recycle-bin');
+        item.visible = !this._settings.get_boolean('show-recycle-bin') && !this._cleanDesktop;
     }
 
     // Shows or hides the drop target's window (a hidden window actor neither
@@ -327,7 +334,7 @@ export class RecycleBin {
             this._showAt(...this._held);
             return;
         }
-        this.actor.visible = this._settings.get_boolean('show-recycle-bin');
+        this.actor.visible = this._settings.get_boolean('show-recycle-bin') && !this._cleanDesktop;
         if (!this.actor.visible) {
             this._stopDropTarget();
             this._reserveArea();
@@ -603,6 +610,7 @@ export class RecycleBin {
                 : PopupMenu.Ornament.NO_DOT ?? PopupMenu.Ornament.NONE);
         }
         const shown = this._settings.get_boolean('show-recycle-bin');
+        this._desktopItem.visible = !this._cleanDesktop;
         this._desktopItem.label.text = shown ? 'Remove from desktop' : 'Show on desktop';
         this._desktopItem.setIcon(shown ? 'list-remove-symbolic' : 'list-add-symbolic');
         // Above it in the lower half of the screen, below it in the upper

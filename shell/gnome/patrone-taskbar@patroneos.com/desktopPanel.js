@@ -1,20 +1,26 @@
-// The desktop files panel (the user's design, 2026-10-30, in place of the
-// bubble of 2026-10-26). With the desktop-bubble setting on (off by default;
-// it keeps its old name so accounts' choices carry over), the desktop's files
-// show only in a panel that slides out of the left edge of the primary screen
-// as a full layer over the windows: the screen's free area, the wallpaper
-// behind the icons, each icon where it would be on the desktop, the taskbar
-// still in front. A small pill at that edge, shown while no window covers its
-// spot, opens it when clicked or dragged out, and rides on the panel's edge
-// to push it back. The Recycle Bin comes in on the panel. Until the pill is
-// first opened, it bounces now and then with a tip saying what it does.
+// Where the desktop's files show, off the desktop: the desktop files panel
+// (the user's design, 2026-10-30, in place of the bubble of 2026-10-26). The
+// desktop-files setting has them on the desktop (the default), in the panel,
+// which a pill opens, or 'hidden': a clean desktop, with nothing on it, not
+// even the Recycle Bin, where the panel opens from a corner (desktopCorner.js,
+// the user's next ask that day), or the desktop's or the taskbar's right-click
+// menu.
+//
+// The panel slides out of the left edge of the primary screen, or the right
+// for a corner on that side, as a full layer over the windows: the screen's
+// free area, the wallpaper behind the icons, each icon where it would be on
+// the desktop, the taskbar still in front. The pill at that edge, shown while
+// no window covers its spot, opens it when clicked or dragged out, and rides
+// on the panel's edge to push it back. The Recycle Bin comes in on the panel.
+// Until the pill is first opened, it bounces now and then with a tip saying
+// what it does.
 //
 // It closes by itself as soon as a window opens on top of it (above the
 // windows, it would hide that window), and when anything else takes the
 // keyboard, the workspace changes or the overview opens; Escape, its Close
-// button, the pill and a click on the taskbar close it too. A click on its
-// empty part doesn't: that's the desktop's own, for the rubber band and the
-// right-click menu.
+// button, the pill, the corner and a click on the taskbar close it too. A
+// click on its empty part doesn't: that's the desktop's own, for the rubber
+// band and the right-click menu.
 //
 // Patrone File Manager draws the icons, in a window of its own, clear but for
 // them and its small bar (desktopHost.js, file-manager/src/desktop.rs); this
@@ -31,6 +37,8 @@ import St from 'gi://St';
 
 import * as Background from 'resource:///org/gnome/shell/ui/background.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+
+import {DesktopCorner} from './desktopCorner.js';
 
 const PILL_WIDTH = 12;
 const PILL_HEIGHT = 72;
@@ -72,6 +80,8 @@ export class DesktopPanel {
         this._interface = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
         this._open = false;
         this._showing = false;
+        // Which side it comes from: -1 the left, 1 the right
+        this._side = -1;
         this._coverLater = 0;
         this._desktopsLater = 0;
         this._bounceId = 0;
@@ -166,7 +176,10 @@ export class DesktopPanel {
         });
 
         this._settings.connectObject(
-            'changed::desktop-bubble', () => this._sync(),
+            'changed::desktop-files', () => {
+                this.close(false);
+                this._sync();
+            },
             'changed::show-recycle-bin', () => this.close(false),
             'changed::recycle-bin-dock', () => this._follow(),
             'changed::recycle-bin-position', () => this._follow(),
@@ -192,6 +205,7 @@ export class DesktopPanel {
 
         this._sync();
         this._introduce();
+        this._corner = new DesktopCorner(settings, side => this.toggle(side));
     }
 
     destroy() {
@@ -200,6 +214,7 @@ export class DesktopPanel {
         // does at every screen lock) no longer calls in: its last calls
         // queued checks that ran on the destroyed pill and layer.
         this._destroyed = true;
+        this._corner.destroy();
         for (const name of ['open', 'close', 'panel-window'])
             this._host.on(name, null);
         this.close(false);
@@ -226,8 +241,13 @@ export class DesktopPanel {
         this._layer.destroy();
     }
 
+    get _mode() {
+        return this._settings.get_string('desktop-files');
+    }
+
+    // The files are off the desktop
     get _on() {
-        return this._settings.get_boolean('desktop-bubble');
+        return this._mode !== 'desktop';
     }
 
     get _scale() {
@@ -246,7 +266,7 @@ export class DesktopPanel {
     get _grown() {
         const actor = this._host.panelActor;
         const area = this._area();
-        return this._showing && actor && area ? 1 + actor.translation_x / area.width : 0;
+        return this._showing && actor && area ? 1 - Math.abs(actor.translation_x) / area.width : 0;
     }
 
     // Shows or hides it all for the setting, the overview and the screen
@@ -262,10 +282,26 @@ export class DesktopPanel {
         this._queueChecks();
     }
 
-    /** Opens the panel, sliding out of the left edge. */
-    open() {
-        if (this._prepare())
+    /**
+     * Opens the panel, sliding out of an edge.
+     *
+     * @param {number} side - -1 for the left, 1 for the right
+     */
+    open(side = -1) {
+        if (this._prepare(side))
             this._settle(true);
+    }
+
+    /**
+     * Opens the panel, or closes it if it's open or opening.
+     *
+     * @param {number} side - where it comes from: -1 the left, 1 the right
+     */
+    toggle(side) {
+        if (this._showing && this._open)
+            this.close();
+        else
+            this.open(side);
     }
 
     /**
@@ -286,7 +322,7 @@ export class DesktopPanel {
 
     // The panel's window, shown out of sight past the edge, ready to slide,
     // with the keyboard
-    _prepare() {
+    _prepare(side = -1) {
         if (this._showing)
             return true;
         const actor = this._host.panelActor;
@@ -294,8 +330,10 @@ export class DesktopPanel {
         if (!this._layer.visible || !actor || !area)
             return false;
         this._showing = true;
+        this._side = side;
+        this._edge.set_style_class_name(`patrone-desktop-panel-edge${side > 0 ? ' right' : ''}`);
         this._returnFocus = global.display.focus_window;
-        actor.translation_x = -area.width;
+        actor.translation_x = side * area.width;
         actor.connectObject('notify::translation-x', () => this._follow(), this);
         this._showWall();
         this._host.showPanel();
@@ -304,9 +342,11 @@ export class DesktopPanel {
         this._pillIcon.icon_name = 'pan-start-symbolic';
         // (Opened by File Manager, say for a new file, a window may have
         // been covering it)
-        this._pill.remove_transition('opacity');
-        this._pill.opacity = 255;
-        this._pill.show();
+        if (this._mode === 'panel') {
+            this._pill.remove_transition('opacity');
+            this._pill.opacity = 255;
+            this._pill.show();
+        }
         this._hideTip();
         this._holdBin();
         this._restackLayer();
@@ -345,7 +385,7 @@ export class DesktopPanel {
         }
         this._open = open;
         this._stopSlide();
-        const to = open ? 0 : -area.width;
+        const to = open ? 0 : this._side * area.width;
         if (!this._interface.get_boolean('enable-animations')) {
             actor.translation_x = to;
             this._settled(open);
@@ -390,7 +430,7 @@ export class DesktopPanel {
         const area = this._area();
         // Out of sight first: its window goes before the next frame
         if (actor && area)
-            actor.translation_x = -area.width;
+            actor.translation_x = this._side * area.width;
         this._open = false;
         this._showing = false;
         global.stage.disconnectObject(this);
@@ -544,9 +584,9 @@ export class DesktopPanel {
     }
 
     // What moves with the panel's edge: the part of its window and of the
-    // wallpaper past the screen's left edge is cut off (it would show on a
-    // screen to the left), and the pill, the shadow and the Recycle Bin go
-    // along. The Recycle Bin is on the panel where it is on the desktop.
+    // wallpaper past the screen's edge is cut off (it would show on a screen
+    // beside it), and the pill, the shadow and the Recycle Bin go along. The
+    // Recycle Bin is on the panel where it is on the desktop.
     _follow() {
         const area = this._area();
         if (!area)
@@ -557,6 +597,7 @@ export class DesktopPanel {
         const grown = this._grown;
         const reach = Math.round(area.width * grown);
         const hidden = area.width - reach;
+        const fromRight = this._side > 0;
         const x = this._showing ? Math.max(area.x + reach - pillWidth, area.x) : area.x;
         this._layer.set_clip(monitor.x, monitor.y, monitor.width, monitor.height);
         this._pill.set_size(pillWidth, pillHeight);
@@ -565,16 +606,17 @@ export class DesktopPanel {
             return;
 
         const actor = this._host.panelActor;
-        actor?.set_clip(hidden, 0, reach, area.height);
-        this._wall.translation_x = -hidden;
-        this._wall.set_clip(area.x + hidden, area.y, reach, area.height);
+        const edgeWidth = EDGE_WIDTH * scale;
+        actor?.set_clip(fromRight ? 0 : hidden, 0, reach, area.height);
+        this._wall.translation_x = this._side * hidden;
+        this._wall.set_clip(fromRight ? area.x : area.x + hidden, area.y, reach, area.height);
         this._edge.visible = grown > 0 && grown < 1;
-        this._edge.set_position(area.x + reach, area.y);
-        this._edge.set_size(EDGE_WIDTH * scale, area.height);
+        this._edge.set_position(fromRight ? area.x + hidden - edgeWidth : area.x + reach, area.y);
+        this._edge.set_size(edgeWidth, area.height);
         if (this._binHeld) {
             const home = this._bin.homePosition();
             if (home)
-                this._bin.hold(this._layer, home[0] - hidden, home[1]);
+                this._bin.hold(this._layer, home[0] + this._side * hidden, home[1]);
         }
     }
 
@@ -680,7 +722,7 @@ export class DesktopPanel {
     }
 
     // The pill shows while no window covers its spot, and while there's a
-    // panel to open
+    // panel to open; a clean desktop has none
     _checkCover() {
         const area = this._area();
         if (!area || this._showing)
@@ -702,7 +744,7 @@ export class DesktopPanel {
             return frame.x < right && frame.x + frame.width > area.x &&
                 frame.y < bottom && frame.y + frame.height > top;
         });
-        const show = this._layer.visible && !covered && !!panelWindow;
+        const show = this._layer.visible && this._mode === 'panel' && !covered && !!panelWindow;
         if (show === this._pill.visible && this._pill.opacity === (show ? 255 : 0))
             return;
         this._pill.remove_transition('opacity');
