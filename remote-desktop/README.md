@@ -124,7 +124,14 @@ screen: GDM ─▶ "Patrone Desktop" session ───┘
    the account from the connection itself (`SO_PEERCRED`), and shows it full
    screen with FreeRDP's SDL client inside `cage`, a one-app compositor.
    When the client is disconnected, the session ends and GDM shows the login
-   screen.
+   screen. The client runs with no session bus
+   (`DBUS_SESSION_BUS_ADDRESS=disabled:`), so SDL doesn't watch the desktop's
+   cursor theme. It draws the pointers the desktop sends, so it has no use for
+   the theme, and SDL mishandles a change to it on a compositor without the
+   cursor shape protocol, such as `cage`: it frees the theme's images but keeps
+   them as its default cursor, which it shows at every change of pointer, and
+   `cage` drops the client for the image that's gone (found with SDL 3.4.2;
+   3.4.18's code is the same).
 4. **Remote Desktop**: FreeRDP's proxy listens on port 3389 as the
    unprivileged `patrone-rdp` user (`patrone-remote-desktop.service`, config
    in `/etc/patrone-remote-desktop/proxy.ini`). It requires NLA from

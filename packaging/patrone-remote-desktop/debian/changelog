@@ -1,3 +1,15 @@
+patrone-remote-desktop (0.5.9) resolute; urgency=medium
+
+  * Changing the mouse pointer no longer ends the session on the screen and
+    goes back to the login screen. The screen's client watched the desktop's
+    cursor theme, and when it changes, SDL frees the theme's images but keeps
+    them as its default cursor, which it shows at every change of pointer, so
+    the next one attached an image that was gone and cage dropped the client.
+    The client draws the pointers the desktop sends, so it no longer gets a
+    session bus and doesn't watch the theme.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Fri, 30 Oct 2026 10:00:00 -0500
+
 patrone-remote-desktop (0.5.8) resolute; urgency=medium
 
   * Signing in through Remote Desktop or Hyper-V's enhanced session unlocks
