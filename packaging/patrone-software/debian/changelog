@@ -1,3 +1,14 @@
+patrone-software (0.1.8) resolute; urgency=medium
+
+  * Only the user's picks are featured: MailCraft, PdfCraft, Portal for
+    Teams, WordCraft and GridCraft, with ScreenGrabCraft as soon as it's in
+    the app index. They show on the new Featured tab, in Patrone's build of
+    GNOME Software, which this now depends on, and no longer in Explore's
+    banners and Editor's Choice. Every app stays in Explore, its categories
+    and search.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Sat, 31 Oct 2026 10:00:00 -0500
+
 patrone-software (0.1.7) resolute; urgency=medium
 
   * The system's new name, PatroneOS (2026-10-29), in its description.

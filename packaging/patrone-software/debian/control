@@ -9,12 +9,12 @@ Vcs-Git: https://github.com/billsecond/patroneos.git
 
 Package: patrone-software
 Architecture: all
-Depends: ${misc:Depends}, gnome-software, gnome-software-plugin-flatpak
+Depends: ${misc:Depends}, gnome-software (>= 50.0-1patrone1), gnome-software-plugin-flatpak
 Description: PatroneOS's app store: GNOME Software with Patrone's picks
  GNOME Software, in place of Ubuntu's App Center (Canonical's snap-store
  snap, which this removes when it's first installed). It finds apps in
- Ubuntu's archive and on Flatpak remotes such as Flathub, and its Explore
- page shows Patrone's own picks in place of GNOME's. It adds Patrone's app
+ Ubuntu's archive and on Flatpak remotes such as Flathub, and its Featured
+ tab shows Patrone's own picks in place of GNOME's. It adds Patrone's app
  index, which lists the Craft apps and installs them from their own GitHub
  releases, and Flathub.
  .

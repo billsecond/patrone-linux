@@ -1,3 +1,10 @@
+patrone-desktop (0.2.7) resolute; urgency=medium
+
+  * Patrone's apt pins keep its build of GNOME Software, which has the
+    Featured tab, as they do its other builds of Ubuntu's packages.
+
+ -- William Daugherty <31995458+billsecond@users.noreply.github.com>  Sat, 31 Oct 2026 10:00:00 -0500
+
 patrone-desktop (0.2.6) resolute; urgency=medium
 
   * The system's new name, PatroneOS (2026-10-29), in its description, the

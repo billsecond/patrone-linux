@@ -15,8 +15,9 @@
 #   ~/iso/ubuntu-26.04.1-desktop-amd64.iso) isn't there already.
 # - packages: every one of Patrone's packages, built from this checkout: the
 #   installer app (installer/build.sh), each package in packaging/, and
-#   Patrone's builds of Ubuntu's GDM, GNOME Settings, first-login setup and
-#   Language Support (from Ubuntu's newest version of each).
+#   Patrone's builds of Ubuntu's GDM, GNOME Settings, GNOME Software,
+#   first-login setup and Language Support (from Ubuntu's newest version of
+#   each).
 # - disc: iso/build-iso.sh, from the packages this run built and nothing
 #   else in out/. It needs root, so it runs this script again with sudo. A
 #   new disc takes the place of the one in OUT, and that one's source goes.
@@ -45,6 +46,7 @@ steps=(check ubuntu packages disc source)
 declare -A rebuilds=(
     [gdm]=gdm3
     [gnome-settings]=gnome-control-center
+    [gnome-software]=gnome-software
     [gnome-initial-setup]=gnome-initial-setup
     [language-selector]=language-selector-common
 )
@@ -123,11 +125,11 @@ step_check() {
             problems+=("Rust $rust or newer: this has $have (rustup update)")
     fi
     # Ubuntu's build dependencies for the packages Patrone rebuilds
-    if unmet=$(apt-get -s build-dep gdm3 gnome-control-center gnome-initial-setup language-selector 2>&1); then
+    if unmet=$(apt-get -s build-dep gdm3 gnome-control-center gnome-software gnome-initial-setup language-selector 2>&1); then
         while read -r pkg; do missing+=("$pkg"); done < <(sed -n 's/^Inst \([^ ]*\).*/\1/p' <<<"$unmet")
     else
         echo "Note: without Ubuntu's source repositories (deb-src) this can't check what GDM, GNOME Settings,"
-        echo "first-login setup and Language Support need to build. If something is missing, their build stops and says what."
+        echo "GNOME Software, first-login setup and Language Support need to build. If something is missing, their build stops and says what."
     fi
 
     # Room for the build: the disc, its source and build-iso.sh's work
