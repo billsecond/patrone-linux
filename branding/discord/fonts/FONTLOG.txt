@@ -1,0 +1,75 @@
+FONTLOG for the PatroneOS fonts
+===============================
+
+This file gives details about PatroneOS's font families: what they are,
+how they're made, and their history. It is distributed with the fonts, as
+the SIL Open Font License suggests.
+
+
+Basic font information
+----------------------
+
+The PatroneOS fonts are five families, made for PatroneOS and free for
+anyone to use, change and share under the SIL Open Font License,
+Version 1.1 (OFL.txt).
+
+- PatroneOS Sans, the system font: Light, Regular, SemiBold, Bold and
+  ExtraBold, each with an italic.
+- PatroneOS Mono, the console font: every glyph one cell wide, a dotted
+  zero, and the box-drawing and block characters terminal programs draw
+  their frames and bars with. Light, Regular and Bold, each with an italic.
+- PatroneOS Document, for documents: Regular and Bold, each with an italic.
+- PatroneOS Serif, for serif text: Regular and Bold, each with an italic.
+- PatroneOS Classic, a plain, classic sans: Regular and Bold, each with an
+  italic.
+
+Every family has a tailed l, so that I, l, 1 and | all differ, and no zero
+is slashed. Each covers Latin-1, Latin Extended-A, the common Western
+punctuation and symbols, Romanian's comma letters, arrows and a few maths
+signs. The italics are the uprights slanted.
+
+The fonts are static TrueType, hinted with ttfautohint, with WOFF2 copies
+for the web.
+
+
+How they're made
+----------------
+
+The fonts are drawn from scratch, in code. Every letter is a pen stroke:
+a centre line of straight lines and cubic curves, outlined by an oval pen
+that turns and changes size along it (source/engine.py). The letters'
+skeletons, the pen and each family's character are in source/; build.sh
+draws the families, writes them as UFO sources, compiles them with fontmake,
+hints them with ttfautohint and checks them with fontbakery.
+
+No outline, point, kerning pair or hint was taken from any other font, and
+nothing was traced. Most of the families' advance widths and line spacing
+follow widely used fonts (source/metrics/), so that text set for those
+fonts keeps its layout.
+
+The fonts were made with AI help: the drawing code was written with an AI
+assistant, under William Daugherty's direction, and every family was
+checked and approved by him.
+
+
+ChangeLog
+---------
+
+30 October 2026 (William Daugherty) PatroneOS fonts version 1.1.0
+- PatroneOS Sans redrawn: new letter shapes, proportions and spacing,
+  narrower letters, a single-storey g, and a heavier Bold. SemiBold is now
+  drawn in its own right.
+- PatroneOS Mono, Document, Serif and Classic have the same glyphs as in
+  1.0.0.
+
+29 October 2026 (William Daugherty) PatroneOS fonts version 1.0.0
+- First release: PatroneOS Sans, Mono, Document, Serif and Classic, 28
+  fonts in all.
+
+
+Acknowledgements
+----------------
+
+N: William Daugherty
+W: https://github.com/billsecond/patroneos-fonts
+D: Design and direction
