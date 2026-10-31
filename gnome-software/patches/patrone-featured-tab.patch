@@ -50,7 +50,7 @@ Last-Update: 2026-10-31
  }
 --- a/src/gs-featured-page.c
 +++ b/src/gs-featured-page.c
-@@ -0,0 +1,303 @@
+@@ -0,0 +1,306 @@
 +/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
 + * vi:set noexpandtab tabstop=8 shiftwidth=8:
 + *
@@ -59,6 +59,9 @@ Last-Update: 2026-10-31
 + * Explore can't show a short list whole: it keeps five banners, and trims
 + * Editor's Choice to a multiple of six.
 + *
++ * Adapted from gs-overview-page.c:
++ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
++ * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
 + * Copyright (C) 2026 William Daugherty
 + *
 + * SPDX-License-Identifier: GPL-2.0-or-later
@@ -356,10 +359,13 @@ Last-Update: 2026-10-31
 +}
 --- a/src/gs-featured-page.h
 +++ b/src/gs-featured-page.h
-@@ -0,0 +1,21 @@
+@@ -0,0 +1,24 @@
 +/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
 + * vi:set noexpandtab tabstop=8 shiftwidth=8:
 + *
++ * Adapted from gs-overview-page.h:
++ * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
++ * Copyright (C) 2015-2017 Kalev Lember <klember@redhat.com>
 + * Copyright (C) 2026 William Daugherty
 + *
 + * SPDX-License-Identifier: GPL-2.0-or-later

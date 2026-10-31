@@ -51,7 +51,9 @@ cat >> debian/copyright << 'EOF'
 
 Files: debian/patches/patrone-featured-tab.patch
        src/gs-featured-page.*
-Copyright: 2026 William Daugherty
+Copyright: 2013-2017 Richard Hughes <richard@hughsie.com>
+           2014-2018 Kalev Lember <klember@redhat.com>
+           2026 William Daugherty
 License: GPL-2+
 EOF
 
