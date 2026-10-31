@@ -29,7 +29,7 @@ Make it a Featured tab in front of explore".
 | Portal for Teams | `com.github.IsmaelMartinez.teams_for_linux` | Flathub |
 | WordCraft | `ai.storyteller.wordcraft` | The app index |
 | GridCraft | `ai.storyteller.gridcraft` | The app index |
-| ScreenGrabCraft | `io.github.billsecond.screengrabcraft` | The app index, once its repository is public, below |
+| ScreenGrabCraft | `io.github.billsecond.screengrabcraft` | The app index |
 
 The ArtCraft Launcher is out too, the user's choice (2026-10-31), until they
 have the ArtCraft Team's written permission for its icon, below.
@@ -86,12 +86,8 @@ so every account sees the apps and a remote someone deletes stays deleted.
 Removing the package deletes the index's remote unless apps installed from
 it still need it.
 
-Not in the index yet: **ScreenGrabCraft**, whose repository
-(`billsecond/screengrabcraft`) is private, so its releases can't be downloaded
-by others. It's in the index's `apps.list` already, where a project that
-can't be read is skipped, so the first run after it's public lists it, and the
-Featured tab shows it, with nothing else to do. AniCraft has no releases yet,
-and ArtCraft has no Linux build (its releases are for macOS and Windows).
+Not in the index: AniCraft has no releases yet, and ArtCraft has no Linux
+build (its releases are for macOS and Windows).
 
 The package:
 
