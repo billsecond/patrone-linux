@@ -566,6 +566,15 @@ left notches and stray blocks. It was redone from the logo on 2026-10-28
 the edges out somehow"), then with shaded edges ("can you find a way to go
 smoother?"), and on 2026-10-29 from the PatroneOS logo.
 
+## Discord
+
+`discord/` is the set for PatroneOS's Discord server (the user, 2026-10-31):
+logos, server icons and banners, a banner for each channel, emoji, role icons,
+stickers, wallpapers to post, and a copy of the fonts as TTF files.
+`discord/README.md` says where each file goes. `tools/make_discord_assets.py`
+draws all of it but the fonts and checks it against Discord's limits. It isn't
+part of the `patrone-branding` package, so nothing here reaches installs.
+
 ## Colors
 
 | Role | Hex | Where it appears |
