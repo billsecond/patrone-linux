@@ -5,104 +5,37 @@
   patrone-software, in place of GNOME's list (see README.md).
 
   Each app is its AppStream ID, as Ubuntu's archive or a Flatpak remote
-  (Flathub) knows it, with up to three marks (GNOME's gnome-app-list README):
-    GnomeSoftware::FeatureTile    the banners at the top of Explore (5 or more)
-    kudo GnomeSoftware::popular   Editor's Choice on Explore (6 or more)
+  (Flathub, Patrone's app index) knows it, with two marks:
+    GnomeSoftware::DeploymentFeatured = patrone
+                                  the Featured tab (Patrone's build of GNOME
+                                  Software, gnome-software/ in this repository)
     category Featured             the picks on its category's page (3 or more
                                   in a category)
+  GNOME's other two marks, GnomeSoftware::FeatureTile and the
+  GnomeSoftware::popular kudo, fill Explore's banners and Editor's Choice.
+  They're left out so these apps show once, on the Featured tab.
   An app that no catalog GNOME Software reads has is left out, so an app
   listed here shows as soon as one has it.
 -->
 <components>
   <!--
-    The Craft apps (the user's list, 2026-10-27): storytold's Crafting Apps
-    (github.com/storytold, getartcraft.com), most popular first by GitHub
-    stars, then ScreenGrabCraft and MailCraft. None is in Ubuntu's archive
-    or on Flathub yet: they're .deb, .flatpak and AppImage files on their
-    GitHub releases, which GNOME Software doesn't read. They show once
-    they're in a Flatpak repository it does (README.md). ArtCraft itself
-    has no Linux build (macOS, Windows and the web), so it isn't listed.
+    The user's list, 2026-10-31: "feature only for now" these. They stay in
+    Explore, its categories and search, like every other app.
+
+    ScreenGrabCraft shows once it's in Patrone's app index: its repository
+    is private, so nobody else can download its releases. The ArtCraft
+    Launcher isn't here until the ArtCraft Team allows its icon
+    (docs/COMPLIANCE.md, item 6).
   -->
   <component merge="append">
-    <id>ai.storyteller.photocraft</id>
+    <id>io.github.billsecond.mailcraft</id>
     <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+    <custom><value key="GnomeSoftware::DeploymentFeatured">patrone</value></custom>
   </component>
   <component merge="append">
     <id>ai.storyteller.pdfcraft</id>
     <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.filmcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.wordcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.lightcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.vectorcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.effectcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.cadcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.gridcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.designcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.deckcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.soundcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>ai.storyteller.figcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-  </component>
-  <component merge="append">
-    <id>io.github.billsecond.screengrabcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
-  </component>
-  <component merge="append">
-    <id>io.github.billsecond.mailcraft</id>
-    <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+    <custom><value key="GnomeSoftware::DeploymentFeatured">patrone</value></custom>
   </component>
   <!--
     Teams for Linux, the unofficial Microsoft Teams app (the user, 2026-10-28:
@@ -113,7 +46,21 @@
   <component merge="append">
     <id>com.github.IsmaelMartinez.teams_for_linux</id>
     <categories><category>Featured</category></categories>
-    <kudos><kudo>GnomeSoftware::popular</kudo></kudos>
-    <custom><value key="GnomeSoftware::FeatureTile">True</value></custom>
+    <custom><value key="GnomeSoftware::DeploymentFeatured">patrone</value></custom>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.wordcraft</id>
+    <categories><category>Featured</category></categories>
+    <custom><value key="GnomeSoftware::DeploymentFeatured">patrone</value></custom>
+  </component>
+  <component merge="append">
+    <id>ai.storyteller.gridcraft</id>
+    <categories><category>Featured</category></categories>
+    <custom><value key="GnomeSoftware::DeploymentFeatured">patrone</value></custom>
+  </component>
+  <component merge="append">
+    <id>io.github.billsecond.screengrabcraft</id>
+    <categories><category>Featured</category></categories>
+    <custom><value key="GnomeSoftware::DeploymentFeatured">patrone</value></custom>
   </component>
 </components>

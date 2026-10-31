@@ -1,0 +1,700 @@
+Description: A Featured tab before Explore, and open it first
+ Explore can't show a short list of apps whole: it keeps five banners, and
+ trims Editor's Choice to a multiple of six. So this adds a page of its own
+ for the distribution's picks, every app with
+ GnomeSoftware::DeploymentFeatured set to "patrone", in banners and tiles,
+ as the first tab. It's where Software opens, goes back to and returns to
+ when it's opened again. Alt+1 is Featured now, and Alt+2 to 4 the others.
+Author: William Daugherty <31995458+billsecond@users.noreply.github.com>
+Forwarded: not-needed
+Last-Update: 2026-10-31
+---
+--- a/src/gnome-software.gresource.xml
++++ b/src/gnome-software.gresource.xml
+@@ -20,6 +20,7 @@
+   <file preprocess="xml-stripblanks">gs-extras-page.ui</file>
+   <file preprocess="xml-stripblanks">gs-feature-tile.ui</file>
+   <file preprocess="xml-stripblanks">gs-featured-carousel.ui</file>
++  <file preprocess="xml-stripblanks">gs-featured-page.ui</file>
+   <file preprocess="xml-stripblanks">gs-hardware-support-context-dialog.ui</file>
+   <file preprocess="xml-stripblanks">gs-info-window.ui</file>
+   <file preprocess="xml-stripblanks">gs-installed-page.ui</file>
+--- a/src/gs-application.c
++++ b/src/gs-application.c
+@@ -618,6 +618,8 @@
+ 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
+ 	} else if (g_strcmp0 (mode, "installed") == 0) {
+ 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_INSTALLED);
++	} else if (g_strcmp0 (mode, "featured") == 0) {
++		gs_shell_set_mode (app->shell, GS_SHELL_MODE_FEATURED);
+ 	} else if (g_strcmp0 (mode, "overview") == 0) {
+ 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
+ 	} else if (g_strcmp0 (mode, "updated") == 0) {
+@@ -660,7 +662,7 @@
+ 	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
+ 
+ 	if (gs_app_list_length (list) == 0) {
+-		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
++		gs_shell_set_mode (app->shell, GS_SHELL_MODE_FEATURED);
+ 		gs_shell_show_notification (app->shell,
+ 					    /* TRANSLATORS: we tried to show an app that did not exist */
+ 					    _("Sorry! There are no details for that application."));
+@@ -1326,7 +1328,7 @@
+ 	GsApplication *app = GS_APPLICATION (application);
+ 
+ 	if (gs_application_is_shell_loaded (app))
+-		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
++		gs_shell_set_mode (app->shell, GS_SHELL_MODE_FEATURED);
+ 
+ 	gs_shell_activate (GS_APPLICATION (application)->shell);
+ }
+--- a/src/gs-featured-page.c
++++ b/src/gs-featured-page.c
+@@ -0,0 +1,303 @@
++/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
++ * vi:set noexpandtab tabstop=8 shiftwidth=8:
++ *
++ * The Featured tab: every app the distribution's list marks with
++ * GnomeSoftware::DeploymentFeatured and the key below, in banners and tiles.
++ * Explore can't show a short list whole: it keeps five banners, and trims
++ * Editor's Choice to a multiple of six.
++ *
++ * Copyright (C) 2026 William Daugherty
++ *
++ * SPDX-License-Identifier: GPL-2.0-or-later
++ */
++
++#include "config.h"
++
++#include <adwaita.h>
++#include <glib/gi18n.h>
++
++#include "gs-shell.h"
++#include "gs-featured-page.h"
++#include "gs-app-list-private.h"
++#include "gs-common.h"
++#include "gs-featured-carousel.h"
++#include "gs-summary-tile.h"
++
++/* Tiles to show until the list arrives */
++#define N_PLACEHOLDER_TILES 6
++
++/* The size of icon GsFeatureTile needs */
++#define BANNER_ICON_SIZE 128
++
++static const gchar * const featured_keys[] = { "patrone", NULL };
++
++struct _GsFeaturedPage
++{
++	GsPage			 parent_instance;
++
++	GsPluginLoader		*plugin_loader;
++	GCancellable		*cancellable;
++	gboolean		 cache_valid;
++	gboolean		 loading;
++	GsShell			*shell;
++
++	GtkWidget		*featured_carousel;
++	GtkWidget		*box_featured;
++	GtkWidget		*scrolledwindow_featured;
++	GtkWidget		*stack_featured;
++};
++
++G_DEFINE_TYPE (GsFeaturedPage, gs_featured_page, GS_TYPE_PAGE)
++
++typedef enum {
++	PROP_VADJUSTMENT = 1,
++	PROP_TITLE,
++} GsFeaturedPageProperty;
++
++static void
++app_activated_cb (GsFeaturedPage *self, GsAppTile *tile)
++{
++	GsApp *app;
++
++	app = gs_app_tile_get_app (tile);
++
++	if (!app)
++		return;
++
++	gs_shell_show_app (self->shell, app);
++}
++
++static void
++featured_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
++                                  GsApp              *app,
++                                  gpointer            user_data)
++{
++	GsFeaturedPage *self = GS_FEATURED_PAGE (user_data);
++
++	gs_shell_show_app (self->shell, app);
++}
++
++static void
++gs_featured_page_get_apps_cb (GObject *source_object,
++                              GAsyncResult *res,
++                              gpointer user_data)
++{
++	g_autoptr(GsFeaturedPage) self = GS_FEATURED_PAGE (user_data);
++	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
++	g_autoptr(GError) error = NULL;
++	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
++	g_autoptr(GsAppList) banners = gs_app_list_new ();
++	GsAppList *list = NULL;
++
++	self->loading = FALSE;
++
++	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
++		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
++		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++			return;
++		g_warning ("failed to get featured apps: %s", error->message);
++	} else {
++		list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
++	}
++
++	self->cache_valid = TRUE;
++
++	if (list == NULL || gs_app_list_length (list) == 0) {
++		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_featured), "no-results");
++		return;
++	}
++
++	gs_widget_remove_all (self->box_featured, (GsRemoveFunc) gtk_flow_box_remove);
++
++	for (guint i = 0; i < gs_app_list_length (list); i++) {
++		GsApp *app = gs_app_list_index (list, i);
++		g_autoptr(GIcon) icon = NULL;
++
++		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_featured), gs_summary_tile_new (app), -1);
++
++		icon = gs_app_get_icon_for_size (app,
++						 BANNER_ICON_SIZE,
++						 gtk_widget_get_scale_factor (GTK_WIDGET (self)),
++						 NULL);
++		if (icon != NULL)
++			gs_app_list_add (banners, app);
++	}
++
++	gtk_widget_set_visible (self->featured_carousel, gs_app_list_length (banners) > 0);
++	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->featured_carousel), banners);
++
++	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_featured), "featured");
++}
++
++static void
++gs_featured_page_load (GsFeaturedPage *self)
++{
++	g_autoptr(GsPluginJob) plugin_job = NULL;
++	g_autoptr(GsAppQuery) query = NULL;
++	GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
++
++	if (self->loading)
++		return;
++
++	query = gs_app_query_new ("deployment-featured", featured_keys,
++				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING |
++							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_CATEGORIES |
++							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
++				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
++						  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
++				  "sort-func", gs_utils_app_sort_name,
++				  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
++				  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
++				  NULL);
++
++	plugin_job = gs_plugin_job_list_apps_new (query, flags);
++
++	self->loading = TRUE;
++	gs_plugin_loader_job_process_async (self->plugin_loader,
++					    plugin_job,
++					    self->cancellable,
++					    gs_featured_page_get_apps_cb,
++					    g_object_ref (self));
++}
++
++static void
++gs_featured_page_reload (GsPage *page)
++{
++	GsFeaturedPage *self = GS_FEATURED_PAGE (page);
++
++	self->cache_valid = FALSE;
++	gs_featured_page_load (self);
++}
++
++static void
++gs_featured_page_switch_to (GsPage *page)
++{
++	GsFeaturedPage *self = GS_FEATURED_PAGE (page);
++
++	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_FEATURED) {
++		g_warning ("Called switch_to(featured) when in mode %s",
++			   gs_shell_get_mode_string (self->shell));
++		return;
++	}
++
++	gs_grab_focus_when_mapped (self->scrolledwindow_featured);
++
++	if (!self->cache_valid)
++		gs_featured_page_load (self);
++}
++
++static gboolean
++gs_featured_page_setup (GsPage *page,
++                        GsShell *shell,
++                        GsPluginLoader *plugin_loader,
++                        GCancellable *cancellable,
++                        GError **error)
++{
++	GsFeaturedPage *self = GS_FEATURED_PAGE (page);
++
++	g_return_val_if_fail (GS_IS_FEATURED_PAGE (self), TRUE);
++
++	self->plugin_loader = g_object_ref (plugin_loader);
++	self->cancellable = g_object_ref (cancellable);
++
++	/* avoid a ref cycle */
++	self->shell = shell;
++
++	for (guint i = 0; i < N_PLACEHOLDER_TILES; i++)
++		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_featured), gs_summary_tile_new (NULL), -1);
++
++	return TRUE;
++}
++
++static void
++gs_featured_page_init (GsFeaturedPage *self)
++{
++	g_type_ensure (GS_TYPE_FEATURED_CAROUSEL);
++
++	gtk_widget_init_template (GTK_WIDGET (self));
++}
++
++static void
++gs_featured_page_get_property (GObject    *object,
++                               guint       prop_id,
++                               GValue     *value,
++                               GParamSpec *pspec)
++{
++	GsFeaturedPage *self = GS_FEATURED_PAGE (object);
++
++	switch ((GsFeaturedPageProperty) prop_id) {
++	case PROP_VADJUSTMENT:
++		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_featured)));
++		break;
++	case PROP_TITLE:
++		/* Translators: This is the title of the page of apps the distribution features. */
++		g_value_set_string (value, _("Featured"));
++		break;
++	default:
++		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++		break;
++	}
++}
++
++static void
++gs_featured_page_set_property (GObject      *object,
++                               guint         prop_id,
++                               const GValue *value,
++                               GParamSpec   *pspec)
++{
++	switch ((GsFeaturedPageProperty) prop_id) {
++	case PROP_VADJUSTMENT:
++	case PROP_TITLE:
++		/* Read only. */
++		g_assert_not_reached ();
++		break;
++	default:
++		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++		break;
++	}
++}
++
++static void
++gs_featured_page_dispose (GObject *object)
++{
++	GsFeaturedPage *self = GS_FEATURED_PAGE (object);
++
++	g_clear_object (&self->plugin_loader);
++	g_clear_object (&self->cancellable);
++
++	G_OBJECT_CLASS (gs_featured_page_parent_class)->dispose (object);
++}
++
++static void
++gs_featured_page_class_init (GsFeaturedPageClass *klass)
++{
++	GObjectClass *object_class = G_OBJECT_CLASS (klass);
++	GsPageClass *page_class = GS_PAGE_CLASS (klass);
++	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
++
++	object_class->get_property = gs_featured_page_get_property;
++	object_class->set_property = gs_featured_page_set_property;
++	object_class->dispose = gs_featured_page_dispose;
++
++	page_class->switch_to = gs_featured_page_switch_to;
++	page_class->reload = gs_featured_page_reload;
++	page_class->setup = gs_featured_page_setup;
++
++	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
++	g_object_class_override_property (object_class, PROP_TITLE, "title");
++
++	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-featured-page.ui");
++
++	gtk_widget_class_bind_template_child (widget_class, GsFeaturedPage, featured_carousel);
++	gtk_widget_class_bind_template_child (widget_class, GsFeaturedPage, box_featured);
++	gtk_widget_class_bind_template_child (widget_class, GsFeaturedPage, scrolledwindow_featured);
++	gtk_widget_class_bind_template_child (widget_class, GsFeaturedPage, stack_featured);
++	gtk_widget_class_bind_template_callback (widget_class, featured_carousel_app_clicked_cb);
++	gtk_widget_class_bind_template_callback (widget_class, app_activated_cb);
++}
++
++GsFeaturedPage *
++gs_featured_page_new (void)
++{
++	return GS_FEATURED_PAGE (g_object_new (GS_TYPE_FEATURED_PAGE, NULL));
++}
+--- a/src/gs-featured-page.h
++++ b/src/gs-featured-page.h
+@@ -0,0 +1,21 @@
++/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
++ * vi:set noexpandtab tabstop=8 shiftwidth=8:
++ *
++ * Copyright (C) 2026 William Daugherty
++ *
++ * SPDX-License-Identifier: GPL-2.0-or-later
++ */
++
++#pragma once
++
++#include "gs-page.h"
++
++G_BEGIN_DECLS
++
++#define GS_TYPE_FEATURED_PAGE (gs_featured_page_get_type ())
++
++G_DECLARE_FINAL_TYPE (GsFeaturedPage, gs_featured_page, GS, FEATURED_PAGE, GsPage)
++
++GsFeaturedPage	*gs_featured_page_new		(void);
++
++G_END_DECLS
+--- a/src/gs-featured-page.ui
++++ b/src/gs-featured-page.ui
+@@ -0,0 +1,101 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<interface>
++  <requires lib="gtk" version="4.0"/>
++  <requires lib="adwaita" version="1.0"/>
++  <template class="GsFeaturedPage" parent="GsPage">
++    <accessibility>
++      <property name="label" translatable="yes">Featured page</property>
++    </accessibility>
++    <child>
++      <object class="GtkStack" id="stack_featured">
++
++        <child>
++          <object class="GtkStackPage">
++            <property name="name">featured</property>
++            <property name="child">
++              <object class="GtkScrolledWindow" id="scrolledwindow_featured">
++                <property name="can_focus">True</property>
++                <property name="hscrollbar_policy">never</property>
++                <property name="vscrollbar_policy">automatic</property>
++                <child>
++                  <object class="GtkViewport">
++                    <property name="scroll-to-focus">True</property>
++                    <property name="hexpand">True</property>
++                    <property name="vexpand">True</property>
++                    <child>
++                      <object class="AdwClamp">
++                        <!-- We use the same sizes as the overview page. -->
++                        <property name="maximum-size">1000</property>
++                        <property name="tightening-threshold">600</property>
++                        <child>
++                          <object class="GtkBox">
++                            <property name="orientation">vertical</property>
++                            <property name="margin-top">24</property>
++                            <property name="margin-bottom">36</property>
++                            <property name="margin-start">12</property>
++                            <property name="margin-end">12</property>
++                            <property name="valign">start</property>
++                            <property name="spacing">6</property>
++
++                            <child>
++                              <object class="GsFeaturedCarousel" id="featured_carousel">
++                                <property name="visible">False</property>
++                                <property name="height-request">318</property>
++                                <property name="valign">start</property>
++                                <signal name="app-clicked" handler="featured_carousel_app_clicked_cb"/>
++                              </object>
++                            </child>
++
++                            <child>
++                              <object class="GtkLabel" id="featured_heading">
++                                <property name="xalign">0</property>
++                                <property name="label" translatable="yes" comments="Translators: This is a heading for the apps the distribution features.">Featured Apps</property>
++                                <property name="margin-top">21</property>
++                                <property name="margin-bottom">6</property>
++                                <style>
++                                  <class name="heading"/>
++                                </style>
++                              </object>
++                            </child>
++                            <child>
++                              <object class="GtkFlowBox" id="box_featured">
++                                <property name="homogeneous">True</property>
++                                <property name="column-spacing">14</property>
++                                <property name="row-spacing">14</property>
++                                <property name="valign">start</property>
++                                <property name="selection-mode">none</property>
++                                <signal name="child-activated" handler="app_activated_cb" swapped="yes"/>
++                                <accessibility>
++                                  <relation name="labelled-by">featured_heading</relation>
++                                </accessibility>
++                              </object>
++                            </child>
++
++                          </object>
++                        </child>
++                      </object>
++                    </child>
++                  </object>
++                </child>
++              </object>
++            </property>
++          </object>
++        </child>
++
++        <child>
++          <object class="GtkStackPage">
++            <property name="name">no-results</property>
++            <property name="child">
++              <object class="AdwStatusPage">
++                <property name="icon_name">org.gnome.Software-symbolic</property>
++                <property name="title" translatable="yes">No Featured Apps Found</property>
++                <property name="description" translatable="yes">They show once the app catalogs have downloaded. Check your internet connection.</property>
++              </object>
++            </property>
++          </object>
++        </child>
++
++      </object>
++    </child>
++  </template>
++</interface>
+--- a/src/gs-shell.c
++++ b/src/gs-shell.c
+@@ -26,6 +26,7 @@
+ #include "gs-installed-updates-dialog.h"
+ #include "gs-loading-page.h"
+ #include "gs-search-page.h"
++#include "gs-featured-page.h"
+ #include "gs-overview-page.h"
+ #include "gs-updates-page.h"
+ #include "gs-updates-paused-banner.h"
+@@ -42,6 +43,7 @@
+ 
+ static const gchar *page_name[] = {
+ 	"unknown",
++	"featured",
+ 	"overview",
+ 	"installed",
+ 	"search",
+@@ -584,6 +586,7 @@
+ gs_shell_get_mode_is_main (GsShellMode mode)
+ {
+ 	switch (mode) {
++	case GS_SHELL_MODE_FEATURED:
+ 	case GS_SHELL_MODE_OVERVIEW:
+ 	case GS_SHELL_MODE_INSTALLED:
+ 	case GS_SHELL_MODE_SEARCH:
+@@ -634,7 +637,8 @@
+ 	/* do action for mode */
+ 	page = shell->pages[mode];
+ 
+-	if (mode == GS_SHELL_MODE_OVERVIEW ||
++	if (mode == GS_SHELL_MODE_FEATURED ||
++	    mode == GS_SHELL_MODE_OVERVIEW ||
+ 	    mode == GS_SHELL_MODE_INSTALLED ||
+ 	    mode == GS_SHELL_MODE_UPDATES)
+ 		gs_shell_clean_back_entry_stack (shell);
+@@ -646,6 +650,7 @@
+ 
+ 	/* update header bar widgets */
+ 	switch (mode) {
++	case GS_SHELL_MODE_FEATURED:
+ 	case GS_SHELL_MODE_OVERVIEW:
+ 	case GS_SHELL_MODE_INSTALLED:
+ 	case GS_SHELL_MODE_SEARCH:
+@@ -662,6 +667,7 @@
+ 
+ 	widget = gs_page_get_header_start_widget (page);
+ 	switch (mode) {
++	case GS_SHELL_MODE_FEATURED:
+ 	case GS_SHELL_MODE_OVERVIEW:
+ 	case GS_SHELL_MODE_INSTALLED:
+ 	case GS_SHELL_MODE_UPDATES:
+@@ -675,6 +681,7 @@
+ 
+ 	widget = gs_page_get_header_end_widget (page);
+ 	switch (mode) {
++	case GS_SHELL_MODE_FEATURED:
+ 	case GS_SHELL_MODE_OVERVIEW:
+ 	case GS_SHELL_MODE_INSTALLED:
+ 	case GS_SHELL_MODE_UPDATES:
+@@ -909,8 +916,8 @@
+ 
+ 	/* nothing to do */
+ 	if (g_queue_is_empty (shell->back_entry_stack)) {
+-		g_debug ("no back stack, showing overview");
+-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
++		g_debug ("no back stack, showing featured");
++		gs_shell_change_mode (shell, GS_SHELL_MODE_FEATURED, NULL, FALSE);
+ 		return;
+ 	}
+ 
+@@ -921,7 +928,7 @@
+ 	case GS_SHELL_MODE_LOADING:
+ 		/* happens when using --search, --details, --install, etc. options */
+ 		g_debug ("popping back entry for %s", page_name[entry->mode]);
+-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
++		gs_shell_change_mode (shell, GS_SHELL_MODE_FEATURED, NULL, FALSE);
+ 		break;
+ 	case GS_SHELL_MODE_CATEGORY:
+ 		g_debug ("popping back entry for %s with %s",
+@@ -1005,7 +1012,7 @@
+ 	   could be changed from the command line or such, which would mean
+ 	   hiding the chosen page. */
+ 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING)
+-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
++		gs_shell_change_mode (shell, GS_SHELL_MODE_FEATURED, NULL, TRUE);
+ 
+ 	return G_SOURCE_REMOVE;
+ }
+@@ -1036,7 +1043,8 @@
+ 
+ 	g_signal_handlers_disconnect_by_func (loading_page, initial_refresh_done, data);
+ 
+-	been_overview = gs_shell_get_mode (shell) == GS_SHELL_MODE_OVERVIEW;
++	been_overview = gs_shell_get_mode (shell) == GS_SHELL_MODE_FEATURED ||
++			gs_shell_get_mode (shell) == GS_SHELL_MODE_OVERVIEW;
+ 
+ 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
+ 
+@@ -1046,6 +1054,7 @@
+ 		shell->overview_page_refreshed_id =
+ 			g_signal_connect (shell->pages[GS_SHELL_MODE_OVERVIEW], "refreshed",
+ 				          G_CALLBACK (overview_page_refresh_done), shell);
++		gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_FEATURED]));
+ 		gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_OVERVIEW]));
+ 		return;
+ 	}
+@@ -1079,6 +1088,7 @@
+ 			 * otherwise we would show the search bar
+ 			 * without a button to toggle it. */
+ 			switch (mode) {
++			case GS_SHELL_MODE_FEATURED:
+ 			case GS_SHELL_MODE_OVERVIEW:
+ 			case GS_SHELL_MODE_INSTALLED:
+ 			case GS_SHELL_MODE_SEARCH:
+@@ -2409,10 +2419,10 @@
+ void
+ gs_shell_reset_state (GsShell *shell)
+ {
+-	/* reset to overview, unless we're in the loading state which advances
+-	 * to overview on its own */
++	/* reset to featured, unless we're in the loading state which advances
++	 * to featured on its own */
+ 	if (gs_shell_get_mode (shell) != GS_SHELL_MODE_LOADING)
+-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
++		gs_shell_change_mode (shell, GS_SHELL_MODE_FEATURED, NULL, TRUE);
+ 
+ 	gs_shell_clean_back_entry_stack (shell);
+ }
+@@ -2880,6 +2890,7 @@
+ 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
+ 	gtk_widget_class_bind_template_child (widget_class, GsShell, window_title);
+ 
++	gtk_widget_class_bind_template_child_full (widget_class, "featured_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_FEATURED]));
+ 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
+ 	gtk_widget_class_bind_template_child_full (widget_class, "updates_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_UPDATES]));
+ 	gtk_widget_class_bind_template_child_full (widget_class, "installed_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_INSTALLED]));
+@@ -2916,6 +2927,7 @@
+ 	g_type_ensure (GS_TYPE_CATEGORY_PAGE);
+ 	g_type_ensure (GS_TYPE_DETAILS_PAGE);
+ 	g_type_ensure (GS_TYPE_EXTRAS_PAGE);
++	g_type_ensure (GS_TYPE_FEATURED_PAGE);
+ 	g_type_ensure (GS_TYPE_INSTALLED_PAGE);
+ 	g_type_ensure (GS_TYPE_LOADING_PAGE);
+ 	g_type_ensure (GS_TYPE_OVERVIEW_PAGE);
+--- a/src/gs-shell.h
++++ b/src/gs-shell.h
+@@ -22,6 +22,7 @@
+ 
+ typedef enum {
+ 	GS_SHELL_MODE_UNKNOWN,
++	GS_SHELL_MODE_FEATURED,
+ 	GS_SHELL_MODE_OVERVIEW,
+ 	GS_SHELL_MODE_INSTALLED,
+ 	GS_SHELL_MODE_SEARCH,
+--- a/src/gs-shell.ui
++++ b/src/gs-shell.ui
+@@ -67,20 +67,27 @@
+           <object class="GtkShortcut">
+             <property name="trigger">&lt;Alt&gt;1</property>
+             <property name="action">action(app.set-mode)</property>
+-            <property name="arguments">'overview'</property>
++            <property name="arguments">'featured'</property>
+           </object>
+         </child>
+         <child>
+           <object class="GtkShortcut">
+             <property name="trigger">&lt;Alt&gt;2</property>
+             <property name="action">action(app.set-mode)</property>
+-            <property name="arguments">'installed'</property>
++            <property name="arguments">'overview'</property>
+           </object>
+         </child>
+         <child>
+           <object class="GtkShortcut">
+             <property name="trigger">&lt;Alt&gt;3</property>
+             <property name="action">action(app.set-mode)</property>
++            <property name="arguments">'installed'</property>
++          </object>
++        </child>
++        <child>
++          <object class="GtkShortcut">
++            <property name="trigger">&lt;Alt&gt;4</property>
++            <property name="action">action(app.set-mode)</property>
+             <property name="arguments">'updates'</property>
+           </object>
+         </child>
+@@ -209,6 +216,18 @@
+                                             <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                                             <child>
+                                               <object class="AdwViewStackPage">
++                                                <property name="name">featured</property>
++                                                <property name="title" translatable="yes" comments="Translators: A label for a button to show the apps the distribution features.">_Featured</property>
++                                                <property name="use-underline">True</property>
++                                                <property name="icon-name">starred-symbolic</property>
++                                                <property name="child">
++                                                  <object class="GsFeaturedPage" id="featured_page">
++                                                  </object>
++                                                </property>
++                                              </object>
++                                            </child>
++                                            <child>
++                                              <object class="AdwViewStackPage">
+                                                 <property name="name">overview</property>
+                                                 <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">_Explore</property>
+                                                 <property name="use-underline">True</property>
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -48,6 +48,7 @@
+   'gs-details-page.c',
+   'gs-extras-page.c',
+   'gs-feature-tile.c',
++  'gs-featured-page.c',
+   'gs-featured-carousel.c',
+   'gs-hardware-support-context-dialog.c',
+   'gs-info-window.c',
