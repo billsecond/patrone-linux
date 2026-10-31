@@ -18,15 +18,15 @@ Discord asks for; a server without them can still use everything else here.
 | `server/discovery-splash.png` | 1920×1080 | Server Settings → Discovery | A Community server in Discovery |
 | `server/event-cover.png` | 1600×800 | The cover of a scheduled event. Discord crops covers, so the logo stays in the middle | Nothing |
 | `channel-banners/` | 1600×400 | Post one at the top of its channel, above the channel's first message | Nothing |
-| `emoji/` | 128×128, under 256 KB | Server Settings → Emoji. Discord names each emoji from its file name, so `patrone_check.png` is `:patrone_check:`. `patrone_loading.gif` is the boot spinner, animated | Nothing |
-| `role-icons/` | 256×256 | Server Settings → Roles → a role → Display. Discord publishes no size for these that we could find, so they're large and small on disk | A Server Boost perk |
-| `stickers/` | 320×320, under 512 KB | Server Settings → Stickers | Nothing |
+| `emoji/` | 128×128, under 256 KB | Server Settings → Emoji, which has 50 free slots. Discord names each emoji from its file name, so `patrone_check.png` is `:patrone_check:`. `patrone_loading.gif` is the boot spinner, animated, and only members with Nitro can use it | Nothing |
+| `role-icons/` | 256×256, under 256 KB | Server Settings → Roles → a role → Display | Boost Level 2 |
+| `stickers/` | 320×320, under 512 KB | Server Settings → Stickers, which has 5 free slots, so one of these six waits for Boost Level 1. Each needs a related emoji | Nothing |
 | `images/` | 1920×1080 | Wallpapers to post | Nothing |
 | `logos/` | Up to 2400 wide | Transparent logos for anything else. `-dark-bg` files are for dark backgrounds, with white lettering, and `-light-bg` files for light ones. `logos/svg/` has the vector masters | Nothing |
 
-None of this has been uploaded to a real server yet: the sizes, file sizes and
-transparency are checked, and each image was looked at on Discord's dark and
-light colors in `contact-sheet.jpg`.
+Discord can't put a new message above an old one, so post a channel's banner
+before anything else goes in it. In a channel that already has messages, the
+banner lands below them.
 
 ## Fonts
 
