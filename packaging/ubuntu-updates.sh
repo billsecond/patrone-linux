@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Keeps Patrone's builds of Ubuntu's packages up with Ubuntu. When Ubuntu
-# publishes a newer GDM, GNOME Settings, first-login setup or Language Support
-# for resolute (in its release, security or updates pocket), builds it again
-# with Patrone's changes (gdm/build.sh, gnome-settings/build.sh,
+# publishes a newer GDM, GNOME Settings, GNOME Software, first-login setup or
+# Language Support for resolute (in its release, security or updates pocket),
+# builds it again with Patrone's changes (gdm/build.sh,
+# gnome-settings/build.sh, gnome-software/build.sh,
 # gnome-initial-setup/build.sh, language-selector/build.sh)
 # and publishes it (publish.sh): installs keep Patrone's build until then
 # (desktop/apt/patrone.pref). Also says when the installer snap's channel
@@ -72,6 +73,7 @@ LOGS=$work/logs APT_REPO=$repo APT_GITHUB=$github \
 declare -A build=(
     [gdm3]=gdm/build.sh
     [gnome-control-center]=gnome-settings/build.sh
+    [gnome-software]=gnome-software/build.sh
     [gnome-initial-setup]=gnome-initial-setup/build.sh
     [language-selector]=language-selector/build.sh
 )

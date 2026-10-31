@@ -5,12 +5,12 @@
 #
 # - Patrone's own (packaging/*/debian/changelog): each whose version on main
 #   is newer than the published one is built (packaging/build.sh).
-# - Patrone's builds of Ubuntu's GDM, GNOME Settings, first-login setup and
-#   Language Support: a newer revision of Patrone's changes in gdm/build.sh,
-#   gnome-settings/build.sh, gnome-initial-setup/build.sh or
-#   language-selector/build.sh is built again from the Ubuntu version already
-#   published, or Ubuntu's newest for one never published (Ubuntu's own
-#   updates to them are ubuntu-updates.sh's).
+# - Patrone's builds of Ubuntu's GDM, GNOME Settings, GNOME Software,
+#   first-login setup and Language Support: a newer revision of Patrone's
+#   changes in gdm/build.sh, gnome-settings/build.sh, gnome-software/build.sh,
+#   gnome-initial-setup/build.sh or language-selector/build.sh is built again
+#   from the Ubuntu version already published, or Ubuntu's newest for one
+#   never published (Ubuntu's own updates to them are ubuntu-updates.sh's).
 #
 # Then it publishes what built, all at once, and only the debs it has just
 # built, never another build in out/ (packaging/publish.sh).
@@ -155,6 +155,7 @@ done
 declare -A rebuild=(
     [gdm3]=gdm/build.sh
     [gnome-control-center]=gnome-settings/build.sh
+    [gnome-software]=gnome-software/build.sh
     [gnome-initial-setup]=gnome-initial-setup/build.sh
     [language-selector]=language-selector/build.sh
 )

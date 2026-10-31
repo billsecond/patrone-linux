@@ -806,6 +806,13 @@ built packages: `Maintainer` and `Original-Maintainer` are as above in
 `gdm3`, `libgdm1` and `gnome-initial-setup`, GDM's copyright file ends with
 the paragraph, and first-login setup's passes a strict DEP-5 parse.
 
+Patrone's build of GNOME Software (2026-10-31) does the same from its first
+revision: `gnome-software/build.sh` names Patrone as maintainer and Debian's
+GNOME team, whose package Ubuntu ships as it is, as the original one, and adds
+a stanza for Patrone's patch and its new page, which keeps the copyright lines
+of the page it's adapted from. Checked in the built package, whose copyright
+file passes a strict DEP-5 parse.
+
 ## 14. The website: Ubuntu in a URL, and incomplete trademark notices
 
 **Likely problem** (website session).

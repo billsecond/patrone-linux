@@ -139,8 +139,9 @@ EOF
 patrone/
     patroneos-$short.tar.gz: PatroneOS's repository at that
     commit: Patrone's own packages (packaging/, and the folders it names),
-    its changes to Ubuntu's (gdm/, gnome-settings/, gnome-initial-setup/,
-    installer/), and the scripts that make the disc (iso/). Each package's
+    its changes to Ubuntu's (gdm/, gnome-settings/, gnome-software/,
+    gnome-initial-setup/, language-selector/, installer/), and the scripts
+    that make the disc (iso/). Each package's
     build is packaging/build.sh; the rebuilds' are their folders' build.sh.
     Rust packages fetch their crates, whose versions Cargo.lock fixes, from
     crates.io.

@@ -72,6 +72,9 @@ declare -A newest
 for deb in "$debs"/*.deb; do
     name=$(dpkg-deb -f "$deb" Package)
     case $name in *-dev | *-dbgsym) continue ;; esac
+    # Patrone's build of GNOME Software makes these, for installs that ask for
+    # them; the snap plugin would browse the Snap Store (software/README.md)
+    case $name in gnome-software-doc | gnome-software-plugin-fwupd | gnome-software-plugin-snap) continue ;; esac
     if [ -z "${newest[$name]:-}" ] || dpkg --compare-versions \
         "$(dpkg-deb -f "$deb" Version)" gt "$(dpkg-deb -f "${newest[$name]}" Version)"; then
         newest[$name]=$deb

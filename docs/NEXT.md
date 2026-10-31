@@ -122,6 +122,34 @@ Done:
 
 Waiting on the user:
 
+- **Patrone Software's Featured tab** (the user, 2026-10-31: "please feature
+  only for now, the MailCraft, the Artcraft Launcher and the Artcraft PDF
+  and the Portal for TEams, Wordcraft, Gridcraft. Add the ScreeGrabCraft
+  project too. Make it a Featured tab in front of explore";
+  `software/README.md`, `gnome-software/README.md`). The tab shows MailCraft,
+  PdfCraft, Portal for Teams, WordCraft, GridCraft and ScreenGrabCraft. A tab
+  means rebuilding
+  GNOME Software, so Patrone now has five builds of Ubuntu's packages
+  (`gnome-software/`).
+  - **ScreenGrabCraft is the sixth.** `billsecond/screengrabcraft` went public
+    on 2026-10-31, on the user's word. Read first: all 5 commits, all 255 file
+    names ever, its 3 screenshots, its settings. No keys, tokens, private
+    addresses, personal e-mail or stored secrets.
+  - **The ArtCraft Launcher stays out** (the user, 2026-10-31) until they
+    have the ArtCraft Team's written permission (`docs/COMPLIANCE.md`, item
+    6); then it's `apps.list` and the featured list.
+  - **Checked** on PatroneDev with the installed packages, in the throwaway
+    shell: the tab comes first, opens first, and comes back when the app is
+    reopened; Alt+1 to 4; banners, arrows and tiles open an app, and Back
+    returns; search; `--mode=`; dark mode; a narrow window; the empty page,
+    with the list moved aside. Explore no longer repeats the picks. With
+    ScreenGrabCraft's real release, served from the VM, through the real
+    `build-index.sh` into an unsigned test index: six tiles, Install on its
+    tile, and `screengrabcraft-cli` 0.1.1 ran.
+  - **Not checked:** running ScreenGrabCraft's tray and capture, the user's
+    own desktop, a fresh install from an ISO, the daily job's first publish
+    of `gnome-software`, and the banners turning by themselves.
+
 - **Drives and mounts in File Manager** (the user, 2026-10-28: "add under
   computer Mounts where the drives are ... and add the ability to mount
   other drives/resources"; `file-manager/README.md`, Drives and mounts).
@@ -292,9 +320,8 @@ Waiting on the user:
   Checked: a system-wide install of MailCraft from the published, signed
   index ran (`mailcraft-cli --version`), and Patrone Software showed
   PdfCraft's page with Install. Its signing key's backup is on the VM in
-  `~/.local/share/patrone-app-index/gnupg`. ScreenGrabCraft (private
-  repository) and AniCraft (no releases) aren't in it; see
-  `software/README.md`, "The Craft apps".
+  `~/.local/share/patrone-app-index/gnupg`. AniCraft (no releases) isn't in
+  it; see `software/README.md`, "The Craft apps".
 
 - **The desktop bubble** (the user's design, 2026-10-26;
   `shell/gnome/README.md`, "The desktop bubble"): in the first step's

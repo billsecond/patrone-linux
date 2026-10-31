@@ -20,6 +20,7 @@ source. `build.sh` puts the two together and builds the `.deb` on the dev VM:
 ./packaging/build.sh patrone-guest-tools
 ./packaging/build.sh patrone-hyperv-setup -d
 ./gnome-settings/build.sh
+./gnome-software/build.sh
 ```
 
 The packages land in `out/`. Install them with
@@ -46,7 +47,8 @@ dependencies), and publish them to Patrone's apt repository with
 | `patrone-task-manager` | `task-manager/` | Patrone Task Manager, in the place of Ubuntu's Resources (`Conflicts` and `Replaces: resources`; Resources is only recommended by `ubuntu-desktop-minimal`, so Ubuntu's desktop stays): apps and processes with what each uses, performance graphs, each app's processor time since the computer started, startup applications, users (with Sign out and Disconnect, through logind, so polkit asks for an administrator's password for another account), every process, and services. Also its launcher entry and icon, and Ctrl+Shift+Esc: a custom shortcut in a Patrone dconf database (`/etc/dconf/db/patrone.d/`, compiled by `dconf update` in postinst) read through a vendor profile, `/usr/share/dconf/profile/user` (an administrator's `/etc/dconf/profile/user` takes its place). Depends on `dconf-cli`; recommends `pkexec`. Builds with `libgtk-4-dev`. See `task-manager/README.md`. |
 | `fonts-patroneos` | `fonts/` | PatroneOS's own fonts, Sans, Mono, Document, Serif and Classic (28 static TrueType fonts), in `/usr/share/fonts/truetype/patroneos/`, with their FONTLOG and the OFL 1.1. They're drawn and built in their own repository, [billsecond/patroneos-fonts](https://github.com/billsecond/patroneos-fonts); this package installs the release `fonts/release.txt` pins, which `build.sh` fetches and checks against its SHA-256 before building (the build itself runs offline). Recommends Noto (other scripts), Liberation and Caladea (the classic serif fonts). See `fonts/README.md`. |
 | `fonts-patrone-sans` | `fonts/` | Transitional: Patrone Sans gave way to PatroneOS's fonts, and this package now only depends on `fonts-patroneos`, so upgrading from Patrone Sans installs them and removes it. |
-| `patrone-software` | `software/` | GNOME Software as Patrone's app store, in place of Ubuntu's App Center (Canonical's `snap-store` snap, which its postinst removes when it's first installed). It depends on `gnome-software` and its Flatpak plugin, not the snap one, so Canonical's Snap Store isn't browsed. Its Explore page shows Patrone's picks (`/usr/share/swcatalog/xml/org.patrone.Software.Featured.xml`, a placeholder for now) in place of GNOME's, which preinst diverts to `org.gnome.Software.Featured.xml.gnome`. See `software/README.md`. |
+| `patrone-software` | `software/` | GNOME Software as Patrone's app store, in place of Ubuntu's App Center (Canonical's `snap-store` snap, which its postinst removes when it's first installed). It depends on Patrone's build of `gnome-software` and its Flatpak plugin, not the snap one, so Canonical's Snap Store isn't browsed. Its Featured tab shows Patrone's picks (`/usr/share/swcatalog/xml/org.patrone.Software.Featured.xml`) in place of GNOME's, which preinst diverts to `org.gnome.Software.Featured.xml.gnome`. See `software/README.md`. |
+| `gnome-software`, `gnome-software-common` and its plugins (Patrone's build) | `gnome-software/` | Ubuntu's GNOME Software with a Featured tab before Explore, where it opens, versioned Ubuntu's plus `patrone1`. Built by `gnome-software/build.sh`, not `build.sh`: it fetches Ubuntu's source first. Builds with Ubuntu's build dependencies for `gnome-software`. See `gnome-software/README.md`. |
 | `patrone-guest-tools` | `guest-tools/` | Hyper-V's integration services and VirtualBox's Guest Additions, each only under its own hypervisor (`ConditionVirtualization`). Hyper-V: Ubuntu's `linux-cloud-tools` daemons for the HWE kernel (key-value exchange, VSS), Patrone's unit for file copy (`Copy-VMFile`; Ubuntu's waits for a device Linux 6.10 dropped), and the host's clock as one of chrony's sources. VirtualBox: recommends Ubuntu's `virtualbox-guest-utils` and `virtualbox-guest-x11` (multiverse), starts VBoxClient in Wayland sessions (user units), and adds every account to `vboxsf` and `vboxdrmipc` so shared folders work. See `guest-tools/README.md`. |
 | `patrone-hyperv-setup` | `hyperv-setup/` | Virtual Machine Setup: at each desktop login in a Hyper-V VM (a user unit, `ConditionVirtualization=microsoft`, not in the installer's live session), a dialog that offers to set up what's missing with one password (a root helper run by `pkexec`, polkit action `org.patrone.hyperv-setup.apply`): `patrone-guest-tools`, and `patrone-remote-desktop`'s service for VMConnect's enhanced session; and the PowerShell command for Windows' side (the Hyper-V socket transport, integration services turned off), with a Copy button. Shows nothing when everything's set up, and "Don't show this again" turns it off for the account. A udev rule notes when Hyper-V opens an enhanced session, which is how it knows the transport is set. Depends on `pkexec`; builds with `libgtk-4-dev`. See `hyperv-setup/README.md`. |
 
@@ -143,13 +145,13 @@ half is `desktop/apt/patrone-archive-keyring.gpg`.
 
 ### Ubuntu's updates to the packages Patrone rebuilds
 
-GDM, GNOME Settings, first-login setup and Language Support are Ubuntu's
-packages with Patrone's changes, versioned Ubuntu's plus `patroneN`, and installs keep
+GDM, GNOME Settings, GNOME Software, first-login setup and Language Support
+are Ubuntu's packages with Patrone's changes, versioned Ubuntu's plus `patroneN`, and installs keep
 Patrone's build even when Ubuntu has a newer one (`desktop/apt/patrone.pref`).
 So each of Ubuntu's updates to them has to be built again with Patrone's
 changes. `ubuntu-updates.sh` does that: it compares Patrone's builds with
 what Ubuntu has published for resolute (Launchpad), builds what's behind
-with `gdm/build.sh`, `gnome-settings/build.sh`,
+with `gdm/build.sh`, `gnome-settings/build.sh`, `gnome-software/build.sh`,
 `gnome-initial-setup/build.sh` or `language-selector/build.sh` at Ubuntu's
 new version, from a clean
 checkout of `main`, and publishes it. It also says when the installer

@@ -65,9 +65,10 @@ updates install them (`52patrone-unattended-upgrades` allows the `Patrone`
 origin). `packaging/publish.sh` publishes (`packaging/README.md`,
 "Publishing").
 
-Patrone builds four of Ubuntu's packages with its own changes: GDM
-(`gdm/`), GNOME Settings (`gnome-settings/`), first-login setup
-(`gnome-initial-setup/`) and Language Support (`language-selector/`). Their versions are Ubuntu's plus `patroneN`, so
+Patrone builds five of Ubuntu's packages with its own changes: GDM
+(`gdm/`), GNOME Settings (`gnome-settings/`), GNOME Software
+(`gnome-software/`), first-login setup (`gnome-initial-setup/`) and Language
+Support (`language-selector/`). Their versions are Ubuntu's plus `patroneN`, so
 Ubuntu's next update of one is newer and would replace Patrone's build.
 `patrone.pref` stops that: Patrone's repository has priority 600, over
 Ubuntu's 500, so its builds win whatever the versions; and Ubuntu's versions
